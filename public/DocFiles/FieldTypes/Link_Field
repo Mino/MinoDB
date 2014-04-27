@@ -1,0 +1,72 @@
+<p>
+A <a href="/docs/Fields">field</a> implementing the Link <a href="/docs/Field_Types">field type</a> can store a value that is either an <a href="/docs/IDs">ID</a>(numeric/string) or a <a href="/docs/Paths">path</a>(string). The Link <a href="/docs/Field_Types">field type</a> has the following parameters:
+</p>
+
+<ul>
+<li><code>IDs Allowed</code> - Defaults to false.</li>
+<li><code>Paths Allowed</code> - Defaults to false.</li>
+<li><code>Items Allowed</code> - Defaults to false.</li>
+<li><code>Folders Allowed</code> - Defaults to false.</li>
+<li><code>Self Allowed</code> - Defaults to false. Allows the setting of the value to <code>SELF</code> to indicate the current <a href="/docs/Items">item</a> is the target of the relationship.</li>
+<li><code>Child Of</code> - Specifies the <a href="/docs/Paths">path</a> that the value must be within (only works for <a href="/docs/Paths">paths</a>).</li>
+<li><code>Recommended Types</code> - An array of <a href="/docs/Types">type</a> names (with optional version numbers). This list of <a href="/docs/Types">types</a> is used for suggesting compatible <a href="/docs/Items">items</a> via the <a href="/docs/Browser">Browser</a>, but is not enforced upon saving.</li>
+</ul>
+
+<ul>
+<li>At least one of <code>IDs Allowed</code> and <code>Paths Allowed</code> must be set to true.</li>
+<li>At least one of <code>Items Allowed</code> and <code>Folders Allowed</code> must be set to true.</li>
+<li><code>Child Of</code> cannot be set unless <code>Paths Allowed</code> is set to true.</li>
+</ul>
+
+<p>
+If an ID is accepted by the <a href="/docs/Fields">field</a>, it is not checked to see if it is a <a href="/docs/Folder">Folder</a> or an <a href="/docs/Items">item</a>. These checks are performed on <a href="/docs/Paths">paths</a> only.
+</p>
+
+<p>
+The target of the Link is not checked for existance. It is possible to save a value that refers to an <a href="/docs/Objects">object</a> that does not exist or is inaccessible to the user saving the <a href="/docs/Fields">field</a> value.
+</p>
+
+
+<div class="heading">Example Field 1</div>
+<pre>{
+	"Name" : "My Link Field",
+	"Field Type" : "Link",
+	"Description" : "The example usage of the Link Field Type.",
+	"Required" : true,
+	"Parameters" : {
+		"Paths Allowed" : true,
+		"Items Allowed" : true,
+		"Child Of" : "/ExampleUser/People/"
+	} 
+}</pre>
+
+<div class="heading">Example Value 1</div>
+<pre>"ExampleUser.MyType.1" : {
+	...
+	"My Link Field" : "/ExampleUser/People/John Smith",
+	...
+}</pre>
+
+
+<div class="heading">Example Field 2</div>
+<pre>{
+	"Name" : "My Link Field",
+	"Field Type" : "Link",
+	"Description" : "The example usage of the Link Field Type.",
+	"Required" : true,
+	"Parameters" : {
+		"IDs Allowed" : true,
+		"Items Allowed" : true,
+		"Folders Allowed" : true
+	} 
+}</pre>
+
+<div class="heading">Example Value 2</div>
+<pre>"ExampleUser.MyType.1" : {
+	...
+	"My Link Field" : "466",
+	...
+}</pre>
+
+
+	

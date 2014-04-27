@@ -1,0 +1,153 @@
+<p>
+MinoCloud allows you to store structured data so that you can power <a href="/docs/Apps">apps</a> or just store useful data online so that you can search and share it.
+</p>
+
+<p>
+This tutorial will guide you through the process of storing your first piece of data and teach you the simple concepts behind MinoCloud. For the purposes of this tutorial we'll be storing data about people. Each person will consist of a <code>First Name</code>, <code>Last Name</code> and <code>Date of Birth</code>.
+</p>
+
+<p>
+If possible, keep this tutorial open and use a new window to follow the instructions.
+</p>
+
+<div class="heading">Go to the <a href="/docs/Browser">Browser</a></div>
+<p>
+Open the MinoCloud <a href="/docs/Browser">Browser</a> by navigating to <a target="_blank" href="http://minocloud.com/browser/">minocloud.com/browser/</a>. If you haven't already signed up, you will be asked to do so before you can continue.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick Start Tutorial/Browser.png" />
+<div class="image_description">The MinoCloud Browser</div>
+
+<div class="heading">Create a <a href="/docs/Folder">Folder</a></div>
+<p>
+MinoCloud uses <a href="/docs/Folders">folders</a> to organize data. This makes it really easy to navigate and search through your data and also allows you to select folders that you want to share with other users.
+</p>
+
+<p>
+To create a <a href="/docs/Folders">folder</a> click the <code>+Folder</code> button on the <a href="/docs/Toolbar">toolbar</a> in the bottom-right of your screen. Name the <a href="/docs/Folders">folder</a> <code>People</code>. Once the <a href="/docs/Folders">folder</a> has been created, click it's icon to view it's contents.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick Start Tutorial/Folder Creation.png" />
+<div class="image_description">Creating a Folder</div>
+
+<div class="heading">Create an <a href="/docs/Items">item</a></div>
+<p>
+Now that you've got a <a href="/docs/Folders">folder</a> we can start storing some data. MinoCloud stores data in <a href="/docs/Items">items</a>. To create an <a href="/docs/Items">item</a>, click the <code>+Item</code> button on the <a href="/docs/Toolbar">toolbar</a> in the bottom-right of your screen.
+</p>
+
+<p>
+You now have a blank <a href="/docs/Items">item</a> that hasn't yet been saved. Every <a href="/docs/Items">item</a> has some basic fields that are used to keep everything organized such as an <code>ID</code>, <code>Name</code> and <code>Path</code>.
+</p>
+
+<p>
+We'll come back to the <code>ID</code> and <code>Path</code> fields, but for now we're going to create a new <a href="/docs/Items">item</a> that contains information about a person named <code>John Smith</code>, so type <code>John Smith</code> into the <code>Name</code> field.
+</p>
+
+<div class="heading">Save an <a href="/docs/Items">item</a></div>
+<p>
+Let's save this <a href="/docs/Items">item</a>. Don't worry that it doesn't contain any useful data yet; that's next. To save an <a href="/docs/Items">item</a>, click the <code>Save</code> button on the <a href="/docs/Toolbar">toolbar</a>.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick Start Tutorial/Created Item.png" />
+<div class="image_description">"John Smith" Item</div>
+
+<p>
+Our <a href="/docs/Items">item</a> has been allocated an <code>ID</code> and the <code>Version</code>, <code>Created</code> and <code>Last Updated</code> fields have been filled in.
+</p>
+
+<div class="heading">Create a <a href="/docs/Types">type</a></div>
+<p>
+Our <a href="/docs/Items">item</a> doesn't currently store any useful data. To add data to it we need to create a <a href="/docs/Types">type</a> so that we can define the structure of what we want to store.
+</p>
+
+<p>
+To create a new <a href="/docs/Types">type</a>, click the <code>Types</code> button on the <a href="/docs/Toolbar">toolbar</a> and click <code>New Type</code> from the menu that appears.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick Start Tutorial/New Type Menu.png" />
+<div class="image_description">Type Menu</div>
+
+<p>
+We want to store information about people so type <code>Person</code> into the <code>Name</code> field. The <code>Full Name</code> field is the unique name assigned to the <a href="/docs/Types">type</a> you are creating and is in the format <code>{Username}.{Type Name}.{Version}</code>. The <code>Full Name</code> will be automatically filled as you enter your chosen <code>Name</code>. You can optionally provide a <code>Description</code> of the <a href="/docs/Types">type</a> to remind yourself and others what to use it for. We're storing information about people so the <code>Description</code> could be <code>Used to store basic information about a person</code>.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick Start Tutorial/Type Basic Info.png" />
+<div class="image_description">Basic Info for "Person" Type</div>
+
+<div class="heading">Create some <a href="/docs/Fields">fields</a></div>
+<p>
+We need to create some <a href="/docs/Fields">fields</a> that we can store data in such as <code>First Name</code>, <code>Last Name</code> and <code>Date of Birth</code>.
+</p>
+
+<p>
+Each <a href="/docs/Fields">field</a> has to have a <a href="/docs/Field_Types">field type</a>. This defines the type of values that the <a href="/docs/Fields">field</a> will accept. This tutorial won't go into depth about each <a href="/docs/Field_Types">field type</a> you can use. For now we'll just use <code>Text</code>, <code>Text</code> and <code>Date</code> as our respective <a href="/docs/Field_Types">field types</a>.
+</p>
+
+<p>
+Click the <code>Add Field</code> button either on the <a href="/docs/Toolbar">toolbar</a> or beneath the <a href="/docs/Types">type</a>'s basic information.
+</p>
+
+<p>
+You now have a <a href="/docs/Field">Field</a> that you can customize to suit your needs. Enter <code>First Name</code> into the <code>Name</code> field and leave the <code>Type</code> field set to <code>Text</code>. You can enter a <code>Description</code> such as <code>The person's first name.</code> to remind both yourself and others exactly what to enter into the field. Because we want to make sure that users can't leave this <a href="/docs/Fields">field</a> empty, make sure the <code>Required</code> field is checked. Leave the parameters empty. If you would like more information about how to customize <a href="/docs/Fields">fields</a>, click <a href="/docs/Fields">here</a>.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick Start Tutorial/First Name.png" />
+<div class="image_description">"First Name" Field</div>
+
+<p>
+Click <code>Add Field</code> again, but this time use <code>Last Name</code> instead of <code>First Name</code> where appropriate.
+</p>
+
+<p>
+Now we need to add the <code>Date of Birth</code> field. Click <code>Add Field</code> and enter <code>Date of Birth</code> into the <code>Name</code> field. This time select <code>Date</code> as the <code>Type</code>. This will change our <a href="/docs/Fields">field</a> into a <a href="/docs/Date_Field">Date Field</a>. Fill in a description, tick the <code>Required</code> box.
+</p>
+
+<p>
+Now that the <a href="/docs/Fields">fields</a> are defined, click the <code>Save</code> button on the <a href="/docs/Toolbar">toolbar</a>.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick Start Tutorial/Date of Birth.png" />
+<div class="image_description">"Date of Birth" Field</div>
+
+<p>
+You will be asked if you are sure that you want to save this <a href="/docs/Types">type</a> as it cannot be deleted once created. <a href="/docs/Types">Types</a> can't be deleted because as soon as they are used in an <a href="/docs/Items">item</a>, that <a href="/docs/Items">item</a> would be broken if the <a href="/docs/Types">type</a> was deleted or replaced.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick Start Tutorial/Type Save.png" />
+<div class="image_description">Type saving confirmation</div>
+
+<div class="heading">Use your <a href="/docs/Types">type</a></div>
+<p>
+Now that you've defined a <a href="/docs/Types">type</a>, you can go back to your <code>John Smith</code> <a href="/docs/Items">item</a> to add your new <code>Person</code> <a href="/docs/Types">type</a> to it.
+</p>
+
+<p>
+You can either use your web browser's back button to navigate back to your <code>John Smith</code> <a href="/docs/Items">item</a> or you can click the home button (house icon) in the top left of your screen. From your home folder you can navigate back through the <code>People</code> <a href="/docs/Folders">folder</a> you created to find the <code>John Smith</code> <a href="/docs/Items">item</a>.
+</p>
+
+<p>
+Once back in your <code>John Smith</code> <a href="/docs/Items">item</a>, click the <code>Edit</code> button on the <a href="/docs/Toolbar">toolbar</a> to enter edit mode. The "Recently Used Types" panel beneath the <a href="/docs/Items">item</a>'s basic information will contain your new <code>Person</code> <a href="/docs/Types">type</a>. Click <code>Add</code> next to your <a href="/docs/Types">type</a> to add it to your <a href="/docs/Items">item</a>.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick Start Tutorial/Recent Types.png" />
+<div class="image_description">Recent Types List</div>
+
+<p>
+Your <a href="/docs/Types">type</a>, with it's 3 fields (<code>First Name</code>, <code>Last Name</code> and <code>Date of Birth</code>) will appear underneath the <a href="/docs/Items">item</a>'s basic information. Fill in the values with some example data such as <code>John</code>, <code>Smith</code> and <code>1985-05-11</code> for the respective fields. Note that <a href="/docs/Date_Field">dates</a> must be in the format <code>YYYY-MM-DD</code> to avoid confusion over the ordering of days and months.
+</p>
+
+<p>
+Click <code>Save</code> on the <a href="/docs/Toolbar">toolbar</a> to save your <a href="/docs/Items">item</a> again.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick Start Tutorial/Saved Item.png" />
+<div class="image_description">Complete "John Smith" Item</div>
+
+<div class="heading">Well Done!</div>
+<p>
+Now that you've successfully saved your first <a href="/docs/Items">item</a> that contains some useful data, you can create some more using the same <code>Person</code> <a href="/docs/Types">type</a> simply by creating a new <a href="/docs/Items">item</a> from a <a href="/docs/Folders">folder</a> and adding the <code>Person</code> <a href="/docs/Types">type</a>.
+</p>
+
+<p>
+If you want to learn how to search through your new data collection follow the <a href="/docs/Search Tutorial">Search Tutorial</a>.
+</p>

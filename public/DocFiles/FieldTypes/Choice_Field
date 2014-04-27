@@ -1,0 +1,25 @@
+<p>
+A <a href="/docs/Fields">field</a> implementing the Choice <a href="/docs/Field_Types">field type</a> can store an index (integer) value for a selection in an array of possible choices specified by the field. Due to array convention, the first choice has an index of <code>0</code> rather than <code>1</code>. The Choice <a href="/docs/Field_Types">field type</a> has a single required parameter named <code>Choices</code> that must contain an array of strings.
+</p>
+
+<div class="heading">Example Field</div>
+<pre>{
+	"Name" : "My Choice Field",
+	"Field Type" : "Choice",
+	"Description" : "The example usage of the Choice Field Type.",
+	"Required" : true,
+	"Parameters" : {
+		"Choices" : [
+			"The first choice",
+			"The second choice",
+			"The third choice"
+		]
+	} 
+}</pre>
+
+<div class="heading">Example Value</div>
+<pre>"ExampleUser.MyType.1" : {
+	...
+	"My Choice Field" : 1,//Corresponds to "The second choice".
+	...
+}</pre>

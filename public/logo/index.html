@@ -1,0 +1,110 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+
+<link rel="stylesheet" href="../brand/brandPage.css" />
+<script type="text/javascript" src="../Libraries/jquery.1.7.1.js"></script>
+<script type="text/javascript" src="jquery.logo3d.js"></script>
+<script type="text/javascript" src="../brand/brand.js"></script>
+
+</head>
+
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+	
+		var logo3dElement = $("#logo3dView").logo3d();
+		
+		$(".menuOption").on('click',function(){
+			logo3dElement.logo3d("changeTo",$(this).attr("id"));
+		});
+
+		var startingX = -30;
+		var startingY = 45;
+
+		var mouseDown = false;
+		var lastPos = null;
+		var rotX = startingX;
+		var rotY = startingY;
+		var logo3dDiv = $("#logo3dView").find(".logo3d");
+
+		rotateToCurrent = function(){
+			$(logo3dDiv).css({
+				"-webkit-transition" : "none",
+				"-moz-transition" : "none",
+				"-ms-transition" : "none",
+				"transition" : "none",
+				"-webkit-transform": "rotateX("+rotX+"deg) rotateY("+rotY+"deg)",
+				"-moz-transform": "rotateX("+rotX+"deg) rotateY("+rotY+"deg)",
+				"-ms-transform": "rotateX("+rotX+"deg) rotateY("+rotY+"deg)",
+				"transform": "rotateX("+rotX+"deg) rotateY("+rotY+"deg)"
+			});
+		}
+
+		$("#resetRotation").click(function(){
+			$(".transformAccessories").show();
+			rotX = startingX;
+			rotY = startingY;
+			$(logo3dDiv).css({
+				"-webkit-transform": '',
+				"-moz-transform": '',
+				"-ms-transform": '',
+				"transform": '',
+				"-webkit-transition" : '',
+				"-moz-transition" : '',
+				"-ms-transition" : '',
+				"transition" : ''
+			});
+		});
+
+		var events = ["mousemove","mousedown","mouseup"];
+		if('ontouchstart' in document.documentElement){
+			events = ["touchmove","touchstart","touchend"];
+		} else {
+			$("body")
+			.on("mouseleave",function(){
+				mouseDown = false;
+			})
+		}
+
+		$("body").on(events[0],function(e){
+			e.preventDefault();
+			if(lastPos!=null){
+				if(mouseDown){
+					$(".transformAccessories").hide();
+					var diffX = lastPos.pageX - e.originalEvent.pageX;
+					var diffY = lastPos.pageY - e.originalEvent.pageY;
+					rotX+=diffY*0.5;
+					rotY-=diffX*0.5;
+					rotateToCurrent();
+				}	
+			}
+			lastPos = {pageX:e.originalEvent.pageX, pageY:e.originalEvent.pageY};
+		}).on(events[1],function(){
+			mouseDown = true;
+		}).on(events[2],function(){
+			mouseDown = false;
+			lastPos = null;
+		});
+	});
+</script>
+
+<body class="coloredBackground">
+	<div id="logo3dView"></div>
+	<!--<img src="SimpleBlack.png" width="150" height="100" style="position: absolute; top:50%; left:50%; margin-left:-75px; margin-top:-50px; opacity: 0.5; -webkit-transform: scale(0.935);" />-->
+	<div class="menu">
+		<button class="mino_button menuOption" id="">Logo</button>
+		<!--<button class="mino_button menuOption" id="cloud">Cloud</div>-->
+		<button class="mino_button menuOption" id="message">Message</button>
+		<button class="mino_button menuOption" id="house">House</button>
+		<button class="mino_button menuOption" id="play">Play</button>
+		<button class="mino_button menuOption" id="pencil">Pencil</button>
+		<button class="mino_button menuOption" id="pyramid">Pyramid</button>
+		<button class="mino_button menuOption" id="tick">Tick</button>
+		<button class="mino_button menuOption" id="roadsign">Roadsign</button>
+		<button class="mino_button menuOption" id="graph">Graph</button>
+		<button class="mino_button menuOption" id="resetRotation">Reset</button>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,97 @@
+<p>
+Want to get up and running with MinoCloud using Node.js? You can either follow the <a href="/docs/(Node) Quick_App_Tutorial">(Node) Quick App Tutorial</a> to setup a basic example app to learn from or follow the instructions below to just start using the API.
+</p>
+<p>
+This guide assumes you understand the basics of using <code>node</code> and <code>npm</code>.
+</p>
+
+<div class="heading">Install <code>minocloud</code> using <code>npm</code></div>
+<p>
+Navigate to the directory you are going to use for your <a href="/docs/Apps">app</a>'s code in a terminal and run:
+</p>
+<pre>npm install minocloud</pre>
+
+<div class="heading">Save and retrieve an <a href="/docs/Items">item</a></div>
+<p>
+To use the <code>api</code> function of the MinoCloud class to <code>Save</code> an <a href="/docs/Items">item</a> that uses a <a href="/docs/Types">type</a> named <code>ExampleUser.Person.1</code> and then <code>Get</code> it, use the following:
+</p>
+
+<div class="heading">Save and retrieve an <a href="/docs/Items">item</a></div>
+<p>
+The following code example shows how to use the <a href="/docs/Save_Function">Save function</a> to save an <a href="/docs/Items">item</a> that uses a <a href="/docs/Types">type</a> named <code>ExampleUser.Person.1</code> and then the <a href="/docs/Get_Function">Get function</a> to retrieve it.
+</p>
+
+<p>
+This code example uses the Node convenience functions <a href="/docs/(Node) saveObjects">saveObjects</a> and <a href="/docs/(Node) get">get</a> to call the underlying functions. These convenience functions . These functions act as wrappers for the <a href="/docs/(Node) api">api</a> function, which can be used to call the MinoCloud <a href="/docs/API">API</a> as per the <a href="/docs/API">API</a> documentation.
+</p>
+
+<pre>
+var MinoCloud = require("minocloud");
+
+var username = "__YOUR_USERNAME__";
+var api_key = "__YOUR_API_KEY__";
+
+var minocloud = new MinoCloud(username,api_key);
+
+minocloud.saveObjects(
+	{
+		"Name" : "John Smith",
+		"Path" : "/"+username+"/",
+		"ExampleUser.Person.1" : {
+			"First Name" : "John",
+			"Last Name" : "Smith",
+			"Date of Birth" : "1985-05-11"
+		}
+	},
+	function(error,result){
+		if(error!=null){
+			console.log("Saving error:");
+			console.log(JSON.stringify(error, null, 2));
+		} else {
+			console.log("Save result:");
+			console.log(JSON.stringify(result, null, 2));
+
+			minocloud.get("/"+username+"/John Smith",function(error,result){
+				if(error!=null){
+					console.log("Get error:");
+					console.log(JSON.stringify(error, null, 2));
+				} else {
+					console.log("Get result:");
+					console.log(JSON.stringify(result, null, 2));
+				}
+			});
+		}
+	}
+);
+</pre>
+<p>
+Output:
+</p>
+<pre>
+Save result:
+{
+  "Name": "John Smith",
+  "Path": "/ExampleUser/",
+  "ID": 60274,
+  "Full Path": "/ExampleUser/John Smith",
+  "Created": "2013-10-17 14:24:46",
+  "Last Updated": "2013-10-17 14:24:46",
+  "Version": 1
+}
+Get result:
+{
+  "ID": 60274,
+  "Name": "John Smith",
+  "Folder": false,
+  "Path": "/ExampleUser/",
+  "Full Path": "/ExampleUser/John Smith",
+  "Created": "2013-10-17 14:24:46",
+  "Last Updated": "2013-10-17 14:24:46",
+  "Version": 1,
+  "ExampleUser.Person.1": {
+    "First Name": "John",
+    "Last Name": "Smith",
+    "Date of Birth": "1985-05-11"
+  }
+}
+</pre>

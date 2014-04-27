@@ -1,0 +1,19 @@
+<p>
+A <a href="/docs/Fields">field</a> implementing the Boolean <a href="/docs/Field_Types">field type</a> can store either <code>true</code> or <code>false</code>. The Boolean <a href="/docs/Field_Types">field type</a> has no parameters.
+</p>
+
+<div class="heading">Example Field</div>
+<pre>{
+	"Name" : "My Boolean Field",
+	"Field Type" : "Boolean",
+	"Description" : "The example usage of the Boolean Field Type.",
+	"Required" : true,
+	"Parameters" : {} 
+}</pre>
+
+<div class="heading">Example Value</div>
+<pre>"ExampleUser.MyType.1" : {
+	...
+	"My Boolean Field" : true,
+	...
+}</pre>

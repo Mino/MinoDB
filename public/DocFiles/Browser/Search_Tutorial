@@ -1,0 +1,17 @@
+<p>
+The MinoCloud <a href="/docs/Browser">Browser</a> allows you to search through any <a href="/docs/Folders">folder</a> that you have access to using the search pane that can be accessed using by clicking the search button (magnifying glass icon) on the <a href="/docs/Toolbar">toolbar</a> in the bottom-right of your screen.
+</p>
+
+<div class="heading">Select a <a href="/docs/Folders">folder</a> to search</div>
+<p>
+The first thing you should do when performing a search is to select the <a href="/docs/Folders">folder</a> you want to search within and specify whether or not you would like to include that <a href="/docs/Folders">folder</a>'s subfolders in the search.
+</p>
+
+<p>
+The top two fields in the search pane allow you specify these two options. Click the <code>Select</code> button to open a window that will allow you to select the <a href="/docs/Paths">path</a> that you wish to search within. If you leave the <code>Include Subfolders</code> checkbox unticked then the search will only return <a href="/docs/Objects">objects</a> that are directly within the <a href="/docs/Folders">folder</a> you specified as your <code>Path</code>. If you tick the checkbox then all <a href="/docs/Objects">objects</a> within the <a href="/docs/Folders">folder</a> you specified and any of it's subfolders will be returned.
+</p>
+
+<div class="heading">Specify <a href="/docs/Objects">object</a> parameters</div>
+<p>
+Because all MinoCloud <a href="/docs/Objects">objects</a> have basic parameters you can search using their <code>Name</code>, <code>Folder</code>, <code>Last Updated</code> and <code>Created</code> fields. To search using one or more of these fields, select the name of the field from the dropdown menu beneath the <code>Include Subfolders</code> field. Upon selecting a field, you will be shown the different queries you can use on that field. For example, a <a href="/docs/Date & Time_Field">Date & Time Field</a> can be searched by specifying the <code>Earliest</code>, <code>Latest</code> or <code>Equal To</code> queries. This allows you to either specify an acceptable range or an exact value that the <a href="/docs/Objects">object</a> must have.
+</p>

@@ -1,0 +1,31 @@
+<p>
+MinoCloud allows you to share any of your created folders with other users with either read or read+write permissions.
+</p>
+
+<p>
+This allows you to collaborate and share your data and can be performed by navigating to the <a href="/docs/Folders">folder</a> using the <a href="/docs/Browser">Browser</a> and clicking "Sharing" on the <a href="/docs/Toolbar">Toolbar</a> in the bottom right of your screen.
+</p>
+
+<p>
+You will be shown the list of users that can currently read or write to the Folder.
+</p>
+
+<p>
+To change a user's permissions simply click on their username.
+</p>
+
+<p>
+To search for a new user to share the <a href="/docs/Folders">folder</a> with, use the box near the top of the window.
+</p>
+
+<p>
+When viewing a user's permissions, the current <a href="/docs/Folders">folder</a> and all of the <a href="/docs/Folders">folders</a> above it in the hierarchy are shown and the user's current permissions are shown as a either a tick or a cross next to the titles "Read" and "Write" at the top of the list. 
+</p>
+
+<p>
+You cannot share your <a href="/docs/Home_Folder">home folder</a>, but all others have both a "Read" and a "Write" button next to them. Granting either read or read+write permission to any of the <a href="/docs/Folders">folders</a> will give the user the same permission to all <a href="/docs/Folders">folders</a> above that one (granting write access to "/ExampleUser/People/" to the user "MarkDoe" will also allow "MarkDoe" to write to the <a href="/docs/Folder] "/ExampleUser/People/Students/"">Folder</a>.
+</p>
+
+<p>
+You can only share <a href="/docs/Folders">folders</a> that are either within your <a href="/docs/Home_Folder">home folder</a> or are an <a href="/docs/App Folders">app folder</a> for your <a href="/docs/Apps">app</a>.
+</p>

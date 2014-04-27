@@ -1,0 +1,25 @@
+<p>
+The code for these <a href="/docs/Apps">apps</a> will be available soon, but for now, feel free to try them out to see what MinoCloud is capable of.
+</p>
+
+<div class="heading" style="margin-bottom: 10px;">MinoToDo</div>
+<a href="http://node.minotodo.com"><img src="http://minotodo.com/icons/ToDo80.png" class="noscale" style="float:left; margin-right: 5px; margin-bottom: 5px;"/></a>
+<p style="margin-top: 0px;">
+MinoToDo is a simple todo list app that uses MinoCloud notifications to keep the list synchronized across multiple instances. Open the app in multiple windows to see it in action.
+</p>
+<p>
+<a href="http://node.minotodo.com">Click here to use MinoToDo</a>
+</p>
+
+
+<div class="heading" style="margin-bottom: 10px;">MinoSocial</div>
+<a href="http://minosocial.com"><img src="http://minosocial.com/icons/MinoSocial80.png" class="noscale" style="float:left; margin-right: 5px; margin-bottom: 5px;"/></a>
+<p style="margin-top: 0px;">
+MinoSocial is a basic social network that lets you subscribe to other users' posts. When someone that you have subscribed to creates a post, it appears in realtime on your "Feed".
+</p>
+<p>
+When you comment on a post, the comment is sent to users that have subscribed to the author of the original post, users that have already commented on the post or those that have chosen to "watch" the post.
+</p>
+<p>
+<a href="http://minosocial.com">Click here to use MinoSocial</a>
+</p>

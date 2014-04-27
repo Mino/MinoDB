@@ -1,0 +1,11 @@
+<p>
+Upon modifying a <a href="/docs/Types">type</a>, a field may be deprecated,effectively labelling at as no longer used. This is done by removing the <a href="/docs/Fields">field</a> from the <a href="/docs/Types">type</a> when it is saved as a revision.
+</p>
+
+<p>
+MinoCloud keeps the deprecated <a href="/docs/Fields">fields</a> in the <a href="/docs/Types">type</a> alongside the non-deprecated <a href="/docs/Fields">fields</a>, but they have a <code>Deprecated</code> key set to <code>true</code>.
+</p>
+
+<p>
+It is possible to undeprecate a <a href="/docs/Fields">field</a> by saving the <a href="/docs/Field">field</a> with <code>Deprecated</code> set to <code>false</code> or without the <code>Deprecated</code> key present.
+</p>

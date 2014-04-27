@@ -1,0 +1,59 @@
+<p>
+Counter fields are slightly different to other <a href="/docs/Field_Types">field types</a>. Counter fields exist because certain values that you may wish to store could change extremely quickly and be subject to concurrent modification (e.g. the view count on a popular video).
+</p>
+
+<p>
+Counter fields are designed especially for this use case. The value associated to a <code>Counter</code> field is stored separately to the rest of the <a href="/docs/Items">item</a>, can be modified without having to save a new version and can be retrieved independently. Whenever a new version is saved you can specify whether to use the current value of the counter or set a new value.
+</p>
+
+<p>
+This configuration allows two or more API calls to modify the value, safe in the knowledge that the final value will be the result of all of the modifications. Either upon an interval or criteria you can update the value stored in the <a href="/docs/Items">item</a> simply by saving the <a href="/docs/Items">item</a>.
+</p>
+
+<p>
+To modify counter values use the <a href="/docs/Counter_Function">Counter function</a>.
+</p>
+
+<p>
+If an <a href="/docs/Items">item</a> containing a counter is retrieved without first saving the counter field's value to it, the <a href="/docs/Items">item</a> will contain the value of the <code>Counter</code> field at the last time the <a href="/docs/Items">item</a> was saved. You may wish to save <a href="/docs/Items">items</a> with counters regularly in order to store the counter values so that they can be used for searching. Returning to the video example - if the view count was stored using a <code>Counter</code> field, you would have to save the <a href="/docs/Items">item</a> to store the view count value so that the video can be searched by it's view count.
+</p>
+
+<p>
+Counters can only be used to store integer values greater than or equal to 0.
+</p>
+
+<p>
+The <code>Counter</code> <a href="/docs/Field_Types">field type</a> has no parameters.
+</p>
+
+<div class="heading">Example Field</div>
+<pre>{
+	"Name" : "My Counter Field",
+	"Field Type" : "Counter",
+	"Description" : "The example usage of the Counter Field Type.",
+	"Required" : true,
+	"Parameters" : {
+	} 
+}</pre>
+
+<div class="heading">Example Value 1</div>
+<pre>"ExampleUser.MyType.1" : {
+	...
+	"My Counter Field" : 3,//Will be replaced by the Counter value.
+	...
+}</pre>
+<p>
+Saving a <code>Counter</code> field with a numeric value specifies that you would like the actual counter value to be inserted into the place of the number provided. This is the default functionality because it uses the counter field's intended purpose and requires no interaction to save the <a href="/docs/Items">item</a> with the latest value of the counter.
+</p>
+
+<div class="heading">Example Value 2</div>
+<pre>"ExampleUser.MyType.1" : {
+	...
+	"My Counter Field" : {
+		"Set" : 5//Will set the Counter value to 5
+	},
+	...
+}</pre>
+<p>
+To set the Counter value and insert the new value into the <a href="/docs/Items">item</a> you must create a key named "Set" within the counter field value.
+</p>

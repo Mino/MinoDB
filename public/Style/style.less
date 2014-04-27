@@ -1,0 +1,38 @@
+@import "../../Style/common.subless";
+//@import "../../Style/brand/brand.subless";
+
+@background_pane_color: rgba(240,240,240,1.0);
+@background-color: rgba(200,200,200,1.0);
+
+body{
+	margin: 5px;
+	background-color: @background-color;
+	font-family: Arial, Helmet, Freesans, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	font-size: 14px;
+	line-height: 18px;
+}
+
+.center_holder{
+	max-width: 480px;
+	margin-left: 50%;
+
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+}
+
+.center{
+	position: relative;
+	top:0px;
+	left:-100%;
+	width: 200%;
+	overflow-x: hidden;
+}
+
+@import "../Elements/Elements.subless";
+@import "../Pages/Pages.subless";
+
+@import "../Pages/DocsPage/SideMenu/SideMenu.subless";

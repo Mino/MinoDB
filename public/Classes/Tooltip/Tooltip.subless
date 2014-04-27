@@ -1,0 +1,43 @@
+@tooltipBackgroundColor : white;
+
+.tooltipInfoHolder{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	background: @tooltipBackgroundColor;
+	color: black;
+	border: 1px solid #AAA;
+	width: 200px;
+	padding: 5px;
+	word-wrap: break-word;
+	z-index: 10000;
+	
+	font-size: 11px;
+	line-height: 13px;
+
+	.noselect;
+}
+
+.tooltipInfoHolder span, .tooltipInfoHolder div, .tooltipInfoHolder p{
+	width: 200px;
+	word-wrap: break-word;
+}
+
+.modal .tooltipInfoHolder{
+	z-index: 2000;
+}
+
+.tooltipHelper{
+	position: relative;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+	color: @tooltipColor;
+	font-weight: normal;
+	display: inline-block;
+	.noselect;
+}
+
+.darkBorderTooltip .tooltipInfoHolder{
+	border: 1px solid #333;
+}

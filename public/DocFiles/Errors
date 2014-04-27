@@ -1,0 +1,62 @@
+<p>
+MinoCloud uses a system of nested errors to provide useful, structured errors to your <a href="/docs/Apps">app</a> and to the <a href="/docs/Browser">Browser</a>.
+</p>
+
+<p>
+Errors follow the structure of the input, but contain keys that indicate the type of errors for each key that contained errors. The 3 possible types of errors are:
+<ul>
+<li><code>Invalid</code> - A value was provided, but something was wrong with it.</li>
+<li><code>Missing</code> - A value was not provided and the key is required.</li>
+<li><code>Unrecognized</code> - A key was present that was not expected.</li>
+</ul>
+
+
+<p>
+Given the following input:
+</p>
+
+<pre>{
+    "A Number" : "Quite clearly not a number",
+    "Some text" : "A valid string",
+    "Curveball" : "This field isn't expected",
+    "My Nested Object" : {
+    	"Nested Number" : "ABC"
+    }
+}</pre>
+
+<p>
+And following the obvious cues from the keys shown, the following error could be expected:
+</p>
+
+<pre>{
+	"Invalid" : {
+		"A Number" : {
+			"Error" : "Incorrect field type. Expected __Expected__.",
+			"Error Number" : 2,
+			"Expected" : "Number"
+		},
+		"Curveball" : {
+			"Error" : "Unrecognized field.",
+			"Error Number" : 4
+		},
+		"My Nested Objects" : {
+			"Error" : "One or more errors.",
+			"Error Number" : 0,
+			"Invalid" : {
+				"Nested Number" : {
+					"Error" : "Incorrect field type. Expected __Expected__."",
+					"Error Number" : 2,
+					"Expected" : "Number"
+				}
+			}
+		}
+	}
+}</pre>
+
+<p>
+The nested structure shows the hierarchy of the causes of the errors, allowing you to easily iterate through your request and response to match up the error and the cause.
+</p>
+
+<p>
+Some errors use underscores to mark the location of values that are provided in the error such as the <code>__Expected__</code> string shown above.
+</p>

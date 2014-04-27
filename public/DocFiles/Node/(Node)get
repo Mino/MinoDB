@@ -1,0 +1,111 @@
+<p>
+The <code>get</code> function is a convenience wrapper for the <a href="/docs/Get_Function">Get function</a>.
+</p>
+
+<div class="heading">get(<code>addresses</code>,<code>callback</code>)</div>
+<p>
+<code>addresses</code><br />
+<code>Type: Array</code> or <code>String</code><br />
+An array of <a href="/docs/Paths">paths</a> for either <a href="/docs/Objects">objects</a> or <a href="/docs/Types">types</a> or a single <a href="/docs/Paths">path</a>.
+</p>
+<p>
+<code>callback</code><br />
+<code>Type: Function(error,result)</code><br />
+A function that will be called with the result of (or error caused by) the request.
+</p>
+
+<div class="heading">Example Usage 1</div>
+<p>
+Retrieving a single <a href="/docs/Paths">path</a> returns a single JSON object as a result.
+</p>
+<pre>
+var minocloud = new MinoCloud("ExampleUser","3XaMpL3Us3rAp1k3y");
+
+minocloud.get(
+	"/ExampleUser/My Item",
+	function(error,result){
+		console.log(error);
+		console.log(result);
+	}
+)
+</pre>
+<p>
+Output:
+</p>
+<pre>
+null
+{ 
+	"ID" : 749,
+	"Name" : "My Item",
+	"Folder" : false,
+	"Path" : "/ExampleUser/",
+	"Full Path": "/ExampleUser/My Item",
+	"Created" : "2013-10-12 18:14:34",
+	"Last Updated" : "2013-10-12 18:14:34",
+	"Version" : 1
+}
+</pre>
+
+<div class="heading">Example Usage 2</div>
+<p>
+<code>get</code> can be used to retrieve an array of <a href="/docs/Paths">paths</a> and will return an array as the result. With this usage, only errors that are related to <a href="/docs/Paths">path</a> format will be returned as errors; <a href="/docs/Paths">paths</a> that could not be retrieved are returned in the result as errors for their index.
+</p>
+<pre>
+var minocloud = new MinoCloud("ExampleUser","3XaMpL3Us3rAp1k3y");
+
+minocloud.get(
+	[
+		"/ExampleUser/My Item",
+		"/Something/Inaccessible/",
+		"ExampleApp.SimplePost.1"
+	],
+	function(error,result){
+		console.log(error);
+		console.log(result);
+	}
+)
+</pre>
+<p>
+Output:
+</p>
+<pre>
+null
+[
+	{ 
+		"ID" : 749,
+		"Name" : "My Item",
+		"Folder" : false,
+		"Path" : "/ExampleUser/",
+		"Full Path": "/ExampleUser/My Item",
+		"Created" : "2013-10-12 18:14:34",
+		"Last Updated" : "2013-10-12 18:14:34",
+		"Version" : 1
+	},
+	{
+		"Error": "Object does not exist or you are not permitted to access it.",
+		"Error Number": 14
+	}
+	{
+		"Name": "SimplePost",
+		"Description": "This type is used to represent a post with a title.",
+		"Full Name": "ExampleApp.SimplePost.1",
+		"Required Types": [],
+		"Fields": [
+			{
+				"Field Type": "Text",
+				"Parameters": {},
+				"Required": true,
+				"Name": "Title",
+				"Description": "The title of the post."
+			},
+			{
+				"Field Type": "Text",
+				"Parameters": {},
+				"Required": true,
+				"Name": "Content",
+				"Description": "The content of the post."
+			}
+		]
+	}
+]
+</pre>

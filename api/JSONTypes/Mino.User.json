@@ -1,0 +1,1 @@
+{"Name":"User","Full Name":"Mino.User","Description":"This Type is used by MinoCloud to manage Users.","Required Types":[],"Fields":[{"Name":"Username","Description":"The unique username of the User.","Field Type":"User","Required":true,"Parameters":{}},{"Name":"Email","Description":"The email address of the User.","Field Type":"Email","Required":true,"Parameters":{}}]}

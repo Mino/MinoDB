@@ -1,0 +1,40 @@
+<p>
+Paths are built from the forward-slash (<code>/</code>) delimited <a href="/docs/Folders">folder</a> names of an <a href="/docs/Objects">object</a>'s ancestors.
+</p>
+
+<p>
+A <code>Full Path</code> is the concatenation (joining) of the <code>Path</code> and the <code>Name</code> of the <a href="/docs/Objects">object</a>. An example is shown below using an <a href="/docs/Items">item</a> named <code>John Smith</code>:
+</p>
+
+<pre>
+"Name" : "John Smith",
+"Path" : "/ExampleUser/People/",
+"Full Path" : "/ExampleUser/People/John Smith"
+</pre>
+
+
+<p>Every <code>Full Path</code> must be unique. If the <a href="/docs/Objects">object</a> is a <a href="/docs/Folders">folder</a> then the <code>Full Path</code> ends in a forward-slash. This allows you to have a <a href="/docs/Folders">folder</a> and an <a href="/docs/Items">item</a> with the same name in a <a href="/docs/Folders">folder</a>.
+</p>
+
+<p>
+Each User owns the root <a href="/docs/Folders">folder</a> of the same name. The User <code>ExampleUser</code> has the <a href="/docs/Folders">folder</a> <code>/ExampleUser/</code>.
+</p>
+
+<div class="heading">Example</div>
+<p>
+If the user <code>ExampleUser</code> creates a <a href="/docs/Folders">folder</a> named <code>People</code> within their root <a href="/docs/Folders">folder</a>, this new <a href="/docs/Folders">folder</a> will have a <code>Full Path</code> of <code>/ExampleUser/People/</code> and a <code>Path</code> of <code>/ExampleUser/</code>.
+</p>
+
+<p>
+An <a href="/docs/Items">item</a> within this <code>People</code> <a href="/docs/Folders">folder</a> named <code>John Smith</code> will have a <code>Full Path</code> of <code>/ExampleUser/People/John Smith</code> and a <code>Path</code> of <code>/ExampleUser/People/</code>.
+</p>
+
+<p>
+The <code>Full Paths</code>s of the <a href="/docs/Objects">objects</a> in the above example are shown below.
+</p>
+
+<ul>
+	<li><code>/ExampleUser/</code></li>
+	<li><code>/ExampleUser/People/</code></li>
+	<li><code>/ExampleUser/People/John Smith</code></li>
+</ul>

@@ -1,0 +1,26 @@
+<p>
+A <a href="/docs/Fields">field</a> implementing the Date <a href="/docs/Field_Types">field type</a> can store a value as string that conforms to the format <code>YYYY-MM-DD</code>. This format is preferred over others as lexicographical sorting has the same outcome as chronological sorting. If you need to store dates in another format, use a <a href="/docs/Text_Field">Text Field</a>.
+</p>
+
+<p>
+The Date <a href="/docs/Field_Types">field type</a> has two optional parameters named <code>Earliest</code> and <code>Latest</code> that can be used to specify the acceptable range of dates.
+</p>
+
+<div class="heading">Example Field</div>
+<pre>{
+	"Name" : "My Date Field",
+	"Field Type" : "Date",
+	"Description" : "The example usage of the Date Field Type.",
+	"Required" : true,
+	"Parameters" : {
+		"Earliest" : "1990-01-01",//OPTIONAL
+		"Latest" : "1999-12-31"//OPTIONAL
+	} 
+}</pre>
+
+<div class="heading">Example Value</div>
+<pre>"ExampleUser.MyType.1" : {
+	...
+	"My Date Field" : "1975-01-27",
+	...
+}</pre>

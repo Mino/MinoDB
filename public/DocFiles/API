@@ -1,0 +1,21 @@
+<p>
+The MinoCloud API is accessed over HTTP at <code>api.minocloud.com</code>. All API communications are secured using AES 128-bit encryption, but this encryption process is abstracted by the MinoCloud library for supported languages.
+</p>
+
+<p>
+The MinoCloud API supports the following functions:
+</p>
+
+<ul>
+<li><a href="/docs/Add_Privileges_Function">Add Privileges</a></li>
+<li><a href="/docs/Add_Type_Privileges_Function">Add Type Privileges</a></li>
+<li><a href="/docs/Counter_Function">Counter</a></li>
+<li><a href="/docs/Delete_Function">Delete</a></li>
+<li><a href="/docs/Delete_Versions_Function">Delete Versions</a></li>
+<li><a href="/docs/Get_Function">Get</a></li>
+<li><a href="/docs/Notify_Function">Notify</a></li>
+<li><a href="/docs/Remove_Privileges_Function">Remove Privileges</a></li>
+<li><a href="/docs/Save_Function">Save</a></li>
+<li><a href="/docs/Save_Type_Function">Save Type</a></li>
+<li><a href="/docs/Search_Function">Search</a></li>
+</ul>

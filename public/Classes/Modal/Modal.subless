@@ -1,0 +1,187 @@
+.modalShadow{
+	position: fixed;
+	overflow: hidden;
+	top: 0px;
+	left: 0px;
+	padding: 3px;
+	background-color: black;
+	opacity: 0.5;
+	filter: ~"alpha(opacity = 50)";
+	width: 100%;
+	height: 100%;
+	z-index: 2001;
+}
+
+.modal {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	height: 180px;
+	margin-top: -90px;
+	margin-left: -150px;
+	width: 300px;
+	background-color: @modalBackgroundColor;
+	z-index: 2002;
+	opacity: 1.0;
+	filter: ~"alpha(opacity = 100)";
+
+	.modalTitle {
+		width: 100%;
+		height: 40px;
+		z-index: 2;
+		background-color:@paneBackgroundColor;
+		border-bottom: 1px solid @borderColor;
+
+		.modalTabs {
+			position: absolute;
+			height: 35px;
+			margin-top: 5px;
+			left: 50%;
+		}
+
+		.modalTitleText{
+			position: absolute;
+			text-align: center;
+			width: 190px;
+			height: 35px;
+			margin-top: 5px;
+			left: 50%;
+			margin-left: -95px;
+			color: @textOnBackgroundColor;
+			font-size: 13px;
+			font-weight: bold;
+			line-height: 29px;
+		}
+
+		.modalCloseButton{
+			width: 40px;
+			height: 40px;
+		}
+	}
+
+	.modalContents {
+		width:100%;
+		display: block;
+		overflow-y: scroll;
+		overflow-x: hidden;
+		position: absolute;
+		top:41px;	
+		bottom:40px;
+	}
+
+	.modalContents .modalContents{
+		top: 0px;
+		bottom: 0px;
+	}
+
+	.modalBottomBar{
+		position: absolute;
+		bottom:0px;
+		width:100%;
+		height: 40px;	
+		border-top: 1px solid @borderColor;
+
+		.navbutton{
+			text-align: left;
+			float: left;
+			height: 40px;
+		}
+
+		.singleButton{
+			width: 100%;
+			height: 100%;
+		}
+
+		.leftButton{
+			width: 50%;
+			height: 100%;
+			float: left;
+		}
+
+		.rightButton{
+			width: 50%;
+			height: 100%;
+			float: left;
+		}
+	}
+
+
+	.modalSearchRow{
+		position: relative;
+		height: 40px;
+		background-color:@paneBackgroundColor;
+		border-bottom: 1px solid @borderColor;
+
+		.modalSearchPadding{
+			padding-right: 8px;
+
+			input[type="text"].modalSearchInput{
+				padding: 4px;
+				height: 32px;
+				border: none;
+				width: 100%;
+			}
+		}
+	}
+
+	.halfWidthModalInput{
+		position: absolute;
+		width: 50%;
+		margin-left: -5px;
+		height: 20px;
+		margin-bottom: 5px;
+	}
+
+	.dialogSaving{
+		position: absolute;
+		top:0px;
+		left:0px;
+		width:300px;
+		height: 100px;
+		background-color: @inputActiveBorderColor;
+		background-color: rgba(0,0,0,0.75);
+		color: white;
+		font-weight: bold;
+		line-height: 90px;
+		text-align: center;
+	}
+
+	.dialogError{
+		width: 280px;
+		margin-left: 5px;
+		margin-right: 5px;
+		margin-top: 5px;
+		color: red;
+		font-weight: bold;
+		line-height: 16px;
+	}
+
+	.modalCloseDiv {
+		position: absolute;
+		top: 5px;
+		right: 10px;
+		height: 35px;
+	}
+
+	.modalBackDiv {
+		position: absolute;
+		top: 5px;
+		left: 10px;
+		height: 35px;
+	}
+
+	.modalTabButton{
+		float: left;
+	}
+
+	.modalLoading{
+		background-image: url("images/dark-loader.gif");
+		background-position: center;
+		background-repeat: no-repeat;
+		position: absolute;
+		top:50px;	
+		bottom:0px;
+	}
+}
+
+@import "FullScreenModal/FullScreenModal.subless";

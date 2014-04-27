@@ -1,0 +1,12 @@
+<p>
+MinoCloud currently supports PHP and Node.js web app development.
+</p>
+
+<img src="http://minocloud.com/DocFiles/images/php.png" class="noscale" />
+<p>
+The tutorial for PHP is available <a href="/docs/(PHP)Quick_App_Tutorial">here</a>.
+</p>
+
+<img src="http://minocloud.com/DocFiles/images/nodejs-light.png" class="noscale" />
+<p>
+The tutorial for Node.js is available <a href="/docs/(Node)Quick_App_Tutorial">here</a></p>

@@ -1,0 +1,1229 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+/*Removed minoColor2*/
+body {
+  font-family: arial, "lucida grande", tahoma, verdana, arial, sans-serif;
+}
+.noselect {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+.mino_button {
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  outline: none;
+  display: block;
+  color: black;
+  font-size: 11px;
+  font-weight: bold;
+  height: 30px;
+  line-height: 21px;
+  padding-top: 1px;
+  padding-bottom: 2px;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin: 0px;
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  font-family: arial, "lucida grande", tahoma, verdana, arial, sans-serif;
+  -webkit-transition: 0.1s ease;
+  -moz-transition: 0.1s ease;
+  -ms-transition: 0.1s ease;
+  -o-transition: 0.1s ease;
+  transition: 0.1s ease;
+  -webkit-transition-property: border;
+  -moz-transition-property: border;
+  -ms-transition-property: border;
+  -o-transition-property: border;
+  transition-property: border;
+}
+.mino_button.no_left {
+  border-left: none;
+}
+.mino_button.no_right {
+  border-right: none;
+}
+.mino_button.no_top {
+  border-top: none;
+}
+.mino_button.no_bottom {
+  border-bottom: none;
+}
+.mino_button.noBorder {
+  border: none;
+}
+.mino_button:active:enabled {
+  border-bottom: 5px solid #2c8eda;
+  background-color: #ffffff;
+}
+.mino_button:disabled {
+  opacity: 0.5;
+}
+.mino_button.active {
+  border-bottom: 5px solid #2c8eda;
+  background-color: #ffffff;
+}
+.mino_buttonNoAnimation {
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+  transition: none;
+}
+.minoGreenButton {
+  background-color: #13b716;
+  border: 1px solid #13b716;
+}
+.minoGreenButton:active:enabled {
+  border: 1px solid #1dff21;
+  background-color: #1dff21;
+}
+.minoRedButton {
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  outline: none;
+  display: block;
+  color: black;
+  font-size: 11px;
+  font-weight: bold;
+  height: 30px;
+  line-height: 21px;
+  padding-top: 1px;
+  padding-bottom: 2px;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin: 0px;
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  font-family: arial, "lucida grande", tahoma, verdana, arial, sans-serif;
+  -webkit-transition: 0.1s ease;
+  -moz-transition: 0.1s ease;
+  -ms-transition: 0.1s ease;
+  -o-transition: 0.1s ease;
+  transition: 0.1s ease;
+  -webkit-transition-property: border;
+  -moz-transition-property: border;
+  -ms-transition-property: border;
+  -o-transition-property: border;
+  transition-property: border;
+  background-color: #c72a22;
+  border: 1px solid #c72a22;
+  color: white;
+}
+.minoRedButton.no_left {
+  border-left: none;
+}
+.minoRedButton.no_right {
+  border-right: none;
+}
+.minoRedButton.no_top {
+  border-top: none;
+}
+.minoRedButton.no_bottom {
+  border-bottom: none;
+}
+.minoRedButton.noBorder {
+  border: none;
+}
+.minoRedButton:active:enabled {
+  border-bottom: 5px solid #2c8eda;
+  background-color: #ffffff;
+}
+.minoRedButton:disabled {
+  opacity: 0.5;
+}
+.minoRedButton.active {
+  border-bottom: 5px solid #2c8eda;
+  background-color: #ffffff;
+}
+.minoRedButton:active:enabled {
+  border: 1px solid #ff3f33;
+  background-color: #ff3f33;
+}
+.lightmino_button {
+  border: 1px solid #2c8eda;
+  background-color: #2c8eda;
+  color: white;
+}
+.lightmino_button:active:enabled {
+  border-color: #2576b6;
+  background-color: #2576b6;
+}
+.successgradient {
+  background-color: #13b716;
+  color: white;
+}
+.bold {
+  font-weight: bold;
+}
+.semibold {
+  font-weight: bold;
+}
+body {
+  margin: 5px;
+  background-color: #c8c8c8;
+  font-family: Arial, Helmet, Freesans, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  line-height: 18px;
+}
+.center_holder {
+  max-width: 480px;
+  margin-left: 50%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+}
+.center {
+  position: relative;
+  top: 0px;
+  left: -100%;
+  width: 200%;
+  overflow-x: hidden;
+}
+.header {
+  background-color: blue;
+}
+.header .top_header {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  z-index: 10;
+  height: 40px;
+  background-color: #f0f0f0;
+  -webkit-transition: top 0.5s ease;
+  -moz-transition: top 0.5s ease;
+  -o-transition: top 0.5s ease;
+  -ms-transition: top 0.5s ease;
+  transition: top 0.5s ease;
+}
+.header .fixed_header {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  z-index: 10;
+  height: 40px;
+  background-color: rgba(240, 240, 240, 0.5);
+  -webkit-transition: top 0.5s ease;
+  -moz-transition: top 0.5s ease;
+  -o-transition: top 0.5s ease;
+  -ms-transition: top 0.5s ease;
+  transition: top 0.5s ease;
+}
+.header .fixed_header .center_holder .menu_center {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+}
+.header .fixed_header .center_holder .menu_center #mino_menu_item {
+  float: left;
+  position: relative;
+}
+.header .fixed_header .center_holder .menu_center #mino_menu_item .button_contents {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 20px;
+  margin-left: -50px;
+  margin-top: -10px;
+}
+.header .fixed_header .center_holder .menu_center #mino_menu_item .button_contents .logo {
+  float: left;
+  position: relative;
+  top: 3px;
+  left: 5px;
+}
+.header .fixed_header .center_holder .menu_center .menu_items_holder {
+  float: right;
+  height: 39px;
+  width: 100%;
+}
+.header .fixed_header .center_holder .menu_center .menu_item {
+  float: right;
+  height: 39px;
+  font-weight: bold;
+}
+.header.hidden .top_header {
+  top: -40px;
+}
+.header.hidden .fixed_header {
+  top: -40px;
+}
+.body_contents_holder {
+  max-width: 480px;
+  margin-left: 50%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  margin-top: 40px;
+}
+.body_contents_holder .contents {
+  position: relative;
+  top: 0px;
+  left: -100%;
+  width: 200%;
+  overflow-x: hidden;
+  background-color: #ffffff;
+  -webkit-transition: background-color 0.5s ease;
+  -moz-transition: background-color 0.5s ease;
+  -o-transition: background-color 0.5s ease;
+  -ms-transition: background-color 0.5s ease;
+  transition: background-color 0.5s ease;
+}
+.body_contents_holder.transparent .contents {
+  background-color: rgba(255, 255, 255, 0);
+}
+.footer {
+  text-align: right;
+  color: #555;
+  padding-top: 25px;
+  padding-right: 5px;
+  padding-bottom: 50px;
+}
+.body_text {
+  padding-top: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  position: relative;
+}
+.body_text .body_headline {
+  text-align: center;
+  font-size: 25px;
+  margin-top: 45px;
+  margin-bottom: 20px;
+  letter-spacing: -1px;
+}
+.home_page .signup_area {
+  position: relative;
+  left: 50%;
+  width: 300px;
+  height: 52px;
+  padding-top: 20px;
+  margin-left: -150px;
+}
+.home_page .signup_area span {
+  float: left;
+  padding-right: 10px;
+  line-height: 50px;
+}
+.home_page .signup_area .big_signup_button {
+  background-color: #13b716;
+  border: 1px solid #13b716;
+  float: left;
+  padding: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  height: 50px;
+  font-size: 20px;
+  color: white;
+}
+.home_page .signup_area .big_signup_button:active:enabled {
+  border: 1px solid #1dff21;
+  background-color: #1dff21;
+}
+.home_page .feature_divide {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  width: 70%;
+  height: 1px;
+  margin-top: 10px;
+  margin-left: 15%;
+}
+.home_page .feature {
+  border-top: none;
+  margin-left: 20px;
+  margin-right: 20px;
+  height: 320px;
+}
+.home_page .feature .text {
+  text-align: center;
+  width: 50%;
+}
+.home_page .feature .text .title {
+  font-size: 20px;
+  padding: 20px;
+  padding-top: 10px;
+  display: block;
+  letter-spacing: -1px;
+}
+.home_page .feature .text .content {
+  padding: 0px 20px 0px 20px;
+}
+.home_page .feature .image {
+  position: relative;
+  float: right;
+  width: 50%;
+  height: 300px;
+  margin-top: 10px;
+}
+.home_page .feature .image div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  height: 300px;
+  background-size: 400px 300px;
+  margin-left: -200px;
+  margin-top: -150px;
+}
+.home_page .feature.left .text {
+  float: left;
+}
+.home_page .feature.left .image {
+  float: left;
+}
+.home_page .feature.right .text {
+  float: right;
+}
+.home_page .feature.right .image {
+  float: right;
+}
+.home_page .feature.stacked .text {
+  width: 100%;
+  float: none;
+  padding-top: 10px;
+}
+.home_page .feature.stacked .image {
+  width: 100%;
+  float: none;
+  height: 235px;
+  margin-top: 10px;
+}
+.home_page .feature .image.featuresdesignimg div {
+  background-image: url("http://minocloud.com/webimages/Features and Design@1x.png");
+}
+.home_page .feature .image.folderimg div {
+  background-image: url("http://minocloud.com/webimages/folder@1x.png");
+}
+.home_page .feature .image.browserapiimg div {
+  background-image: url("http://minocloud.com/webimages/browserapi@1x.png");
+}
+.home_page .feature .image.browserimg div {
+  background-image: url("http://minocloud.com/webimages/browser@1x.png");
+}
+.home_page .feature .image.shareimg div {
+  background-image: url("http://minocloud.com/webimages/share@1x.png");
+}
+.home_page .feature .image.structuredimg div {
+  background-image: url("http://minocloud.com/webimages/structured@1x.png");
+}
+.home_page .feature .image.authimg div {
+  background-image: url("http://minocloud.com/webimages/auth@1x.png");
+}
+.home_page .feature .image.languagesimg div {
+  background-image: url("http://minocloud.com/webimages/languages@1x.png");
+}
+.home_page .feature .image.notificationsimg div {
+  background-image: url("http://minocloud.com/webimages/notifications@1x.png");
+}
+.home_page .feature .image.checkersscreenshotimg div {
+  background-image: url("http://minocloud.com/webimages/checkers400.png");
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+.home_page .feature .image.todoscreenshotimg div {
+  background-image: url("http://minocloud.com/webimages/todo400.png");
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+.home_page .feature .image.minosocialscreenshotimg div {
+  background-image: url("http://minocloud.com/webimages/minosocial400.png");
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+.home_page .feature .image.helloworldscreenshotimg div {
+  background-image: url("http://minocloud.com/webimages/helloworld400.png");
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+@media only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+  .home_page .feature .image.featuresdesignimg div {
+    background-image: url("http://minocloud.com/webimages/Features and Design@2x.png");
+  }
+  .home_page .feature .image.folderimg div {
+    background-image: url("http://minocloud.com/webimages/folder@2x.png");
+  }
+  .home_page .feature .image.browserapiimg div {
+    background-image: url("http://minocloud.com/webimages/browserapi@2x.png");
+  }
+  .home_page .feature .image.browserimg div {
+    background-image: url("http://minocloud.com/webimages/browser@2x.png");
+  }
+  .home_page .feature .image.shareimg div {
+    background-image: url("http://minocloud.com/webimages/share@2x.png");
+  }
+  .home_page .feature .image.structuredimg div {
+    background-image: url("http://minocloud.com/webimages/structured@2x.png");
+  }
+  .home_page .feature .image.authimg div {
+    background-image: url("http://minocloud.com/webimages/auth@2x.png");
+  }
+  .home_page .feature .image.languagesimg div {
+    background-image: url("http://minocloud.com/webimages/languages@2x.png");
+  }
+  .home_page .feature .image.notificationsimg div {
+    background-image: url("http://minocloud.com/webimages/notifications@2x.png");
+  }
+  .home_page .feature .image.checkersscreenshotimg div {
+    background-image: url("http://minocloud.com/webimages/checkers800.png");
+  }
+  .home_page .feature .image.todoscreenshotimg div {
+    background-image: url("http://minocloud.com/webimages/todo800.png");
+  }
+  .home_page .feature .image.minosocialscreenshotimg div {
+    background-image: url("http://minocloud.com/webimages/minosocial800.png");
+  }
+  .home_page .feature .image.helloworldscreenshotimg div {
+    background-image: url("http://minocloud.com/webimages/helloworld800.png");
+  }
+}
+.auth_page {
+  background-color: red;
+}
+.auth_page .login_box {
+  width: 300px;
+  margin-left: -150px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+}
+.auth_page .login_box .logo_header {
+  position: relative;
+  width: 300px;
+  height: 50px;
+}
+.auth_page .login_box .logo_header .login_box_title {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  text-decoration: none;
+  color: white;
+  float: right;
+  font-size: 30px;
+  font-weight: bold;
+}
+.auth_page .login_box .logo_header .logo {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+.auth_page .login_box .logo_header .logoAnimatedView div {
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+.auth_page .login_box .logo_header .logo {
+  background-color: red;
+  width: 70px;
+  height: 46px;
+}
+.auth_page .login_box .logo_header .logo.logo2d .shape {
+  position: absolute;
+  background-image: url("http://minocloud.com/logo/logo2dLogo.png");
+  background-size: 100%, 100%;
+  width: 100%;
+  height: 100%;
+}
+.auth_page .login_box .logo_header .logo.logo2d .house {
+  position: absolute;
+  background-image: url("http://minocloud.com/logo/logo2dHouse.png");
+  background-size: 100%, 100%;
+  width: 100%;
+  height: 100%;
+}
+.auth_page .login_box .logo_header .logo.logo2d .pencil {
+  position: absolute;
+  background-image: url("http://minocloud.com/logo/logo2dPencil.png");
+  background-size: 100%, 100%;
+  width: 100%;
+  height: 100%;
+}
+.auth_page .login_box .logo_header .logo.logo2d .message {
+  position: absolute;
+  background-image: url("http://minocloud.com/logo/logo2dMessage.png");
+  background-size: 100%, 100%;
+  width: 100%;
+  height: 100%;
+}
+.auth_page .login_box .logo_header .logo.logo3d.animated {
+  transition: all 0.5s ease;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+}
+.auth_page .login_box .logo_header .logo.logo3d .transformAccessories {
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transition: all 0.25s ease;
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -ms-transition: all 0.25s ease;
+}
+.auth_page .login_box .logo_header .logo.logo3d.message .logo3d {
+  -webkit-transform: rotateX(-90deg) rotateY(180deg);
+  -moz-transform: rotateX(-90deg) rotateY(180deg);
+  -ms-transform: rotateX(-90deg) rotateY(180deg);
+}
+.auth_page .login_box .logo_header .logo.logo3d.cloud .cloudDependant {
+  opacity: 1.0;
+  transition: all 1s ease;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  -webkit-transition-delay: 0.5s;
+  -moz-transition-delay: 0.5s;
+  -ms-transition-delay: 0.5s;
+}
+.auth_page .login_box .logo_header .logo.logo3d .perspective {
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  -ms-perspective: 150px;
+  -moz-perspective: 150px;
+  -webkit-perspective: 150px;
+  perspective: 150px;
+}
+.auth_page .login_box .logo_header .logo.logo3d .perspective > .shape {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -50px;
+  margin-top: -50px;
+  width: 100px;
+  height: 100px;
+  transform-style: preserve-3d;
+  transform: rotateX(-31deg) rotateY(45deg);
+  -moz-transform-style: preserve-3d;
+  -moz-transform: rotateX(-31deg) rotateY(45deg);
+  -ms-transform-style: preserve-3d;
+  -ms-transform: rotateX(-31deg) rotateY(45deg);
+  -webkit-transform-style: preserve-3d;
+  -webkit-transform: rotateX(-31deg) rotateY(45deg);
+  z-index: 0;
+  transition: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+}
+.auth_page .login_box .logo_header .logo.logo3d .perspective > .shape > .base {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -25px;
+  margin-top: -25px;
+  width: 50px;
+  height: 50px;
+  background-color: white;
+  opacity: 0.5;
+  backface-visibility: visible;
+  transform-origin: 50% 50%;
+  -webkit-transform: rotateX(90deg) rotateY(0deg) rotateZ(0deg);
+  -moz-transform: rotateX(90deg) rotateY(0deg) rotateZ(0deg);
+  -ms-transform: rotateX(90deg) rotateY(0deg) rotateZ(0deg);
+}
+.auth_page .login_box .logo_header .logo.logo3d .perspective > .shape > .triangle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -25px;
+  width: 50px;
+  height: 70px;
+  backface-visibility: visible;
+  transform-origin: 50% 50%;
+  -webkit-transform: translate3d(0px, -35px, 25px) rotateX(45.6deg) rotateY(0deg) rotateZ(0deg);
+  -moz-transform: translate3d(0px, -35px, 25px) rotateX(45.6deg) rotateY(0deg) rotateZ(0deg);
+  -ms-transform: translate3d(0px, -35px, 25px) rotateX(45.6deg) rotateY(0deg) rotateZ(0deg);
+}
+.auth_page .login_box .logo_header .logo.logo3d .perspective > .shape > .triangle > .left {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 0px;
+  height: 0px;
+  border-top: 35px solid transparent;
+  border-right: 25px solid #ffffff;
+}
+.auth_page .login_box .logo_header .logo.logo3d .perspective > .shape > .triangle > .right {
+  position: absolute;
+  top: 0px;
+  left: 25px;
+  width: 0px;
+  height: 0px;
+  border-top: 35px solid transparent;
+  border-left: 25px solid #ffffff;
+}
+.auth_page .login_box .logo_header .cloudCanvas {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 75px;
+  width: 150px;
+  margin-top: -35px;
+  margin-left: -41px;
+}
+.auth_page .login_box .logo_header .logoAnimatedView.message .messageDependant {
+  opacity: 1.0;
+  transition: all 1s ease;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  -webkit-transition-delay: 0.5s;
+  -moz-transition-delay: 0.5s;
+  -ms-transition-delay: 0.5s;
+}
+.auth_page .login_box .logo_header .logoAnimatedView.pencil .pencilDependant {
+  opacity: 0.0;
+  /*Disabled*/
+
+  transition: all 1s ease;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  -webkit-transition-delay: 0.5s;
+  -moz-transition-delay: 0.5s;
+  -ms-transition-delay: 0.5s;
+}
+.auth_page .login_box .logo_header .logoAnimatedView.house .houseDependant {
+  opacity: 0.0;
+  /*Disabled*/
+
+  transition: all 1s ease;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  -webkit-transition-delay: 0.5s;
+  -moz-transition-delay: 0.5s;
+  -ms-transition-delay: 0.5s;
+}
+.auth_page .login_box .logo_header .messagesNotificationAlert {
+  background-color: #c72a22;
+  color: white;
+  height: 15px;
+  width: 15px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 15px;
+  -webkit-transform: translate3d(14.499999999999998px, -29.5px, 12.5px);
+  -moz-transform: translate3d(14.499999999999998px, -29.5px, 2.5px);
+  -ms-transform: translate3d(14.499999999999998px, -29.5px, 2.5px);
+}
+.auth_page .login_box .logo_header .pencilEnd {
+  -webkit-transform: translate3d(-48px, 30px, 0px) rotateZ(45deg);
+  -moz-transform: translate3d(-48px, 30px, 0px) rotateZ(45deg);
+  -ms-transform: translate3d(-48px, 30px, 0px) rotateZ(45deg);
+}
+.auth_page .login_box .logo_header .pencilEnd .left {
+  float: left;
+  border-top: 15px solid rgba(0, 0, 0, 0.25);
+  border-left: 10.5px solid transparent;
+}
+.auth_page .login_box .logo_header .pencilEnd .right {
+  float: left;
+  border-top: 15px solid rgba(0, 0, 0, 0.25);
+  border-right: 10.5px solid transparent;
+}
+.auth_page .login_box .logo_header .door {
+  width: 15px;
+  height: 25px;
+  background-color: rgba(255, 255, 255, 0.5);
+  -webkit-transform: translate3d(-17.5px, 0px, 0px) rotateZ(0deg);
+  -moz-transform: translate3d(-17.5px, 0px, 0px) rotateZ(0deg);
+  -ms-transform: translate3d(-17.5px, 0px, 0px) rotateZ(0deg);
+}
+.auth_page .login_box .logo_header .logoAnimatedView.house .logo3d {
+  -webkit-transform: rotateX(-90deg) rotateY(180deg);
+  -moz-transform: rotateX(-90deg) rotateY(180deg);
+  -ms-transform: rotateX(-90deg) rotateY(180deg);
+}
+.auth_page .login_box .logo_header .logoAnimatedView.pencil .logo3d {
+  -webkit-transform: rotateX(-90deg) rotateY(-45deg);
+  -moz-transform: rotateX(-90deg) rotateY(-45deg);
+  -ms-transform: rotateX(-90deg) rotateY(-45deg);
+}
+.auth_page .login_box .logo_header .logoAnimatedView.graph .logo3d {
+  -webkit-transform: rotateX(0deg) rotateY(-45deg);
+  -moz-transform: rotateX(-90deg) rotateY(-45deg);
+  -ms-transform: rotateX(-90deg) rotateY(-45deg);
+}
+.auth_page .login_box .logo_header .logoAnimatedView.pyramid .logo3d {
+  -webkit-transform: rotateX(0deg) rotateY(0deg);
+  -moz-transform: rotateX(0deg) rotateY(0deg);
+  -ms-transform: rotateX(0deg) rotateY(0deg);
+}
+.auth_page .login_box .logo_header .logoAnimatedView.play .logo3d {
+  -webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(90deg);
+  -moz-transform: rotateX(0deg) rotateY(0deg);
+  -ms-transform: rotateX(0deg) rotateY(0deg);
+}
+.auth_page .login_box .logo_header .logoAnimatedView.tick .logo3d {
+  -webkit-transform: rotateX(13deg) rotateZ(-62deg) rotateY(-79deg);
+  -moz-transform: rotateX(13deg) rotateZ(-62deg) rotateY(-79deg);
+  -ms-transform: rotateX(13deg) rotateZ(-62deg) rotateY(-79deg);
+}
+.auth_page .login_box .logo_header .logoAnimatedView.roadsign .logo3d {
+  -webkit-transform: rotateX(-90deg) rotateY(90deg);
+  -moz-transform: rotateX(-90deg) rotateY(90deg);
+  -ms-transform: rotateX(-90deg) rotateY(90deg);
+}
+.auth_page .login_box .logo_header .message .triangle {
+  -webkit-transform: translate3d(0px, -35px, 25px) rotateX(88.6deg) rotateY(0deg) rotateZ(0deg);
+  -moz-transform: translate3d(0px, -35px, 25px) rotateX(88.6deg) rotateY(0deg) rotateZ(0deg);
+  -ms-transform: translate3d(0px, -35px, 25px) rotateX(88.6deg) rotateY(0deg) rotateZ(0deg);
+}
+.auth_page .login_box .logo_header .house .triangle {
+  -webkit-transform: translate3d(0px, -35px, 25px) rotateX(-90deg) rotateY(0deg) rotateZ(0deg);
+  -moz-transform: translate3d(0px, -35px, 25px) rotateX(-90deg) rotateY(0deg) rotateZ(0deg);
+  -ms-transform: translate3d(0px, -35px, 25px) rotateX(-90deg) rotateY(0deg) rotateZ(0deg);
+}
+.auth_page .login_box .logo_header .pencil .triangle {
+  -webkit-transform: translate3d(0px, -35px, 25px) rotateX(-90deg) rotateY(0deg) rotateZ(0deg);
+  -moz-transform: translate3d(0px, -35px, 25px) rotateX(-90deg) rotateY(0deg) rotateZ(0deg);
+  -ms-transform: translate3d(0px, -35px, 25px) rotateX(-90deg) rotateY(0deg) rotateZ(0deg);
+}
+.auth_page .login_box .logo_header .pyramid .triangle {
+  -webkit-transform: translate3d(0px, -35px, 25px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  -moz-transform: translate3d(0px, -35px, 25px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  -ms-transform: translate3d(0px, -35px, 25px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+}
+.auth_page .login_box .logo_header .play .triangle {
+  -webkit-transform: translate3d(0px, -35px, 25px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  -moz-transform: translate3d(0px, -35px, 25px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  -ms-transform: translate3d(0px, -35px, 25px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+}
+.auth_page .login_box .logo_header .tick .triangle {
+  -webkit-transform: translate3d(0px, -35px, 25px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  -moz-transform: translate3d(0px, -35px, 25px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  -ms-transform: translate3d(0px, -35px, 25px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+}
+.auth_page .login_box .logo_header .roadsign .triangle {
+  -webkit-transform: translate3d(0px, -35px, 25px) rotateX(-90deg) rotateY(0deg) rotateZ(0deg);
+  -moz-transform: translate3d(0px, -35px, 25px) rotateX(-90deg) rotateY(0deg) rotateZ(0deg);
+  -ms-transform: translate3d(0px, -35px, 25px) rotateX(-90deg) rotateY(0deg) rotateZ(0deg);
+}
+.auth_page .login_box .logo_header .logo3d.dark .base {
+  background-color: black;
+}
+.auth_page .login_box .logo_header .logo3d.dark .triangle .left {
+  border-right-color: black;
+}
+.auth_page .login_box .logo_header .logo3d.dark .triangle .right {
+  border-left-color: black;
+}
+.auth_page .login_box input.login_form_field {
+  width: 288px;
+  height: 20px;
+  margin-top: 4px;
+  line-height: 30px;
+  font-weight: bold;
+  border: 1px solid white;
+  outline: none;
+  -webkit-appearance: none;
+  border-radius: 0px;
+  padding: 5px;
+}
+.auth_page .terms_label {
+  width: 260px;
+  text-align: center;
+  line-height: 20px;
+  font-weight: bold;
+  padding-top: 5px;
+  padding-bottom: 7px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+.auth_page .auth_field_error {
+  background-color: #c72a22;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  width: 252px;
+  line-height: 15px;
+  padding: 5px;
+}
+.auth_page a.terms_link {
+  color: #3fc9ff;
+  font-weight: bold;
+  text-decoration: none;
+}
+.auth_page .user_message_area {
+  background-color: #13b716;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  width: 252px;
+  line-height: 15px;
+  padding: 5px;
+}
+.auth_page .auth_mode_option_area {
+  height: 20px;
+  width: 300px;
+  padding-bottom: 5px;
+  line-height: 20px;
+  margin-left: 6px;
+}
+.auth_page .auth_mode_option_area input {
+  margin-right: 5px;
+}
+.auth_page .auth_mode_option_area span {
+  margin-right: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+.docs_page .menu_expand_button {
+  position: absolute;
+  top: -1px;
+  z-index: 3;
+}
+.docs_page .body_text {
+  z-index: 2;
+}
+.docs_page .tabs ul.ui-tabs-nav {
+  display: inline;
+  padding: 0px;
+}
+.docs_page .tabs ul.ui-tabs-nav li {
+  display: inline;
+}
+.docs_page .tabs ul.ui-tabs-nav li button {
+  display: inline;
+}
+.docs_page .tabs ul.ui-tabs-nav li button {
+  position: relative;
+  bottom: -1px;
+}
+.docs_page .tabs .tabContents p:first-child {
+  margin-top: 5px;
+}
+.docs_page .ui-tabs-hide {
+  display: none;
+}
+.docs_page .ui-state-active button {
+  border-bottom: 5px solid #2c8eda;
+  background-color: #ffffff;
+}
+.docs_page .tabContents {
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  padding: 5px;
+}
+.docs_page .heading {
+  padding-top: 20px;
+  font-size: 18px;
+}
+.docs_page .NodeIconHeadline {
+  background-image: url("http://minocloud.com/DocFiles/images/nodejs-green.png");
+  width: 66px;
+  height: 25px;
+  margin-right: 3px;
+  position: relative;
+  top: 5px;
+  background-size: 66px 25px;
+  display: inline-block;
+}
+.docs_page .NodeIconMenuItem {
+  background-image: url("http://minocloud.com/DocFiles/images/nodejs-green.png");
+  width: 37px;
+  height: 14px;
+  margin-right: 3px;
+  position: relative;
+  top: 3px;
+  background-size: 37px 14px;
+  display: inline-block;
+}
+.docs_page .PHPIconHeadline {
+  background-image: url("http://minocloud.com/DocFiles/images/phpicon.png");
+  width: 46px;
+  height: 25px;
+  margin-right: 3px;
+  position: relative;
+  top: 5px;
+  background-size: 46px 25px;
+  display: inline-block;
+}
+.docs_page .PHPIconMenuItem {
+  background-image: url("http://minocloud.com/DocFiles/images/phpicon.png");
+  width: 26px;
+  height: 14px;
+  margin-right: 3px;
+  position: relative;
+  top: 3px;
+  background-size: 26px 14px;
+  display: inline-block;
+}
+.docs_page pre {
+  display: block;
+  padding: 9.5px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.428571429;
+  color: #333333;
+  word-break: break-all;
+  word-wrap: break-word;
+  background-color: #f5f5f5;
+  border: 1px solid #cccccc;
+  white-space: pre-wrap;
+  max-height: 300px;
+  overflow-y: scroll;
+}
+.docs_page code {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #444;
+  white-space: nowrap;
+  background-color: #eee;
+  border-radius: 4px;
+}
+.docs_page .doc img {
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  max-width: 400px;
+  width: 100%;
+}
+.docs_page .doc img.noscale {
+  border: none;
+  max-width: inherit;
+  width: inherit;
+}
+.docs_page .doc .mino_button {
+  margin: 0px;
+}
+.docs_page .image_description {
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+  max-width: 400px;
+}
+.not_found_page .error_code {
+  padding-top: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+.not_found_page .description {
+  text-align: center;
+}
+.fixed_menu_holder {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow-x: hidden;
+}
+.fixed_menu_holder .side_menu_center_holder {
+  max-width: 480px;
+  height: 100%;
+  position: relative;
+  margin-left: 50%;
+}
+.fixed_menu_holder .side_menu_center_holder .side_menu_holder {
+  position: absolute;
+  top: 0px;
+  left: -100%;
+  height: 100%;
+  width: 250px;
+  overflow-y: scroll;
+}
+.fixed_menu_holder .side_menu_center_holder .side_menu_holder .side_menu {
+  font-size: 12px;
+  background-color: #DDD;
+  min-height: 100%;
+  width: 250px;
+}
+.fixed_menu_holder .side_menu_center_holder .side_menu_holder .side_menu .side_menu_elements {
+  padding-top: 45px;
+  padding-bottom: 50px;
+}
+.fixed_menu_holder .side_menu_center_holder .side_menu_holder .side_menu .side_menu_elements .side_menu_section .side_menu_section_title {
+  font-size: 16px;
+  margin-left: 10px;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+.fixed_menu_holder .side_menu_center_holder .side_menu_holder .side_menu .side_menu_elements .side_menu_section .side_menu_section_title .menu_arrow {
+  font-size: 11px;
+  line-height: 10px;
+  padding-right: 5px;
+}
+.fixed_menu_holder .side_menu_center_holder .side_menu_holder .side_menu .side_menu_elements .side_menu_section .side_menu_item {
+  display: block;
+  color: black;
+  line-height: 20px;
+  padding-left: 5px;
+}
+.fixed_menu_holder .side_menu_center_holder .side_menu_holder .side_menu .side_menu_elements .side_menu_section .side_menu_item:active {
+  color: #2576b6;
+  background-color: #EFEFEF;
+}
+.fixed_menu_holder .side_menu_center_holder .side_menu_holder .side_menu .side_menu_elements .side_menu_section .side_menu_item span {
+  padding-left: 5px;
+}
+.fixed_menu_holder .side_menu_center_holder .side_menu_holder .side_menu .side_menu_elements .side_menu_section .side_menu_item.active {
+  background-color: #EFEFEF;
+}

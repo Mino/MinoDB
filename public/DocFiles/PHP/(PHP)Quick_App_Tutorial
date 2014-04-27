@@ -1,0 +1,330 @@
+<div class="heading">Before you Start</div>
+<p>
+This tutorial shows how to setup a simple <a href="/docs/Apps">app</a> that uses <a target="_blank" href="http://php.net">PHP</a> for the back-end and Javascript for the front end. The app lets users save simple "posts" as a title and content that appear in realtime across all of a user's open windows. MinoCloud's API will be used to store and search the posts, push updates across devices and to authenticate users.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick App Tutorial/Example App.gif" />
+<div class="image_description">The app you're going to setup</div>
+
+<div class="heading">How do MinoCloud-powered apps work?</div>
+<p>
+MinoCloud lets you power <a href="/docs/Apps">apps</a> using the same data platform that you can access through the MinoCloud <a href="/docs/Browser">Browser</a>.
+</p>
+
+<p>
+As well as providing access to simple, but powerful databasing functionality, MinoCloud also gives you access to <a href="/docs/Notify_Function">Notification</a> and <a href="/docs/Authentication">Authentication</a> services so that you can concentrate on building your <a href="/docs/Apps">app</a>'s functionality, rather than the infrastructure that powers it.
+</p>
+
+<p>
+MinoCloud doesn't host your <a href="/docs/Apps">app</a>, so you're free to host it wherever and however you like, whilst using MinoCloud's <a href="/docs/API">API</a> to power it. This approach gives you complete freedom over how your <a href="/docs/Apps">app</a> is structured and lets you use MinoCloud alongside other useful services seamlessly.
+</p>
+
+<div class="heading">Your <a href="/docs/Apps">app</a> needs a user account</div>
+<p>
+It is recommended that you create a new user that will become your <a href="/docs/Apps">app</a>. MinoCloud allows any user account to become an <a href="/docs/Apps">app</a> so the process is the same as signing up for a personal account.
+</p>
+
+<p class="highlight">
+Unless you plan on continuing to use the username to build an app that you will eventually publicize, please avoid taking a username that someone else might want to use in the future. You could add some numbers to the username (e.g. <code>ExampleApp123</code> rather than <code>ExampleApp</code>).
+</p>
+
+<p>
+If you're already signed in to a MinoCloud account then we recommend you open a different web browser and navigate to <a href="http://minocloud.com">MinoCloud.com</a> to sign up.
+</p>
+
+<p>
+If you can't use a different web browser, open a new tab (so you don't lose this tutorial page) and sign out of your MinoCloud account to return to the sign in page, then click the <code>Sign Up</code> button.
+</p>
+
+<p>
+If you're not signed in then click <a target="_blank" href="http://minocloud.com/account/signup.php">here to sign up</a> (opens in new tab/window).
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick App Tutorial/Sign Up.png" />
+<div class="image_description">Create a User for your <a href="/docs/Apps">app</a></div>
+
+<div class="heading">Host your <a href="/docs/Apps">app</a></div>
+<p>
+MinoCloud can either use your <a href="/docs/Apps">app</a>'s API to inform it of new users (in which case your server needs to be accessible from the Internet) or you can specify a page that MinoCloud can load within a hidden frame to inform your <a href="/docs/Apps">app</a> of a new user. Using a page load to activate your app allows you to specify an address such as <code>http://localhost</code>, <code>http://127.0.0.1</code> or an intranet address as it will be loaded by the user's browser.
+</p>
+
+<p>
+If you've already got hosting that supports PHP then skip to the next step, otherwise you'll need to setup a local server that you can develop with. Select your operating system below and follow the instructions to setup a local PHP server.
+</p>
+
+<div class="tabs" id="serverTabs">
+    <ul>
+        <li>
+            <a href="#server-mac">
+                <button>Mac OS X</button>
+            </a>
+        </li>
+        <li>
+            <a href="#server-windows">
+                <button>Windows</button>
+            </a>
+        </li>
+        <li>
+            <a href="#server-other">
+                <button>Other</button>
+            </a>
+        </li>
+    </ul>
+    <div class="tabContents" id="server-other">
+        <p>
+        You need to install a web server such as Nginx or Apache and PHP on your local machine. PHP needs Mcrypt and cURL support. Search for tutorials that detail how to install this combination on your operating system.
+        </p>
+        <p>
+        The tutorial will make references to the following two locations:
+        </p>
+        <ul>
+        <li>Your <code>web directory</code> will most likely be <code>/var/www</code></li>
+        <li>Your <code>web app address</code> will most likely be <code>http://localhost</code></li>
+        </ul>
+    </div>
+    <div class="tabContents" id="server-windows">
+        <p>
+        You can use an application such as <a href="http://www.wampserver.com/en/">WampServer</a> to handle the server setup on your PC. WampServer will create a local server that uses Apache, MySQL and PHP. We won't be using the MySQL package, but it's a quick way to get a PHP server running on your PC. Download and install WampServer from the <a href="http://www.wampserver.com/en/">WampServer website</a>. Select the package appropriate to your machine (32/64 bit) and with the latest PHP version.
+        </p>
+        <p>
+        Use all defaults during installation. Once installed, WampServer will be accessible via the notification area (system tray) in the bottom right of your screen.
+        </p>
+        
+        <p>
+        Click the WampServer icon and click <code>Start All Services</code>.
+        </p>
+        <p class="highlight">
+        If the WampServer icon does not become green, even after a wait of a few seconds, it is possible that port 80 is being used by another application on your computer. You can find out which application is using the port by clicking on the WampServer icon and selecting <code>Apache</code>-><code>Service</code>-><code>Test Port 80</code>. This will open the command prompt, which will print the name of the application using port 80.
+        </p>
+        <p class="highlight">
+        If you cannot stop this application easily, you can change the port that WampServer is trying to use. To do this, click the WampServer icon and select <code>Apache</code>-><code>httpd.conf</code>. This will open the Apache configuration file. Change the line <code>Listen 80</code> (line 58 at time of writing) to <code>Listen 8080</code>. Save the file, click the WampServer icon and select <code>Start All Services</code>. The icon should become green. Because the server is now running on port 8080 rather than the default port of 80, replace references to <code>http://localhost</code> in this tutorial with <code>http://localhost:8080</code>.
+        </p>
+        <p>
+        The MinoCloud PHP library uses cURL to connect the the MinoCloud API.To enable it, click the WampServer icon and select <code>PHP</code>-><code>PHP extensions</code>-><code>php_curl</code> and make sure it is ticked. 
+        </p>
+        <p>
+        Click the WampServer icon and click <code>Localhost</code>. This will open your local server in a web browser. The address should be <code>http://localhost</code>.
+        </p>
+        <p>
+        Click the WampServer icon again. This time click <code>www directory</code>. This will open the directory that your local server is serving files from. It should have the path <code>C:\wamp\www</code>. You should delete the files in this directory before continuing.
+        <p>
+        The tutorial will make references to the following two locations:
+        </p>
+        <ul>
+        <li>Your <code>web directory</code> is <code>C:\wamp\www</code></li>
+        <li>Your <code>web app address</code> is <code>http://localhost</code></li>
+        </ul>
+
+        <p>
+        Because Windows uses a different <a href="http://en.wikipedia.org/wiki/Newline">Newline</a> character to Unix-based systems, Windows' default text editor, Notepad, does not separate the lines in the example code provided below. Wordpad supports Unix Newline characters and most third-party editors do too. 
+        </p>
+    </div>
+    <div class="tabContents" id="server-mac">
+        <p>
+        You can use an application such as <a target="_blank" href="http://mamp.info">MAMP</a> to handle the server setup on your Mac. MAMP stands for <b>M</b>acintosh, <b>A</b>pache, <b>M</b>ySQL and <b>P</b>HP. We won't be using the MySQL package, but it's a quick way to get a PHP server running on your Mac. Download and install MAMP from the <a target="_blank" href="http://mamp.info">MAMP website</a>. 
+        </p>
+
+        <p>
+        By default MAMP does not display errors for PHP. When developing it's helpful to see where things have gone wrong. To set <code>display_errors</code> to <code>On</code> in all configurations run the following command in terminal:
+        </p>
+
+        <pre>find /Applications/MAMP -name 'php.ini' -exec sed -i "" 's/display_errors = Off/display_errors = On/g' {} \;</pre>
+
+        <p>
+        Run MAMP.app from it's folder in <code>/Applications/MAMP/</code>
+        </p>
+
+        <p>
+        By default MAMP creates a server on port 8888. Whilst this will work, it is desirable to set the port to 80 (the default port for HTTP) so that it does not need to be specified. To do so, click <code>Preferences</code> on the MAMP application window, select the <code>Ports</code> tab, enter <code>80</code> into the <code>Apache Port</code> input and click OK. You will have to enter your password because using any port below 1024 requires administrator privileges.
+        </p>
+
+        <img src="http://minocloud.com/DocFiles/Tutorials/Quick App Tutorial/MAMP Port.png" />
+        <div class="image_description">MAMP Port Settings</div>
+
+        <p>
+        By default MAMP serves content from <code>/Applications/MAMP/htdocs</code>. This is therefore your <code>web directory</code>.
+        </p>
+        <p>
+        The tutorial will make references to the following two locations:
+        </p>
+        <ul>
+        <li>Your <code>web directory</code> is <code>/Applications/MAMP/htdocs</code></li>
+        <li>Your <code>web app address</code> is <code>http://localhost</code></li>
+        </ul>
+    </div>
+</div>
+
+<div class="heading">Download the tutorial files</div>
+<p>
+Download the files that make up this tutorial <a href="/docs/Apps">app</a> from <a target="_blank" href="http://minocloud.com/docs/downloads/Quick App Tutorial/quick_app_tutorial_php.zip">here</a>.
+</p>
+<p>
+Extract the contents of the zip file you have just downloaded into your <code>web directory</code> so that the <code>.php</code> files are directly within the directory (not within a subdirectory named "quick_app_tutorial_php").
+</p>
+
+<p>
+MinoCloud needs to know the addresses of some of these files so that everything can run smoothly.
+</p>
+
+<div class="heading">Make your account an <a href="/docs/Apps">app</a></div>
+<p>
+MinoCloud lets any user account become an <a href="/docs/Apps">app</a>. When a user becomes an <a href="/docs/Apps">app</a>, it allows other users to "Activate" the <a href="/docs/Apps">app</a>. As explained previously, the <a href="/docs/Activation">Activation</a> process can either be performed by calling your <a href="/docs/Apps">app</a>'s API, or it can be done by loading a page in the end-user's browser. We're going to use the latter method because it will work with localhost development.
+</p>
+
+<p>
+It is recommended that you keep this window open so you can follow these instructions.
+</p>
+
+<p>
+Make sure you're signed in to the MinoCloud account for the user that you want to become an <a href="/docs/Apps">app</a> and navigate to the <a target="_blank" href="http://minocloud.com/account/">Account</a> page, where you should click the <code>Create App</code> button in the <code>Apps</code> section.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick App Tutorial/Create App.png" />
+<div class="image_description">Create App Confirmation</div>
+
+<p>
+After confirming that you want your user to become an <a href="/docs/Apps">app</a> you will be taken to the <code>App Settings</code> page. You should fill in the following fields in the <code>App Settings</code> section using the suggested values if your web app address is <code>http://localhost</code>:
+</p>
+<ul>
+    <li><code>Description</code> - A simple description of your App (e.g. PHP sample app).</li>
+    <li><code>App URL</code> - Your <code>web app address</code> (<code>http://localhost</code>).</li>
+    <li><code>API URL</code> - Your <code>web app address</code> + <code>/api.php</code> (<code>http://localhost/api.php</code>).</li>
+    <li><code>Domain URL</code> - The domain that the App will be hosted on (<code>http://localhost</code>).</li>
+</ul>
+
+<p>
+And the following two fields in the <code>Activation</code> section:
+</p>
+<ul>
+    <li><code>Activation Type</code> - Page.</li>
+    <li><code>Activation URL</code> - Your <code>web app address</code> + <code>/activate.php</code> (<code>http://localhost/activate.php</code>).</li>
+</ul>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick App Tutorial/App Settings php.png" />
+<div class="image_description">Localhost App Settings</div>
+
+<p>
+Click <code>Save Changes</code> at the bottom of the <code>App Settings</code> page.
+</p>
+
+<div class="heading">Modify <code>app_settings.php</code></div>
+<p>
+You need to specify the username and API Key that your <a href="/docs/Apps">app</a> will use to interact with MinoCloud's <a href="/docs/API">API</a>. These are stored as variables in the <code>app_settings.php</code> file (shown below without comments).
+</p>
+
+<pre>
+&#60;?php
+    include 'minocloud.php';
+
+    $app_username = '__YOUR_APP_USERNAME__';
+    $api_key = '__YOUR_API_KEY__';
+
+    $postType = 'ExampleApp.SimplePost.1';
+?&#62;
+</pre>
+<p>
+If you haven't ever generated an API Key or have forgotten it, you can generate a new one by visiting the <a target="_blank" href="http://minocloud.com/account/">Account</a> page and clicking the <code>Generate New API Key</code> button in the <code>Apps</code> section.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick App Tutorial/API Key Generation.png" />
+<div class="image_description">API Key Generation</div>
+
+<p>
+Open <code>app_settings.php</code> in a text editor and replace <code>'__YOUR_APP_USERNAME__'</code> with the username of the <a href="/docs/Apps">app</a> and <code>'__YOUR_API_KEY__'</code> with the API Key you generated.
+</p>
+
+<p>
+The last line of PHP in the <code>app_settings.php</code> file defines <code>$postType</code> as <code>ExampleApp.SimplePost.1</code>. This <a href="/docs/Types">type</a> has been created by the <code>ExampleApp</code> user and made public so that your <a href="/docs/Apps">app</a> can use it.
+</p>
+
+<p>
+If you are signed in to a MinoCloud account, you can view the <code>ExampleApp.SimplePost.1</code> <a href="/docs/Types">type</a> via the <a href="/docs/Browser">Browser</a> at the following address:
+</p>
+<p>
+<a target="_blank" href="http://minocloud.com/browser/#ExampleApp.SimplePost.1">http://minocloud.com/browser/#ExampleApp.SimplePost.1</a>
+</p>
+
+<div class="heading">Test your <a href="/docs/Apps">app</a></div>
+<p>
+Whilst an <a href="/docs/Apps">app</a> can be activated by the very user that the <a href="/docs/Apps">app</a> is connected to, it may be preferable to use a different user to test it. Sign out of the user that the <a href="/docs/Apps">app</a> uses and sign in with a new/different user. Navigate to your <code>web app address</code> (<a target="_blank" href="http://localhost">http://localhost</a>).
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick App Tutorial/Not Signed In.png" />
+<div class="image_description">App prior to activation</div>
+
+<p>
+Your <a href="/docs/Apps">app</a> should appear with the text "Not signed in" at the top of the page. To activate it, click the <code>Activate</code> button on the <a href="/docs/Toolbar">Toolbar</a> in the bottom right of the screen.
+</p>
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick App Tutorial/Activate App.png" />
+<div class="image_description">Activate the App</div>
+
+<p>
+You will be asked to confirm that you wish to activate the <a href="/docs/Apps">app</a> and upon doing so you will be taken back to the <a href="/docs/Apps">app</a>, but now it will be activated and you can begin using it.
+</p>
+
+<p>
+Because this <a href="/docs/Apps">app</a> makes use of MinoCloud's notifications to push new posts out to all of your devices, you can open the <a href="/docs/Apps">app</a> in multiple windows and on multiple devices and any post will appear on all other windows.
+</p>
+
+
+<img src="http://minocloud.com/DocFiles/Tutorials/Quick App Tutorial/Example App.gif" />
+<div class="image_description">The App</div>
+
+<p>
+The posts you create will be saved using the <code>ExampleApp.SimplePost.1</code> <a href="/docs/Types">type</a> and will be located in <code>/__APP_USER__/Apps/__YOUR_APP_USERNAME__/Posts/</code>. This <a href="/docs/App Folders">app folder</a> can be viewed by both the <a href="/docs/Apps">app</a> and the app user, but only the <a href="/docs/Apps">app</a> may write to it.
+</p>
+
+<div class="heading">How does the <a href="/docs/Apps">app</a> work?</div>
+
+<p>
+The front-end of the <a href="/docs/Apps">app</a> is loaded from the file <code>index.php</code>. 1
+</p>
+
+<div class="heading"><code>app_settings.php</code></div>
+<p>
+As discussed above, <code>app_settings.php</code> contains your username, API Key and the addresses of any <a href="/docs/Types">types</a> your <a href="/docs/Apps">app</a> uses.
+</p>
+
+<div class="heading"><code>minocloud.php</code></div>
+<p>
+<code>minocloud.php</code> is the MinoCloud PHP library that allows your <a href="/docs/Apps">app</a> to make API requests to MinoCloud and also provides an easy-to-use wrapper around AJAX requests when combined with the client-side Javascript MinoCloud functions.
+</p>
+
+<div class="heading"><code>index.php</code></div>
+<p>
+<code>index.php</code> is the file that your server will load when you navigate to your <code>web app address</code> (e.g. <code>http://localhost</code>). This file is the entire front-end of your <a href="/docs/Apps">app</a> and contains the Javascript and CSS styles for your <a href="/docs/Apps">app</a>.
+</p>
+
+<div class="heading"><code>index.js</code></div>
+<p>
+<code>index.js</code> contains the Javascript front-end for the <a href="/docs/Apps">app</a>. This interface calls the <code>api.php</code> file to use the <a href="/docs/Apps">app</a>'s API.
+</p>
+
+<div class="heading"><code>style.css</code></div>
+<p>
+<code>style.css</code> contains some basic styling for the post elements.
+</p>
+
+<div class="heading"><code>api.php</code></div>
+<p>
+<code>api.php</code> is the API for your <a href="/docs/Apps">app</a> and makes up the entire back-end. The functions defined in this file are used by the front-end of your <a href="/docs/Apps">app</a> and other <a href="/docs/Apps">apps</a> to perform actions on behalf of your users (if you wish to enable this functionality).
+</p>
+
+<div class="heading"><code>activate.php</code></div>
+<p>
+<code>activate.php</code> is the PHP file that MinoCloud loads in a hidden frame when a user activates your <a href="/docs/Apps">app</a>. Your <a href="/docs/Apps">app</a> just has to define a function that it will run. This function must return <code>true</code> if everything ran as expected, otherwise your <a href="/docs/Apps">app</a> will never be activated and an error will be shown to the user.
+</p>
+
+<div class="heading">Well done!</div>
+<p>
+You just created your very first <a href="/docs/Apps">app</a> powered by MinoCloud. It might not be aesthetically pleasing right now because the code is intentionally brief, but you can easily add styling and new features once you're familiar with the code.
+</p>
+
+<p>
+MinoCloud solves the big problems so that you can concentrate on the features and design that you want. Your <a href="/docs/Apps">app</a> has the ability to store data, authenticate users and push changes to any of it's users and if you remove all of the comments it's less than 200 lines of basic PHP and Javascript.
+</p>
+
+<p>
+Now that you know the basics of how to power <a href="/docs/Apps">apps</a> with MinoCloud, you can take a look at the <a href="/docs/Sample Apps">Sample Apps</a> and see how they work. Feel free to use any code you find within them to achieve similar functionality.
+</p>

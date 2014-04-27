@@ -1,0 +1,88 @@
+<p>
+Items are <a href="/docs/Objects">objects</a> and as such have an <code>ID</code>, <code>Name</code> and <code>Path</code>. Their <code>Folder</code> key is set to false.
+</p>
+
+<p>
+Items are used to hold data defined by <a href="/docs/Types">types</a>. The fields defined in the <a href="/docs/Types">type</a> are stored by their <code>Name</code> key under the <code>Full Name</code> of the <a href="/docs/Types">type</a>.
+</p>
+
+<p>
+Prior to saving, an item that holds a single <a href="/docs/Types">type</a> named <code>ExampleUser.Person.1</code> would have the following structure:
+</p>
+
+<pre>{
+    "Name" : "John Smith",
+    "Path" : "/ExampleUser/People/",
+    "Folder" : false,
+    "ExampleUser.Person.1" : {
+        "First Name" : "John",
+        "Last Name" : "Smith",
+        "Date of Birth" : "1983-04-28"
+    }
+}</pre>
+
+<p>
+Once saved, an item will contain additional fields:
+</p>
+
+<pre>{
+    "ID" : 466,
+    "Name" : "John Smith",
+    "Path" : "/ExampleUser/People/",
+    "Full Path" : "/ExampleUser/People/John Smith"
+    "Folder" : false,
+    "Created" : "2013-05-11 17:20:23",
+    "Last Updated" : "2013-05-11 17:20:23",
+    "Version" : 1,
+    "ExampleUser.Person.1" : {
+        "First Name" : "John",
+        "Last Name" : "Smith",
+        "Date of Birth" : "1983-04-28"
+    }
+}</pre>
+
+<p>
+If an item is saved into an <a href="/docs/App Folders">app folder</a> then it will contain two additional fields that are used for searching (<code>App Path</code> and <code>App Full Path</code>):
+</p>
+
+<pre>{
+    "ID" : 1518,
+    "Name" : "Post 1518",
+    "Path" : "/ExampleUser/Apps/SocialApp/Posts/",
+    "Full Path" : "/ExampleUser/Apps/SocialApp/Posts/Post 1518"
+    "App Path" : "/SocialApp/Posts/",
+    "App Full Path" : "/SocialApp/Posts/Post 1518"
+    "Folder" : false,
+    "Created" : "2013-05-11 16:19:22",
+    "Last Updated" : "2013-05-11 16:19:22",
+    "Version" : 1,
+    "SocialApp.Post.1" : {
+        "Content" : "Hello World! This is my first post."
+    }
+}</pre>
+
+<p>
+Items can contain multiple <a href="/docs/Types">types</a> so that you can represent subclasses or add additional fields that may not be appropriate to store with all items, such as the example shown below.
+</p>
+
+<pre>{
+    "ID" : 1519,
+    "Name" : "Post 1519",
+    "Path" : "/ExampleUser/Apps/SocialApp/Posts/",
+    "Full Path" : "/ExampleUser/Apps/SocialApp/Posts/Post 1519"
+    "App Path" : "/SocialApp/Posts/",
+    "App Full Path" : "/SocialApp/Posts/Post 1519"
+    "Folder" : false,
+    "Created" : "2013-05-11 16:25:07",
+    "Last Updated" : "2013-05-11 16:25:07",
+    "Version" : 1,
+    "SocialApp.Post.1" : {
+        "Content" : "Here are some photos that I took on my holiday!"
+    },
+    "SocialApp.PhotoPost.1" : {
+        "Photo Addresses" : [
+            "http://example.com/photos/151255.jpg",
+            "http://example.com/photos/151256.jpg"
+        ]
+    }
+}</pre>

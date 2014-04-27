@@ -1,0 +1,7 @@
+.footer{
+	text-align: right;
+	color: #555;
+	padding-top: 25px;
+	padding-right: 5px;
+	padding-bottom: 50px;
+}

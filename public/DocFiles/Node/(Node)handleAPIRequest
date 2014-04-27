@@ -1,0 +1,144 @@
+<p>
+The <code>handleAPIRequest</code> function is provided as an easy way to process AJAX requests from the front end of your <a href="/docs/Apps">app</a>. It works perfectly in conjunction with the <code>MinoCloud_api</code> Javascript function that is provided in the Javascript file included by the <a href="/docs/Toolbar">toolbar</a>. The function uses the request and response objects used by the node module <a href="http://expressjs.com">Express.js</a>.
+</p>
+
+<p>
+The standard method of using <a href="http://expressjs.com">Express</a> to connect to the <code>handleAPIRequest</code> method is shown <a href=“?(Node) handleAPIRequest#expressSetup">at the bottom of this page</a>.
+</p>
+
+<div class="heading">handleAPIRequest(<code>request</code>,<code>response</code>,<code>callback</code>)</div>
+<p>
+<code>request</code><br />
+<code>Type: Express Request</code><br />
+The <a target="_blank" href="http://expressjs.com">Express</a> request object.
+</p>
+<p>
+<code>response</code><br />
+<code>Type: Express Response</code><br />
+The <a target="_blank" href="http://expressjs.com">Express</a> response object.
+</p>
+<p>
+<code>callback</code><br />
+<code>Type: Function(appUser,caller,functionName,parameters,respond)</code><br />
+A function that will be called with the details of the request. If there is anything wrong with the structure of the request then the callback will not be called and <code>handleAPIRequest</code> will end the request and write an error to the response.
+<br />
+<br />
+If the <code>callback</code> function returns <code>false</code> then <code>handleAPIRequest</code> will end the request and write an error to the response stating that the function does not exist.
+<br />
+<br />
+<code>appUser</code> is the end-user of the <a href="/docs/Apps">app</a> that this request is for.
+<br />
+<br />
+<code>caller</code> is the username of the user that has made this request on behalf of <code>appUser</code>. If this request was made via AJAX then <code>caller</code> will be <code>null</code>.
+<br />
+<br />
+<code>functionName</code> is the name of the requested function.
+<br />
+<br />
+<code>parameters</code> is an JSON object containing the parameters for the request.
+<br />
+<br />
+<code>respond</code> is the "write out" function and should be called once with a JSON object as it's single parameter.
+</p>
+
+<div class="heading">Example Usage</div>
+<p>
+Because the <code>minocloud</code> object is unique for each request, it contains the username of the authenticated user in the <code>appUser</code> key if they were successfully authenticated.
+</p>
+<p>
+If the <code>request</code> includes a URL parameter named <code>minocloud_session_cookie</code> then this value will be set as the cookie and a "Location" header will be sent. This will end the request and the <code>callback</code> will not be called.
+</p>
+<pre>
+var minocloud = new MinoCloud("ExampleApp","3XaMpL3ApPaP1K3Y");
+
+minocloud.handleAPIRequest(
+  request,
+  response,
+  function(appUser,caller,functionName,parameters,respond){
+    if(functionName=="Echo"){
+      respond({
+        "Echoing" : parameters['My Echo String'] + ' ' + parameters['My Echo String']
+      })
+      return true;
+    }
+  }
+);
+</pre>
+
+<p>
+The above code snippet should be combined the following front end code.
+</p>
+
+<pre>
+MinoCloud_api(apiAddress,
+  'Echo',
+  {
+      'My Echo String' : 'Hello World',
+  },
+  function(response){
+    console.log("response:");
+    console.log(response);
+  },
+  function(error){
+    console.log("error:");
+    console.log(error);
+  }
+);
+</pre>
+<p>
+The console output for the front end:
+</p>
+<pre>
+response:
+{
+  "Echoing" : "Hello World Hello World"
+}
+</pre>
+
+<a name="expressSetup" />
+<div class="heading">Express.js setup</div>
+<p>
+Create a file named <code>api.js</code> that contains a function that will act as your API handler.
+</p>
+<pre>
+var MinoCloud = require('minocloud');
+
+/* It's useful to define your app's settings as a JSON object in 
+ * app_settings.js. */
+var app_settings = require("./app_settings");
+
+var api = function(request, response){
+
+	/* Use the app_settings to create a MinoCloud object. */
+	var minocloud = new MinoCloud(app_settings.username,app_settings.apiKey);
+	minocloud.handleAPIRequest(
+		request,
+		response,
+		function(appUser,caller,functionName,parameters,respond){
+			//Your api goes here
+		}
+	);
+}
+
+module.exports = api;
+</pre>
+
+<p>
+Attach the <code>api</code> module to the <a href="http://expressjs.com">Express.js</a> server.
+</p>
+
+<pre>
+...
+var api = require('./api');
+...
+var server = express();
+
+/* MinoCloud needs the post variables and cookies to be parsed. */
+server.use(express.bodyParser());
+server.use(express.cookieParser());
+...
+server.post('/api', function(req, res){
+  api(req,res);
+});
+...
+</pre>

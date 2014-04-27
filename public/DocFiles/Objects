@@ -1,0 +1,20 @@
+<p>
+Both the <a href="/docs/Items">items</a> that store data and the <a href="/docs/Folders">folders</a> that organize everything are objects.
+</p>
+
+<p>
+Every object has the following fields:
+</p>
+<ul>
+	<li><code>ID</code> - The ID of the object.</li>
+	<li><code>Name</code> - The name of the object. It must be unique to the object's <a href="/docs/Paths">path</a>.</li>
+	<li><code>Path</code> - The <a href="/docs/Paths">path</a> of the object. It is the <code>Full Path</code> of the parent <a href="/docs/Folders">folder</a>.</li>
+	<li><code>Folder</code> - A boolean indicating whether or not the object is a <a href="/docs/Folders">folder</a>.</li>
+</ul>
+
+<p>
+For more information on the two types of objects:
+<ul>
+	<li><a href="/docs/Items">Items</a> can contain data in structures defined by <a href="/docs/Types">types</a> and can be moved and renamed.</li>
+	<li><a href="/docs/Folders">Folders</a> cannot contain data and can neither be moved or renamed.</li>
+</ul>

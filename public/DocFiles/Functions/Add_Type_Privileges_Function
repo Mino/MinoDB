@@ -1,0 +1,96 @@
+<p>
+The <code>Add Type Privileges</code> function can be used to allow other users use of a <href="?Types">type</a> that you have created.
+</p>
+
+<p>
+By default, only the user that created a <a href="/docs/Types">type</a> can use it or view it's details. It is possible for a user to retrieve an <a href="/docs/Items">item</a> that uses a <href="?Types">type</a> that they do not have the right to use. They will be able to see the fields of the <a href="/docs/Types">type</a> in the <a href="/docs/Items">item</a>, but not any of the details. They will also be unable to save the <a href="/docs/Items">item</a>.
+</p>
+
+<p>
+You can only grant access to <a href="/docs/Types">types</a> that you have created (e.g. only <code>ExampleUser</code> can grant privileges for the <a href="/docs/Types">type</a> <code>ExampleUser.Person.1</code>).
+</p>
+
+<p>
+Once granted, type privileges cannot be revoked. This is to ensure that the usefulness of any data that a user creates is not compromised by being unable to continue using a <a href="/docs/Types">type</a> that their <a href="/docs/Items">items</a> may be using.
+</p>
+
+<p>
+By granting access to the <code>Public</code> user, all users will be able to use the specified <a href="/docs/Types">type</a>.
+</p>
+
+<p>
+The function does not differentiate between successfully creating a type privilege and the type privilege already existing; both will show as a success.
+</p>
+
+<p>
+The function takes a single top-level parameter called <code>Type Privileges</code> which is an array of the type privileges you would like to grant.
+</p>
+
+
+<div class="heading">Example Request</div>
+<pre>{
+    "Type Privileges" : [
+        {
+            "Granted To" : "AnotherUser",
+            "Type Version" : "ExampleUser.Person.1",
+        },
+        {
+            "Granted To" : "Public",
+            "Path" : "ExampleUser.Post.3",
+        }
+    ]
+}</pre>
+
+<p>
+The function returns an array of the successes in the order in which they were requested.
+</p>
+
+<pre>{
+    "Privileges" : [
+        {
+            "Granted" : true
+        },
+        {
+            "Granted" : true
+        }
+    ]
+}</pre>
+
+<div class="heading">Erroneous Request/Response</div>
+<p>
+If a specified user does not exist or a specified <a href="/docs/Types">type</a> is provided in an invalid format or does not exist, then none of the correctly-formed type privileges will be granted and an <a href="/docs/Errors">error</a> will be returned.
+</p>
+<pre>{
+    "Privileges" : [
+        {
+            "Granted To" : "NonExistantUser",
+            "Type Version" : "ExampleUser.TypeThatDoesNotExist.4"
+        }
+    ]
+}
+</pre>
+
+<p>
+In the case of the above request, because the user <code>NonExistantUser</code> does not exist and the <code>Path</code> <code>/ExampleUser//DoubleSlashMistake</code> is invalid, the following <a href="/docs/Errors">error</a> would be returned.
+</p>
+
+<pre>{
+    "Invalid" : {
+        "Privileges" : {
+            "Invalid" : {
+                "0" : {
+                    "Invalid" : {
+                        "Granted To" : {
+                            "Error" : "User does not exist.",
+                            "Error Number" : 76
+                        },
+                        "Type Version" : {
+                            "Error" : "Type Version does not exist.",
+                            "Error Number" : 121
+                        }
+                    }
+                }
+            }
+        }
+    }
+}</pre>

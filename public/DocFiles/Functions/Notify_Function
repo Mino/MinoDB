@@ -1,0 +1,149 @@
+<p>
+The <code>Notify</code> function allows your <a href="/docs/Apps">app</a> to send silent or visual notifications to it's users with optional <a href="/docs/Notify Function#ScriptedNotifications">scripted notifications</a> and <a href="/docs/Notify Function#ConditionalAlerts">conditional alerts</a>.
+</p>
+
+<div class="heading">Basic (silent) notification</div>
+<p>
+The most basic notification is one that just delivers content silently to the front-end of your <a href="/docs/Apps">app</a>. This just requires a <code>Payload</code>, the data that the front-end of your <a href="/docs/Apps">app</a> will receive and <code>Recipients</code>, the list of user's that will receive the notification.
+</p>
+<pre>
+{
+	"Payload" : {
+		"News Item" : "Now powered by MinoCloud's notification service."
+	}
+	"Recipients" : ["ExampleUser"]
+}
+</pre>
+<p>
+The function returns an object with <code>Success</code> set to <code>true</code> to indicate a successful request. This does not indicate that the notification was delivered to an online end-user, just that it will be delivered if the user is online.
+</p>
+<pre>
+{
+	"Success" : true
+}
+</pre>
+<p>
+Then on your <a href="/docs/Apps">app</a>'s front-end, set a Javascript callback for MinoCloud to call when your <a href="/docs/Apps">app</a> receives a new notification.
+</p>
+<pre>
+MinoCloud_setNotificationCallback(function(notification){
+	var payload = notification['Notifications.Notification.1']['Payload'];
+	console.log(payload['News Item']);
+});
+</pre>
+<p>
+The callback shown above receives an <a href="/docs/Items">item</a> that includes the <code>Notifications.Notification.1</code> type that contains the notification data. This is the <a href="/docs/Types">type</a> that the notification service uses to keep track of notifications.
+</p>
+
+
+<div class="heading">Adding a visual alert</div>
+<p>
+Sending silent notifications to deliver content to the front-end of your <a href="/docs/Apps">app</a> can lead to some great functionality, but sometimes it's useful to alert the user to an update too. You can still include a <code>Payload</code> if you need the notification to both alert the user and provide content, but it isn't required; an empty payload object will be delivered if you don't provide one.
+</p>
+
+<p>
+The <code>Description</code> key provides a string that will be shown to the user and the <code>Address</code> key is the address that the user will be taken to upon clicking the notification. The <code>Audible</code> value specifies whether or not the notification should be accompanied by an audible alert. MinoCloud ensures that this sound is only played once per device, rather than on every open instance of your <a href="/docs/Apps">app</a> on each device.
+</p>
+<pre>
+{
+	"Description" : "This is the description that will be shown to the user",
+	"Address" : "http://example.com/content",
+	"Audible" : true,
+	"Recipients" : ["ExampleUser","AnotherUser"]
+}
+</pre>
+<p>
+The notification will be delivered to the end-users you specify and will be shown in the notifications list accessible via the <a href="/docs/Toolbar">toolbar</a> in the bottom-right of their screen.
+</p>
+
+<a name="ConditionalAlerts" />
+<div class="heading">Conditional Alerts</div>
+<p>
+Receiving a visual and potentially audible alert can be frustrating for a user if they are looking at the content as it updates. For example, having a messaging <a href="/docs/Apps">app</a> play a sound upon receiving a message even though the user is typing a response to the same conversation.
+</p>
+
+<p>
+MinoCloud allows you to mitigate this annoyance by allowing the front-end or your <a href="/docs/Apps">app</a> to suppress the alert if the user is actively engaged with the content that the alert is for. MinoCloud sends the notification to the every instance of your <a href="/docs/Apps">app</a> for each user and waits for all of the responses before sending a visual and audible alert. If any of the instances choose to suppress the alert, it is dropped. 
+</p>
+
+<p>
+Conditional alerts operated on a per-user basis; if multiple recipients are specified, the reaction of each user's instances are independent. One user may not receive an alert because their instances suppressed it, but another user may receive one.
+</p>
+
+<p>
+To use conditional alerts, set the <code>Conditional Alert</code> key to <code>true</code> in the notification request.
+</p>
+<pre>
+{
+	"Description" : "This notification uses conditional alerts",
+	"Address" : "http://example.com/conversation",
+	"Audible" : true,
+	"Conditional Alert" : true,
+	"Recipients" : ["ExampleUser","AnotherUser"]
+}
+</pre>
+<p>
+Then on your <a href="/docs/Apps">app</a>'s front-end, set a Javascript callback for MinoCloud to call when your <a href="/docs/Apps">app</a> receives a conditional alert. The function is asking "Do you want an alert?", so if all instances callback with <code>true</code> then an alert will be shown. If any of them return <code>false</code>, it is dropped.
+</p>
+<pre>
+MinoCloud_setConditionalAlertCallback(function(notification,callback){
+	if(wantAnAlert()){
+		callback(true);
+	} else {
+		callback(false);
+	}
+});
+</pre>
+<p>
+The demonstration callback shown above receives the same <a href="/docs/Items">item</a> that the <code>MinoCloud_setNotificationCallback</code> function does, but the <code>callback</code> parameter allows the instance to respond to the question "Do you want an alert?". The imaginary <code>wantAnAlert</code> function that is used to decide between calling back with either <code>true</code> or <code>false</code> could be a function that checks if the window is focused or if an element related to the notification is visible on the user's screen. The criteria is different for each <a href="/docs/Apps">app</a>.
+</p>
+
+<a name="ScriptedNotifications" />
+<div class="heading">Scripted Notifications</div>
+<p>
+MinoCloud allows you to merge related alerts using a <code>Merge String</code> that is unique for each event. This ensures that your <a href="/docs/Apps">app</a> does not create a large number of individual notifications because a single event had multiple updates.
+</p>
+
+<p>
+The notifications are merged using a Javascript function that you send along with the notification request. This function must be sent as a string as the <code>Script</code> key in the request. The function receives the previous notification with the same <code>Merge String</code> (if one exists), the current notification being sent and the username of the user receiving the notification. This also allows you to send a single generic payload to multiple recipients, but have your <code>Script</code> create a description based upon which user is receiving the notification.
+</p>
+
+<p>
+The <code>Script</code> must return an array containing two values: the <code>Description</code> as a string that will be shown to the user and the <code>Payload</code> to save as a json object. The payload returned by the <code>Script</code> will replace the one sent in the request.
+</p>
+
+<p>
+If the <code>Script</code> returns <code>null</code> for the <code>Description</code> (array index 0) then the notification is sent silently. This allows you to send the notification to the user that was the root of the notification (e.g. the person that made a comment on a social post), but not display an alert for that particular user.
+</p>
+
+<pre>
+{
+	"Address" : "http://example.com/conversation",
+	"Audible" : true,
+	"Merge String" : "MyUniqueMergeString",
+	"Payload" : {
+		"Add" : 37,
+		"Message" : "My message" 
+	}
+	"Script" : 'function(previousPayload,thisPayload,username){
+		var description;
+
+		if(username=="ExampleUser"){
+			description = "I know you!";
+		} else {
+			description = "Hello "+username+".";
+		}
+		description += thisPayload['Message'];
+
+		if(previousPayload!=null){
+			thisPayload += previousPayload['Add'];
+		}
+
+		return [description,thisPayload];
+	}',
+	"Recipients" : ["ExampleUser","AnotherUser"]
+}
+</pre>
+<p>
+The front-end of your <a href="/docs/Apps">app</a> receives the notification in the same manner as shown above.
+</p>

@@ -1,0 +1,74 @@
+<p>
+The <code>deleteObjects</code> function is a convenience wrapper for the <a href="/docs/Delete_Function">Delete function</a>.
+</p>
+
+<div class="heading">deleteObjects(<code>addresses</code>,<code>callback</code>)</div>
+<p>
+<code>addresses</code><br />
+<code>Type: Array</code> or <code>String</code> or <code>Integer</code><br />
+An array of <a href="/docs/Paths">paths</a> or a single <a href="/docs/Paths">path</a>  for <a href="/docs/Objects">objects</a> that you want to delete.
+</p>
+<p>
+<code>callback</code><br />
+<code>Type: Function(error,result)</code><br />
+A function that will be called with the result of (or error caused by) the request.
+</p>
+
+<div class="heading">Example Usage 1</div>
+<p>
+Deleting a single <a href="/docs/Objects">object</a> returns a single JSON object as a result.
+</p>
+<pre>
+var minocloud = new MinoCloud("ExampleUser","3XaMpL3Us3rAp1k3y");
+
+minocloud.deleteObjects(
+	"/ExampleUser/My Item",
+	function(error,result){
+		console.log(error);#line 1 of output
+		console.log(result);#line 2-4 of output
+	}
+)
+</pre>
+<p>
+Output:
+</p>
+<pre>
+null
+{ 
+	"Deleted" : true
+}
+</pre>
+
+<div class="heading">Example Usage 2</div>
+<p>
+<code>deleteObjects</code> can be used to delete an array of <a href="/docs/Paths">paths</a> and will return an array as the result. With this usage, only errors that are related to <a href="/docs/Paths">path</a> format will be returned as errors; <a href="/docs/Paths">paths</a> that could not be deleted are returned in the result as errors for their index.
+</p>
+<pre>
+var minocloud = new MinoCloud("ExampleUser","3XaMpL3Us3rAp1k3y");
+
+minocloud.deleteObjects(
+	[
+		"/ExampleUser/My Item",
+		"/Something/Inaccessible"
+	],
+	function(error,result){
+		console.log(error);#line 1 of output
+		console.log(result);#line 2-10 of output
+	}
+)
+</pre>
+<p>
+Output:
+</p>
+<pre>
+null
+[
+	{
+		"Deleted" : true
+	},
+	{ 
+		"Error" : "Object does not exist or you do not have permission to modify it.",
+    	"Error Number" : 80 
+    }
+]
+</pre>

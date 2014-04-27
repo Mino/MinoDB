@@ -1,0 +1,60 @@
+<p>
+Folders are used to organize your data. Creating a folder with the full path <code>/ExampleUser/People/</code> allows you to save other <a href="/docs/Objects">objects</a> into this path (e.g. <code>/ExampleUser/People/John Smith</code>).
+</p>
+<p>
+Folders are <a href="/docs/Objects">objects</a> and as such have an <code>ID</code>, <code>Name</code> and <code>Path</code>. Their <code>Folder</code> value is set to true.
+</p>
+
+<p>
+Folders can contain both other folders and <a href="/docs/Items">items</a>.
+</p>
+
+<p>
+Unlike <a href="/docs/Items">items</a>, folders cannot be used to store data using <a href="/docs/Types">types</a>.
+</p>
+
+<p>
+Folders cannot be moved or renamed.
+</p>
+
+<p>
+Prior to saving, a folder located in <code>/ExampleUser/People/</code> with the name <code>Students</code> would have the following basic structure:
+</p>
+
+<pre>{
+    "Name" : "Students",
+    "Path" : "/ExampleUser/People/",
+    "Folder" : true
+}</pre>
+
+<p>
+Once saved, the folder will contain additional keys:
+</p>
+
+<pre>{
+    "ID" : 1512,
+    "Name" : "Students",
+    "Path" : "/ExampleUser/People/",
+    "Full Path" : "/ExampleUser/People/Students/",
+    "Folder" : true,
+    "Created" : "2013-05-11 18:21:24"
+}</pre>
+
+<p>
+If a folder is saved into an <a href="/docs/App Folders">app folder</a> then it will contain two additional keys that are used for searching (<code>App Path</code> and <code>App Full Path</code>):
+</p>
+
+<pre>{
+    "ID" : 1519,
+    "Name" : "Posts",
+    "Path" : "/ExampleUser/Apps/SocialApp/Posts/",
+    "Full Path" : "/ExampleUser/Apps/SocialApp/Posts/Post 1518/",
+    "App Path" : "/SocialApp/Posts/",
+    "App Full Path" : "/SocialApp/Posts/Post 1518/",
+    "Folder" : true,
+    "Created" : "2013-05-11 18:21:24"
+}</pre>
+
+<p>
+Folders can be shared with other users. For more information see <a href="/docs/Sharing">Sharing</a>.
+</p>

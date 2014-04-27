@@ -1,0 +1,83 @@
+<p>
+The <code>notify</code> function is a convenience wrapper for the <a href="/docs/Notify_Function">Notify function</a>.
+</p>
+
+<div class="heading">notify(<code>recipients</code>,<code>parameters</code>,<code>callback</code>)</div>
+<p>
+<code>recipients</code><br />
+<code>Type: Array</code> or <code>String</code><br />
+An array of usernames or a single username.
+</p>
+<p>
+<code>parameters</code><br />
+<code>Type: JSON Object</code><br />
+Parameters for the <code>Notify</code> function as specified in <a href="/docs/Notify_Function">Notify function</a>.
+</p>
+<p>
+<code>callback</code><br />
+<code>Type: Function(error,result)</code><br />
+A function that will be called with the result of (or error caused by) the request.
+</p>
+
+<div class="heading">Example Usage 1</div>
+<p>
+Send a simple payload to a single user silently (No <code>Description</code> or <code>Script</code> sent).
+</p>
+<pre>
+var minocloud = new MinoCloud("ExampleApp","3XaMpL3ApPaP1K3Y");
+
+minocloud.notify(
+	"ExampleUser",
+	{
+		"Payload" : {
+			"News Item" : "Now powered by MinoCloud's notification service."
+		}
+	},
+	function(error,result){
+		console.log(error);
+		console.log(result);
+	}
+)
+</pre>
+<p>
+Output:
+</p>
+<pre>
+null
+{ 
+	"Success" : true
+}
+</pre>
+
+<div class="heading">Example Usage 2</div>
+<p>
+Send a notification with a description to multiple users.
+</p>
+<pre>
+var minocloud = new MinoCloud("ExampleApp","3XaMpL3ApPaP1K3Y");
+
+minocloud.notify(
+	[
+		"ExampleUser",
+		"AnotherUser"
+	],
+	{
+		"Description" : "This is the description that will be shown to the user",
+		"Address" : "http://example.com/content",
+		"Audible" : true
+	},
+	function(error,result){
+		console.log(error);
+		console.log(result);
+	}
+)
+</pre>
+<p>
+Output:
+</p>
+<pre>
+null
+{
+	"Success" : true
+}
+</pre>
