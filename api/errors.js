@@ -21,6 +21,7 @@ var errors = {
 	SOME_ERROR: [16,"One or more of the 'request' fields 'Function', 'Parameters' and 'Time' are invalid or are empty."],//ServerHandler.handle
 	SOME_ERROR: [17,"Invalid format. Expecting object."],//TypeVersion.createFields SearchRequestHandler.typeVersionAvailable
 	SOME_ERROR: [18,"Invalid short type name."],//TypeVersion.initialize
+	NO_WRITE_PERMISSION: [19,"You do not have permission to write to this path."],
 
 	SOME_ERROR: [20,"Invalid field type."],//MinoField.createField 
 	SOME_ERROR: [21,"Invalid field type so parameters cannot be checked."],//MinoField.createField

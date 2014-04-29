@@ -15,8 +15,17 @@ function SaveObject(json, handler, index){
 
 	so.validator = new FieldVal(json);
 
+	so.granted_new_path = false;
+
 	so.id = so.validator.get("id","integer",false,bval.minimum(1));
 	so.path = so.validator.get("path","string",true,validators.path);
+	if(so.path!=null){
+		if(so.path.username_for_permission(handler.username)===handler.username){
+			so.granted_new_path = true;
+		} else {
+			handler.check_permissions_for_path(so.path,so,false);
+		}
+	}
 	so.name = so.validator.get("name","string",true,bval.not_empty(true));
 	so.folder = so.validator.get("folder","boolean",false);
 

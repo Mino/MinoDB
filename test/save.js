@@ -13,7 +13,7 @@ describe('save', function() {
             }
             var object = {
                 "name" : "One",
-                "path" : "/TestUser/",
+                "path" : "/TestUser/Diff/Another/Folder/",
                 "person" : {
                     "first_name" : "John",
                     "last_name" : "Smith",
@@ -22,9 +22,10 @@ describe('save', function() {
             save(user,{
                 objects: [object]
             },function(err,res){
+                logger.log(JSON.stringify(err, null, 4))
                 expect(err).to.equal(null);
+                done();
             })
-            done();
         });
 
     });

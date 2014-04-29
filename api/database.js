@@ -20,6 +20,12 @@ Database.prototype.connect = function(callback) {
 	    	logger.log(res);
 	    })
 
+
+	    // mongo.runCommand({shardCollection:"minodb.objects", key: { full_path: 1 }}, function(err,res){
+	    // 	logger.log(err);
+	    // 	logger.log(res);
+	    // })
+
 	    callback(err, db);
 	});
 };

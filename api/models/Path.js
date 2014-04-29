@@ -89,11 +89,11 @@ Path.is_valid_character_for_object_name = function(path_char, allowed_tilde) {
 
 }
 
-Path.prototype.username_for_privilege = function(requesting_username, for_write) {
+Path.prototype.username_for_permission = function(requesting_username, for_write) {
     var path = this;
 
-    //Restricts access to the Privileges folder in each user's root
-    if (path.object_names.length > 1 && path.object_names[1] == "Privileges") {
+    //Restricts access to the Permissions folder in each user's root
+    if (path.object_names.length > 1 && path.object_names[1] == "Permissions") {
 
         if (path.object_names.length == 2 && !path.is_folder) {
             /* The request is for an item with the same name as one of the restricted folders, not the folder itself
@@ -102,11 +102,7 @@ Path.prototype.username_for_privilege = function(requesting_username, for_write)
             return path.object_names[0];
         }
 
-        if (requesting_username == "Mino") {
-            return "Mino";
-        }
-
-        //Allows read access of privileges by user
+        //Allows read access of permissions by user
         if (path.object_names[0] == requesting_username && !for_write) {
             return requesting_username;
         }

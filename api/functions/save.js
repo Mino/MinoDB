@@ -1,7 +1,9 @@
+var errors = require('../errors')
 var Validator = require('../../../FieldVal/fieldval-js/lib/fieldval');
 var bval = require('../../../FieldVal/fieldval-js/lib/fieldval').BasicVal;
 var Path = require('../Models/Path')
 var TypeVersion = require('../Models/TypeVersion');
+var PathPermissionChecker = require('../Models/PathPermissionChecker');
 var SaveObject = require('../Models/SaveObject')
 var logger = require('tracer').console();
 
@@ -15,6 +17,8 @@ function SaveHandler(user, parameters, callback){
     sh.save_objects = [];
     sh.types_to_retrieve = {};
 
+    sh.path_permission_checker = new PathPermissionChecker(sh);
+
     sh.validator = new Validator(parameters);
 
     var objects = sh.validator.get("objects", "array", true, bval.each(function(object, index){
@@ -27,10 +31,23 @@ function SaveHandler(user, parameters, callback){
     logger.log(sh.types_to_retrieve);
 
     sh.retrieve_types();
+    sh.path_permission_checker.retrieve_permissions(function(){
+        for(var i = 0; i < sh.save_objects.length; i++){
+            var save_object = sh.save_objects[i];
+
+            if(!save_object.granted_new_path){
+                save_object.validator.invalid("path",Validator.Error(errors.NO_WRITE_PERMISSION))
+            }
+            var error = save_object.final_error_check();
+            if(error!=null){
+                sh.validator.invalid(save_object.index, error);
+            }
+        }
+        callback(sh.validator.end());
+    });
 
     var error = sh.validator.end();
-    logger.log(JSON.stringify(error, null, 4))
-    callback(error);
+    // callback(error);
     return;
 }
 
@@ -45,6 +62,12 @@ SaveHandler.prototype.request_type = function(type_name, save_object){
     existing.push(save_object);
 }
 
+SaveHandler.prototype.check_permissions_for_path = function(path, save_object, old_path){
+    var sh = this;
+
+    sh.path_permission_checker.check_permissions_for_path(path, save_object, old_path);
+}
+
 SaveHandler.prototype.retrieve_types = function(){
     var sh = this;
 
@@ -57,6 +80,12 @@ SaveHandler.prototype.retrieve_types = function(){
         "fields": [{
             "name": "first_name",
             "display_name": "First Name",
+            "type": "Text",
+            "min_length": 2,
+            "max_length": 32
+        },{
+            "name": "last_name",
+            "display_name": "Last Name",
             "type": "Text",
             "min_length": 2,
             "max_length": 32
