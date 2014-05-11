@@ -1,3 +1,7 @@
+var count = 0;
+
 module.exports = {
-    maximumAccessiblePathLength: 249
+	NO_PERMISSION : count++,
+	READ_PERMISSION : count++,
+	WRITE_PERMISSION : count++
 }

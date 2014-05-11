@@ -1,62 +1,4 @@
-package requestHandlers.base;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.ListIterator;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import org.elasticsearch.action.ListenableActionFuture;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.sort.SortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.RawJSON;
-
-import privileges.ObjectPrivilegeRetriever;
-import privileges.PrivilegeArrayListener;
-import requestHandlers.RequestHandler;
-import saving.ClusterTypeSaver;
-import search.Condition;
-import search.ConditionListener;
-import types.TypeRetriever;
-import types.TypeVersion;
-import main.APIRole;
-import minocloud.validator.ValidatorError;
-import minocloud.validator.Validator;
-import minocloud.validator.ValidatorObject;
-
-import minocloud.serverdaemon.ServerDaemon;
-
-import Models.User;
-
-import com.couchbase.client.CouchbaseClient;
-import common.Common;
-import common.Path;
-
-import dataRetrieval.CouchbasePool;
-import minocloud.elasticsearch.ElasticSearchNode;
-
 public class SearchRequestHandler extends RequestHandler implements PrivilegeArrayListener, ConditionListener{
-
-	public static int baseCost = 5;
-	public static int costPerType = 1;
-	public static int costPerField = 1;
-	public static int costPerFilter = 1;
-	public static int costPerHundredResults = 1;
 
 	String path;
 	ObjectPrivilegeRetriever objectPrivilegeRetriever;
@@ -65,9 +7,6 @@ public class SearchRequestHandler extends RequestHandler implements PrivilegeArr
 	boolean accessGranted = false;
 	BoolFilterBuilder searchFilterBuilder = null;
 	Condition baseCondition;
-
-	private CouchbaseClient client = CouchbasePool.getInstance().getCache();
-	ClusterTypeSaver clusterTypeSaver;
 
 	public SearchRequestHandler(User user, JSONObject parameters) throws ValidatorError {
 		super(user, parameters);

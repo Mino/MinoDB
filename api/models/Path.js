@@ -1,4 +1,5 @@
 var Constants = require('../Constants');
+var Common = require('../Common');
 var FieldVal = require('../../../FieldVal/fieldval-js/lib/fieldval');
 var errors = require('../errors')
 
@@ -89,6 +90,14 @@ Path.is_valid_character_for_object_name = function(path_char, allowed_tilde) {
 
 }
 
+Path.prototype.permission_path = function(requesting_username,for_write){
+    var path = this;
+
+    var user = path.username_for_permission(requesting_username,for_write);
+
+    return "/"+requesting_username+"/Permissions/"+user+"/"+Common.convert_path_to_tilde_path(path.toString());
+}
+
 Path.prototype.username_for_permission = function(requesting_username, for_write) {
     var path = this;
 
@@ -142,7 +151,7 @@ Path.prototype.parent_path = function() {
     var path = this;
 
     if (path.length == 1) {
-        return FieldVal.Error(-1);
+        return null;
     }
 
     var parent_path = new Path();
