@@ -1,23 +1,23 @@
 var should = require('should');
 var expect = require('expect.js');
 var logger = require('tracer').console();
-var Privilege = require('../api/Models/Privilege')
+var Permission = require('../api/Models/Permission')
 
-describe('Privilege', function() {
+describe('Permission', function() {
 
     describe('Construction', function() {
 
-        it('should create a privilege', function(done) {
-            var privilege = new Privilege();
+        it('should create a permission', function(done) {
+            var permission = new Permission();
             var handler = {
-                username: "NotTest"
+                username: "Test"
             }
-            var privilege_object = {
+            var permission_object = {
                 "granted_to": "TestUser2",
                 "path": "/Test/Shared/",
                 "grant_write" : true
             }
-            expect(privilege.init(privilege_object,handler)).to.equal(null);
+            expect(permission.init(permission_object,handler)).to.equal(null);
             done();
         });
 

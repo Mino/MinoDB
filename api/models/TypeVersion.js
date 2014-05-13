@@ -1,6 +1,7 @@
 var logger = require('tracer').console();
 var Field = require('./Fields/Field');
-var FieldVal = require('../../../FieldVal/fieldval-js/lib/fieldval');
+var FieldVal = require('../../../FieldVal/fieldval-js/fieldval');
+var bval = FieldVal.BasicVal;
 
 function TypeVersion(full_name) {
     var tv = this;
@@ -33,13 +34,13 @@ TypeVersion.prototype.validate = function(json) {
 
     tv.validator = new Validator(json);
 
-    tv.name = tv.validator.get("name", "string", true);
-    tv.display_name = tv.validator.get("display_name", "string", true);
-    tv.description = tv.validator.get("description", "string", false);
-    tv.required_types = tv.validator.get("required_types", "array", false);
+    tv.name = tv.validator.get("name", bval.string(true));
+    tv.display_name = tv.validator.get("display_name", bval.string(true));
+    tv.description = tv.validator.get("description", bval.string(false));
+    tv.required_types = tv.validator.get("required_types", bval.array(false));
     //TODO validate required types
 
-    var fields_json = tv.validator.get("fields", "array", true);
+    var fields_json = tv.validator.get("fields", bval.array(true));
     if (fields_json != null) {
         var fields_error = tv.process_fields(fields_json, true);
         if(fields_error!=null){

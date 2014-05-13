@@ -1,7 +1,7 @@
 var logger = require('tracer').console();
 var Field = require('./Field');
-
-logger.log(Field);
+var FieldVal = require('../../../../FieldVal/fieldval-js/fieldval');
+var bval = FieldVal.BasicVal;
 
 require('../../../extend')(TextField, Field);
 
@@ -23,8 +23,7 @@ function TextField(json, for_search) {
 TextField.prototype.init = function() {
     var field = this;
 
-    field.min_length = field.validator.get("min_length", "integer", false);
-    logger.log(field.min_length);
+    field.min_length = field.validator.get("min_length", bval.integer(false));
     if (field.min_length != null) {
         if (field.for_search) {
             fieldErrors.getOrMakeInvalid().put("min_length", new ValidatorError(57).error);
@@ -36,7 +35,7 @@ TextField.prototype.init = function() {
         }
     }
 
-    field.max_length = field.validator.get("max_length", "integer", false);
+    field.max_length = field.validator.get("max_length", bval.integer(false));
     if (field.max_length != null) {
 
         if (field.for_search) {
@@ -50,42 +49,42 @@ TextField.prototype.init = function() {
         }
     }
 
-    field.phrase = field.validator.get("phrase", "string", false);
+    field.phrase = field.validator.get("phrase", bval.string(false));
     if (field.phrase != null) {
         if (!for_search) {
             fieldErrors.getOrMakeInvalid().put("phrase", new ValidatorError(65).error);
         }
     }
 
-    field.equal_to = field.validator.get("equal_to", "string", false);
+    field.equal_to = field.validator.get("equal_to", bval.string(false));
     if (field.equal_to != null) {
         if (!for_search) {
             fieldErrors.getOrMakeInvalid().put("equal_to", new ValidatorError(65).error);
         }
     }
 
-    field.ci_equal_to = field.validator.get("ci_equal_to", "string", false);
+    field.ci_equal_to = field.validator.get("ci_equal_to", bval.string(false));
     if (field.ci_equal_to != null) {
         if (!for_search) {
             fieldErrors.getOrMakeInvalid().put("ci_equal_to", new ValidatorError(65).error);
         }
     }
 
-    field.prefix = field.validator.get("prefix", "string", false);
+    field.prefix = field.validator.get("prefix", bval.string(false));
     if (field.prefix != null) {
         if (!for_search) {
             fieldErrors.getOrMakeInvalid().put("prefix", new ValidatorError(65).error);
         }
     }
 
-    field.ci_prefix = field.validator.get("ci_prefix", "string", false);
+    field.ci_prefix = field.validator.get("ci_prefix", bval.string(false));
     if (field.ci_prefix != null) {
         if (!for_search) {
             fieldErrors.getOrMakeInvalid().put("ci_prefix", new ValidatorError(65).error);
         }
     }
 
-    field.query = field.validator.get("query", "string", false);
+    field.query = field.validator.get("query", bval.string(false));
     if (field.query != null) {
         if (!for_search) {
             fieldErrors.getOrMakeInvalid().put("query", new ValidatorError(65).error);
@@ -98,7 +97,7 @@ TextField.prototype.init = function() {
 TextField.prototype.validate = function(validator){
     var field = this;
 
-    var value = validator.get(field.name, "string", field.required);
+    var value = validator.get(field.name, bval.string(field.required));
 
     //Continue validating
 }

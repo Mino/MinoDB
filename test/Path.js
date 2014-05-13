@@ -78,61 +78,61 @@ describe('Path', function() {
 
     });
 
-    describe('username_for_privilege', function() {
+    describe('username_for_permission', function() {
 
         it('should return the user for their root (read)', function(done) {
             var path = new Path();
             path.init("/Test/");
-            expect(path.username_for_privilege("Test", false)).to.equal("Test");
+            expect(path.username_for_permission("Test", false)).to.equal("Test");
             done();
         });
 
         it('should return the user for their root (write)', function(done) {
             var path = new Path();
             path.init("/Test/");
-            expect(path.username_for_privilege("Test", true)).to.equal("Test");
+            expect(path.username_for_permission("Test", true)).to.equal("Test");
             done();
         });
 
         it('should return the user for a folder in their root (read)', function(done) {
             var path = new Path();
             path.init("/Test/Subfolder/");
-            expect(path.username_for_privilege("Test", false)).to.equal("Test");
+            expect(path.username_for_permission("Test", false)).to.equal("Test");
             done();
         });
 
         it('should return the user for a folder in their root (write)', function(done) {
             var path = new Path();
             path.init("/Test/Subfolder/");
-            expect(path.username_for_privilege("Test", true)).to.equal("Test");
+            expect(path.username_for_permission("Test", true)).to.equal("Test");
             done();
         });
 
-        it('should return the user for the "Privileges" folder if reading', function(done) {
+        it('should return the user for the "Permissions" folder if reading', function(done) {
             var path = new Path();
-            path.init("/Test/Privileges/");
-            expect(path.username_for_privilege("Test", false)).to.equal("Test");
+            path.init("/Test/Permissions/");
+            expect(path.username_for_permission("Test", false)).to.equal("Test");
             done();
         });
 
-        it('should return the user for an item named "Privileges" if writing', function(done) {
+        it('should return the user for an item named "Permissions" if writing', function(done) {
             var path = new Path();
-            path.init("/Test/Privileges");
-            expect(path.username_for_privilege("Test", true)).to.equal("Test");
+            path.init("/Test/Permissions");
+            expect(path.username_for_permission("Test", true)).to.equal("Test");
             done();
         });
 
-        it('should return "Mino" for the "Privileges" folder if requested by "Mino"', function(done) {
+        it('should return "Mino" for the "Permissions" folder if requested by "Mino"', function(done) {
             var path = new Path();
-            path.init("/Test/Privileges/");
-            expect(path.username_for_privilege("Mino", true)).to.equal("Mino");
+            path.init("/Test/Permissions/");
+            expect(path.username_for_permission("Mino", true)).to.equal("Mino");
             done();
         });
 
-        it('should return null for the "Privileges" folder if requested by anyone other than "Mino"', function(done) {
+        it('should return null for the "Permissions" folder if requested by anyone other than "Mino"', function(done) {
             var path = new Path();
-            path.init("/Test/Privileges/");
-            expect(path.username_for_privilege("AnotherUser", false)).to.equal(null);
+            path.init("/Test/Permissions/");
+            expect(path.username_for_permission("AnotherUser", false)).to.equal(null);
             done();
         });
 
@@ -199,11 +199,11 @@ describe('Path', function() {
             done();
         });
 
-        it('should return an error if called on a root path', function(done) {
+        it('should return null if called on a root path', function(done) {
             var path = new Path();
             path.init("/Test/");
             var parent_path = path.parent_path();
-            expect(parent_path.error).to.not.equal(null);
+            expect(parent_path).to.equal(null);
             done();
         });
 

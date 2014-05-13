@@ -18,7 +18,8 @@ var TextField;
 // public JSONObject detailedjson;
 // protected ValidatorObject fieldErrors = new ValidatorObject();
 
-var FieldVal = require('../../../../FieldVal/fieldval-js/lib/fieldval');
+var FieldVal = require('../../../../FieldVal/fieldval-js/fieldval');
+var bval = FieldVal.BasicVal;
 
 function Field(json, for_search) {
     var field = this;
@@ -32,13 +33,13 @@ function Field(json, for_search) {
     field.for_search = for_search;
     field.validator = new Validator(json);
 
-    field.name = field.validator.get("name", "string", true);
-    field.display_name = field.validator.get("display_name", "string", true);
-    field.type = field.validator.get("type", "string", true);
-    field.required = field.validator.get("required", "boolean", false) || false;
+    field.name = field.validator.get("name", bval.string(true));
+    field.display_name = field.validator.get("display_name", bval.string(true));
+    field.type = field.validator.get("type", bval.string(true));
+    field.required = field.validator.get("required", bval.boolean(false)) || false;
 
     if (json != null) {
-        var exists = field.validator.get("exists", "boolean", false);
+        var exists = field.validator.get("exists", bval.boolean(false));
         if (exists != null) {
             existsFilter = exists ? 1 : 2;
         }

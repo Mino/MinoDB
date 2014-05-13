@@ -1,6 +1,6 @@
 var Constants = require('../Constants');
 var Common = require('../Common');
-var FieldVal = require('../../../FieldVal/fieldval-js/lib/fieldval');
+var FieldVal = require('../../../FieldVal/fieldval-js/fieldval');
 var errors = require('../errors')
 
 function Path() {
@@ -104,7 +104,7 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
     //Restricts access to the Permissions folder in each user's root
     if (path.object_names.length > 1 && path.object_names[1] == "Permissions") {
 
-        if (path.object_names.length == 2 && !path.is_folder) {
+        if (path.object_names.length==2 && !path.is_folder) {
             /* The request is for an item with the same name as one of the restricted folders, not the folder itself
              * so return the username of the top folder.
              */
@@ -115,6 +115,12 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
         if (path.object_names[0] == requesting_username && !for_write) {
             return requesting_username;
         }
+
+        //Allows "Mino" user to write
+        if(requesting_username==="Mino"){
+            return "Mino";
+        }
+
         return null;
     }
 

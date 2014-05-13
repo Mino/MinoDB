@@ -1,7 +1,7 @@
 var errors = require('../errors')
 var db = require('../database');
-var Validator = require('../../../FieldVal/fieldval-js/lib/fieldval');
-var bval = require('../../../FieldVal/fieldval-js/lib/fieldval').BasicVal;
+var Validator = require('../../../FieldVal/fieldval-js/fieldval');
+var bval = Validator.BasicVal;
 var PathPermissionChecker = require('../Models/PathPermissionChecker');
 var logger = require('tracer').console();
 
@@ -16,7 +16,7 @@ function SearchHandler(user, parameters, callback){
 
     sh.validator = new Validator(parameters);
 
-    sh.paths = sh.validator.get("paths","array",true);
+    sh.paths = sh.validator.get("paths", bval.array(true));
 
     sh.path_permission_checker.retrieve_permissions(function(){
 

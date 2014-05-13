@@ -3,8 +3,8 @@ var Path = require('./Path');
 var logger = require('tracer').console();
 var db = require('../database');
 var Field = require('./Fields/Field');
-var Validator = require('../../../FieldVal/fieldval-js/lib/fieldval');
-var bval = require('../../../FieldVal/fieldval-js/lib/fieldval').BasicVal;
+var Validator = require('../../../FieldVal/fieldval-js/fieldval');
+var bval = Validator.BasicVal;
 var validators = require('../validators');
 
 function SaveObject(json, handler, index){
@@ -21,15 +21,15 @@ function SaveObject(json, handler, index){
 
 	so.granted_new_path = false;
 
-	so.id = so.validator.get("_id","string",false); //,bval.minimum(1));
+	so.id = so.validator.get("_id", bval.string(false)); //,bval.minimum(1));
 	so.is_new = so.id===null;
 
-	so.folder = so.validator.get("folder","boolean",false);
-	so.version = so.validator.get("version","integer",false);
+	so.folder = so.validator.get("folder", bval.boolean(false));
+	so.version = so.validator.get("version", bval.integer(false));
 	if(so.folder===null){
 		so.folder = false;
 	}
-	so.path = so.validator.get("path","string",true,validators.path);
+	so.path = so.validator.get("path", bval.string(true), validators.path);
 	if(so.path!=null){
 		var username_for_permission = so.path.username_for_permission(handler.user.username);
 		if(username_for_permission===handler.user.username){
@@ -54,7 +54,7 @@ function SaveObject(json, handler, index){
 			});
 		}
 	}
-	so.name = so.validator.get("name","string",true,bval.not_empty(true));
+	so.name = so.validator.get("name", bval.string(true), bval.not_empty(true));
 	if(so.name!=null && so.path!=null){
 		so.full_path = so.path.path_for_child_with_name(so.name,so.folder);
 	}
