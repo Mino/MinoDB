@@ -1,36 +1,26 @@
 {
-    "name": "minodb",
-    "version": "0.0.1",
-    "private": true,
-    "scripts": {
-        "start": "node server.js"
-    },
-    "dependencies": {
-        "couchbase": "*",
-        "express": "3.4.8",
-        "connect": "2.x",
-        "jade": "*",
-        "newrelic": "*",
-        "async": "*",
-        "request": " *",
-        "grunt-cli": "*",
-        "tracer": "*",
-        "expect.js": "*",
-        "blanket": "*",
-        "mongodb": "*"
-    },
-    "devDependencies": {
-        "grunt": "~0.4.0",
-        "grunt-contrib-uglify": "*",
-        "grunt-contrib-less": "*",
-        "grunt-contrib-watch": "*",
-        "matchdep": "*",
-        "should": "*"
-    },
-    "main": "server.js",
-    "config": {
-        "blanket": {
-            "pattern": "api/Models"
-        }
-    }
+  "name": "minodb",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.4.8",
+    "jade": "1.1.5",
+    "request": "*",
+    "connect": "2.x",
+    "tracer": "*",
+    "newrelic" : "*",
+    "mongodb" : "*",
+    "sendgrid": "*"
+  },
+  "devDependencies": {
+    "gulp-imports" : "git+ssh://git@github.com/MarcusLongmuir/gulp-imports.git",
+    "gulp-nodemon" : "*",
+    "gulp-util": "^2.2.14",
+    "gulp": "^3.6.1",
+    "gulp-less": "^1.2.3",
+    "gulp-uglify": "^0.2.1",
+    "gulp-concat": "^2.2.0",
+    "gulp-watch": "^0.6.2",
+    "gulp-plumber": "^0.6.1"
+  }
 }
