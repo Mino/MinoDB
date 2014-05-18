@@ -21,7 +21,7 @@ db.connect(function(err){
     server.use(express.methodOverride());
     server.use(express.cookieParser());
     server.use(express.bodyParser());
-    server.use(express.static(path.join(__dirname, 'public')));
+    server.use(express.static(path.join(__dirname, '../public')));
     server.use(express.logger('dev'));
     server.use(express.errorHandler());
 

@@ -48,7 +48,7 @@ Database.prototype.connect = function(callback) {
 		    			logger.log(error);
 		    			logger.log(response);
 
-			    		logger.log("SET ID_INDEX TO: "+response);
+			    		logger.log("SET ID_INDEX TO: "+response.index);
 		    			db.id_index = response.index;
 						callback(error, db);
 		    		})

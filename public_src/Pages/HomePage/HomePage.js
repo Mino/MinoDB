@@ -1,3 +1,5 @@
+@import("Feature/Feature.js");
+
 extend(HomePage, Page);
 
 function HomePage(parameters, url) {
@@ -12,14 +14,13 @@ function HomePage(parameters, url) {
         .append(
             $("<div />").addClass("body_text")
             .append(
-                $("<div />").addClass("body_headline")
-                .cms_string("top_headline")
+                $("<div />").addClass("body_headline").text("HEADLINE")
             )
     )
         .append(
             page.sign_up_area = $("<div />").addClass("signup_area")
             .append(
-                $("<span />").cms_string("top_signup_message")
+                $("<span />").text("SIGN UP MESSAGE")
             )
             .append(
                 $("<a />")

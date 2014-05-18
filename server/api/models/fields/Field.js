@@ -4,21 +4,6 @@ var have_subclasses = false;
 var TextField;
 var NestedField;
 
-// public TypeVersion parentType;
-// public String name;
-// public String description;
-// public boolean required;
-// public boolean deprecated;
-// public boolean isSearchParam;
-// public String fieldTypeName;
-// public Boolean isArray = false; //By default
-// public Integer minimumArraySize;
-// public Integer maximumArraySize;
-// public int existsFilter = 0; //1 = Enforce existance. 2 = Force abscence
-// public JSONObject json;
-// public JSONObject detailedjson;
-// protected ValidatorObject fieldErrors = new ValidatorObject();
-
 var FieldVal = require('../../../../../FieldVal/fieldval-js/fieldval');
 var bval = FieldVal.BasicVal;
 

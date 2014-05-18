@@ -90,10 +90,10 @@ TextField.prototype.validate = function(validator){
 
     var operators = [];
     if(field.min_length){
-        operators.push(bval.min_length(field.min_length));
+        operators.push(bval.min_length(field.min_length,{stop_on_error:false}));
     }
     if(field.max_length){
-        operators.push(bval.max_length(field.max_length));
+        operators.push(bval.max_length(field.max_length,{stop_on_error:false}));
     }
 
     var value = validator.get(field.name, bval.string(field.required), operators);

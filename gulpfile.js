@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var plumber = require('gulp-plumber');
+var logger = require('tracer').console();
 
 var less = require('gulp-less');
 var concat = require('gulp-concat');
@@ -35,9 +36,14 @@ gulp.task('less', function(){
     gulp.start('dynamic_less');
 });
 
+var public_js_task = null;
 
 //JS compilation
 gulp.task('public_js', function(){
+    if(public_js_task){
+        public_js_task.stop();
+    }
+    public_js_task = this;
     return gulp.src([
         'public_src/init.js'
     ])
@@ -72,7 +78,6 @@ gulp.task('default', function(){
     gulp.start('js');
     gulp.start('less');
 })
-
 
 gulp.task('nodemon', function () {
   nodemon({ script: 'server/server.js', ext: 'html js', ignore: ['public_src/','public/'] })

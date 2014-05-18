@@ -1,43 +1,41 @@
+@import("bower_components/jquery/dist/jquery.js");
+@import("safe/safe.min.js");
+@import("strings.js");
+@import("../extend.js");
+
+@import("Pages/Pages.js");
+
 var page_title_append = "MinoCloud";
 var max_width = 960;
 var min_width = 320;
 var body_contents_holder;
-var header;
-var footer;
+// var header;
+// var footer;
 
 $(document).ready(function() {
 
     Site.on_resize = function(resize_obj) {
 
-        resize_obj.body_width = body_contents_holder.contents.width();
-        resize_obj.proportion = resize_obj.body_width / max_width;
-        if (resize_obj.proportion > 1.0) {
-            resize_obj.proportion = 1.0;
-        }
+        // resize_obj.body_width = body_contents_holder.contents.width();
+        // resize_obj.proportion = resize_obj.body_width / max_width;
+        // if (resize_obj.proportion > 1.0) {
+        //     resize_obj.proportion = 1.0;
+        // }
 
-        body_contents_holder.resize(resize_obj);
+        // body_contents_holder.resize(resize_obj);
 
-        header.resize(resize_obj);
+        // header.resize(resize_obj);
     }
 
-    Site.get_cms_string = function(id) {
-        return strings[id];
-    }
+    var center = $("<div />").addClass("center").appendTo("body");
 
-    Site.get_cms_image = function(ref) {
-        return images[ref];
-    }
+    // header = new Header();
+    // header.element.appendTo("body");
 
-    header = new Header();
-    header.element.appendTo("body");
+    Site.element.addClass("page_holder").appendTo(center);
 
-    body_contents_holder = new BodyContentsHolder();
-    body_contents_holder.element.appendTo("body");
-
-    Site.element.appendTo(body_contents_holder.contents);
-
-    footer = new Footer();
-    footer.element.appendTo(body_contents_holder.contents);
+    // footer = new Footer();
+    // footer.element.appendTo(body_contents_holder.contents);
 
     Site.transition_page_callback = function(new_page, old_page) {
         var title = new_page.get_title();
@@ -76,7 +74,7 @@ $(document).ready(function() {
 
     Site.debug = false;
 
-    Site.set_no_page_found_class(NotFoundPage);
+    // Site.set_no_page_found_class(NotFoundPage);
 
     Site.init();
 

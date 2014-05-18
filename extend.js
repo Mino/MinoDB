@@ -1,5 +1,3 @@
-var logger = require('tracer').console();
-
 function extend(sub, sup) {
     function emptyclass() {}
     emptyclass.prototype = sup.prototype;
@@ -8,5 +6,3 @@ function extend(sub, sup) {
     sub.superConstructor = sup;
     sub.superClass = sup.prototype;
 }
-
-module.exports = extend;

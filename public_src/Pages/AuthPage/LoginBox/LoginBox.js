@@ -5,7 +5,7 @@ function LoginBox() {
     var posted_email = "Inserted email";
     var auth_mode = 'new';
 
-    lb.logo = new Logo();
+    // lb.logo = new Logo();
 
     lb.element = $("<div />").addClass("login_box")
         .append(
@@ -16,9 +16,9 @@ function LoginBox() {
     )
         .append(
             lb.logo_header = $("<div />").addClass("logo_header")
-            .append(
-                lb.logo.element.addClass("dark logo52")
-            )
+            // .append(
+            //     lb.logo.element.addClass("dark logo52")
+            // )
             .append(
                 lb.login_box_title = $("<a />")
                 .attr("href", "/")
@@ -80,7 +80,7 @@ function LoginBox() {
             .attr("name", "username")
             .attr("title", "Username")
             .val(posted_username)
-            .hint()
+            // .hint()
     )
         .append(
             lb.username_error = $('<div />')
@@ -95,7 +95,7 @@ function LoginBox() {
             .attr("name", "email")
             .attr("title", "Email")
             .val(posted_email)
-            .hint()
+            // .hint()
     )
         .append(
             lb.email_error = $('<div />')
@@ -109,7 +109,7 @@ function LoginBox() {
             .attr("autocomplete", "off")
             .attr("name", "password")
             .attr("title", "Password")
-            .hint()
+            // .hint()
     )
         .append(
             lb.password_error = $('<div />')
@@ -236,7 +236,7 @@ LoginBox.prototype.switch_mode = function(animate) {
             })
             .fadeIn(lb.animate_time);
 
-        lb.username_input.attr("title", "Username").hint();
+        lb.username_input.attr("title", "Username")//.hint();
 
         lb.confirm_button.text("Sign Up");
 
@@ -253,7 +253,7 @@ LoginBox.prototype.switch_mode = function(animate) {
             .slideDown(lb.animate_time)
             .fadeIn(lb.animate_time);
 
-        lb.username_input.attr("title", "Username or Email").hint();
+        lb.username_input.attr("title", "Username or Email")//.hint();
 
         lb.confirm_button.text("Sign In");
 
@@ -269,7 +269,7 @@ LoginBox.prototype.switch_mode = function(animate) {
             .slideUp(lb.animate_time)
             .fadeOut(lb.animate_time);
 
-        lb.username_input.attr("title", "Username or Email").hint();
+        lb.username_input.attr("title", "Username or Email")//.hint();
 
         lb.confirm_button.text("Reset Password");
 

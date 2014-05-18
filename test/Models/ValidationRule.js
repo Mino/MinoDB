@@ -18,7 +18,7 @@ describe('ValidationRule', function() {
                     first_name: {
                         display_name: "First Name",
                         type: "text",
-                        min_length: 2,
+                        min_length: 20,
                         max_length: 32
                     },
                     last_name: {

@@ -1,3 +1,5 @@
+@import("LoginBox/LoginBox.js");
+
 extend(AuthPage, Page);
 
 function AuthPage(parameters, url, wildcard_contents) {
@@ -35,17 +37,17 @@ AuthPage.prototype.init = function() {
 
     page.login_box.reposition_box();
 
-    body_contents_holder.set_transparent(true);
-    header.hide();
-    footer.hide();
+    // body_contents_holder.set_transparent(true);
+    // header.hide();
+    // footer.hide();
 }
 
 AuthPage.prototype.remove = function() {
     var page = this;
 
-    body_contents_holder.set_transparent(false);
-    header.show();
-    footer.show();
+    // body_contents_holder.set_transparent(false);
+    // header.show();
+    // footer.show();
 }
 
 AuthPage.prototype.resize = function(resize_obj) {
