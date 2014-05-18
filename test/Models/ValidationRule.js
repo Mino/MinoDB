@@ -8,7 +8,7 @@ describe('ValidationRule', function() {
     describe('Construction', function() {
 
         it('should create a ValidationRule for a basic field', function(done) {
-            var tv = new ValidationRule();
+            var vr = new ValidationRule();
             var type_object = {
                 description: "My description",
                 name: "person",
@@ -17,6 +17,12 @@ describe('ValidationRule', function() {
                 fields: {
                     first_name: {
                         display_name: "First Name",
+                        type: "text",
+                        min_length: 2,
+                        max_length: 32
+                    },
+                    last_name: {
+                        display_name: "Last Name",
                         type: "text",
                         min_length: 2,
                         max_length: 32
@@ -39,7 +45,7 @@ describe('ValidationRule', function() {
                     }
                 }
             }
-            var init_result = tv.init_for_saving(type_object);
+            var init_result = vr.init_for_saving(type_object);
             logger.log(JSON.stringify(init_result,null,4));
             expect(init_result).to.equal(null);
 
@@ -54,8 +60,8 @@ describe('ValidationRule', function() {
             });
 
             
-            tv.validate_object(object_validator);
-            
+            vr.validate_object(object_validator);
+
             logger.log(JSON.stringify(object_validator.end(),null,4));
 
             done();

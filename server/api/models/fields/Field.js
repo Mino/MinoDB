@@ -38,7 +38,7 @@ function Field(name, json, for_search, validator) {
     field.display_name = field.validator.get("display_name", bval.string(false));
     field.description = field.validator.get("description", bval.string(false));
     field.type = field.validator.get("type", bval.string(true));
-    field.required = field.validator.get("required", bval.boolean(false)) || true;
+    field.required = field.validator.default(true).get("required", bval.boolean(false))
 
     if (json != null) {
         var exists = field.validator.get("exists", bval.boolean(false));

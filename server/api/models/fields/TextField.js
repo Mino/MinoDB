@@ -88,7 +88,15 @@ TextField.prototype.init = function() {
 TextField.prototype.validate = function(validator){
     var field = this;
 
-    var value = validator.get(field.name, bval.string(field.required));
+    var operators = [];
+    if(field.min_length){
+        operators.push(bval.min_length(field.min_length));
+    }
+    if(field.max_length){
+        operators.push(bval.max_length(field.max_length));
+    }
+
+    var value = validator.get(field.name, bval.string(field.required), operators);
 
     logger.log(value);
     //Continue validating
