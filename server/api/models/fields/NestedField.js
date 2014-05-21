@@ -8,8 +8,6 @@ require('../../../../extend')(NestedField, Field);
 function NestedField(name, json, for_search, validator) {
     var field = this;
 
-    logger.log(name);
-
     NestedField.superConstructor.call(this, name, json, for_search, validator);
 }
 

@@ -98,8 +98,7 @@ TextField.prototype.validate = function(validator){
 
     var value = validator.get(field.name, bval.string(field.required), operators);
 
-    logger.log(value);
-    //Continue validating
+    return value;
 }
 
 module.exports = TextField;

@@ -18,7 +18,7 @@ describe('ValidationRule', function() {
                     first_name: {
                         display_name: "First Name",
                         type: "text",
-                        min_length: 20,
+                        min_length: 2,
                         max_length: 32
                     },
                     last_name: {
@@ -32,6 +32,11 @@ describe('ValidationRule', function() {
                         description: "An address. This is a nested test.",
                         type: "nested",
                         fields: {
+                            house_number: {
+                                type: "number",
+                                integer: true,
+                                minimum: 1
+                            },
                             line_1: {
                                 type: "text"
                             },
@@ -40,6 +45,10 @@ describe('ValidationRule', function() {
                             },
                             line_3: {
                                 type: "text"
+                            },
+                            country: {
+                                type: "choice",
+                                choices: ["UK","US"]
                             }
                         }
                     }
@@ -52,9 +61,13 @@ describe('ValidationRule', function() {
             var object_validator = new Validator({
                 person: {
                     first_name: "Marcus",
+                    last_name: "Longmuir",
                     address: {
+                        house_number: 37,
                         line_1: "40 Lorem Ipsum",
-                        line_2: "Dolor Sit Amet"
+                        line_2: "Dolor Sit Amet",
+                        line_3: "This is line 3",
+                        country: "UK"
                     }
                 }
             });

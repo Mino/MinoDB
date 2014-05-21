@@ -1,8 +1,6 @@
 var logger = require('tracer').console();
 
 var have_subclasses = false;
-var TextField;
-var NestedField;
 
 var FieldVal = require('../../../../../FieldVal/fieldval-js/fieldval');
 var bval = FieldVal.BasicVal;
@@ -32,10 +30,13 @@ function Field(name, json, for_search, validator) {
         }
     }
 }
+Field.types = {};
 
 Field.get_subclasses = function() {
-    TextField = require('./TextField');
-    NestedField = require('./NestedField');
+    Field.types.TextField = require('./TextField');
+    Field.types.NumberField = require('./NumberField');
+    Field.types.NestedField = require('./NestedField');
+    Field.types.ChoiceField = require('./ChoiceField');
 }
 
 Field.prototype.addToQuery = function(filter_builder, field_prefix, field_name, condition) {
@@ -64,7 +65,7 @@ Field.create_field = function(parent_type, name, json, for_search, validator) {
     var field = null;
 
     if(json.type === "nested"){
-        field = new NestedField(name, json, for_search, validator);
+        field = new Field.types.NestedField(name, json, for_search, validator);
     // } else if (json.type === "Boolean") {
     //     field = new BooleanField(json, for_search)
     // } else if (json.type === "Choice") {
@@ -86,7 +87,11 @@ Field.create_field = function(parent_type, name, json, for_search, validator) {
     // } else if (json.type === "Tree") {
     //     field = new TreeField(json, for_search)
     } else if (json.type === "text") {
-        field = new TextField(name, json, for_search,validator)
+        field = new Field.types.TextField(name, json, for_search,validator)
+    } else if (json.type === "number") {
+        field = new Field.types.NumberField(name, json, for_search,validator)
+    } else if (json.type === "choice") {
+        field = new Field.types.ChoiceField(name, json, for_search,validator)
     // } else if (json.type === "URL") {
     //     field = new URLField(json, for_search)
     // } else if (json.type === "User") {
@@ -97,7 +102,8 @@ Field.create_field = function(parent_type, name, json, for_search, validator) {
         //Create a generic field to create the correct errors for the "Field" fields
         var field = new Field(json, for_search,validator);
         field.validator.invalid("type", {
-            "error": -1
+            error: -1,
+            error_message: "Field type does not exist"
         });
 
         return [field.validator.end(), null];
