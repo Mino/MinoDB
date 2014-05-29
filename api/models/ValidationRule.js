@@ -1,7 +1,7 @@
 var logger = require('tracer').console();
 var Field = require('./Fields/Field');
-var FieldVal = require('../../../../FieldVal/fieldval-js/fieldval');
-var bval = FieldVal.BasicVal;
+var FieldVal = require('fieldval');
+var bval = require('../../../../FieldVal/fieldval-basicval-js/fieldval-basicval');
 
 function ValidationRule() {
     var vr = this;

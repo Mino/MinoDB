@@ -1,10 +1,10 @@
-var Validator = require('../../../../FieldVal/fieldval-js/fieldval');
-var bval = Validator.BasicVal;
+var Validator = require('fieldval');
+var bval = require('fieldval-basicval');
 var Path = require('../Models/Path')
 var logger = require('tracer').console();
 
-module.exports = function(user, parameters, callback) {
-
+module.exports = function(minodb, user, parameters, callback) {
+    
     var validator = new Validator(parameters);
     var addresses = validator.get("addresses", bval.array(true));
 

@@ -1,13 +1,13 @@
 var errors = require('../errors')
-var db = require('../../database');
-var Validator = require('../../../../FieldVal/fieldval-js/fieldval');
-var bval = Validator.BasicVal;
+var Validator = require('fieldval');
+var bval = require('fieldval-basicval');
 var PathPermissionChecker = require('../Models/PathPermissionChecker');
 var logger = require('tracer').console();
 
-function SearchHandler(user, parameters, callback){
+function SearchHandler(minodb, user, parameters, callback){
     var sh = this;
 
+    sh.minodb = minodb;
     sh.user = user;
     sh.parameters = parameters;
     sh.callback = callback;

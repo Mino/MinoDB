@@ -61,13 +61,12 @@ describe('ValidationRule', function() {
             var object_validator = new Validator({
                 person: {
                     first_name: "Marcus",
-                    last_name: "Longmuir",
+                    last_name: "L",
                     address: {
-                        house_number: 37,
+                        house_number: 37.5,
                         line_1: "40 Lorem Ipsum",
-                        line_2: "Dolor Sit Amet",
                         line_3: "This is line 3",
-                        country: "UK"
+                        country: "ESP"
                     }
                 }
             });

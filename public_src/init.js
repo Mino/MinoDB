@@ -1,4 +1,4 @@
-@import("bower_components/jquery/dist/jquery.js");
+@import("../bower_components/jquery/dist/jquery.js");
 @import("safe/safe.min.js");
 @import("strings.js");
 @import("../extend.js");

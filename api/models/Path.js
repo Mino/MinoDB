@@ -1,6 +1,6 @@
 var Constants = require('../Constants');
 var Common = require('../Common');
-var FieldVal = require('../../../../FieldVal/fieldval-js/fieldval');
+var FieldVal = require('fieldval');
 var errors = require('../errors')
 
 function Path() {

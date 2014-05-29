@@ -10321,6 +10321,10 @@ function extend(sub, sup) {
     sub.superClass = sup.prototype;
 }
 
+if (typeof module != 'undefined') {
+    module.exports = Validator;
+}
+
 function LoginBox() {
     var lb = this;
 

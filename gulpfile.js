@@ -80,7 +80,7 @@ gulp.task('default', function(){
 })
 
 gulp.task('nodemon', function () {
-  nodemon({ watch: ['server/'], script: 'server/server.js', ext: 'html js', ignore: ['public_src/','public/'] })
+  nodemon({ watch: ['./'], script: 'minodb.js', ext: 'html js', ignore: ['public_src/','public/','node_modules/','bower_components/'] })
     .on('restart', function () {
       console.log('restarted!')
     })

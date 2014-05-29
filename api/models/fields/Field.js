@@ -2,8 +2,8 @@ var logger = require('tracer').console();
 
 var have_subclasses = false;
 
-var FieldVal = require('../../../../../FieldVal/fieldval-js/fieldval');
-var bval = FieldVal.BasicVal;
+var FieldVal = require('fieldval');
+var bval = require('fieldval-basicval');
 
 function Field(name, json, for_search, validator) {
     var field = this;

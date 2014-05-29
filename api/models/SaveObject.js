@@ -1,10 +1,9 @@
 var Constants = require('../Constants');
 var Path = require('./Path');
 var logger = require('tracer').console();
-var db = require('../../database');
 var Field = require('./Fields/Field');
-var Validator = require('../../../../FieldVal/fieldval-js/fieldval');
-var bval = Validator.BasicVal;
+var Validator = require('fieldval');
+var bval = require('fieldval-basicval');
 var validators = require('../validators');
 
 function SaveObject(json, handler, index){

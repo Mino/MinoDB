@@ -1,5 +1,5 @@
-var Validator = require('../../../FieldVal/fieldval-js/fieldval');
-var bval = Validator.BasicVal;
+var Validator = require('fieldval');
+var bval = require('fieldval-basicval');
 var logger = require('tracer').console();
 var api = require('./api');
 var crypt = require("../utils/crypt");

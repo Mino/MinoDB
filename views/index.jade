@@ -7,10 +7,10 @@ html(xmlns='http://www.w3.org/1999/xhtml', xml:lang='en-US', lang='en-US')
     meta(name="apple-mobile-web-app-capable", content="yes")
     meta(name="apple-mobile-web-app-status-bar-style", content="black")
     
-    link(rel='stylesheet', href='/Style/style.css', type='text/css')
+    link(rel='stylesheet', href='#{path}Style/style.css', type='text/css')
     
   body
-    img(src="/images/ajax-loader.gif", style="visibility: none; position: absolute; top: -50px;")
+    #{path}
 
     - if (page_data.production)
         script.
@@ -19,4 +19,4 @@ html(xmlns='http://www.w3.org/1999/xhtml', xml:lang='en-US', lang='en-US')
         script.
           var production = false;
 
-    script(type='text/javascript', src='/frontend.js')
+    script(type='text/javascript', src='#{path}frontend.js')

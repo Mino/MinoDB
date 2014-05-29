@@ -1,4 +1,4 @@
-var FieldVal = require('../../../../FieldVal/fieldval-js/fieldval');
+var FieldVal = require('fieldval');
 var bval = FieldVal.BasicVal;
 
 var logger = require('tracer').console();

@@ -1,5 +1,4 @@
 var Constants = require('../Constants');
-var db = require('../../database');
 var logger = require('tracer').console();
 
 function CallbackObject(callback){

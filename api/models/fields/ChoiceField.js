@@ -1,7 +1,7 @@
 var logger = require('tracer').console();
 var Field = require('./Field');
-var FieldVal = require('../../../../../FieldVal/fieldval-js/fieldval');
-var bval = FieldVal.BasicVal;
+var FieldVal = require('../fieldval');
+var bval = require('fieldval-basicval');
 
 require('../../../../extend')(ChoiceField, Field);
 
@@ -27,7 +27,7 @@ ChoiceField.prototype.validate = function(validator){
         operators.push(bval.one_of(field.choices,{stop_on_error:false}));
     }
 
-    var value = validator.get(field.name, bval.required(true), operators);
+    var value = validator.get(field.name, FieldVal.required(true), operators);
 
     return value;
 }

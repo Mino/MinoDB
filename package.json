@@ -2,6 +2,7 @@
   "name": "minodb",
   "version": "0.0.1",
   "private": true,
+  "main": "minodb.js",
   "dependencies": {
     "express": "3.4.8",
     "jade": "1.1.5",
@@ -10,7 +11,8 @@
     "tracer": "*",
     "newrelic" : "*",
     "mongodb" : "*",
-    "sendgrid": "*"
+    "fieldval" : "*",
+    "fieldval-basicval" : "*"
   },
   "devDependencies": {
     "gulp-imports" : "git+ssh://git@github.com/MarcusLongmuir/gulp-imports.git",
