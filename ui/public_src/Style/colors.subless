@@ -1,0 +1,8 @@
+@minoColor1: #770000;
+@borderColor: blue;
+@lighterBorderColor: gray;
+@errorColor: purple;
+@linkOnBackground: pink;
+@successColor: green;
+
+@background: orange;

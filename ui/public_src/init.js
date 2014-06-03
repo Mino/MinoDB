@@ -1,13 +1,14 @@
-@import("../bower_components/jquery/dist/jquery.js");
-@import("safe/safe.min.js");
+@import("../../bower_components/jquery/dist/jquery.js");
+@import("../../bower_components/safe/safe.min.js");
+@import("../../bower_components/fieldval/fieldval.js");
+@import("../../bower_components/fieldval-basicval/fieldval-basicval.js");
+@import("../../bower_components/fieldval-ui/fieldval-ui.js");
 @import("strings.js");
-@import("../extend.js");
+@import("../../extend.js");
 
 @import("Pages/Pages.js");
 
-var page_title_append = "MinoCloud";
-var max_width = 960;
-var min_width = 320;
+var page_title_append = "MinoDB";
 var body_contents_holder;
 // var header;
 // var footer;

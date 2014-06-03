@@ -45,22 +45,22 @@ gulp.task('public_js', function(){
     }
     public_js_task = this;
     return gulp.src([
-        'public_src/init.js'
+        'ui/public_src/init.js'
     ])
     .pipe(plumber(onError))
     .pipe(gulpImports())
     .on('error', onError)
     .pipe(concat('frontend.js'))
-    .pipe(gulp.dest('./public/'))
+    .pipe(gulp.dest('./ui/public/'))
 });
 gulp.task('dynamic_js', function(){
     return gulp.src([
-        'public_src/DynamicPages/**/*.js'
+        'ui/public_src/DynamicPages/**/*.js'
     ])
     .pipe(plumber(onError))
     .pipe(gulpImports())
     .on('error', onError)
-    .pipe(gulp.dest('./public/DynamicPages/'))
+    .pipe(gulp.dest('./ui/public/DynamicPages/'))
 });
 gulp.task('js', function(){
     gulp.start('public_js');
@@ -70,8 +70,8 @@ gulp.task('js', function(){
 
 
 gulp.task('watch', function(){
-    gulp.watch(['public_src/**/*.js', '!public_src/bower_components/'], ['js']);
-    gulp.watch(['public_src/**/*.less','public_src/**/*.subless'], ['less']);
+    gulp.watch(['ui/public_src/**/*.js', '!bower_components/'], ['js']);
+    gulp.watch(['ui/public_src/**/*.less','ui/public_src/**/*.subless'], ['less']);
 });
 
 gulp.task('default', function(){

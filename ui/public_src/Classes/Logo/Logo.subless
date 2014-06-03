@@ -1,4 +1,4 @@
-@import "../colors.subless";
+@import "../../Style/colors.subless";
 
 @logoWidth: 50px;
 @perspectiveRatio: 3;

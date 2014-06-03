@@ -5,8 +5,9 @@ var path = require('path');
 
 var settings = require('./settings');
 var DataStore = require('./datastore');
-var api = require('./api/api');
-var process_session = require('./utils/process_session');
+var API = require('./api/API');
+var APIServer = require('./api/APIServer');
+var UIServer = require('./ui/UIServer');
 var logger = require('tracer').console();
 
 function MinoDB(config){
@@ -15,6 +16,11 @@ function MinoDB(config){
     logger.log(config);
 
     mdb.config = config;
+
+    mdb._api_server = new APIServer(mdb);
+    mdb._ui_server = new UIServer(mdb);
+
+    mdb.api = new API(mdb);
 
     mdb.ds = new DataStore({
         address: mdb.config.db_address
@@ -32,32 +38,13 @@ MinoDB.prototype.connect = function(callback){
 }
 
 MinoDB.prototype.ui_server = function(){
-    var server = express();
+    var mdb = this;
+    return mdb._ui_server.express_server;
+}
 
-    server.set('port', process.env.PORT || 5001);
-    server.set('views', path.join(__dirname, 'views'));
-    server.set('view engine', 'jade')
-    server.use(connect.compress());
-    server.use(express.methodOverride());
-    server.use(express.cookieParser());
-    server.use(express.bodyParser());
-    server.use(express.static(path.join(__dirname, 'public')));
-    server.use(express.logger('dev'));
-    server.use(express.errorHandler());
-
-    require('./ajax/routes').add_routes(server);
-    require('./api/routes').add_routes(server);
-
-    server.get('/*', process_session(false), function(req, res) {
-        res.render('index', {
-            path: "/minodb/",
-            page_data: {
-                user: req.user
-            }
-        });
-    })
-
-    return server;
+MinoDB.prototype.api_server = function(){
+    var mdb = this;
+    return mdb._api_server.express_server;
 }
 
 module.exports = MinoDB;

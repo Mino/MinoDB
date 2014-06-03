@@ -12,8 +12,6 @@
 		z-index: 10;
 		height: 40px;
 		background-color: @header_background_color;
-
-		.transition(top,0.5s,ease);
 	}
 
 	.fixed_header{
@@ -24,8 +22,6 @@
 		z-index: 10;
 		height: 40px;
 		background-color: @header_fixed_color;
-		
-		.transition(top,0.5s,ease);
 
 		.center_holder{
 			.menu_center{

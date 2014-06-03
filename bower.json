@@ -2,7 +2,10 @@
   "name": "minodb",
   "version": "0.0.1",
   "dependencies": {
-    "jquery": "1.11.1"
+    "jquery": "1.11.1",
+    "fieldval": "*",
+    "fieldval-basicval": "*",
+    "fieldval-ui": "*"
   },
   "private": true
 }

@@ -7,16 +7,10 @@ html(xmlns='http://www.w3.org/1999/xhtml', xml:lang='en-US', lang='en-US')
     meta(name="apple-mobile-web-app-capable", content="yes")
     meta(name="apple-mobile-web-app-status-bar-style", content="black")
     
-    link(rel='stylesheet', href='#{path}Style/style.css', type='text/css')
+    link(rel='stylesheet', href='#{ui_path}Style/style.css', type='text/css')
     
   body
-    #{path}
+    script.
+      var ui_path = !{JSON.stringify(ui_path)};
 
-    - if (page_data.production)
-        script.
-          var production = true;
-    - else
-        script.
-          var production = false;
-
-    script(type='text/javascript', src='#{path}frontend.js')
+    script(type='text/javascript', src='#{ui_path}frontend.js')

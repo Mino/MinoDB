@@ -74,19 +74,15 @@ function HomePage(parameters, url) {
         var feature = new Feature(feature_data, i % 2 == 0);
         page.features.push(feature);
 
-        page.feature_stack
-            .append(
-                feature.element
-        )
-            .append(
-                $("<div />").addClass("feature_divide")
+        page.feature_stack.append(
+            feature.element
+            ,
+            $("<div />").addClass("feature_divide")
         )
     }
 
 }
-Site.add_url("/", HomePage);
-Site.add_url("index.html", HomePage);
-Site.add_url("index.php", HomePage);
+Site.add_url(ui_path, HomePage);
 
 HomePage.prototype.get_title = function() {
     var page = this;
