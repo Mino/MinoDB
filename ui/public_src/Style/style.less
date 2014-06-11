@@ -1,8 +1,9 @@
-//@import "../../Style/brand/brand.subless";
 @import "colors.subless";
 
 @background_pane_color: rgba(240,240,240,1.0);
-@background-color: rgba(200,200,200,1.0);
+@background-color: rgba(240,240,240,1.0);
+
+@import "../fieldval_themes/mino_theme.subless";
 
 body{
 	margin: 5px;
@@ -11,6 +12,11 @@ body{
 	-webkit-font-smoothing: antialiased;
 	font-size: 14px;
 	line-height: 18px;
+}
+
+input,textarea{
+	.bold;
+	outline: none;
 }
 
 .bold{
@@ -26,6 +32,7 @@ body{
 }
 
 .mino_button{
+	
 	
 	&.active{
 
@@ -51,7 +58,7 @@ body{
 	overflow-x: hidden;
 }
 
-@import "../Elements/Elements.subless";
+@import "../CommonElements/CommonElements.subless";
 @import "../Pages/Pages.subless";
 
 @import "../Pages/DocsPage/SideMenu/SideMenu.subless";

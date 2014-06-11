@@ -1,7 +1,7 @@
-var should = require('should');
-var expect = require('expect.js');
 var logger = require('tracer').console();
-var Path = require('../../server/api/Models/Path')
+var assert = require("assert");
+
+var Path = require('../../api/models/Path')
 
 describe('Path', function() {
 
@@ -9,70 +9,70 @@ describe('Path', function() {
 
         it('should create a path for a single folder', function(done) {
             var path = new Path();
-            expect(path.init("/Test/")).to.equal(null);
-            expect(path.object_names[0]).to.equal("Test");
-            expect(path.is_folder).to.equal(true);
-            expect(path.length).to.equal(1);
-            expect(path.toString()).to.equal("/Test/");
+            assert.equal(path.init("/Test/"),null);
+            assert.equal(path.object_names[0],"Test");
+            assert.equal(path.is_folder,true);
+            assert.equal(path.length,1);
+            assert.equal(path.toString(),"/Test/");
             done();
         });
 
         it('should create a path for a folder and item', function(done) {
             var path = new Path();
-            expect(path.init("/Test/Item")).to.equal(null);
-            expect(path.object_names[0]).to.equal("Test");
-            expect(path.object_names[1]).to.equal("Item");
-            expect(path.is_folder).to.equal(false);
-            expect(path.length).to.equal(2);
-            expect(path.toString()).to.equal("/Test/Item");
+            assert.equal(path.init("/Test/Item"),null);
+            assert.equal(path.object_names[0],"Test");
+            assert.equal(path.object_names[1],"Item");
+            assert.equal(path.is_folder,false);
+            assert.equal(path.length,2);
+            assert.equal(path.toString(),"/Test/Item");
             done();
         });
 
         it('should create a path for two folders', function(done) {
             var path = new Path();
-            expect(path.init("/Test/Subfolder/")).to.equal(null);
-            expect(path.object_names[0]).to.equal("Test");
-            expect(path.object_names[1]).to.equal("Subfolder");
-            expect(path.is_folder).to.equal(true);
-            expect(path.length).to.equal(2);
-            expect(path.toString()).to.equal("/Test/Subfolder/");
+            assert.equal(path.init("/Test/Subfolder/"),null);
+            assert.equal(path.object_names[0],"Test");
+            assert.equal(path.object_names[1],"Subfolder");
+            assert.equal(path.is_folder,true);
+            assert.equal(path.length,2);
+            assert.equal(path.toString(),"/Test/Subfolder/");
             done();
         });
 
         it('init should throw an error for an empty path ', function(done) {
             var path = new Path();
-            expect(path.init("")).to.not.equal(null);
+            assert.notEqual(path.init(""),null);
             done();
         });
 
         it('init should throw an error for an overly-long path ', function(done) {
             var path = new Path();
             var string = Array(500).join("a");
-            expect(path.init(string)).to.not.equal(null);
+            assert.notEqual(path.init(string),null);
             done();
         });
 
         it('init should throw an error for a path with two /s ', function(done) {
             var path = new Path();
-            expect(path.init("//Test/")).to.not.equal(null);
+            assert.notEqual(path.init("//Test/"),null);
             done();
         });
 
         it('init should throw an error for a path containing an invalid character ', function(done) {
             var path = new Path();
-            expect(path.init("/Te~st/")).to.not.equal(null);
+            assert.notEqual(path.init("/Te~st/"),null);
             done();
         });
 
         it('init should throw an error for a path that doesn\'t start with /', function(done) {
             var path = new Path();
-            expect(path.init("Test/")).to.not.equal(null);
+            assert.notEqual(path.init("Test/"),null);
             done();
         });
 
         it('init should throw an error for single object path that doesn\'t end with /', function(done) {
             var path = new Path();
-            expect(path.init("/Test")).to.not.equal(null);
+            assert.notEqual(path.init("/Test"),null);
             done();
         });
 
@@ -83,56 +83,56 @@ describe('Path', function() {
         it('should return the user for their root (read)', function(done) {
             var path = new Path();
             path.init("/Test/");
-            expect(path.username_for_permission("Test", false)).to.equal("Test");
+            assert.equal(path.username_for_permission("Test", false),"Test");
             done();
         });
 
         it('should return the user for their root (write)', function(done) {
             var path = new Path();
             path.init("/Test/");
-            expect(path.username_for_permission("Test", true)).to.equal("Test");
+            assert.equal(path.username_for_permission("Test", true),"Test");
             done();
         });
 
         it('should return the user for a folder in their root (read)', function(done) {
             var path = new Path();
             path.init("/Test/Subfolder/");
-            expect(path.username_for_permission("Test", false)).to.equal("Test");
+            assert.equal(path.username_for_permission("Test", false),"Test");
             done();
         });
 
         it('should return the user for a folder in their root (write)', function(done) {
             var path = new Path();
             path.init("/Test/Subfolder/");
-            expect(path.username_for_permission("Test", true)).to.equal("Test");
+            assert.equal(path.username_for_permission("Test", true),"Test");
             done();
         });
 
         it('should return the user for the "Permissions" folder if reading', function(done) {
             var path = new Path();
             path.init("/Test/Permissions/");
-            expect(path.username_for_permission("Test", false)).to.equal("Test");
+            assert.equal(path.username_for_permission("Test", false),"Test");
             done();
         });
 
         it('should return the user for an item named "Permissions" if writing', function(done) {
             var path = new Path();
             path.init("/Test/Permissions");
-            expect(path.username_for_permission("Test", true)).to.equal("Test");
+            assert.equal(path.username_for_permission("Test", true),"Test");
             done();
         });
 
         it('should return "Mino" for the "Permissions" folder if requested by "Mino"', function(done) {
             var path = new Path();
             path.init("/Test/Permissions/");
-            expect(path.username_for_permission("Mino", true)).to.equal("Mino");
+            assert.equal(path.username_for_permission("Mino", true),"Mino");
             done();
         });
 
         it('should return null for the "Permissions" folder if requested by anyone other than "Mino"', function(done) {
             var path = new Path();
             path.init("/Test/Permissions/");
-            expect(path.username_for_permission("AnotherUser", false)).to.equal(null);
+            assert.equal(path.username_for_permission("AnotherUser", false),null);
             done();
         });
 
@@ -144,11 +144,11 @@ describe('Path', function() {
             var path = new Path();
             path.init("/Test/");
             var child_path = path.path_for_child_with_name("Item", false);
-            expect(child_path.object_names[0]).to.equal("Test");
-            expect(child_path.object_names[1]).to.equal("Item");
-            expect(child_path.is_folder).to.equal(false);
-            expect(child_path.length).to.equal(2);
-            expect(child_path.toString()).to.equal("/Test/Item");
+            assert.equal(child_path.object_names[0],"Test");
+            assert.equal(child_path.object_names[1],"Item");
+            assert.equal(child_path.is_folder,false);
+            assert.equal(child_path.length,2);
+            assert.equal(child_path.toString(),"/Test/Item");
             done();
         });
 
@@ -156,11 +156,11 @@ describe('Path', function() {
             var path = new Path();
             path.init("/Test/");
             var child_path = path.path_for_child_with_name("Subfolder", true);
-            expect(child_path.object_names[0]).to.equal("Test");
-            expect(child_path.object_names[1]).to.equal("Subfolder");
-            expect(child_path.is_folder).to.equal(true);
-            expect(child_path.length).to.equal(2);
-            expect(child_path.toString()).to.equal("/Test/Subfolder/");
+            assert.equal(child_path.object_names[0],"Test");
+            assert.equal(child_path.object_names[1],"Subfolder");
+            assert.equal(child_path.is_folder,true);
+            assert.equal(child_path.length,2);
+            assert.equal(child_path.toString(),"/Test/Subfolder/");
             done();
         });
 
@@ -168,7 +168,7 @@ describe('Path', function() {
             var path = new Path();
             path.init("/Test/Item");
             var child_path = path.path_for_child_with_name("Subfolder", true);
-            expect(child_path.error).to.not.equal(null);
+            assert.notEqual(child_path.error,null);
             done();
         });
 
@@ -181,10 +181,10 @@ describe('Path', function() {
             var path = new Path();
             path.init("/Test/Subfolder/");
             var parent_path = path.parent_path();
-            expect(parent_path.object_names[0]).to.equal("Test");
-            expect(parent_path.is_folder).to.equal(true);
-            expect(parent_path.length).to.equal(1);
-            expect(parent_path.toString()).to.equal("/Test/");
+            assert.equal(parent_path.object_names[0],"Test");
+            assert.equal(parent_path.is_folder,true);
+            assert.equal(parent_path.length,1);
+            assert.equal(parent_path.toString(),"/Test/");
             done();
         });
 
@@ -192,10 +192,10 @@ describe('Path', function() {
             var path = new Path();
             path.init("/Test/Item");
             var parent_path = path.parent_path();
-            expect(parent_path.object_names[0]).to.equal("Test");
-            expect(parent_path.is_folder).to.equal(true);
-            expect(parent_path.length).to.equal(1);
-            expect(parent_path.toString()).to.equal("/Test/");
+            assert.equal(parent_path.object_names[0],"Test");
+            assert.equal(parent_path.is_folder,true);
+            assert.equal(parent_path.length,1);
+            assert.equal(parent_path.toString(),"/Test/");
             done();
         });
 
@@ -203,7 +203,7 @@ describe('Path', function() {
             var path = new Path();
             path.init("/Test/");
             var parent_path = path.parent_path();
-            expect(parent_path).to.equal(null);
+            assert.equal(parent_path,null);
             done();
         });
 

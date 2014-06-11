@@ -2,7 +2,7 @@ var errors = require('../errors')
 var Validator = require('fieldval');
 var bval = require('fieldval-basicval');
 var Path = require('../Models/Path')
-var ValidationRule = require('../Models/ValidationRule');
+var ValidationRule = require('fieldval-rules');
 var PathPermissionChecker = require('../Models/PathPermissionChecker');
 var SaveObject = require('../Models/SaveObject')
 var logger = require('tracer').console();
@@ -83,7 +83,7 @@ SaveHandler.prototype.retrieve_rules = function(){
     var sh = this;
 
     //TODO replace mocking
-    var person_rule = new ValidationRule("person");
+    var person_rule = new ValidationRule();
     person_rule.init({
         "description": "A person type",
         "name": "person",

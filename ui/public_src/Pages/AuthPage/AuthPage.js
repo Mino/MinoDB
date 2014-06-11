@@ -1,4 +1,4 @@
-@import("LoginBox/LoginBox.js");
+
 
 extend(AuthPage, Page);
 

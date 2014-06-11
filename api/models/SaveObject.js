@@ -1,7 +1,6 @@
 var Constants = require('../Constants');
 var Path = require('./Path');
 var logger = require('tracer').console();
-var Field = require('./Fields/Field');
 var Validator = require('fieldval');
 var bval = require('fieldval-basicval');
 var validators = require('../validators');

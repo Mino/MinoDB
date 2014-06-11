@@ -29,19 +29,9 @@ function APIServer(minodb){
         var params = req.api_parameters;
         var user_api_key = req.user_api_key;
 
-        var api_val = new Validator(params);
-        var function_name = api_val.get("function_name", bval.string(true));
-        var parameters = api_val.get("parameters", bval.object(true));
-
-        var error = api_val.end();
-        if(error){
-            res.json(error);
-        }
-
-        as.minodb.api(user, function_name, parameters, function(api_err, api_res){
+        as.minodb.api.call(user, params, function(api_err, api_res){
             if(api_err){
-                api_val.invalid(api_err);
-                res.json(api_val.end());
+                res.json(api_err);
                 return;
             }
             res.json(api_res);

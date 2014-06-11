@@ -2,8 +2,6 @@
 
 	background-color: red;
 
-	@import "LoginBox/LoginBox.subless";
-
 	.terms_label{
 		width: 260px;
 		text-align: center;

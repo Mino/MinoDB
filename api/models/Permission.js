@@ -1,5 +1,5 @@
 var FieldVal = require('fieldval');
-var bval = FieldVal.BasicVal;
+var bval = require('fieldval-basicval');
 
 var logger = require('tracer').console();
 var Common = require('../Common');
@@ -16,7 +16,7 @@ Permission.prototype.init = function(json, handler, saving_folder_list, saving_i
     var permission = this;
 
 
-    var validator = new Validator(json);
+    var validator = new FieldVal(json);
 
     permission.granted_to = validator.get("granted_to", bval.string(true));
     if (permission.granted_to != null) {

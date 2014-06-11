@@ -1,7 +1,7 @@
-var should = require('should');
-var expect = require('expect.js');
 var logger = require('tracer').console();
-var Permission = require('../../server/api/Models/Permission')
+var assert = require("assert");
+
+var Permission = require('../../api/Models/Permission')
 
 describe('Permission', function() {
 
@@ -17,7 +17,7 @@ describe('Permission', function() {
                 "path": "/Test/Shared/",
                 "grant_write" : true
             }
-            expect(permission.init(permission_object,handler)).to.equal(null);
+            assert.equal(permission.init(permission_object,handler),null);
             done();
         });
 

@@ -1,6 +1,6 @@
 var logger = require('tracer').console();
 var api = require('./api');
-var crypt = require("../../../MinoSDK/lib/crypt");
+var crypt = require("../../MinoSDK/lib/crypt");
 
 module.exports = function(req, res, next) {
     var username = req.body.username;
@@ -9,7 +9,13 @@ module.exports = function(req, res, next) {
         res.send(400);
     } else {
 
-        api.get_user_by_username(username, function(error, user) {
+        // api.get_user_by_username(username, function(error, user) {
+        // TODO: MOCKING GET USER FUNCTION
+        var error = null;
+        var user = {
+            username: "TestUser",
+            api_key: "TEST123fmafo4agnlanq23"
+        }
             if (error != null) {
                 res.send(400, JSON.stringify(error));
             } else {
@@ -42,6 +48,6 @@ module.exports = function(req, res, next) {
                     }
                 })
             }
-        })
+        // })
     }
 }

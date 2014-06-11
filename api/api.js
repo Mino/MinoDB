@@ -11,37 +11,41 @@ function API(minodb){
 	api.minodb = minodb;
 }
 
-API.prototype.call = function(user, function_name, parameters, callback){
+API.prototype.call = function(user, request, callback){
 	var api = this;
 
+    var api_val = new FieldVal(request);
+
+    var function_name = api_val.get("function", bval.string(true), bval.one_of(["get","save"]));
+    var parameters = api_val.get("parameters", bval.object(true));
+
     var handler = null;
-    if (function_name == "get") {
+    if (function_name === "get") {
         handler = get_handler;
-    } else if (function_name == "save") {
+    } else if (function_name === "save") {
         handler = save_handler;
     }
 
+    var error = api_val.end();
+    if(error){
+        callback(error);
+        return;
+    }
+
     if (handler != null) {
-        handler(user, parameters, function(error, response) {
+        handler(api.mino_db, user, parameters, function(error, response) {
             logger.log(error);
             logger.log(response);
             if (error != null) {
-                return res.json(api_val.invalid("parameters", {
+                return callback(api_val.invalid("parameters", {
                     error: 0,
                     error_message: "One or more errors occurred",
                     data: error
                 }).end());
             } else {
-                res.json(response);
+                callback(null, response);
             }
         })
-    } else {
-        api_val.invalid("function_name", {
-            error: 1000,
-            error_message: "Unrecognized function requested"
-        })
-        //returning anything is unneccessary - it's just cleaner
-        return res.json(api.end());
     }
 }
 

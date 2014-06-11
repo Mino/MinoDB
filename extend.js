@@ -8,5 +8,5 @@ function extend(sub, sup) {
 }
 
 if (typeof module != 'undefined') {
-    module.exports = Validator;
+    module.exports = extend;
 }

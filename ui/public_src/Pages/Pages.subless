@@ -14,6 +14,7 @@
 }
 
 @import "HomePage/HomePage.subless";
+@import "BrowserPage/BrowserPage.subless";
 @import "AuthPage/AuthPage.subless";
 @import "DocsPage/DocsPage.subless";
 @import "NotFoundPage/NotFoundPage.subless";

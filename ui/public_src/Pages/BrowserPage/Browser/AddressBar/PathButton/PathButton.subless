@@ -1,0 +1,240 @@
+@pathbutton_border_color: @mino_buttonBorderColor;
+@pathbutton_background: @mino_buttonColor;
+@pathbutton_page_background: white;
+
+.pathbutton{
+	cursor: pointer;
+	display: block;
+	position: relative;
+	float: left;
+	margin: -1px 10px 0px -10px;
+	height: 32px;
+	white-space: nowrap;
+	
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+
+	.left_arrow{
+		.leftArrowBackground{
+			position: absolute;
+			top:1px;
+			left:-10px;
+			float:left;
+			width: 0px;
+			height: 0px;
+			margin-left: 10px;
+			border-top: 15px solid transparent;
+			border-left: 15px solid @pathbutton_page_background;
+			border-bottom: 15px solid transparent;
+			z-index: 2;
+		}
+
+		.leftArrowBorder{
+			position: absolute;
+			top:0px;
+			left:-10px;
+			float:left;
+			width: 0px;
+			height: 0px;
+			margin-left: 10px;
+			border-top: 16px solid transparent;
+			border-left: 16px solid @pathbutton_border_color;
+			border-bottom: 16px solid transparent;
+			z-index: 2;
+		}
+	}
+
+	.right_arrow{
+		.rightArrowBackground{
+			position: absolute;
+			top:1px;
+			right:-15px;
+			float:left;
+			width: 0px;
+			height: 0px;
+			margin-left: 10px;
+			border-top: 15px solid transparent;
+			border-left: 15px solid @pathbutton_background;
+			border-bottom: 15px solid transparent;
+			z-index: 2;
+		}
+
+		.rightArrowHighlight{
+			position: absolute;
+			bottom: 1px;
+			right:-4px;
+			float:left;
+			width: 0px;
+			height: 0px;
+			margin-left: 10px;
+			border-top: 0px solid transparent;
+			border-left: 4px solid @minoActiveButtonColor;
+			border-bottom: 0px solid transparent;
+			z-index: 2;
+
+			-webkit-transition: 0.1s ease;
+			-moz-transition: 0.1s ease;
+			-ms-transition: 0.1s ease;
+			-o-transition: 0.1s ease;
+			transition: 0.1s ease;
+		}
+
+		.rightArrowBorder{
+			position: absolute;
+			top:0px;
+			right:-16px;
+			float:left;
+			width: 0px;
+			height: 0px;
+			margin-left: 10px;
+			border-top: 16px solid transparent;
+			border-left: 16px solid @pathbutton_border_color;
+			border-bottom: 16px solid transparent;
+			z-index: 2;
+		}
+	}
+
+	&.toppathbutton{
+		.mino_button{
+			padding-left: 10px;
+		}
+	}
+
+	&.folder_button{
+		.mino_button{
+			border-left: none;
+			border-right: none;
+		}
+	}
+
+	&.endpathbutton{
+		margin-right: 10px;
+
+		.mino_button{
+			padding-right: 10px;
+		}
+	}
+
+	.mino_button{
+		padding-left: 23px;
+		padding-right: 5px;
+		margin: 0px;
+		height: 32px;
+		background-color: @pathbutton_background;
+
+		&:active:enabled{
+			-webkit-transform: scale(1.0);
+			-moz-transform: scale(1.0);
+			-ms-transform: scale(1.0);
+			-o-transform: scale(1.0);
+			transform: scale(1.0);
+		}
+	}
+
+	//Active
+
+	&:active {
+		.rightArrowHighlight{
+			border-bottom-width: 4px;
+		}
+
+		.mino_button{
+			.mino_button.active;
+		}
+	}
+}
+
+.pathbutton .typepathbutton{
+	padding-left: 8px;
+	padding-right: 8px;
+}
+
+.pathbutton.newLinePathButton{
+	margin-left: 0px;
+}
+
+.editAddressButtonSquare{
+	margin-left: -10px;
+	margin-bottom: 6px;
+	float: left;
+
+	.noselect;
+	-webkit-appearance: none;
+	border: none;
+	cursor: pointer;
+	background-color: @grayButtonBackground;
+	color: @textOnBackgroundColor;
+	padding-right: 10px;
+	padding-left: 10px;
+	margin-right: 13px;
+	margin-top: 0px;
+	height: 31px;
+	width: 35px;
+
+	-webkit-transition: 0.1s ease;
+	-moz-transition: 0.1s ease;
+	-ms-transition: 0.1s ease;
+	-o-transition: 0.1s ease;
+	transition: 0.1s ease;
+	-webkit-transition-property: border;
+	-moz-transition-property: border;
+	-ms-transition-property: border;
+	-o-transition-property: border;
+	transition-property: border;
+
+	&:active{
+		border-bottom: 4px solid @grayButtonActiveBorder;
+	}
+
+	&.newLine{
+		margin-left: 0px;
+	}
+}
+
+.editAddressButtonFolder{
+	margin-top: 0px;
+	margin-right: 13px;
+	white-space: nowrap;
+
+	button{
+		.noselect;
+		-webkit-appearance: none;
+		border: none;
+		cursor: pointer;
+		background-color: @grayButtonBackground;
+		color: @textOnBackgroundColor;
+		padding-right: 10px;
+		padding-left: 10px;
+		margin-left: 0px;
+		margin-right: 13px;
+		margin-top: 0px;
+		height: 31px;
+
+		-webkit-transition: 0.1s ease;
+		-moz-transition: 0.1s ease;
+		-ms-transition: 0.1s ease;
+		-o-transition: 0.1s ease;
+		transition: 0.1s ease;
+		-webkit-transition-property: border;
+		-moz-transition-property: border;
+		-ms-transition-property: border;
+		-o-transition-property: border;
+		transition-property: border;
+
+		&:active{
+			border-bottom: 4px solid @grayButtonActiveBorder;
+		}
+	}
+
+	&.needIndent button{
+		padding-left: 23px;
+		margin-right: 0px;
+	}
+
+	&.newLine{
+		margin-left: 0px;
+	}
+}

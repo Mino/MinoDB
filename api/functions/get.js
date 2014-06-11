@@ -1,11 +1,11 @@
-var Validator = require('fieldval');
+var FieldVal = require('fieldval');
 var bval = require('fieldval-basicval');
 var Path = require('../Models/Path')
 var logger = require('tracer').console();
 
 module.exports = function(minodb, user, parameters, callback) {
     
-    var validator = new Validator(parameters);
+    var validator = new FieldVal(parameters);
     var addresses = validator.get("addresses", bval.array(true));
 
     var val_error = validator.end();
@@ -81,7 +81,7 @@ module.exports = function(minodb, user, parameters, callback) {
                 var is_integer_2 = num_2 % 1 == 0;
 
                 if (isNaN(num_1) || !is_integer_1 || num_1 < 1 || isNaN(num_2) || !is_integer_2 || num_2 < 1) {
-                    to_add_to_final = Validator.Error(0);
+                    to_add_to_final = FieldVal.Error(0);
                 } else {
                     logger.log([num_1, num_2, i]);
                     id_versions.push([num_1, num_2, i]);
@@ -93,11 +93,11 @@ module.exports = function(minodb, user, parameters, callback) {
             if (is_integer && this_address > 0) {
                 ids.push([this_address, i]);
             } else {
-                to_add_to_final = Validator.Error(0);
+                to_add_to_final = FieldVal.Error(0);
             }
 
         } else {
-            to_add_to_final = Validator.Error(0);
+            to_add_to_final = FieldVal.Error(0);
         }
 
         logger.log(get_pointer_array);
@@ -114,7 +114,7 @@ module.exports = function(minodb, user, parameters, callback) {
         };
     }
 
-    callback({
+    callback(null, {
         "objects": response_array
     })
 

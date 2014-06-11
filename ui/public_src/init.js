@@ -1,11 +1,19 @@
 @import("../../bower_components/jquery/dist/jquery.js");
+@import("../../bower_components/jquery.autoresize/jquery.autoresize.js");
 @import("../../bower_components/safe/safe.min.js");
 @import("../../bower_components/fieldval/fieldval.js");
 @import("../../bower_components/fieldval-basicval/fieldval-basicval.js");
 @import("../../bower_components/fieldval-ui/fieldval-ui.js");
-@import("strings.js");
 @import("../../extend.js");
 
+@import("common.js");
+
+@import("../../common_classes/Constants.js");
+@import("../../common_classes/Path.js");
+
+@import("fieldval_themes/mino_theme.js");
+
+@import("CommonElements/CommonElements.js");
 @import("Pages/Pages.js");
 
 var page_title_append = "MinoDB";
@@ -28,12 +36,10 @@ $(document).ready(function() {
         // header.resize(resize_obj);
     }
 
-    var center = $("<div />").addClass("center").appendTo("body");
-
     // header = new Header();
     // header.element.appendTo("body");
 
-    Site.element.addClass("page_holder").appendTo(center);
+    Site.element.addClass("page_holder").appendTo("body");
 
     // footer = new Footer();
     // footer.element.appendTo(body_contents_holder.contents);
@@ -73,9 +79,11 @@ $(document).ready(function() {
         return true;
     }
 
+    Site.path = ui_path;
+
     Site.debug = false;
 
-    // Site.set_no_page_found_class(NotFoundPage);
+    Site.set_no_page_found_class(NotFoundPage);
 
     Site.init();
 

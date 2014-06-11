@@ -1,4 +1,4 @@
-@minoColor1: #770000;
+@minoColor1: #2F78B2;
 @borderColor: blue;
 @lighterBorderColor: gray;
 @errorColor: purple;
@@ -6,3 +6,62 @@
 @successColor: green;
 
 @background: orange;
+
+@minoColor1: color('#2576B6');
+@minoColor1Transparent: rgba( red(@minoColor1),green(@minoColor1),blue(@minoColor1), 0);
+/*Removed minoColor2*/
+@minoColor3: @minoColor1*1.20;
+@minoColor4: @minoColor1*0.80;
+
+@borderColor: rgba(0,0,0, 0.5);
+@lighterBorderColor: rgba(0,0,0, 0.3);
+@borderActiveColor: @borderColor*0.5;
+@modalWindowBorderColor: #333333;
+
+@tooltipColor: @borderColor;
+
+@textOnBackgroundColor: #222;
+
+@paneBackgroundColor: rgba(245,245,245, 0.8);
+@modalBackgroundColor: rgba(255,255,255, 0.85);
+@toolbarContentBoxBackgroundColor: @paneBackgroundColor;
+@rowBackgroundColor: rgba(255,255,255, 0.8);
+
+@errorColor: #C72A22;
+@errorColorActive: @errorColor*1.5;
+
+@paneErrorColor: #FFDFDD;
+
+@successColor: #13B716;
+@successColorActive: @successColor*1.5;
+
+@linkColor: @minoColor1;
+@linkOnDarkColor: #d2e6ff;
+@linkOnBackground: @minoColor1*1.7;
+@linkOnLightColor: #1155cc;
+
+@grayButtonBackground: #DDDDDD;
+@grayButtonActiveBorder: #555555;
+
+@inputBorderColor: rgba(0,0,0, 0.1);
+@inputActiveBorderColor: rgba(0,0,0, 0.5);
+
+@selectedColor: #7CAFDB;
+
+@newColor: #a6cbe8;
+@newTextColor: @minoColor4;
+
+@noElementsTextColor: #555555;
+
+@typeIconDarkColor: #7B4000;
+@typeIconColor: #FE7800;
+
+@mino_buttonColor: white;
+@mino_buttonBorderColor: @borderColor;
+@minoActiveButtonColor: @minoColor3;
+
+@breadcrumbBorderDarkColor: @minoActiveButtonColor;
+@breadcrumbBorderLightColor: #FFFFFF;
+
+@pHighlightBackground: #FFFFBE;
+@pHighlightBorder: #B4AE8C;

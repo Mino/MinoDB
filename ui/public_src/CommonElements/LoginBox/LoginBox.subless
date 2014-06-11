@@ -1,0 +1,26 @@
+.login_box{
+	
+}
+
+.modal.login_box_modal{
+
+	.field_container{
+		margin-left: 20px;
+		width: 260px;
+		>.field_title{
+			color: black;
+			.bold;
+		}
+		>.field{
+			>.input_holder{
+				>input{
+					border: 1px solid #0583B9;
+				}
+			}
+		}
+	}
+
+	button{
+		margin-left: 20px;
+	}
+}

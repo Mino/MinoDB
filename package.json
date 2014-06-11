@@ -12,7 +12,8 @@
     "newrelic" : "*",
     "mongodb" : "*",
     "fieldval" : "*",
-    "fieldval-basicval" : "*"
+    "fieldval-basicval" : "*",
+    "fieldval-rules" : "*"
   },
   "devDependencies": {
     "gulp-imports" : "git+ssh://git@github.com/MarcusLongmuir/gulp-imports.git",

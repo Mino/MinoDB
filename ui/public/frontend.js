@@ -10307,6 +10307,236 @@ return jQuery;
 
 }));
 
+/*
+ * jQuery.fn.autoResize 1.1
+ * --
+ * https://github.com/jamespadolsey/jQuery.fn.autoResize
+ * --
+ * This program is free software. It comes without any warranty, to
+ * the extent permitted by applicable law. You can redistribute it
+ * and/or modify it under the terms of the Do What The Fuck You Want
+ * To Public License, Version 2, as published by Sam Hocevar. See
+ * http://sam.zoy.org/wtfpl/COPYING for more details. */ 
+
+(function($){
+
+	var defaults = autoResize.defaults = {
+		onResize: function(){},
+		animate: {
+			duration: 200,
+			complete: function(){}
+		},
+		extraSpace: 50,
+		minHeight: 'original',
+		maxHeight: 500,
+		minWidth: 'original',
+		maxWidth: 500
+	};
+
+	autoResize.cloneCSSProperties = [
+		'lineHeight', 'textDecoration', 'letterSpacing',
+		'fontSize', 'fontFamily', 'fontStyle', 'fontWeight',
+		'textTransform', 'textAlign', 'direction', 'wordSpacing', 'fontSizeAdjust',
+		'padding'
+	];
+
+	autoResize.cloneCSSValues = {
+		position: 'absolute',
+		top: -9999,
+		left: -9999,
+		opacity: 0,
+		overflow: 'hidden'
+	};
+
+	autoResize.resizableFilterSelector = 'textarea,input:not(input[type]),input[type=text],input[type=password]';
+
+	autoResize.AutoResizer = AutoResizer;
+
+	$.fn.autoResize = autoResize;
+
+	function autoResize(config) {
+		this.filter(autoResize.resizableFilterSelector).each(function(){
+			new AutoResizer( $(this), config );
+		});
+		return this;
+	}
+
+	function AutoResizer(el, config) {
+		
+		config = this.config = $.extend(autoResize.defaults, config);
+		this.el = el;
+
+		this.nodeName = el[0].nodeName.toLowerCase();
+
+		this.originalHeight = el.height();
+		this.previousScrollTop = null;
+
+		this.value = el.val();
+
+		if (config.maxWidth === 'original') config.maxWidth = el.width();
+		if (config.minWidth === 'original') config.minWidth = el.width();
+		if (config.maxHeight === 'original') config.maxHeight = el.height();
+		if (config.minHeight === 'original') config.minHeight = el.height();
+
+		if (this.nodeName === 'textarea') {
+			el.css({
+				resize: 'none',
+				overflowY: 'hidden'
+			});
+		}
+
+		el.data('AutoResizer', this);
+
+		this.createClone();
+		this.injectClone();
+		this.bind();
+
+	}
+
+	AutoResizer.prototype = {
+
+		bind: function() {
+
+			var check = $.proxy(function(){
+				this.check();
+				return true;
+			}, this);
+
+			this.unbind();
+
+			this.el
+				.bind('keyup.autoResize', check)
+				//.bind('keydown.autoResize', check)
+				.bind('change.autoResize', check);
+			
+			this.check(null, true);
+
+		},
+
+		unbind: function() {
+			this.el.unbind('.autoResize');
+		},
+
+		createClone: function() {
+
+			var el = this.el,
+				clone;
+
+			if (this.nodeName === 'textarea') {
+				clone = el.clone().height('auto');
+			} else {
+				clone = $('<span/>').width('auto').css({
+					whiteSpace: 'nowrap'
+				});
+			}
+
+			this.clone = clone;
+
+			$.each(autoResize.cloneCSSProperties, function(i, p){
+				clone[0].style[p] = el.css(p);
+			});
+
+			clone
+				.removeAttr('name')
+				.removeAttr('id')
+				.attr('tabIndex', -1)
+				.css(autoResize.cloneCSSValues);
+
+		},
+
+		check: function(e, immediate) {
+
+			var config = this.config,
+				clone = this.clone,
+				el = this.el,
+				value = el.val();
+
+			if (this.nodeName === 'input') {
+
+				clone.text(value);
+
+				// Calculate new width + whether to change
+				var cloneWidth = clone.width(),
+					newWidth = (cloneWidth + config.extraSpace) >= config.minWidth ?
+						cloneWidth + config.extraSpace : config.minWidth,
+					currentWidth = el.width();
+
+				newWidth = Math.min(newWidth, config.maxWidth);
+
+				if (
+					(newWidth < currentWidth && newWidth >= config.minWidth) ||
+					(newWidth >= config.minWidth && newWidth <= config.maxWidth)
+				) {
+
+					config.onResize.call(el);
+
+					el.scrollLeft(0);
+
+					config.animate && !immediate ?
+						el.stop(1,1).animate({
+							width: newWidth
+						}, config.animate)
+					: el.width(newWidth);
+
+				}
+
+				return;
+
+			}
+
+			// TEXTAREA
+			
+			clone.height(0).val(value).scrollTop(10000);
+			
+			var scrollTop = clone[0].scrollTop + config.extraSpace;
+				
+			// Don't do anything if scrollTop hasen't changed:
+			if (this.previousScrollTop === scrollTop) {
+				return;
+			}
+
+			this.previousScrollTop = scrollTop;
+			
+			if (scrollTop >= config.maxHeight) {
+				el.css('overflowY', '');
+				return;
+			}
+
+			el.css('overflowY', 'hidden');
+
+			if (scrollTop < config.minHeight) {
+				scrollTop = config.minHeight;
+			}
+
+			config.onResize.call(el);
+			
+			// Either animate or directly apply height:
+			config.animate && !immediate ?
+				el.stop(1,1).animate({
+					height: scrollTop
+				}, config.animate)
+				: el.height(scrollTop);
+			
+		},
+
+		destroy: function() {
+			this.unbind();
+			this.el.removeData('AutoResizer');
+			this.clone.remove();
+			delete this.el;
+			delete this.clone;
+		},
+
+		injectClone: function() {
+			(
+				autoResize.cloneContainer ||
+				(autoResize.cloneContainer = $('<arclones/>').appendTo('body'))
+			).append(this.clone);
+		}
+
+	};
+	
+})(jQuery);
 function Page(){var e=this;e.element=$("<div />")}function SAFE(){var e=this;Site=this,e.debug=!1,e.initial_url=!0,e.map={},e.ignore_next_url=!1,e.origin=window.location.protocol+"//"+window.location.hostname,""!=window.location.port&&(e.origin+=":"+window.location.port),e.path="/",e.previous_url=document.referrer,e.load_page_class=null,e.loading_page=null,e.scroll_bar_width_value=-1,e.element=$("<div />"),e.is_touchscreen="ontouchstart"in document.documentElement,e.history_state_supported=!(!window.history||!window.history.pushState),e.current_page=null,e.no_page_found_class=null}if(function(e,t){"use strict";var r=e.History=e.History||{},n=e.jQuery;if("undefined"!=typeof r.Adapter)throw new Error("History.js Adapter has already been loaded...");r.Adapter={bind:function(e,t,r){n(e).bind(t,r)},trigger:function(e,t,r){n(e).trigger(t,r)},extractEventData:function(e,r,n){var o=r&&r.originalEvent&&r.originalEvent[e]||n&&n[e]||t;return o},onDomLoad:function(e){n(e)}},"undefined"!=typeof r.init&&r.init()}(window),function(e,t){"use strict";var r=e.console||t,n=e.document,o=e.navigator,a=e.sessionStorage||!1,i=e.setTimeout,s=e.clearTimeout,l=e.setInterval,u=e.clearInterval,c=e.JSON,d=e.alert,p=e.History=e.History||{},f=e.history;try{a.setItem("TEST","1"),a.removeItem("TEST")}catch(h){a=!1}if(c.stringify=c.stringify||c.encode,c.parse=c.parse||c.decode,"undefined"!=typeof p.init)throw new Error("History.js Core has already been loaded...");p.init=function(){return"undefined"==typeof p.Adapter?!1:("undefined"!=typeof p.initCore&&p.initCore(),"undefined"!=typeof p.initHtml4&&p.initHtml4(),!0)},p.initCore=function(){if("undefined"!=typeof p.initCore.initialized)return!1;if(p.initCore.initialized=!0,p.options=p.options||{},p.options.hashChangeInterval=p.options.hashChangeInterval||100,p.options.safariPollInterval=p.options.safariPollInterval||500,p.options.doubleCheckInterval=p.options.doubleCheckInterval||500,p.options.disableSuid=p.options.disableSuid||!1,p.options.storeInterval=p.options.storeInterval||1e3,p.options.busyDelay=p.options.busyDelay||250,p.options.debug=p.options.debug||!1,p.options.initialTitle=p.options.initialTitle||n.title,p.options.html4Mode=p.options.html4Mode||!1,p.options.delayInit=p.options.delayInit||!1,p.intervalList=[],p.clearAllIntervals=function(){var e,t=p.intervalList;if("undefined"!=typeof t&&null!==t){for(e=0;e<t.length;e++)u(t[e]);p.intervalList=null}},p.debug=function(){p.options.debug&&p.log.apply(p,arguments)},p.log=function(){var e,t,o,a,i,s=!("undefined"==typeof r||"undefined"==typeof r.log||"undefined"==typeof r.log.apply),l=n.getElementById("log");for(s?(a=Array.prototype.slice.call(arguments),e=a.shift(),"undefined"!=typeof r.debug?r.debug.apply(r,[e,a]):r.log.apply(r,[e,a])):e="\n"+arguments[0]+"\n",t=1,o=arguments.length;o>t;++t){if(i=arguments[t],"object"==typeof i&&"undefined"!=typeof c)try{i=c.stringify(i)}catch(u){}e+="\n"+i+"\n"}return l?(l.value+=e+"\n-----\n",l.scrollTop=l.scrollHeight-l.clientHeight):s||d(e),!0},p.getInternetExplorerMajorVersion=function(){var e=p.getInternetExplorerMajorVersion.cached="undefined"!=typeof p.getInternetExplorerMajorVersion.cached?p.getInternetExplorerMajorVersion.cached:function(){for(var e=3,t=n.createElement("div"),r=t.getElementsByTagName("i");(t.innerHTML="<!--[if gt IE "+ ++e+"]><i></i><![endif]-->")&&r[0];);return e>4?e:!1}();return e},p.isInternetExplorer=function(){var e=p.isInternetExplorer.cached="undefined"!=typeof p.isInternetExplorer.cached?p.isInternetExplorer.cached:Boolean(p.getInternetExplorerMajorVersion());return e},p.emulated=p.options.html4Mode?{pushState:!0,hashChange:!0}:{pushState:!Boolean(e.history&&e.history.pushState&&e.history.replaceState&&!(/ Mobile\/([1-7][a-z]|(8([abcde]|f(1[0-8]))))/i.test(o.userAgent)||/AppleWebKit\/5([0-2]|3[0-2])/i.test(o.userAgent))),hashChange:Boolean(!("onhashchange"in e||"onhashchange"in n)||p.isInternetExplorer()&&p.getInternetExplorerMajorVersion()<8)},p.enabled=!p.emulated.pushState,p.bugs={setHash:Boolean(!p.emulated.pushState&&"Apple Computer, Inc."===o.vendor&&/AppleWebKit\/5([0-2]|3[0-3])/.test(o.userAgent)),safariPoll:Boolean(!p.emulated.pushState&&"Apple Computer, Inc."===o.vendor&&/AppleWebKit\/5([0-2]|3[0-3])/.test(o.userAgent)),ieDoubleCheck:Boolean(p.isInternetExplorer()&&p.getInternetExplorerMajorVersion()<8),hashEscape:Boolean(p.isInternetExplorer()&&p.getInternetExplorerMajorVersion()<7)},p.isEmptyObject=function(e){for(var t in e)if(e.hasOwnProperty(t))return!1;return!0},p.cloneObject=function(e){var t,r;return e?(t=c.stringify(e),r=c.parse(t)):r={},r},p.getRootUrl=function(){var e=n.location.protocol+"//"+(n.location.hostname||n.location.host);return n.location.port&&(e+=":"+n.location.port),e+="/"},p.getBaseHref=function(){var e=n.getElementsByTagName("base"),t=null,r="";return 1===e.length&&(t=e[0],r=t.href.replace(/[^\/]+$/,"")),r=r.replace(/\/+$/,""),r&&(r+="/"),r},p.getBaseUrl=function(){var e=p.getBaseHref()||p.getBasePageUrl()||p.getRootUrl();return e},p.getPageUrl=function(){var e,t=p.getState(!1,!1),r=(t||{}).url||p.getLocationHref();return e=r.replace(/\/+$/,"").replace(/[^\/]+$/,function(e){return/\./.test(e)?e:e+"/"})},p.getBasePageUrl=function(){var e=p.getLocationHref().replace(/[#\?].*/,"").replace(/[^\/]+$/,function(e){return/[^\/]$/.test(e)?"":e}).replace(/\/+$/,"")+"/";return e},p.getFullUrl=function(e,t){var r=e,n=e.substring(0,1);return t="undefined"==typeof t?!0:t,/[a-z]+\:\/\//.test(e)||(r="/"===n?p.getRootUrl()+e.replace(/^\/+/,""):"#"===n?p.getPageUrl().replace(/#.*/,"")+e:"?"===n?p.getPageUrl().replace(/[\?#].*/,"")+e:t?p.getBaseUrl()+e.replace(/^(\.\/)+/,""):p.getBasePageUrl()+e.replace(/^(\.\/)+/,"")),r.replace(/\#$/,"")},p.getShortUrl=function(e){var t=e,r=p.getBaseUrl(),n=p.getRootUrl();return p.emulated.pushState&&(t=t.replace(r,"")),t=t.replace(n,"/"),p.isTraditionalAnchor(t)&&(t="./"+t),t=t.replace(/^(\.\/)+/g,"./").replace(/\#$/,"")},p.getLocationHref=function(e){return e=e||n,e.URL===e.location.href?e.location.href:e.location.href===decodeURIComponent(e.URL)?e.URL:e.location.hash&&decodeURIComponent(e.location.href.replace(/^[^#]+/,""))===e.location.hash?e.location.href:-1==e.URL.indexOf("#")&&-1!=e.location.href.indexOf("#")?e.location.href:e.URL||e.location.href},p.store={},p.idToState=p.idToState||{},p.stateToId=p.stateToId||{},p.urlToId=p.urlToId||{},p.storedStates=p.storedStates||[],p.savedStates=p.savedStates||[],p.normalizeStore=function(){p.store.idToState=p.store.idToState||{},p.store.urlToId=p.store.urlToId||{},p.store.stateToId=p.store.stateToId||{}},p.getState=function(e,t){"undefined"==typeof e&&(e=!0),"undefined"==typeof t&&(t=!0);var r=p.getLastSavedState();return!r&&t&&(r=p.createStateObject()),e&&(r=p.cloneObject(r),r.url=r.cleanUrl||r.url),r},p.getIdByState=function(e){var t,r=p.extractId(e.url);if(!r)if(t=p.getStateString(e),"undefined"!=typeof p.stateToId[t])r=p.stateToId[t];else if("undefined"!=typeof p.store.stateToId[t])r=p.store.stateToId[t];else{for(;;)if(r=(new Date).getTime()+String(Math.random()).replace(/\D/g,""),"undefined"==typeof p.idToState[r]&&"undefined"==typeof p.store.idToState[r])break;p.stateToId[t]=r,p.idToState[r]=e}return r},p.normalizeState=function(e){var t,r;return e&&"object"==typeof e||(e={}),"undefined"!=typeof e.normalized?e:(e.data&&"object"==typeof e.data||(e.data={}),t={},t.normalized=!0,t.title=e.title||"",t.url=p.getFullUrl(e.url?e.url:p.getLocationHref()),t.hash=p.getShortUrl(t.url),t.data=p.cloneObject(e.data),t.id=p.getIdByState(t),t.cleanUrl=t.url.replace(/\??\&_suid.*/,""),t.url=t.cleanUrl,r=!p.isEmptyObject(t.data),(t.title||r)&&p.options.disableSuid!==!0&&(t.hash=p.getShortUrl(t.url).replace(/\??\&_suid.*/,""),/\?/.test(t.hash)||(t.hash+="?"),t.hash+="&_suid="+t.id),t.hashedUrl=p.getFullUrl(t.hash),(p.emulated.pushState||p.bugs.safariPoll)&&p.hasUrlDuplicate(t)&&(t.url=t.hashedUrl),t)},p.createStateObject=function(e,t,r){var n={data:e,title:t,url:r};return n=p.normalizeState(n)},p.getStateById=function(e){e=String(e);var r=p.idToState[e]||p.store.idToState[e]||t;return r},p.getStateString=function(e){var t,r,n;return t=p.normalizeState(e),r={data:t.data,title:e.title,url:e.url},n=c.stringify(r)},p.getStateId=function(e){var t,r;return t=p.normalizeState(e),r=t.id},p.getHashByState=function(e){var t,r;return t=p.normalizeState(e),r=t.hash},p.extractId=function(e){var t,r,n,o;return o=-1!=e.indexOf("#")?e.split("#")[0]:e,r=/(.*)\&_suid=([0-9]+)$/.exec(o),n=r?r[1]||e:e,t=r?String(r[2]||""):"",t||!1},p.isTraditionalAnchor=function(e){var t=!/[\/\?\.]/.test(e);return t},p.extractState=function(e,t){var r,n,o=null;return t=t||!1,r=p.extractId(e),r&&(o=p.getStateById(r)),o||(n=p.getFullUrl(e),r=p.getIdByUrl(n)||!1,r&&(o=p.getStateById(r)),o||!t||p.isTraditionalAnchor(e)||(o=p.createStateObject(null,null,n))),o},p.getIdByUrl=function(e){var r=p.urlToId[e]||p.store.urlToId[e]||t;return r},p.getLastSavedState=function(){return p.savedStates[p.savedStates.length-1]||t},p.getLastStoredState=function(){return p.storedStates[p.storedStates.length-1]||t},p.hasUrlDuplicate=function(e){var t,r=!1;return t=p.extractState(e.url),r=t&&t.id!==e.id},p.storeState=function(e){return p.urlToId[e.url]=e.id,p.storedStates.push(p.cloneObject(e)),e},p.isLastSavedState=function(e){var t,r,n,o=!1;return p.savedStates.length&&(t=e.id,r=p.getLastSavedState(),n=r.id,o=t===n),o},p.saveState=function(e){return p.isLastSavedState(e)?!1:(p.savedStates.push(p.cloneObject(e)),!0)},p.getStateByIndex=function(e){var t=null;return t="undefined"==typeof e?p.savedStates[p.savedStates.length-1]:0>e?p.savedStates[p.savedStates.length+e]:p.savedStates[e]},p.getCurrentIndex=function(){var e=null;return e=p.savedStates.length<1?0:p.savedStates.length-1},p.getHash=function(e){var t,r=p.getLocationHref(e);return t=p.getHashByUrl(r)},p.unescapeHash=function(e){var t=p.normalizeHash(e);return t=decodeURIComponent(t)},p.normalizeHash=function(e){var t=e.replace(/[^#]*#/,"").replace(/#.*/,"");return t},p.setHash=function(e,t){var r,o;return t!==!1&&p.busy()?(p.pushQueue({scope:p,callback:p.setHash,args:arguments,queue:t}),!1):(p.busy(!0),r=p.extractState(e,!0),r&&!p.emulated.pushState?p.pushState(r.data,r.title,r.url,!1):p.getHash()!==e&&(p.bugs.setHash?(o=p.getPageUrl(),p.pushState(null,null,o+"#"+e,!1)):n.location.hash=e),p)},p.escapeHash=function(t){var r=p.normalizeHash(t);return r=e.encodeURIComponent(r),p.bugs.hashEscape||(r=r.replace(/\%21/g,"!").replace(/\%26/g,"&").replace(/\%3D/g,"=").replace(/\%3F/g,"?")),r},p.getHashByUrl=function(e){var t=String(e).replace(/([^#]*)#?([^#]*)#?(.*)/,"$2");return t=p.unescapeHash(t)},p.setTitle=function(e){var t,r=e.title;r||(t=p.getStateByIndex(0),t&&t.url===e.url&&(r=t.title||p.options.initialTitle));try{n.getElementsByTagName("title")[0].innerHTML=r.replace("<","&lt;").replace(">","&gt;").replace(" & "," &amp; ")}catch(o){}return n.title=r,p},p.queues=[],p.busy=function(e){if("undefined"!=typeof e?p.busy.flag=e:"undefined"==typeof p.busy.flag&&(p.busy.flag=!1),!p.busy.flag){s(p.busy.timeout);var t=function(){var e,r,n;if(!p.busy.flag)for(e=p.queues.length-1;e>=0;--e)r=p.queues[e],0!==r.length&&(n=r.shift(),p.fireQueueItem(n),p.busy.timeout=i(t,p.options.busyDelay))};p.busy.timeout=i(t,p.options.busyDelay)}return p.busy.flag},p.busy.flag=!1,p.fireQueueItem=function(e){return e.callback.apply(e.scope||p,e.args||[])},p.pushQueue=function(e){return p.queues[e.queue||0]=p.queues[e.queue||0]||[],p.queues[e.queue||0].push(e),p},p.queue=function(e,t){return"function"==typeof e&&(e={callback:e}),"undefined"!=typeof t&&(e.queue=t),p.busy()?p.pushQueue(e):p.fireQueueItem(e),p},p.clearQueue=function(){return p.busy.flag=!1,p.queues=[],p},p.stateChanged=!1,p.doubleChecker=!1,p.doubleCheckComplete=function(){return p.stateChanged=!0,p.doubleCheckClear(),p},p.doubleCheckClear=function(){return p.doubleChecker&&(s(p.doubleChecker),p.doubleChecker=!1),p},p.doubleCheck=function(e){return p.stateChanged=!1,p.doubleCheckClear(),p.bugs.ieDoubleCheck&&(p.doubleChecker=i(function(){return p.doubleCheckClear(),p.stateChanged||e(),!0},p.options.doubleCheckInterval)),p},p.safariStatePoll=function(){var t,r=p.extractState(p.getLocationHref());if(!p.isLastSavedState(r))return t=r,t||(t=p.createStateObject()),p.Adapter.trigger(e,"popstate"),p},p.back=function(e){return e!==!1&&p.busy()?(p.pushQueue({scope:p,callback:p.back,args:arguments,queue:e}),!1):(p.busy(!0),p.doubleCheck(function(){p.back(!1)}),f.go(-1),!0)},p.forward=function(e){return e!==!1&&p.busy()?(p.pushQueue({scope:p,callback:p.forward,args:arguments,queue:e}),!1):(p.busy(!0),p.doubleCheck(function(){p.forward(!1)}),f.go(1),!0)},p.go=function(e,t){var r;if(e>0)for(r=1;e>=r;++r)p.forward(t);else{if(!(0>e))throw new Error("History.go: History.go requires a positive or negative integer passed.");for(r=-1;r>=e;--r)p.back(t)}return p},p.emulated.pushState){var h=function(){};p.pushState=p.pushState||h,p.replaceState=p.replaceState||h}else p.onPopState=function(t,r){var n,o,a=!1,i=!1;return p.doubleCheckComplete(),(n=p.getHash())?(o=p.extractState(n||p.getLocationHref(),!0),o?p.replaceState(o.data,o.title,o.url,!1):(p.Adapter.trigger(e,"anchorchange"),p.busy(!1)),p.expectedStateId=!1,!1):(a=p.Adapter.extractEventData("state",t,r)||!1,i=a?p.getStateById(a):p.expectedStateId?p.getStateById(p.expectedStateId):p.extractState(p.getLocationHref()),i||(i=p.createStateObject(null,null,p.getLocationHref())),p.expectedStateId=!1,p.isLastSavedState(i)?(p.busy(!1),!1):(p.storeState(i),p.saveState(i),p.setTitle(i),p.Adapter.trigger(e,"statechange"),p.busy(!1),!0))},p.Adapter.bind(e,"popstate",p.onPopState),p.pushState=function(t,r,n,o){if(p.getHashByUrl(n)&&p.emulated.pushState)throw new Error("History.js does not support states with fragement-identifiers (hashes/anchors).");if(o!==!1&&p.busy())return p.pushQueue({scope:p,callback:p.pushState,args:arguments,queue:o}),!1;p.busy(!0);var a=p.createStateObject(t,r,n);return p.isLastSavedState(a)?p.busy(!1):(p.storeState(a),p.expectedStateId=a.id,f.pushState(a.id,a.title,a.url),p.Adapter.trigger(e,"popstate")),!0},p.replaceState=function(t,r,n,o){if(p.getHashByUrl(n)&&p.emulated.pushState)throw new Error("History.js does not support states with fragement-identifiers (hashes/anchors).");if(o!==!1&&p.busy())return p.pushQueue({scope:p,callback:p.replaceState,args:arguments,queue:o}),!1;p.busy(!0);var a=p.createStateObject(t,r,n);return p.isLastSavedState(a)?p.busy(!1):(p.storeState(a),p.expectedStateId=a.id,f.replaceState(a.id,a.title,a.url),p.Adapter.trigger(e,"popstate")),!0};if(a){try{p.store=c.parse(a.getItem("History.store"))||{}}catch(g){p.store={}}p.normalizeStore()}else p.store={},p.normalizeStore();p.Adapter.bind(e,"unload",p.clearAllIntervals),p.saveState(p.storeState(p.extractState(p.getLocationHref(),!0))),a&&(p.onUnload=function(){var e,t,r;try{e=c.parse(a.getItem("History.store"))||{}}catch(n){e={}}e.idToState=e.idToState||{},e.urlToId=e.urlToId||{},e.stateToId=e.stateToId||{};for(t in p.idToState)p.idToState.hasOwnProperty(t)&&(e.idToState[t]=p.idToState[t]);for(t in p.urlToId)p.urlToId.hasOwnProperty(t)&&(e.urlToId[t]=p.urlToId[t]);for(t in p.stateToId)p.stateToId.hasOwnProperty(t)&&(e.stateToId[t]=p.stateToId[t]);p.store=e,p.normalizeStore(),r=c.stringify(e);try{a.setItem("History.store",r)}catch(o){if(o.code!==DOMException.QUOTA_EXCEEDED_ERR)throw o;a.length&&(a.removeItem("History.store"),a.setItem("History.store",r))}},p.intervalList.push(l(p.onUnload,p.options.storeInterval)),p.Adapter.bind(e,"beforeunload",p.onUnload),p.Adapter.bind(e,"unload",p.onUnload)),p.emulated.pushState||(p.bugs.safariPoll&&p.intervalList.push(l(p.safariStatePoll,p.options.safariPollInterval)),("Apple Computer, Inc."===o.vendor||"Mozilla"===(o.appCodeName||""))&&(p.Adapter.bind(e,"hashchange",function(){p.Adapter.trigger(e,"popstate")}),p.getHash()&&p.Adapter.onDomLoad(function(){p.Adapter.trigger(e,"hashchange")})))},p.options&&p.options.delayInit||p.init()}(window),function(e){e.fn.ajax_url=function(t,r){var n=this;return n.tappable(function(o){var a=null;null!=t&&(a=t(o)),null==a||a===!0?(null!=r&&r(o),o.metaKey===!0||Site.history_state_supported&&(o.isDefaultPrevented()||(o.preventDefault(),Site.load_url(e(n).attr("href"),!0)))):o.preventDefault()}),n}}(jQuery),function(e){var t="ontouchstart"in window;e.fn.tappable=function(r){var n,o=!0,a=function(){return!0},i=0;switch(typeof r){case"function":n=r;break;case"object":n=r.callback,"undefined"!=typeof r.cancelOnMove&&(o=r.cancelOnMove),"undefined"!=typeof r.onlyIf&&(a=r.onlyIf),"undefined"!=typeof r.touchDelay&&(i=r.touchDelay)}var s=function(e,t){"function"==typeof n&&a(e)&&(n.call(e,t),t.preventDefault(),t.stopPropagation())};return t?(this.unbind("touchstart"),this.bind("touchstart",function(){var t=this;return a(this)&&(e(t).addClass("touch-started"),window.setTimeout(function(){e(t).hasClass("touch-started")&&e(t).addClass("touched")},i)),!0}),this.unbind("touchend"),this.bind("touchend",function(t){var r=this;if(e(r).hasClass("touch-started")){if(e(r).removeClass("touched").removeClass("touch-started"),e(t.target).is('input[type="checkbox"]')&&e(t.target).attr("checked",!e(t.target).is(":checked")),e(t.target).is("label")){var n=e(t.target).attr("for"),o=e("#"+n);o.is(":checkbox")?o.attr("checked",!o.is(":checked")):o.focus()}if(e(t.target).is("a")){var a=e(t.target),i=a.attr("href");if(""!==i&&"javascript:;"!==i&&i.indexOf("#")<0)return"_blank"===a.attr("target")?window.open(a.attr("href")):window.location.href=a.attr("href"),!1}s(r,t)}return!0}),this.unbind("click"),this.bind("click",function(e){e.preventDefault()}),o&&(this.unbind("touchmove"),this.bind("touchmove",function(){e(this).removeClass("touched").removeClass("touch-started")}))):"function"==typeof n&&(this.unbind("click"),this.bind("click",function(e){a(this)&&n.call(this,e)})),this}}(jQuery),Page.prototype.new_url=function(){return"NOT_SET"},Page.prototype.get_title=function(){return null},Page.prototype.resize=function(){},Page.prototype.init=function(){},Page.prototype.remove=function(){},"undefined"==typeof console){var cons={};cons.log=cons.error=cons.info=cons.debug=cons.warn=cons.trace=cons.dir=cons.dirxml=cons.group=cons.groupEnd=cons.time=cons.timeEnd=cons.assert=cons.profile=function(){},SAFE.console=cons}else SAFE.console=console;SAFE.prototype.extend=function(e,t){function r(){}r.prototype=t.prototype,e.prototype=new r,e.prototype.constructor=e,e.superConstructor=t,e.superClass=t.prototype},SAFE.prototype.url_changed=function(){},SAFE.prototype.on_resize=function(){},SAFE.prototype.pre_load=function(){},SAFE.prototype.transition_page=function(){return!1},SAFE.prototype.parse_query_string=function(e){for(var t=e.split("&"),r={},n=0;n<t.length;n++)pair=t[n].split("="),r[decodeURIComponent(pair[0])]=decodeURIComponent(pair[1]);return r},SAFE.prototype.build_query_string=function(e){var t="",r=!1,n=[];for(var o in e)r=!0,n.push(encodeURIComponent(o)+"="+encodeURIComponent(e[o]));return r&&(t="?"+n.join("&")),t},SAFE.prototype.scroll_to_anchor=function(e){e&&$(window).scrollTop(e.offset().top)},SAFE.prototype.use_page_class=function(e){var t=this;e||(e={});var r,r=e.class_name,n=e.parameters,o=e.url,a=e.wildcard_contents;if("string"==typeof r){var i=window[r];if(void 0===i)if(null!==t.load_page_class){var s=r;if(t.load_page_class(s,function(r,n){var o=document.createElement("style");o.type="text/css",o.styleSheet?o.styleSheet.cssText=n:o.appendChild(document.createTextNode(n)),$("head")[0].appendChild(o),t.use_page_class(e)}),null===t.loading_page)return;r=t.loading_page}else SAFE.console.error("The requested class ("+r+") was not found and dynamic class loading is not enabled"),r=null;else r=i}if(null==r){if(null==t.no_page_found_class)return null!=t.current_page&&(t.current_page.remove(),t.current_page=null,t.previous_class=null),void SAFE.console.error("No 404 page set. Use Site.set_no_page_found_class(class_name) to set one.");r=t.no_page_found_class}if(r===t.previous_class){var l=t.current_page.new_url(n,o,a);if("NOT_SET"!=l)return void(e.anchor&&t.scroll_to_anchor($("a[name*='"+e.anchor+"']")))}var u=null;null!=t.current_page&&(t.current_page.remove(),u=t.current_page);var c=t.pre_load(r,n,o,a);if(void 0===c){var d=new r(n,o,a,u);t.current_page=d,t.previous_class=r;var p=t.transition_page(t.current_page,u);p===!0||(t.element.empty(),t.element.append(t.current_page.element)),t.current_page.init(),t.resize(),e.anchor&&t.scroll_to_anchor($("a[name*='"+e.anchor+"']"))}else if("function"==typeof c);else{if(null===c)return e.class_name=null,void t.use_page_class(e);t.load_url(c,!0)}},SAFE.prototype.set_no_page_found_class=function(e){var t=this;t.no_page_found_class=e},SAFE.prototype.ajax_post=function(e){return e.cache=!1,e.type="post",e.contentType="application/json; charset=utf-8",e.data=JSON.stringify(e.data),e.dataType="json",$.ajax(e)},SAFE.prototype.ajax_get=function(e){return e.cache=!1,e.dataType="json",e.type="get",$.ajax(e)},SAFE.prototype.ajax_delete=function(e){return e.cache=!1,e.dataType="json",e.type="delete",$.ajax(e)},SAFE.prototype.resize=function(){var e=this,t=$(document).width()-e.scroll_bar_width(),r=$(document).height(),n=$(window).outerWidth(),o=$(window).outerHeight(),a={scroll_bar_width:e.scroll_bar_width(),doc_width:t,doc_height:r,window_width:n,window_height:o};e.on_resize(a),null!=e.current_page&&e.current_page.resize(a)},SAFE.prototype.init=function(e){var t=this,r=window.location.pathname;null!=window.location.search&&(r+=window.location.search);var n=decodeURIComponent(r);return null==e||e==n||(n=e,t.history_state_supported)?(t.history_state_supported&&(History.replaceState(null,"",Site.origin+n),History.Adapter.bind(window,"statechange",function(){if(t.ignore_next_url)return void(t.ignore_next_url=!1);var e=History.getState();null!=e&&t.load_url(decodeURIComponent(e.url),!1)})),$(window).resize(function(){t.resize()}).resize(),null==n&&(n=""),void t.load_url(n,!1)):void(window.location=e)},SAFE.prototype.reload_page=function(){var e=this;e.use_page_class(e.current_class_and_details)},SAFE.prototype.replace_current_url=function(e,t){var r=this;t="undefined"!=typeof t?t:!0;var n=r.ignore_next_url;r.ignore_next_url=!0,History.replaceState(null,"",Site.origin+e),r.ignore_next_url=n,t&&r.url_changed(window.location.toString(),window.location.pathname,window.location.toString().substring(Site.origin.length),!1)},SAFE.prototype.add_url=function(e,t){var r=this;r.map[e]=t},SAFE.prototype.scroll_bar_width=function(){var e=this;if(-1!=e.scroll_bar_width_value)return e.scroll_bar_width_value;var t=$('<div style="width:50px;height:50px;overflow:hidden;position:absolute;top:-200px;left:-200px;"><div style="height:100px;"></div>');$("body").append(t);var r=$("div",t).innerWidth();t.css("overflow-y","scroll");var n=$("div",t).innerWidth();return t.remove(),e.scroll_bar_width_value=r-n,e.scroll_bar_width_value},SAFE.prototype.get_class_for_url=function(e){var t=this,r=t.get_class_and_details_for_url(e),n=window[r.class_name];return void 0===n&&(n=r.class_name),null!=r?n:null},SAFE.prototype.get_class_and_details_for_url=function(e){var t=this,r={},n=e.split("#"),o=n[1],a=n[0].split("?");a.length>1&&(r=t.parse_query_string(a[1]));var i=a[0];i.length>=t.origin.length&&i.substring(0,t.origin.length)==t.origin&&(i=i.substring(t.origin.length));var s=t.path;if(""!=s&&("/"!=s[0]&&(s="/"+s),"/"!=s[s.length-1]&&(s+="/")),s.length>0){if(s.length>i.length||i.substring(0,s.length)!=s)return SAFE.console.error("The requested url ("+e+") was not relative to the domain/origin and within the Site.path scope"),null;i=i.substring(s.length-1)}var l=t.map[i],u=null,u=null;if(null==l)for(var c in t.map){var d=c.indexOf("*");if(-1!=d){var p=c.substring(0,d);p.length<i.length&&p==i.substring(0,p.length)&&(l=t.map[c],u=i.substring(p.length),i=p+"*")}}return{class_name:l,parameters:r,url:i,wildcard_contents:u,anchor:o}},SAFE.prototype.load_url=function(e,t){var r=this,n=Site.origin+e;if(r.history_state_supported)t&&(r.ignore_next_url=!0,History.pushState(null,"",n),r.previous_url=n);else{var o=encodeURI(n);if(window.location!=o)return void(window.location=o)}r.current_url=n,r.current_class_and_details=r.get_class_and_details_for_url(e),null!=r.current_class_and_details.class_name?r.use_page_class(r.current_class_and_details):(SAFE.console.error("Page not found for url ("+r.current_class_and_details.url+"). The full url was ("+e+")"),r.use_page_class(null)),r.url_changed(window.location.toString(),window.location.pathname,window.location.toString().substring(Site.origin.length),r.initial_url),r.initial_url=!1};var Site;new SAFE;
 var logger;
 if((typeof require) === 'function'){
@@ -11750,10 +11980,6 @@ ObjectField.prototype.val = function(set_val) {
         return field;
     }
 }
-var strings = {
-	"top_headline" : "Build apps, not huge pieces of architecture.",
-	"top_signup_message" : "Want to jump right in?"
-}
 function extend(sub, sup) {
     function emptyclass() {}
     emptyclass.prototype = sup.prototype;
@@ -11767,317 +11993,415 @@ if (typeof module != 'undefined') {
     module.exports = Validator;
 }
 
-function LoginBox() {
-    var lb = this;
-
-    var posted_username = "Inserted username";
-    var posted_email = "Inserted email";
-    var auth_mode = 'new';
-
-    // lb.logo = new Logo();
-
-    lb.element = $("<div />").addClass("login_box")
-        .append(
-            lb.user_message_area = $('<div />')
-            .addClass("user_message_area")
-            .text("user_message_area")
-            .hide()
-    )
-        .append(
-            lb.logo_header = $("<div />").addClass("logo_header")
-            // .append(
-            //     lb.logo.element.addClass("dark logo52")
-            // )
-            .append(
-                lb.login_box_title = $("<a />")
-                .attr("href", "/")
-                .ajax_url()
-                .addClass("login_box_title")
-                .text("MinoCloud")
-            )
-    )
-        .append(
-            $("<div />").addClass("auth_mode_option_area")
-            .append(
-                $("<label />")
-                .append(
-                    lb.existing_user_radio = $('<input type="radio" /">')
-                    .attr("name", "auth_mode")
-                    .attr("value", "existing")
-                    .on("change", function() {
-                        lb.switch_mode(true);
-                    })
-                )
-                .append(
-                    $("<span />").text("Existing user")
-                )
-            )
-            .append(
-                $("<label />")
-                .append(
-                    lb.new_user_radio = $('<input type="radio" /">')
-                    .attr("name", "auth_mode")
-                    .attr("value", "new")
-                    .on("change", function() {
-                        lb.switch_mode(true);
-                    })
-                )
-                .append(
-                    $("<span />").text("New user")
-                )
-            )
-            .append(
-                $("<label />")
-                .append(
-                    lb.forgot_radio = $('<input type="radio" /">')
-                    .attr("name", "auth_mode")
-                    .attr("value", "forgot")
-                    .on("change", function() {
-                        lb.switch_mode(true);
-                    })
-                )
-                .append(
-                    $("<span />").text("Forgot")
-                )
-            )
-    )
-        .append(
-            lb.username_input = $('<input type="text" >')
-            .addClass("login_form_field dark_border")
-            .attr("autocomplete", "off")
-            .attr("spellcheck", "false")
-            .attr("name", "username")
-            .attr("title", "Username")
-            .val(posted_username)
-            // .hint()
-    )
-        .append(
-            lb.username_error = $('<div />')
-            .addClass("auth_field_error")
-            .text("username_error")
-            .hide()
-    )
-        .append(
-            lb.email_input = $('<input type="email" />')
-            .addClass("login_form_field dark_border")
-            .attr("autocomplete", "off")
-            .attr("name", "email")
-            .attr("title", "Email")
-            .val(posted_email)
-            // .hint()
-    )
-        .append(
-            lb.email_error = $('<div />')
-            .addClass("auth_field_error")
-            .text("email_error")
-            .hide()
-    )
-        .append(
-            lb.password_input = $('<input type="password" />')
-            .addClass("login_form_field dark_border")
-            .attr("autocomplete", "off")
-            .attr("name", "password")
-            .attr("title", "Password")
-            // .hint()
-    )
-        .append(
-            lb.password_error = $('<div />')
-            .addClass("auth_field_error")
-            .text("password_error")
-            .hide()
-    )
-        .append(
-            $("<div />")
-            .addClass("buttons")
-            .append(
-                $("<a />")
-                .addClass("form_double_button")
-                .append(
-                    $("<button />")
-                    .addClass("mino_button left_button")
-                    .text("Back (broken)")
-                )
-            )
-            .append(
-                $("<div />")
-                .addClass("form_double_button")
-                .append(
-                    lb.confirm_button = $('<button type="submit" />')
-                    .addClass("mino_button minoGreenButton right_button")
-                    .text("Sign Up")
-                    .tappable(function() {
-                        lb.confirm_press();
-                    })
-                )
-            )
-    )
-
-    lb.redirect = null;
-    lb.animate_time = 300;
-
-    if (auth_mode == 'new') {
-        lb.existing_user_radio.attr(
-            "checked", null
-        );
-        lb.forgot_radio.attr(
-            "checked", null
-        );
-        lb.new_user_radio.attr(
-            "checked", "checked"
-        );
-    } else if (auth_mode == 'existing') {
-        lb.new_user_radio.attr(
-            "checked", null
-        );
-        lb.forgot_radio.attr(
-            "checked", null
-        );
-        lb.existing_user_radio.attr(
-            "checked", "checked"
-        );
-    } else {
-        lb.new_user_radio.attr(
-            "checked", null
-        );
-        lb.existing_user_radio.attr(
-            "checked", null
-        );
-        lb.forgot_radio.attr(
-            "checked", "checked"
-        );
-    }
-
-    lb.switch_mode(false);
-
-    lb.reposition_box();
+function isEmptyObject(object){
+	for(key in object){
+		return false;
+	}
+	return true;
 }
 
-LoginBox.prototype.confirm_press = function() {
+var count = 0;
+
+var Constants = {
+	NO_PERMISSION : count++,
+	READ_PERMISSION : count++,
+	WRITE_PERMISSION : count++
+}
+
+if (typeof module != 'undefined') {
+    module.exports = Constants;
+}
+var Constants, Common, Validator, errors;
+if (typeof require != 'undefined') {
+    Constants = require('../Constants');
+    Common = require('../Common');
+    Validator = require('fieldval');
+    errors = require('../errors')
+}
+
+function Path(string) {
+    var path = this;
+
+    return path.init(string);
+}
+
+//Returns error or null
+Path.prototype.init = function(path_string, allow_tilde) {
+    var path = this;
+
+    allow_tilde = allow_tilde || false;
+
+    path.is_folder = false;
+    path.path_string = path_string;
+    path.object_names = [];
+    path.sub_paths = [];
+
+    path.string_length = path_string.length;
+    if (path.string_length < 3) { //Length must be at least 3 (One forward slash, at least one character and another forward slash)
+        return Validator.Error(8)
+    } else if (path.string_length >= Constants.maximumAccessiblePathLength) {
+        return Validator.Error(8)
+    }
+    var path_char = path.path_string.charAt(0);
+    if (path_char != "/") { //Equal to forward slash
+        return Validator.Error(8); //First character must be a forward slash in a path
+    }
+
+    var last_char = "/";
+
+    //The total number of objects
+    var total = 0;
+    for (var index = 1; index < path.string_length; index++) {
+        path_char = path.path_string.substring(index, index + 1);
+        if (path_char.charCodeAt(0) == 47) {
+            if (last_char.charCodeAt(0) == 47) {
+                return Validator.Error(8); //There were two forward slashes together
+            }
+            total++;
+        } else {
+            if (!Path.is_valid_character_for_object_name(path_char, allow_tilde)) { //Check that path character is valid for a folder/object name
+                return Validator.Error(8);
+            }
+        }
+        last_char = path_char;
+    }
+    if (total == 0) { //path is a single item path e.g. "/Item"
+        return Validator.Error(8)
+    }
+
+    if (last_char.charCodeAt(0) == 47) {
+        path.is_folder = true;
+    }
+
+    var current_index = 0;
+    var current_position = 1;
+    var name_start_index = 1;
+    while (current_index < total) {
+        path_char = path.path_string.charAt(current_position);
+        if (path_char.charCodeAt(0) == 47) {
+            path.sub_paths.push(path.path_string.substring(0, current_position + 1));
+            path.object_names.push(path.path_string.substring(name_start_index, current_position));
+            current_index++;
+            name_start_index = current_position + 1;
+        }
+        current_position++;
+    }
+    if (!path.is_folder) {
+        path.sub_paths.push(path.path_string);
+        path.object_names.push(path.path_string.substring(name_start_index, path.string_length));
+    }
+
+    path.length = path.object_names.length;
+
+    return null;
+}
+
+
+Path.is_valid_character_for_object_name = function(path_char, allowed_tilde) {
+
+    var path_char_code = path_char.charCodeAt(0);
+
+    if (path_char_code == 10 /*LINE BREAK*/ || path_char_code == 30 || path_char_code == 31 || path_char_code == '/' || (!allowed_tilde && path_char_code == 126 /*tilde*/ )) {
+        return false;
+    }
+    return true;
+
+}
+
+Path.prototype.permission_path = function(requesting_username,for_write){
+    var path = this;
+
+    var user = path.username_for_permission(requesting_username,for_write);
+
+    return "/"+requesting_username+"/Permissions/"+user+"/"+Common.convert_path_to_tilde_path(path.toString());
+}
+
+Path.prototype.username_for_permission = function(requesting_username, for_write) {
+    var path = this;
+
+    //Restricts access to the Permissions folder in each user's root
+    if (path.object_names.length > 1 && path.object_names[1] == "Permissions") {
+
+        if (path.object_names.length==2 && !path.is_folder) {
+            /* The request is for an item with the same name as one of the restricted folders, not the folder itself
+             * so return the username of the top folder.
+             */
+            return path.object_names[0];
+        }
+
+        //Allows read access of permissions by user
+        if (path.object_names[0] == requesting_username && !for_write) {
+            return requesting_username;
+        }
+
+        //Allows "Mino" user to write
+        if(requesting_username==="Mino"){
+            return "Mino";
+        }
+
+        return null;
+    }
+
+    return path.object_names[0];
+}
+
+Path.prototype.path_for_child_with_name = function(child_name, child_is_folder) {
+    var path = this;
+
+    if (!path.is_folder) {
+        return Validator.Error(117)
+    }
+    var child_path = new Path();
+    child_path.length = path.length + 1;
+    child_path.object_names = [];
+    child_path.sub_paths = [];
+    for (var i = 0; i < child_path.length; i++) {
+        child_path.object_names.push(path.object_names[i]);
+        child_path.sub_paths.push(path.sub_paths[i]);
+    }
+    if (child_is_folder) {
+        child_path.is_folder = true;
+        child_path.path_string = path.path_string + child_name + "/";
+    } else {
+        child_path.is_folder = false;
+        child_path.path_string = path.path_string + child_name;
+    }
+    child_path.object_names[child_path.length - 1] = child_name;
+    child_path.sub_paths[child_path.length - 1] = child_path.path_string;
+    return child_path;
+}
+
+Path.prototype.parent_path = function() {
+    var path = this;
+
+    if (path.length == 1) {
+        return null;
+    }
+
+    var parent_path = new Path();
+    parent_path.length = path.length - 1;
+    parent_path.object_names = [];
+    parent_path.sub_paths = [];
+    for (var i = 0; i < parent_path.length; i++) {
+        parent_path.object_names.push(path.object_names[i]);
+        parent_path.sub_paths.push(path.sub_paths[i]);
+    }
+    parent_path.is_folder = true;
+    parent_path.path_string = parent_path.sub_paths[parent_path.length - 1];
+    return parent_path;
+}
+
+Path.prototype.toString = function() {
+    var path = this;
+    return path.path_string;
+}
+
+if (typeof module != 'undefined') {
+    module.exports = Path;
+}
+
+//Based on "minimal"
+//Change the layout function for ObjectFields to place the error at the top
+var layout_function = Field.prototype.layout;
+Field.prototype.layout = function(){
+    var field = this;
+
+    if(field instanceof ObjectField){
+    	field.container.append(
+	        field.title,field.error_message,
+	        field.element.append(
+	            field.input_holder
+	        )
+	    )
+    } else {
+	    layout_function.call(field);
+	}
+}
+
+
+function Modal(titleText,zIndex){
+	var modal = this;
+
+	if(zIndex==null){
+		zIndex = 2001;
+	}
+
+	modal.initial_position = false;
+
+	modal.closeCallback = function(){};
+	modal.okCallback = function(){};
+	modal.onFinishedLoading = function(){};
+
+	if(titleText==undefined){
+		titleText = "";
+	}
+
+	modal.shadow = $("<div />")
+	.addClass("modalShadow")
+	.appendTo("body")
+	.css("z-index",zIndex)
+	.hide();
+
+	modal.element = $("<div />")
+	.addClass("modal")
+	.css("z-index",zIndex+1)
+	.append(
+		modal.TopBar = $("<div />")
+		.addClass("modalTitle")
+		.append(
+			modal.title = $("<div />")
+			.addClass("modalTitleText")
+			.text(titleText)
+		)
+	).append(
+		$("<button />")
+		.addClass("f8_button modalCloseButton no_top no_right no_bottom")
+		.css("float","right")
+		.text("×")
+		.tappable(function(){
+			modal.close();
+		})
+	)
+	.append(
+		modal.view = $("<div />")
+		.addClass("modalContents")
+	)
+	.append(
+		modal.bottomBar = $("<div />")
+		.addClass("modalBottomBar")
+		.addClass("interfacebox")
+	)
+	.appendTo("body");
+
+	setTimeout(function(){
+		modal.reposition();
+	},1);
+
+	modal.element.hide();
+
+	$(document).on('keyup.modal',function(e) {
+		if(e.keyCode==27){
+		 	modal.close();
+		} else if(e.keyCode==13){//Enter
+		 	modal.okCallback();
+			if(modal.okClosesModal){
+				modal.closeModal();
+			}
+		}
+	});
+
+	modal.shadow.show();
+	modal.element.fadeIn(400, 
+		function(){
+			modal.onFinishedLoading();
+			modal.reposition();
+		}
+	);
+}
+Modal.prototype.reposition = function(){
+	var modal = this;
+
+	var props = {
+		"margin-top":-(modal.element.outerHeight()/2.0)+"px"
+	};
+
+	if(modal.initial_position){
+		modal.element.animate(props,500);
+	} else {
+		modal.element.css(props);
+		modal.initial_position = true;
+	}
+}
+Modal.prototype.close = function(){
+	var modal = this;
+	modal.element.remove();
+	modal.shadow.remove();
+
+	$(document).off('keyup.modal');
+	if(modal.callbackCalled==undefined){
+		modal.callbackCalled = true;
+		modal.closeCallback();
+	}
+}
+function LoginBox(on_sign_in_url){
     var lb = this;
 
-    MinoCloud_api(
-        'http://minocloud.com/auth/api',
-        'Sign In', {
-            'Username': 'MarkDoe',
-            'Password': 'ulhatuuohfihasf'
-        },
-        function(response) {
-            console.log(response);
-        },
-        function(error) {
-            alert(JSON.stringify(error));
-            console.log(error);
-        }
+    lb.on_sign_in_url = on_sign_in_url;
+
+    lb.modal = new Modal();
+    lb.modal.element.addClass("login_box_modal")
+
+    lb.form = new Form();
+    lb.form.add_field("username_or_email",new TextField("Username or Email*"));
+    lb.form.add_field("password",new PasswordField("Password*"));
+
+    lb.form.on_submit(function(object){
+        lb.login_press(object);
+    })
+
+    lb.form.element.append(
+        $("<button />").addClass("mino_button").text("Login")
     );
-}
 
-LoginBox.prototype.update_redirect = function(app_data) {
-    var lb = this;
+    lb.modal.view.append(
+        lb.form.element,
+        lb.loading_overlay = $("<div />").addClass("loading_overlay").hide()
+    )
 
-    lb.redirect = new RedirectOption(
-        "FALSE NAME",
-        app_data,
-        "signup",
-        function() {
-            lb.redirect.element.fadeOut(function() {
-                lb.redirect.element.remove();
-            });
-            lb.redirect.element.css("position", "absolute");
-            lb.reposition_box(true);
-        }
-    );
-    lb.redirect.element.appendTo(lb.element);
-}
-
-LoginBox.prototype.switch_mode = function(animate) {
-    var lb = this;
-
-    var auth_mode = $('input[name=auth_mode]:checked').val()
-
-    if (auth_mode == 'new') {
-        lb.email_input
-            .slideDown(lb.animate_time)
-            .fadeIn(lb.animate_time);
-
-        lb.password_input
-            .slideDown(lb.animate_time, function() {
-                lb.reposition_box(animate);
-            })
-            .fadeIn(lb.animate_time);
-
-        lb.username_input.attr("title", "Username")//.hint();
-
-        lb.confirm_button.text("Sign Up");
-
-        if (lb.redirect != null) {
-            lb.redirect.update_mode("new");
-        }
-    } else if (auth_mode == 'existing') {
-
-        lb.email_input
-            .slideUp(lb.animate_time)
-            .fadeOut(lb.animate_time);
-
-        lb.password_input
-            .slideDown(lb.animate_time)
-            .fadeIn(lb.animate_time);
-
-        lb.username_input.attr("title", "Username or Email")//.hint();
-
-        lb.confirm_button.text("Sign In");
-
-        if (lb.redirect != null) {
-            lb.redirect.update_mode("existing");
-        }
-    } else {
-        lb.email_input
-            .slideUp(lb.animate_time)
-            .fadeOut(lb.animate_time);
-
-        lb.password_input
-            .slideUp(lb.animate_time)
-            .fadeOut(lb.animate_time);
-
-        lb.username_input.attr("title", "Username or Email")//.hint();
-
-        lb.confirm_button.text("Reset Password");
-
-        /*loginBoxTitle.text("Forgot");
-			logoHeader
-			.animate({
-				"left":"0px"
-			},lb.animate_time);*/
-
-        if (lb.redirect != null) {
-            lb.redirect.update_mode("existing");
-        }
-    }
-
-    if (animate) {
-        lb.hide_errors();
+    lb.modal.closeCallback = function(){
+        lb.on_close();
     }
 }
 
-LoginBox.prototype.reposition_box = function(animate) {
+//Overriden
+LoginBox.prototype.on_close = function(){}
+
+LoginBox.prototype.login_press = function(object) {
     var lb = this;
 
-    if (animate != undefined && animate) {
-        lb.element.animate({
-            "margin-top": -(lb.element.height() / 2) + "px"
-        });
-    } else {
-        lb.element.css("margin-top", -(lb.element.height() / 2) + "px");
-    }
-}
+    lb.form.disable();
+    lb.form.clear_errors();
+    lb.modal.reposition();
 
-LoginBox.prototype.hide_errors = function() {
-    var lb = this;
+    lb.loading_overlay.show();
 
-    lb.username_error.slideUp(lb.animate_time);
-    lb.email_error.slideUp(lb.animate_time);
-    lb.password_error.slideUp(lb.animate_time);
-    lb.user_message_area.slideUp(lb.animate_time);
-}
+    $.ajax({
+        type: "POST",
+        url: "/ajax/login",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify(object),
+        success: function(response) {
+            lb.loading_overlay.hide();
+            lb.form.enable();
+            if (response.success == true) {
+                user = response.user;
+                if(response.admin){
+                    admin_bar = new AdminBar();
+                    admin_bar.element.appendTo("body");
+                }
+                header.check_login();
+                if(lb.on_sign_in_url){
+                    Site.load_url(lb.on_sign_in_url, true);
+                } else if(Site.current_page instanceof HomePage){
+                    Site.load_url("/my_applications/",true);
+                } else {
+                    Site.reload_page();
+                }
+                lb.modal.close();
+            } else {
+                lb.form.error(response);
+                lb.modal.reposition();
+            }
+        },
+        error: function(err, response) {
+            lb.loading_overlay.hide();
+            lb.form.enable();
+            error_modal();
+        }
+    })
+};
+
 
 extend(AuthPage, Page);
 
@@ -12133,93 +12457,6 @@ AuthPage.prototype.resize = function(resize_obj) {
     var page = this;
 
 }
-function Feature(object,is_left){
-	var f = this;
-
-	f.title = object.title;
-	f.text = object.text;
-	f.image_ref = object.image_ref;
-
-	f.stacked = null;
-
-	f.element = $("<div />").addClass("feature")
-	.append(
-		f.text_element = $("<div />").addClass("text")
-		.append(
-			$("<span />").addClass("title").text(f.title)
-		)
-		.append(
-			$("<div />").addClass("content").html(f.text)
-		)
-	)
-	.append(
-		$("<div />").addClass("image "+f.image_ref)
-		.append(
-			f.image_div = $("<div />")
-		)
-	)
-
-	if(is_left){
-		f.element.addClass("left");
-	} else {
-		f.element.addClass("right");
-	}
-
-}
-
-Feature.prototype.resize = function(resize_obj) {
-	var f = this;
-
-	var should_stack = resize_obj.doc_width<800;
-
-	if(!should_stack){
-
-		if(f.stacked){
-			f.element.removeClass("stacked");
-			
-			f.element.css("height","320px");
-		}
-
-		var text_height = f.text_element.outerHeight();
-		f.text_element.css("margin-top",((320-text_height)/2)+"px");
-
-		var img_width = 300 + ((resize_obj.doc_width-800) / 2);
-		if(img_width > 400){
-			img_width = 400;
-		}
-		var img_height = img_width * (225.0/300.0);
-
-		f.image_div.css({
-			"height" : img_height+"px",
-			"width" : img_width+"px",
-			"margin-top" : -(img_height/2.0)+"px",
-			"margin-left" : -(img_width/2.0)+"px",
-			"background-size" : img_width+"px "+img_height+"px"
-		});
-
-	} else if(should_stack){
-
-		if(!f.stacked){
-			f.element.addClass("stacked");
-
-			f.image_div.css({
-				"height" : "225px",
-				"width" : "300px",
-				"margin-left" : "-150px",
-				"margin-top" : "-112px",
-				"background-size" : "300px 225px"
-			});
-			f.text_element.css("margin-top","0px");
-		}
-
-		var text_height = f.text_element.innerHeight();
-		f.element.css("height",text_height+260+"px");
-
-	}
-
-	f.stacked = should_stack;
-};
-
 extend(HomePage, Page);
 
 function HomePage(parameters, url) {
@@ -12227,82 +12464,17 @@ function HomePage(parameters, url) {
 
     HomePage.superConstructor.call(this);
 
-    page.stacked = false;
-
     page.element
-        .addClass("home_page")
-        .append(
-            $("<div />").addClass("body_text")
-            .append(
-                $("<div />").addClass("body_headline").text("HEADLINE")
-            )
+    .addClass("home_page")
+    .append(
+        page.title = $("<div />").addClass("title").text("MinoDB"),
+        page.main_content = $("<div />").addClass("main_content").text("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec urna tellus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed pellentesque vel velit sed lacinia. Sed mollis sit amet quam eu malesuada. Vestibulum malesuada facilisis augue eget vehicula. Aliquam ultricies enim in purus congue, in mollis sem scelerisque. Etiam blandit vitae leo at gravida. Quisque interdum bibendum mi, vel pharetra purus. Integer in malesuada odio. Mauris volutpat vehicula dui ac placerat. Cras vel urna tortor. Aenean et congue leo, in feugiat est. Mauris vitae nisi in turpis condimentum feugiat sit amet ut magna. Etiam molestie malesuada nunc a accumsan. Nullam ac egestas sapien, nec feugiat dui. Nam consectetur commodo elit, eleifend congue leo."),
+        page.login_button = $("<button />").addClass("mino_button").text("Login").tappable(function(){
+            new LoginBox();
+        })
     )
-        .append(
-            page.sign_up_area = $("<div />").addClass("signup_area")
-            .append(
-                $("<span />").text("SIGN UP MESSAGE")
-            )
-            .append(
-                $("<a />")
-                .attr("href", "/auth/?appName=MinoCloud&appRedirect=http://minocloud.com/docs/?Quick_Start_Tutorial")
-                .ajax_url()
-                .append(
-                    $("<button />").addClass("mino_button big_signup_button").text("Sign Up")
-                )
-            )
-    )
-        .append(
-            page.feature_stack = $("<div />").addClass("feature_stack")
-    )
-
-
-    var features_data = [{
-        "title": "Concentrate on features and design.",
-        "text": "MinoCloud™ solves the problems that you wish you didn't have to. You want to concentrate on creating great features and usable designs, not writing generic architecture. We've got you covered.",
-        "image_ref": "featuresdesignimg"
-    }, {
-        "title": "Store your structured data properly.",
-        "text": "MinoCloud™ uses an innovative JSON structure to provide validation of your data, whilst allowing flexible, extendable items. ",
-        "image_ref": "structuredimg"
-    }, {
-        "title": "An easy-to-use visual interface",
-        "text": "MinoCloud™ has an easy-to-use visual interface that allows you to search the data your app uses, but also lets you prototype new data structures. It's a powerful tool.",
-        "image_ref": "browserapiimg"
-    }, {
-        "title": "Notifications are powerful, not painful.",
-        "text": "You can update your app's content, alert your users with a description or both at the same time. One simple API request and your notification is delivered all the way to your app's front-end, to multiple devices, with scripted merging and conditional alerts. It's versatile and powerful.",
-        "image_ref": "notificationsimg"
-    }, {
-        "title": "Authentication? 1 line of code.",
-        "text": "Implementing authentication can take up plenty of time. You won't have to worry about that. We take care of your end-user authentication so it's just one line of code to attempt authentication and then you choose how to react.	",
-        "image_ref": "authimg"
-    }, {
-        "title": "Build apps with PHP or Node.js",
-        "text": "MinoCloud™ currently has library support for PHP and Node.js. You can follow the <a href='http://minocloud.com/docs/?Quick App Tutorial (PHP)''>tutorial for PHP here</a> and the <a href='http://minocloud.com/docs/?Quick App Tutorial (Node)'>tutorial for Node.js here</a>.",
-        "image_ref": "languagesimg"
-    }];
-
-    page.features = [];
-
-    page.feature_stack.append(
-        $("<div />").addClass("feature_divide")
-    )
-
-    for (var i in features_data) {
-        var feature_data = features_data[i];
-
-        var feature = new Feature(feature_data, i % 2 == 0);
-        page.features.push(feature);
-
-        page.feature_stack.append(
-            feature.element
-            ,
-            $("<div />").addClass("feature_divide")
-        )
-    }
-
 }
-Site.add_url(ui_path, HomePage);
+Site.add_url("/", HomePage);
 
 HomePage.prototype.get_title = function() {
     var page = this;
@@ -12321,13 +12493,1348 @@ HomePage.prototype.remove = function() {
 
 HomePage.prototype.resize = function(resize_obj) {
     var page = this;
-    //page.stats_element.text("Document width: "+resize_obj.doc_width + " Document height: "+resize_obj.doc_height);
+}
+var button_type_first = 0;
+var button_type_child = 1;
+var button_type_item = 2;
+var button_type_type = 3;
 
-    for (var i in page.features) {
-        var feature = page.features[i];
-        feature.resize(resize_obj);
+function PathButton(text,address,button_type,browser){
+	var pb = this;
+
+	pb.text = text;
+	pb.address = address;
+	pb.browser = browser;
+
+	pb.element = $("<a />").addClass("pathbutton")
+	.ajax_url(function(){
+		if(browser==main_browser){
+			return true;
+		} else {
+			browser.loadurl(address);
+			return false;
+		}
+	})
+	.data("object",pb)
+	.attr("href","/browser"+address)
+	.append(
+		pb.button = $("<button />").addClass("mino_button")
+		.text(pb.text)
+	)
+		
+	if(button_type==button_type_first){
+		
+		pb.button.addClass("no_left");
+		pb.element.addClass("toppathbutton folder_button");
+
+	} else if(button_type==button_type_child || button_type==button_type_item){
+
+		if(button_type==button_type_child){
+			pb.element.addClass("folder_button");
+		} else if(button_type==button_type_item){
+			pb.element.addClass("endpathbutton");
+		}
+
+		pb.element
+		.addClass("childbutton")
+		.append(
+			pb.left_arrow = $("<div />").addClass("left_arrow")
+			.append(
+				$("<div />").addClass("leftArrowBorder"),
+				$("<div />").addClass("leftArrowBackground")
+			)
+		);
+
+	}
+
+	if(button_type==button_type_first || button_type==button_type_child){
+
+		pb.element
+		.append(
+			pb.right_arrow = $("<div />").addClass("right_arrow")
+			.append(		
+				$("<div />").addClass("rightArrowBorder"),
+				$("<div />").addClass("rightArrowBackground"),
+				$("<div />").addClass("rightArrowHighlight")
+			)
+		);
+
+	}
+}
+
+function AddressBar(browser){
+	var address_bar = this;
+	address_bar.browser = browser;
+
+	address_bar.element = $("<div />")
+	.addClass("address_bar")
+	.append(
+		address_bar.text_inputButtonsHolder = $("<div />")
+		.addClass("text_inputButtonsHolder")
+		.append(		
+			address_bar.goAddressButton = $("<button />")
+			.addClass("mino_button goAddressButton no_left no_right no_top")
+			.text("Go")
+			.hide()
+			.tappable(function(){
+				address_bar.go();
+			})
+		)
+		.append(
+			address_bar.cancel_addressButton = $("<button />")
+			.addClass("mino_button cancel_addressButton no_right no_top")
+			.text("Cancel")
+			.hide()
+			.tappable(function(){
+				address_bar.cancel_address()
+			})
+		)
+	)
+	.append(
+		address_bar.navButtons = $("<div />")
+		.addClass("navbuttons")
+	)
+	.append(
+		address_bar.text_input_holder = $("<div />")
+		.addClass("text_input_holder")
+		.hide()
+		.append(
+			address_bar.text_input = $("<textarea />")
+			.addClass("text_input")
+			.autoResize({
+			    maxHeight: 400,
+			    minHeight: 0,
+			    extraSpace: 1
+			})
+			.on("keydown",function(e){
+				if(e.keyCode==13){
+					e.preventDefault();
+					address_bar.go();
+				}
+			})
+		)
+	)
+	.append(
+		address_bar.pathButtons = $("<div />")
+		.addClass("pathButtons")
+		.tappable(function(e){
+			if(e.target !== this){return;}
+			address_bar.editAddress();
+		})
+	);
+
+	// if(browser.needNavigation==undefined){
+	// 	browser.needNavigation = true;
+	// }
+
+	// if(browser.needNavigation){
+	// 	address_bar.element.addClass("hasNavigationButtons");
+		
+	// 	address_bar.navButtons
+	// 	.append(
+	// 		address_bar.backButton = $("<button />")
+	// 		.addClass("mino_button")
+	// 		.addClass("historybutton")
+	// 		.addClass("backButton")
+	// 		.html("&#9668;")
+	// 		.css("width","30px")
+	// 		.tappable(function() {
+	// 			browser.backwardPress();
+	// 		})
+	// 	)
+	// 	.append(
+	// 		address_bar.forwardButton = $("<button />")
+	// 		.addClass("mino_button")
+	// 		.addClass("historybutton")
+	// 		.addClass("forwardButton")
+	// 		.html("&#9658;")
+	// 		.css("width","30px")
+	// 		.tappable(function() {
+	// 			browser.forwardPress();
+	// 		})
+	// 	)
+	// }
+
+	address_bar.navButtons
+	.append(
+		$("<button />")
+		.addClass("mino_button homeButton no_top no_left")
+		.css({
+			"float" : "left",
+			"font-size" : "24px",
+			"width" : "32px"
+		})
+		.append(
+			//createHomeIcon()
+			$("<div />").text("Home").addClass("homeIcon16 dark")
+		)
+		.tappable(function(e){
+			if(e.metaKey){
+				//Holding Cmd or Ctrl
+				return true;
+			}
+			address_bar.browser.loadAddress("/"+username+"/");
+		})
+	);
+
+	address_bar.recalculateNavButtonWidth();
+}
+
+AddressBar.prototype.recalculateNavButtonWidth = function(){
+	var address_bar = this;
+
+	var accum_width = 0;
+	$(address_bar.navButtons).children().each(function() {
+	   accum_width += $(this).width() + 5;
+	});
+
+	$(address_bar.navButtons).width(accum_width);
+}
+
+AddressBar.prototype.createNavButtonPadding = function(){
+	var address_bar = this;
+
+	return $("<div />")
+	.addClass("navButtonsPadding")
+	.css("width",address_bar.navButtons.width());
+}
+
+AddressBar.prototype.editAddress = function(){
+	var address_bar = this;
+
+	address_bar.pathButtons.hide();
+	address_bar.text_input_holder.show();
+	address_bar.goAddressButton.show();	
+	address_bar.cancel_addressButton.show();	
+	address_bar.navButtons.hide();
+
+	if(isTouchscreen){
+		var adr = address_bar.text_input.val();
+		address_bar.text_input.val("");
+		address_bar.text_input.val(adr);
+		
+	} else {
+		address_bar.text_input.focus().select();
+	}
+}
+
+AddressBar.prototype.go = function(){
+	var address_bar = this;
+	address_bar.browser.loadAddress(
+		address_bar.text_input.val()
+	);
+	address_bar.text_input.blur();
+	address_bar.cancel_address();
+}
+
+AddressBar.prototype.cancel_address = function(){
+	var address_bar = this;
+
+	address_bar.pathButtons.show();
+	address_bar.text_input_holder.hide();
+	address_bar.cancel_addressButton.hide();
+	address_bar.goAddressButton.hide();
+	address_bar.navButtons.show();
+	address_bar.text_input.blur();
+}
+
+AddressBar.prototype.editAddress = function(){
+	var address_bar = this;
+
+	address_bar.pathButtons.hide();
+	address_bar.text_input_holder.show();
+	address_bar.goAddressButton.show();	
+	address_bar.cancel_addressButton.show();	
+	address_bar.navButtons.hide();	
+		
+	if(isTouchscreen){
+		var adr = address_bar.text_input.val();
+		address_bar.text_input.val("");
+		address_bar.text_input.val(adr);
+	} else {
+		address_bar.text_input.focus().select();
+	}
+}
+
+AddressBar.prototype.resize = function(resize_obj){
+	var address_bar = this;
+
+	address_bar.text_input.css({
+		width: resize_obj.window_width + "px"
+	})
+}
+function FolderView(browser, path){
+	var folder_view = this;
+
+	console.log(path);
+
+	folder_view.browser = browser;
+	folder_view.path = path;
+
+	// folder_view.isSearch = folder_view.isSearchRequest();
+
+	folder_view.displayedObjects = new Object();
+
+	folder_view.selectModeEnabled = false;
+	folder_view.selectedObjects = new Object();
+
+	folder_view.element = $("<div />").addClass("folder_view")
+	.data("object",folder_view);
+
+	folder_view.objectsContainer = $("<div />")
+	.appendTo(folder_view.element);
+
+	browser.hideElements();
+	browser.element.empty().show();
+	
+	folder_view.is_main_browser = browser instanceof MainBrowser;
+	
+	var thisFolderSectionDiv = null;
+	var sharingPane = null;
+
+	for(var i = 0; i<path.length; i++){
+		
+		var button_text = path.object_names[i];
+		var button_address = path.sub_paths[i];
+
+		var button_type = 1;
+
+		if(i==0){
+			button_type = 0;
+		}
+
+		var pathbutton = new PathButton(
+			button_text,
+			button_address,
+			button_type,
+			browser
+		);
+
+		browser.topNav.pathButtons.append(pathbutton.element);
+	}
+
+	var editPathButton = $("<div />")
+	.addClass("pathbutton editAddressButtonFolder")
+	.tappable(function(){
+		browser.topNav.editAddress()
+	});
+
+	// $("<button />").append(
+	// 	$("<div />").append(createPenIcon().addClass("penIcon16"))
+	// ).appendTo(editPathButton);
+	// browser.topNav.pathButtons.append(editPathButton);
+	
+	var hasOtherObjects = false;
+
+	// for (var i = 0; i < json['Objects'].length; i++){
+	// 	var objectRepresentation = new MinoObjectRepresentation(json['Objects'][i],folder_view);
+	// 	folder_view.displayedObjects[objectRepresentation.id] = objectRepresentation;
+	// 	folder_view.objectsContainer.append(objectRepresentation.element);
+
+	// 	var name = objectRepresentation.objectName;
+	// 	if(name!="Apps" && name!="App Privileges" && name!="Type Privileges" && name!="Privileges"){
+	// 		hasOtherObjects = true;
+	// 	}
+	// }
+
+	// if(!folder_view.isSearch && folder_view.path=="/"+username+"/" && !loadedFirstHomeFolder){
+	// 	loadedFirstHomeFolder = true;
+			
+	// 	if(!hasOtherObjects){
+	// 		var alertModal = new AlertModal("Create some data");
+	// 		alertModal.view.append(
+	// 			$("<div />").css({
+	// 				"padding" : "10px"
+	// 			}).html("You don't have any data. If you're not already following it, try the <a href=\"http://minocloud.com/docs/?Quick Start Tutorial\">Quick Start Tutorial</a>.<br /><br />To prevent this notice from appearing, create a folder or item in your home folder.")
+	// 		)
+	// 	}
+	// }
+
+	folder_view.element
+	.append(
+		folder_view.resultSetPadding = $("<div />")
+		.addClass("resultSetPadding")
+	)
+	.append(
+		folder_view.pageControlsHolder = $("<div />")
+		.addClass("pageControlsHolder")
+		.hide()
+		.append(
+			$("<div />")
+			.addClass("pageControls")
+			.append(
+				folder_view.previousPageButton = $("<button />")
+				.addClass("mino_button previousPageButton left no_left no_top no_bottom")
+				.css("float","left")
+				.css("width","50px")
+				.text("Prev.")
+			)
+			.append(
+				folder_view.pageNumber = $("<div />")
+				.addClass("pageNumber")
+			)
+			.append(
+				folder_view.resultsStatus = $("<div />")
+				.addClass("resultsStatus")
+			)
+			.append(
+				folder_view.nextPageButton = $("<button />")
+				.addClass("mino_button previousPageButton right no_right no_top no_bottom")
+				.css("float","left")
+				.css("width","50px")
+				.text("Next")
+			)
+		)
+	)
+
+	folder_view.displayPageNumbers();
+	
+	browser.onRestore = function(){
+		folder_view.onRestore()
+	};
+
+	folder_view.onRestore();
+	
+	// resize(true);
+}
+
+FolderView.prototype.updateView = function(){
+	var folder_view = this;
+
+	if(folder_view.noElementsWarning!=undefined){
+		folder_view.noElementsWarning.remove();
+		delete folder_view.noElementsWarning;
+	}
+
+	if(isEmptyObject(folder_view.displayedObjects)){
+		if(folder_view.isSearch){
+			folder_view.noElementsWarning = $("<div />")
+			.addClass("largeWarning")
+			.text("No results.")
+			.prependTo(folder_view.element);
+		} else {			
+			folder_view.noElementsWarning = $("<div />")
+			.addClass("largeWarning")
+			.text("No objects in this folder.")
+			.prependTo(folder_view.element);		
+		}
+	}
+}
+
+FolderView.prototype.isSearchRequest = function(){
+	var folder_view = this;
+
+	if(folder_view.request['Parameters']['Include Subfolders']==true){
+		return true;
+	}
+	for(key in folder_view.request['Parameters']){
+		if(isTypeVersionNameStructure(key)){
+			return true;
+		}
+	}
+	return false;
+}
+
+FolderView.prototype.cancelSelection = function(){
+	var folder_view = this;
+	var browser = folder_view.browser;
+
+	for(i in folder_view.selectedObjects){
+		var obj = folder_view.selectedObjects[i];
+		folder_view.clickSelectable(obj,false);
+	}
+	folder_view.selectModeEnabled = false;
+
+	// toolbar_menu.sharing_button.show();
+	// toolbar_menu.select_button.show();
+	// toolbar_menu.list_icons_button.show();
+	// toolbar_menu.new_item_button.show();
+	// toolbar_menu.new_folder_button.show();
+	// toolbar_menu.cancel_button.hide();
+	// toolbar_menu.move_button.hide();
+	// toolbar_menu.delete_button.hide();
+	// toolbar_menu.select_all_button.hide();
+};
+
+FolderView.prototype.onRestore = function(){
+	var folder_view = this;
+	var browser = folder_view.browser;
+	
+	// browser.onLoad("folder",folder_view.request);
+
+	folder_view.pageControlsHolder.show();
+	folder_view.displayPageNumbers();
+
+	// if(folder_view.is_main_browser){
+	// 	toolbar_menu.list_icons_button.show().tappable(function() {
+			
+	// 		if(listoricon=="list"){
+	// 			toolbar_menu.list_icons_button.text("List");
+	// 			$.cookie('listoricon', "icon", {expires: 60*60*24*365, path: '/'});
+	// 			listoricon = "icon";
+	// 		} else {
+	// 			toolbar_menu.list_icons_button.text("Icons");
+	// 			$.cookie('listoricon', "list", {expires: 60*60*24*365, path: '/'});
+	// 			listoricon = "list";
+	// 		}
+
+	// 		for(i in folder_view.displayedObjects){
+	// 			var objectRep = folder_view.displayedObjects[i];
+	// 			objectRep.drawIcon();
+	// 		}
+			
+	//   		resize(false);
+	// 	});
+	
+	// 	toolbar_menu.sharing_button.show().tappable(function(){
+		
+
+	// 		var preventShareReason = null;
+			
+	// 		if(folder_view.path==('/'+username+"/")){
+	// 			preventShareReason = "You cannot share your home folder.";
+	// 		} else if(folder_view.path.startsWith("/"+username+"/Apps/") && !folder_view.path.startsWith("/"+username+"/Apps/"+username+"/")){
+	// 			preventShareReason = "You cannot share any folder in your Apps folder.";
+	// 		} else if(folder_view.path.startsWith("/"+username+"/App Privileges/")){
+	// 			preventShareReason = "You cannot share any folder in your App Privileges folder.";
+	// 		} else if(folder_view.path.startsWith("/"+username+"/Privileges/")){
+	// 			preventShareReason = "You cannot share any folder in your Privileges folder.";
+	// 		} else if(folder_view.path.startsWith("/"+username+"/Type Privileges/")){
+	// 			preventShareReason = "You cannot share any folder in your Type Privileges folder.";
+	// 		}
+			
+			
+	// 		var doOwn = false;
+	// 		if(folder_view.addressSplit.length>2){
+	// 			if(folder_view.addressSplit[1]=="Apps" && folder_view.addressSplit[2]==username){
+	// 				doOwn = true;
+	// 			}
+	// 		}
+			
+	// 		if(folder_view.addressSplit[0]==username){
+	// 			doOwn = true;
+	// 		}
+			
+	// 		if(!doOwn){
+	// 			preventShareReason = "You do not own this folder.";
+	// 		}
+			
+	// 		if(preventShareReason!=null){
+	// 			var alertModal = new AlertModal("Unable to Share");
+	// 			alertModal.view.append(
+	// 				$("<div />")
+	// 				.text(preventShareReason)
+	// 				.css("padding","10px")
+	// 			);
+	// 			return;
+	// 		}
+			
+		
+	// 		var sharingModal = new SharingFolderModal(folder_view.path);
+			
+	// 	});
+		
+	// 	toolbar_menu.select_button.show().tappable(function(){
+	// 		folder_view.selectModeEnabled = true;
+	// 		folder_view.selectedObjects = new Object();
+	// 		folder_view.selectedFolders = new Object();
+			
+	// 		toolbar_menu.sharing_button.hide();
+	// 		toolbar_menu.select_button.hide();
+	// 		toolbar_menu.list_icons_button.hide();
+	// 		toolbar_menu.new_item_button.hide();
+	// 		toolbar_menu.new_folder_button.hide();
+	// 		toolbar_menu.move_button.tappable(function(){
+				
+	// 			var modalTable = null;
+	// 			var pathField = null;
+				
+	// 			var modalWindow = new MoveModal(folder_view,folder_view.selectedObjects,folder_view.path);
+					
+	// 		});
+	// 		toolbar_menu.delete_button.tappable(function(){
+
+	// 			var deleteModal = new DeleteModal();
+			
+	// 			deleteModal.okCallback = function(){
+						
+	// 				var deleteList = new Array();
+	// 				var objectList = new Array();
+					
+	// 				for(selInd in folder_view.selectedObjects){
+	// 					var selDiv = folder_view.selectedObjects[selInd];
+	// 					deleteList.push(selDiv.id);
+	// 					objectList.push(selDiv);
+	// 				}
+					
+	// 				var request = {
+	// 					"Function" : "Delete",
+	// 					"Parameters" : {
+	// 						"Delete" : deleteList
+	// 					}
+	// 				};
+					
+	// 				if(doLogging){
+	// 					console.log(request);
+	// 				}
+					
+	// 				folder_view.cancelSelection();
+
+	// 				browser.makeRequest(
+	// 					request,
+	// 					function(returnedJSON){	
+	// 						var failedReportDiv = $("<div />")
+	// 						.css("padding","10px");
+	// 						var hasFailures = false;
+						
+	// 						if(returnedJSON['Objects']!=undefined){
+	// 							for(resInd in returnedJSON['Objects']){
+	// 								var result = returnedJSON['Objects'][resInd];
+	// 								if(result['Error']!=undefined){
+	// 									hasFailures = true;
+	// 									$(failedReportDiv)
+	// 									.append(
+	// 										$("<div />")
+	// 										.append(
+	// 											$("<span />")
+	// 											.addClass("bold")
+	// 											.text(objectList[resInd].object['Name']+" - ")
+	// 										)
+	// 										.append(
+	// 											$("<span />")
+	// 											.css("color","red")
+	// 											.text(result['Error'])							
+	// 										)
+	// 									);
+	// 								} else {
+	// 									delete folder_view.displayedObjects[objectList[resInd].id];
+	// 									objectList[resInd].element.remove();
+	// 								}
+	// 							}
+	// 							folder_view.updateView();
+	// 						}
+							
+	// 						if(returnedJSON['Error']!=undefined && returnedJSON['Invalid']['Delete']['Invalid']!=undefined){
+	// 							var deleteErrors = returnedJSON['Invalid']['Delete']['Invalid'];
+	// 							for(resInd in deleteErrors){
+	// 								var result = deleteErrors[resInd];
+	// 								if(result['Error']!=undefined){
+	// 									hasFailures = true;
+	// 									var errorString;
+	// 									if(result['Invalid']['ID']!=undefined){
+	// 										errorString = result['Invalid']['ID']['Error'];
+	// 									} else if(result['Invalid']['Path']!=undefined){
+	// 										errorString = result['Invalid']['Path']['Error']
+	// 									} else {
+	// 										errorString = "Unknown error occurred";
+	// 									}
+	// 									$(failedReportDiv)
+	// 									.append(
+	// 										$("<div />")
+	// 										.append(
+	// 											$("<span />")
+	// 											.addClass("bold")
+	// 											.text(objectList[resInd].object['Name']+" - ")
+	// 										)
+	// 										.append(
+	// 											$("<span />")
+	// 											.css("color","red")
+	// 											.text(errorString)							
+	// 										)
+	// 									);
+	// 								}
+	// 							}
+	// 						}
+							
+	// 						if(hasFailures==true){
+	// 							var alertModal = new AlertModal("Deletion Failures");
+	// 							alertModal.view.append(
+	// 								failedReportDiv
+	// 							);
+	// 						}
+	// 					},
+	// 					false,
+	// 					false
+	// 				);
+	// 			}										
+	// 		});
+	// 		toolbar_menu.select_all_button.show().tappable(function(){
+	// 			for(i in folder_view.displayedObjects){
+	// 				var obj = folder_view.displayedObjects[i];
+	// 				folder_view.clickSelectable(obj,true);
+	// 			}
+	// 		});
+	// 		toolbar_menu.cancel_button.show().tappable(function(){
+	// 			folder_view.cancelSelection();
+	// 		});
+	// 	});
+	// 	toolbar_menu.new_item_button.show().tappable(function(){
+			
+	// 		var newItemFakeResponse = {
+	// 			"Objects" : [
+	// 				{
+	// 					"Name" : "",
+	// 					"Path" : folder_view.path,
+	// 					"Full Path" : folder_view.path+"New item",
+	// 					"Folder" : false,
+	// 					"Version" : 1
+	// 				}
+	// 			]
+	// 		};
+
+	// 		var itemView = new ItemView({}, newItemFakeResponse, true, browser);
+	// 		itemView.element.appendTo(browser.element);
+	// 		itemView.updateView();
+
+	// 	});
+	// 	toolbar_menu.new_folder_button.show().tappable(function(){
+			
+	// 		var newFolderModal = new NewFolderModal(folder_view.path);
+
+	// 		newFolderModal.onSuccessCallback = function(newFolderInfo,name){
+				
+	// 			if(doLogging){
+	// 				console.log(newFolderInfo);
+	// 			}
+				
+	// 			var newObject = {
+	// 				"ID" : newFolderInfo['Objects'][0]['ID'],
+	// 				"Name" : name,
+	// 				"Path" : folder_view.path,
+	// 				"Full Path" : newFolderInfo['Objects'][0]['Full Path'],
+	// 				"Folder" : true
+	// 			};
+		
+	// 			var objectRepresentation = new MinoObjectRepresentation(
+	// 				newObject,
+	// 				folder_view
+	// 			);
+	// 			folder_view.displayedObjects[objectRepresentation.id] = objectRepresentation;
+	// 			folder_view.objectsContainer.append(objectRepresentation.element);
+
+	// 			folder_view.updateView();
+				
+	// 		};
+			
+	// 	});
+	// }
+
+	folder_view.updateView();
+}
+
+
+FolderView.prototype.displayPageNumbers = function(){
+	var folder_view = this;
+
+	if(folder_view.isError){
+		return;
+	}
+	
+	var request = folder_view.request;
+	var response = folder_view.response;
+
+	if(request==null || response==null){
+		return;
+	}
+	
+	var currentsize = response['Returned Amount'];
+	var start = response['Starting Index'];
+	var total = response['Total'];
+
+	var othersize = folder_view.browser.iconCapacity();
+
+	var before = Math.ceil(start/othersize);
+	var current = before+1;
+	var next = Math.ceil((total-(start+(currentsize)))/othersize);
+	var totalpages = before+next+1;
+	
+	folder_view.pageNumber.text("Page "+current+" of "+totalpages);
+	folder_view.resultsStatus.text("Showing "+(start+1)+"-"+(start+currentsize)+" of "+total);
+
+	if(current==1 && totalpages==1){
+		folder_view.pageControlsHolder.hide();
+	}
+	
+	if(current==1){
+		folder_view.previousPageButton.attr("disabled", "disabled");
+	} else {
+		folder_view.previousPageButton.removeAttr("disabled").tappable(function() {
+			if($(this).is(':disabled') == false){
+				var newRequest = JSON.parse(JSON.stringify(request));
+				var iconcap = othersize;
+				var newStart = start-iconcap;
+				if(newStart<0){
+					newStart = 0;
+				}
+				newRequest['Parameters']['Starting Index'] = newStart;
+				newRequest['Parameters']['Result Size'] = othersize;
+				
+				if(folder_view.isSearch){
+					folder_view.browser.loadAddress("Search:"+JSON.stringify(newRequest['Parameters']));
+				} else {
+					folder_view.browser.loadAddress("Start:"+(newRequest['Parameters']['Starting Index'])+"&"+newRequest['Parameters']['Path']);
+				}
+			}
+		});
+	}
+	
+	if(current==totalpages){
+		folder_view.nextPageButton.attr("disabled", "disabled");
+	} else {
+		folder_view.nextPageButton.removeAttr("disabled").tappable(function() {
+			if($(this).is(':disabled') == false){
+				var newRequest = JSON.parse(JSON.stringify(request));
+				newRequest['Parameters']['Starting Index'] = start+currentsize;
+				newRequest['Parameters']['Result Size'] = othersize;
+								
+				
+				
+				if(folder_view.isSearch){
+					folder_view.browser.loadAddress("Search:"+JSON.stringify(newRequest['Parameters']));
+				} else {
+					folder_view.browser.loadAddress("Start:"+(newRequest['Parameters']['Starting Index'])+"&"+newRequest['Parameters']['Path']);
+				}
+			}
+		});
+	}	
+}
+
+FolderView.prototype.clickSelectable = function(objectRep,forceSelect){
+	var folder_view = this;
+
+	if(forceSelect==undefined){
+		forceSelect = null;
+	}
+
+	if(forceSelect==true || (folder_view.selectedObjects[objectRep.id]==undefined && forceSelect!=false)){
+		folder_view.selectedObjects[objectRep.id] = objectRep;
+		if(objectRep.isFolder){
+			folder_view.selectedFolders[objectRep.id] = objectRep;
+		}
+		objectRep.select();
+	} else {
+		delete folder_view.selectedObjects[objectRep.id];
+		if(objectRep.isFolder){
+			delete folder_view.selectedFolders[objectRep.id];
+		}
+		objectRep.deselect();
+
+	}
+
+	var totalSelected = 0;
+	var foldersSelected = 0;
+	for(i in folder_view.selectedObjects){
+		var thisObjectRep = folder_view.selectedObjects[i];
+		if(thisObjectRep.isFolder){
+			foldersSelected++;
+		}
+		totalSelected++;
+	}
+	
+	// if(totalSelected==0){
+	// 	toolbar_menu.delete_button.hide();
+	// 	toolbar_menu.move_button.hide();
+	// } else {
+	// 	toolbar_menu.delete_button.show();
+	// 	if(foldersSelected==0){
+	// 		toolbar_menu.move_button.show();
+	// 	} else {
+	// 		toolbar_menu.move_button.hide();
+	// 	}
+	// }
+
+}
+
+extend(MainBrowser, Browser);
+
+function MainBrowser(needNavigation){
+	var browser = this;
+	browser.needNavigation = needNavigation;
+	MainBrowser.superConstructor.call(this);
+
+
+
+}
+
+MainBrowser.prototype.backwardPress = function(){
+	var browser = this;
+	history.go(-1);
+}
+
+MainBrowser.prototype.hideElements = function(){
+	var browser = this;
+
+	Browser.prototype.hideElements.call(this);
+
+	// toolbar_menu.hide_all_buttons();
+}
+
+MainBrowser.prototype.forwardPress = function(){
+	var browser = this;
+	history.go(1);
+}
+
+MainBrowser.prototype.setAddress = function(address){
+	var browser = this;
+	//jQuery.history.load(address);
+	alert("Need to set address");
+}
+
+MainBrowser.prototype.loadAddress = function(address){
+	var browser = this;
+	if(address[0]!='/'){
+		address = '/'+address;
+	}
+	Site.load_url("/browser"+address);
+	//Browser.prototype.loadAddress.call(this,address);
+}
+
+MainBrowser.prototype.createType = function(){
+	var browser = this;
+
+	var typeView = new TypeView(
+		null, 
+		true, 
+		browser
+	);
+	typeView.element.appendTo(browser.element);
+	typeView.updateView();
+}
+
+MainBrowser.prototype.back = function(){
+	var browser = this;
+
+	window.history.back();
+
+	if(browser.topNav!=undefined){
+		browser.topNav.cancelAddress();
+	}
+}
+
+function Browser(){
+	var browser = this;
+
+	browser.history = {};
+	browser.historyIndex = -1;
+
+	browser.address_bar = new AddressBar();
+
+    for(var i = 0; i<5; i++){
+        var path_button = new PathButton("Path "+i, "/Test/Path "+i, 0, null);
+        browser.address_bar.pathButtons.append(
+            path_button.element
+        )
     }
 
+	browser.latestRequest = null;
+
+	browser.container = $("<div />");
+	browser.element = $("<div />")
+	.addClass("browser")
+	.data("object",browser)
+	.append(
+		browser.address_bar.element
+	)
+	.appendTo(browser.container);
+
+	var path = new Path("/TestUser/Subfolder//Item");
+
+	console.log(path);
+
+    browser.view = new FolderView(browser, path);
+    browser.element.append(browser.view.element);
+	
+	// browser.loadingIndicator = new LoadingIndicator();
+	// browser.loadingIndicator.cancel_press = function(){
+	// 	browser.cancelLoading();
+	// }
+	// browser.loadingIndicator.element.appendTo(browser.container);
+
+	browser.capacityElement = window;
+	browser.verticalPadding = 180;
+	browser.onRestore = function(){};
+	browser.onLoad = function(type,object){
+		var browser = this;
+	}
+}
+
+Browser.prototype.resize = function(resize_obj){
+	var browser = this;
+
+	browser.address_bar.resize(resize_obj);
+}
+
+Browser.prototype.isLoading = function(){
+	var browser = this;
+
+	return browser.latestRequest!=null;
+}
+
+Browser.prototype.makeRequest = function(request,callback,hide,canCancel){
+	var browser = this;
+
+	if(hide==undefined){
+		hide = true;
+	}
+	if(canCancel==undefined){
+		canCancel = true;
+	}
+
+	var apiAddress = ajaxAddress;
+	if(browser.apiAddress!=undefined){
+		apiAddress = browser.apiAddress;
+	}
+
+	var postName = 'json';
+	if(browser.postName!=undefined){
+		postName = browser.postName;
+	}
+
+	var postData = {};
+	postData[postName] = JSON.stringify(request);
+
+	var thisRequest = $.ajax({
+		type: 'POST',
+		url: apiAddress,
+		data: postData,
+		cache: false,
+		success: function(returnedData) {
+			var returnedJSON=null;
+			try{
+				returnedJSON=JSON.parse(returnedData);
+			} catch(e){
+				alert(JSON.stringify(returnedData));
+			}
+			
+			if(doLogging){
+				console.log(returnedJSON);
+			}
+			
+			if(browser.latestRequest==thisRequest){
+				browser.finishedLoading();
+				browser.currentRequest = request;
+				browser.currentResponse = returnedJSON;
+				browser.latestRequest = null;
+
+				if(returnedJSON['Error Number']==124){
+					signedOut();
+				} else {
+					callback(returnedJSON);
+				}
+			}
+		},
+		error: function(){
+			if(browser.latestRequest == thisRequest){
+				browser.element.html("Error").show();
+			}
+		}
+	});
+	browser.latestRequest = thisRequest;
+	
+	setTimeout(function(){
+		if(browser.latestRequest == thisRequest){
+			browser.loading(hide,canCancel);
+		}
+	},loadIndicatorDelay);
+}
+
+Browser.prototype.setAddress = function(address){
+	var browser = this;
+
+}
+
+Browser.prototype.backwardPress = function(){
+	var browser = this;
+	if(browser.history[browser.historyIndex-1]!=undefined){
+		browser.forceLoadAddress(browser.history[browser.historyIndex-1]);
+		browser.historyIndex--;
+	}
+}
+
+Browser.prototype.forwardPress = function(){
+	var browser = this;
+	//Can use forceLoadAddress because mainBrowser overrides this
+	if(browser.history[browser.historyIndex+1]!=undefined){
+		browser.forceLoadAddress(browser.history[browser.historyIndex+1]);
+		browser.historyIndex++;
+	}
+}
+
+Browser.prototype.loadAddress = function(address){
+	var browser = this;
+
+	//Loading a path without using the history buttons
+	
+	browser.historyIndex++;
+	var forwardIndex = browser.historyIndex;
+	while(browser.history[forwardIndex]!=undefined){
+		delete browser.history[forwardIndex];
+		forwardIndex++;
+	}
+	browser.history[browser.historyIndex] = address;
+
+	browser.forceLoadAddress(address);
+}
+	
+Browser.prototype.forceLoadAddress = function(address){
+	var browser = this;
+
+	var start = 0;
+	
+	if(address.substring(0,6)=="Start:"){
+		var param = address.substring(6);
+		
+		var ampindex = param.indexOf("&");
+		
+		var start = parseInt(param.substring(0,ampindex));
+		address = param.substring(ampindex+1);
+	}
+	
+	if(address.substring(0,7)=="Search:"){
+		var param = address.substring(7);
+		
+		searchPane.search = JSON.parse(param);
+		searchPane.performSearch();
+
+		return;	
+	}
+	
+	if(address.charCodeAt(0)>48 && address.charCodeAt(0)<58){//ID (CHAR IS BETWEEN 0 and 9
+		
+		var request = {
+			"Function" : "Get",
+			"Parameters" : {
+				"Addresses" : [address]
+			}
+		};
+				
+		browser.makeRequest(request,function(returnedJSON){
+			var itemView = new ItemView(request, returnedJSON, false, browser);
+			itemView.element.appendTo(browser.element);
+			itemView.updateView();
+		});
+		return;
+	} else if(address.charCodeAt(0)==47){// FORWARD SLASH
+		if(address.charCodeAt(address.length-1)==47){
+		
+			var request = {
+				'Function' : 'Search',
+				'Parameters' : {
+					'Path' : address,
+					'Include Subfolders' : false,
+					'Starting Index' : start,
+					'Sort By' : 'Name',
+					'Sort Order' : "Ascending",
+					'Result Size' : browser.iconCapacity()
+				}
+			};
+			
+			browser.makeRequest(request,function(returnedJSON){
+				var folderView = new FolderView(request,returnedJSON,browser);
+				folderView.element.appendTo(browser.element);
+			});
+			return;
+			
+		} else {
+		
+			var request = {
+				"Function" : "Get",
+				"Parameters" : {
+					"Addresses" : [address]
+				}
+			};
+					
+			browser.makeRequest(request,function(returnedJSON){
+				var itemView = new ItemView(request, returnedJSON, false, browser);
+				itemView.element.appendTo(browser.element);
+				itemView.updateView();
+			});
+			return;
+			
+		}
+	} else if(isTypeVersionNameStructure(address)){
+		loadDisplayType(address,browser,function(typeObj){
+			console.log(typeObj);
+			var typeView = new TypeView(typeObj, false, browser);
+			typeView.element.appendTo(browser.element);
+			typeView.updateView();
+		});
+		return;
+	}
+
+	browser.hideElements();
+	browser.element.empty().show();
+	browser.loadingIndicator.hide();
+
+	$(browser.element).append(
+		$("<div />")
+		.addClass("largeWarning")
+		.addClass("error")
+		.text("Invalid format for an address.")
+	);
+}
+
+Browser.prototype.finishedLoading = function(){
+	var browser = this;
+	browser.loadingIndicator.hide()
+}
+
+Browser.prototype.cancelLoading = function(){
+	var browser = this;
+	browser.latestRequest = null;
+	browser.element.show();	
+	browser.loadingIndicator.hide();
+
+	browser.onRestore();
+}
+
+Browser.prototype.loading = function(hide, canCancel){
+	var browser = this;
+
+	browser.loadingIndicator.show();
+
+		if(canCancel==true){
+			$(browser.loadingIndicator).css("width","160px").css("margin-left","-80px");
+			$(browser.loadingIndicator).children("button").show();
+		} else {
+			$(browser.loadingIndicator).css("width","100px").css("margin-left","-50px");
+			$(browser.loadingIndicator).children("button").hide();	
+		}
+		if(hide==true){
+			browser.hideElements();
+		}
+}
+
+Browser.prototype.hideElements = function(){
+	var browser = this;
+	browser.element.hide();
+}
+
+Browser.prototype.forward = function(){
+	var browser = this;
+
+	
+}
+
+Browser.prototype.back = function(){
+	var browser = this;
+
+	
+}
+
+
+
+
+
+function isFolderPath(address){
+	return address.charAt(address.length-1)=="/";
+}
+
+Browser.prototype.iconCapacity = function(element,verticalPadding){
+	var browser = this;
+
+	var element = browser.capacityElement;
+	var verticalPadding = browser.verticalPadding;
+
+	var availableWidth = $(element).width();
+	var availableHeight = $(element).height();
+	
+	availableHeight-=verticalPadding;
+	availableWidth-=20;
+	
+	if(listoricon=="list"){
+		var capacity = Math.floor(availableHeight/35.0);
+		if(capacity>3){
+			return capacity;
+		}
+		return 3;
+	} else {	
+		var row = Math.floor(availableWidth/71.0);
+		var column = Math.floor(availableHeight/79.0);
+		if(column<1){
+			column = 1;
+		}
+		var capacity = row*column;
+		if(capacity>3){
+			return capacity;
+		}
+		return 3;
+	}
+}
+
+extend(BrowserPage, Page);
+
+function BrowserPage(parameters, url) {
+    var page = this;
+
+    BrowserPage.superConstructor.call(this);
+
+    page.browser = new MainBrowser();
+
+    page.element
+    .addClass("browser_page")
+    .append(
+        page.browser.element
+    )
+}
+Site.add_url("/browser/", BrowserPage);
+
+BrowserPage.prototype.get_title = function() {
+    var page = this;
+    return null;
+}
+
+BrowserPage.prototype.init = function() {
+    var page = this;
+
+}
+
+BrowserPage.prototype.remove = function() {
+    var page = this;
+
+}
+
+BrowserPage.prototype.resize = function(resize_obj) {
+    var page = this;
+
+    page.browser.resize(resize_obj);
+}
+extend(NotFoundPage, Page);
+function NotFoundPage(parameters,url,wildcard_contents){
+	var page = this;
+
+	NotFoundPage.superConstructor.call(this);
+	
+	page.element
+	.addClass("not_found_page")
+	.append(
+		page.error_code = $("<div />").addClass("error_code").text("404")
+	)
+	.append(
+		page.description = $("<div />").addClass("description").text("Page not found")
+	)
+
+}
+
+NotFoundPage.prototype.get_title = function(){
+	var page = this;
+	return "Page Not Found";
+}
+
+NotFoundPage.prototype.resize = function(resize_obj){
+	var page = this;
+
+	var error_code_font_size = (resize_obj.proportion * 300) + "px";
+	page.error_code.css({
+		"font-size" : error_code_font_size,
+		"line-height" : error_code_font_size
+	})
+
+	var description_font_size = (resize_obj.proportion * 70) + "px";
+	page.description.css({
+		"font-size" : description_font_size,
+		"line-height" : description_font_size
+	})
 }
 
 var page_title_append = "MinoDB";
@@ -12350,12 +13857,10 @@ $(document).ready(function() {
         // header.resize(resize_obj);
     }
 
-    var center = $("<div />").addClass("center").appendTo("body");
-
     // header = new Header();
     // header.element.appendTo("body");
 
-    Site.element.addClass("page_holder").appendTo(center);
+    Site.element.addClass("page_holder").appendTo("body");
 
     // footer = new Footer();
     // footer.element.appendTo(body_contents_holder.contents);
@@ -12395,9 +13900,11 @@ $(document).ready(function() {
         return true;
     }
 
+    Site.path = ui_path;
+
     Site.debug = false;
 
-    // Site.set_no_page_found_class(NotFoundPage);
+    Site.set_no_page_found_class(NotFoundPage);
 
     Site.init();
 
