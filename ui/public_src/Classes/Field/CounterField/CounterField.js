@@ -29,7 +29,7 @@ function CounterField(field,details){
 	.css("margin","0px")
 	.css("margin-right","5px")
 	.text("+1")
-	.tappable(function(){
+	.on('tap',function(){
 		counterField.modifyCounter(1);
 	})
 	.appendTo(counterField.buttonDiv);
@@ -40,7 +40,7 @@ function CounterField(field,details){
 	.css("margin","0px")
 	.css("margin-right","5px")
 	.text("-1")
-	.tappable(function(){
+	.on('tap',function(){
 		counterField.modifyCounter(-1);
 	})
 	.appendTo(counterField.buttonDiv);
@@ -51,7 +51,7 @@ function CounterField(field,details){
 	.css("margin","0px")
 	.css("margin-right","5px")
 	.text("Refresh")
-	.tappable(function(){
+	.on('tap',function(){
 		counterField.modifyCounter(0);
 	})
 	.appendTo(counterField.buttonDiv);

@@ -4,24 +4,24 @@
 	padding:0px;
 	margin:0px;
 	z-index: 11;
-	position: absolute;
 	overflow: visible;
 	top:0px;
 	left:0px;
 
-	.pathButtons{
-		top:-1px;
-		left:0px;
-		position: absolute;
+	.path_buttons{
 		margin-right: 5px;
+		
+		list-style: none;
+		display: inline-table;
+
 		-webkit-user-select: none;
 		-khtml-user-select: none;
 		-moz-user-select: none;
 		-o-user-select: none;
 		user-select: none;
-		overflow-x: hidden;
-		width: 100%;
+
 		min-height: 35px;
+		margin: 0px;
 
 		@import "PathButton/PathButton.subless";
 	}

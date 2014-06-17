@@ -1,15 +1,14 @@
-var Constants, Common, Validator, errors;
+var Constants, Common, FieldVal, errors;
 if (typeof require != 'undefined') {
     Constants = require('../Constants');
     Common = require('../Common');
-    Validator = require('fieldval');
+    FieldVal = require('fieldval');
     errors = require('../errors')
 }
 
-function Path(string) {
+function Path() {
     var path = this;
 
-    return path.init(string);
 }
 
 //Returns error or null
@@ -25,13 +24,13 @@ Path.prototype.init = function(path_string, allow_tilde) {
 
     path.string_length = path_string.length;
     if (path.string_length < 3) { //Length must be at least 3 (One forward slash, at least one character and another forward slash)
-        return Validator.Error(8)
+        return errors.INVALID_PATH_FORMAT
     } else if (path.string_length >= Constants.maximumAccessiblePathLength) {
-        return Validator.Error(8)
+        return errors.INVALID_PATH_FORMAT
     }
     var path_char = path.path_string.charAt(0);
     if (path_char != "/") { //Equal to forward slash
-        return Validator.Error(8); //First character must be a forward slash in a path
+        return errors.INVALID_PATH_FORMAT; //First character must be a forward slash in a path
     }
 
     var last_char = "/";
@@ -42,18 +41,18 @@ Path.prototype.init = function(path_string, allow_tilde) {
         path_char = path.path_string.substring(index, index + 1);
         if (path_char.charCodeAt(0) == 47) {
             if (last_char.charCodeAt(0) == 47) {
-                return Validator.Error(8); //There were two forward slashes together
+                return errors.INVALID_PATH_FORMAT; //There were two forward slashes together
             }
             total++;
         } else {
             if (!Path.is_valid_character_for_object_name(path_char, allow_tilde)) { //Check that path character is valid for a folder/object name
-                return Validator.Error(8);
+                return errors.INVALID_PATH_FORMAT;
             }
         }
         last_char = path_char;
     }
     if (total == 0) { //path is a single item path e.g. "/Item"
-        return Validator.Error(8)
+        return errors.INVALID_PATH_FORMAT
     }
 
     if (last_char.charCodeAt(0) == 47) {
@@ -136,7 +135,7 @@ Path.prototype.path_for_child_with_name = function(child_name, child_is_folder) 
     var path = this;
 
     if (!path.is_folder) {
-        return Validator.Error(117)
+        return FieldVal.Error(117)
     }
     var child_path = new Path();
     child_path.length = path.length + 1;

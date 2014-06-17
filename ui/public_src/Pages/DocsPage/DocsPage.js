@@ -25,7 +25,7 @@ function DocsPage(parameters,url,wildcard_contents){
 	.append(
 		$("<button />").addClass("mino_button menu_expand_button")
 		.html("&#9776;&nbsp;Menu")
-		.tappable(function(){
+		.on('tap',function(){
 			page.side_menu.toggle_menu();
 		})
 	)
@@ -148,7 +148,7 @@ DocsPage.prototype.show_doc = function(address){
 				pre.addClass("prettyprint linenums");
 
 				$("<button />").addClass("mino_button").text("Select All")
-				.tappable(function(){
+				.on('tap',function(){
 					pre.selectText();
 				})
 				.insertBefore(pre);

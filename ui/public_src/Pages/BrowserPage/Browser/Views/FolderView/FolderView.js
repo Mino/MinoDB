@@ -20,7 +20,8 @@ function FolderView(browser, path){
 	.appendTo(folder_view.element);
 
 	browser.hideElements();
-	browser.element.empty().show();
+	browser.view_container.empty();
+	browser.view_container.append(folder_view.element);
 	
 	folder_view.is_main_browser = browser instanceof MainBrowser;
 	
@@ -50,7 +51,7 @@ function FolderView(browser, path){
 
 	var editPathButton = $("<div />")
 	.addClass("pathbutton editAddressButtonFolder")
-	.tappable(function(){
+	.on('tap',function(){
 		browser.topNav.editAddress()
 	});
 
@@ -201,7 +202,7 @@ FolderView.prototype.onRestore = function(){
 	folder_view.displayPageNumbers();
 
 	// if(folder_view.is_main_browser){
-	// 	toolbar_menu.list_icons_button.show().tappable(function() {
+	// 	toolbar_menu.list_icons_button.show().on('tap',function() {
 			
 	// 		if(listoricon=="list"){
 	// 			toolbar_menu.list_icons_button.text("List");
@@ -221,7 +222,7 @@ FolderView.prototype.onRestore = function(){
 	//   		resize(false);
 	// 	});
 	
-	// 	toolbar_menu.sharing_button.show().tappable(function(){
+	// 	toolbar_menu.sharing_button.show().on('tap',function(){
 		
 
 	// 		var preventShareReason = null;
@@ -269,7 +270,7 @@ FolderView.prototype.onRestore = function(){
 			
 	// 	});
 		
-	// 	toolbar_menu.select_button.show().tappable(function(){
+	// 	toolbar_menu.select_button.show().on('tap',function(){
 	// 		folder_view.selectModeEnabled = true;
 	// 		folder_view.selectedObjects = new Object();
 	// 		folder_view.selectedFolders = new Object();
@@ -279,7 +280,7 @@ FolderView.prototype.onRestore = function(){
 	// 		toolbar_menu.list_icons_button.hide();
 	// 		toolbar_menu.new_item_button.hide();
 	// 		toolbar_menu.new_folder_button.hide();
-	// 		toolbar_menu.move_button.tappable(function(){
+	// 		toolbar_menu.move_button.on('tap',function(){
 				
 	// 			var modalTable = null;
 	// 			var pathField = null;
@@ -287,7 +288,7 @@ FolderView.prototype.onRestore = function(){
 	// 			var modalWindow = new MoveModal(folder_view,folder_view.selectedObjects,folder_view.path);
 					
 	// 		});
-	// 		toolbar_menu.delete_button.tappable(function(){
+	// 		toolbar_menu.delete_button.on('tap',function(){
 
 	// 			var deleteModal = new DeleteModal();
 			
@@ -393,17 +394,17 @@ FolderView.prototype.onRestore = function(){
 	// 				);
 	// 			}										
 	// 		});
-	// 		toolbar_menu.select_all_button.show().tappable(function(){
+	// 		toolbar_menu.select_all_button.show().on('tap',function(){
 	// 			for(i in folder_view.displayedObjects){
 	// 				var obj = folder_view.displayedObjects[i];
 	// 				folder_view.clickSelectable(obj,true);
 	// 			}
 	// 		});
-	// 		toolbar_menu.cancel_button.show().tappable(function(){
+	// 		toolbar_menu.cancel_button.show().on('tap',function(){
 	// 			folder_view.cancelSelection();
 	// 		});
 	// 	});
-	// 	toolbar_menu.new_item_button.show().tappable(function(){
+	// 	toolbar_menu.new_item_button.show().on('tap',function(){
 			
 	// 		var newItemFakeResponse = {
 	// 			"Objects" : [
@@ -422,7 +423,7 @@ FolderView.prototype.onRestore = function(){
 	// 		itemView.updateView();
 
 	// 	});
-	// 	toolbar_menu.new_folder_button.show().tappable(function(){
+	// 	toolbar_menu.new_folder_button.show().on('tap',function(){
 			
 	// 		var newFolderModal = new NewFolderModal(folder_view.path);
 
@@ -493,7 +494,7 @@ FolderView.prototype.displayPageNumbers = function(){
 	if(current==1){
 		folder_view.previousPageButton.attr("disabled", "disabled");
 	} else {
-		folder_view.previousPageButton.removeAttr("disabled").tappable(function() {
+		folder_view.previousPageButton.removeAttr("disabled").on('tap',function() {
 			if($(this).is(':disabled') == false){
 				var newRequest = JSON.parse(JSON.stringify(request));
 				var iconcap = othersize;
@@ -516,7 +517,7 @@ FolderView.prototype.displayPageNumbers = function(){
 	if(current==totalpages){
 		folder_view.nextPageButton.attr("disabled", "disabled");
 	} else {
-		folder_view.nextPageButton.removeAttr("disabled").tappable(function() {
+		folder_view.nextPageButton.removeAttr("disabled").on('tap',function() {
 			if($(this).is(':disabled') == false){
 				var newRequest = JSON.parse(JSON.stringify(request));
 				newRequest['Parameters']['Starting Index'] = start+currentsize;

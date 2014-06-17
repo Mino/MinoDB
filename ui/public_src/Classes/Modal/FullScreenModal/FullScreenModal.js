@@ -29,7 +29,7 @@ function FullScreenModal(titleText){
 			.addClass("mino_button modalCloseButton no_top no_right no_bottom")
 			.css("float","right")
 			.text("×")
-			.tappable(function(){
+			.on('tap',function(){
 				modal.close();
 			})
 		)

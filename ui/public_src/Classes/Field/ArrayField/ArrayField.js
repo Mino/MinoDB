@@ -45,7 +45,7 @@ function ArrayField(field,details){
 	.appendTo(arrayField.element);
 
 	arrayField.addButton = $("<button />").addClass("mino_button").text("Add")
-	.tappable(function(){
+	.on('tap',function(){
 		arrayField.createField();
 	})
 	.appendTo(arrayField.element);

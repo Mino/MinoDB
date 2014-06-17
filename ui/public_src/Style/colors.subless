@@ -1,4 +1,11 @@
 @minoColor1: #2F78B2;
+
+@mino_button_color: #92BCB8;
+@mino_button_color_active: #002B36;
+
+@background_pane_color: rgba(240,240,240,1.0);
+@background_color: rgba(240,240,240,1.0);
+
 @borderColor: blue;
 @lighterBorderColor: gray;
 @errorColor: purple;

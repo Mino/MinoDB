@@ -12,7 +12,6 @@ function NotFoundPage(parameters,url,wildcard_contents){
 	.append(
 		page.description = $("<div />").addClass("description").text("Page not found")
 	)
-
 }
 
 NotFoundPage.prototype.get_title = function(){

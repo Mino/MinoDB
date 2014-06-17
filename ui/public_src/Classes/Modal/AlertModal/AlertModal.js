@@ -9,7 +9,7 @@ function AlertModal(title){
 		$("<button />")
 	 	.addClass("mino_button singleButton noBorder")
 	 	.text("OK")
-	 	.tappable(function(e){
+	 	.on('tap',function(e){
 			if(e.target !== this){return;}
 			modal.close();	
 	 	})

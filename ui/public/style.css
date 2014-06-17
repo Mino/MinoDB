@@ -27,6 +27,14 @@
 }
 .fieldval_ui_form .field_container > .field_title {
   font-size: 16px;
+  line-height: 16px;
+  display: inline-block;
+  padding-right: 5px;
+}
+.fieldval_ui_form .field_container > .field_description {
+  font-size: 14px;
+  line-height: 16px;
+  color: gray;
   display: inline-block;
   padding-right: 5px;
 }
@@ -62,6 +70,9 @@
   box-sizing: border-box;
   border: 1px solid #999;
 }
+.object_field > .input_holder {
+  margin-left: 10px;
+}
 .display_field > .input_holder > div {
   font-size: 14px;
 }
@@ -91,7 +102,7 @@
   width: 40%;
 }
 body {
-  margin: 5px;
+  margin: 0px;
   background-color: #f0f0f0;
   font-family: Arial, Helmet, Freesans, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -108,6 +119,13 @@ textarea {
 }
 .semibold {
   font-weight: bold;
+}
+.no_select {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
 }
 .center_holder {
   max-width: 480px;
@@ -299,12 +317,12 @@ textarea {
   font-size: 16px;
   font-weight: bold;
   color: white;
-  background-color: #92BCB8;
+  background-color: #92bcb8;
   cursor: pointer;
   margin: 0px;
 }
 .mino_button:active {
-  background-color: #002B36;
+  background-color: #002b36;
 }
 .body_text {
   padding-top: 10px;
@@ -319,39 +337,32 @@ textarea {
   margin-bottom: 20px;
   letter-spacing: -1px;
 }
-.browser_page .browser {
-  padding: 12px;
-}
 .browser_page .browser .address_bar {
   width: 100%;
   min-height: 40px;
   padding: 0px;
   margin: 0px;
   z-index: 11;
-  position: absolute;
   overflow: visible;
   top: 0px;
   left: 0px;
 }
-.browser_page .browser .address_bar .pathButtons {
-  top: -1px;
-  left: 0px;
-  position: absolute;
+.browser_page .browser .address_bar .path_buttons {
   margin-right: 5px;
+  list-style: none;
+  display: inline-table;
   -webkit-user-select: none;
   -khtml-user-select: none;
   -moz-user-select: none;
   -o-user-select: none;
   user-select: none;
-  overflow-x: hidden;
-  width: 100%;
   min-height: 35px;
+  margin: 0px;
 }
-.browser_page .browser .address_bar .pathButtons .pathbutton {
+.browser_page .browser .address_bar .path_buttons .pathbutton {
   cursor: pointer;
-  display: block;
+  display: inline-block;
   position: relative;
-  float: left;
   margin: -1px 10px 0px -10px;
   height: 32px;
   white-space: nowrap;
@@ -361,118 +372,69 @@ textarea {
   -o-user-select: none;
   user-select: none;
 }
-.browser_page .browser .address_bar .pathButtons .pathbutton .left_arrow .leftArrowBackground {
-  position: absolute;
-  top: 1px;
-  left: -10px;
-  float: left;
-  width: 0px;
-  height: 0px;
-  margin-left: 10px;
+.browser_page .browser .address_bar .path_buttons .pathbutton a {
+  display: inline-block;
+  height: 30px;
+  line-height: 30px;
+  padding-left: 25px;
+  padding-right: 5px;
+  background: #92bcb8;
+  text-align: center;
+  box-sizing: border-box;
+  position: relative;
+  margin-right: 5px;
+  text-decoration: none;
+  color: #fff;
+}
+.browser_page .browser .address_bar .path_buttons .pathbutton a:after {
+  content: "";
   border-top: 15px solid transparent;
-  border-left: 15px solid #ffffff;
   border-bottom: 15px solid transparent;
-  z-index: 2;
-}
-.browser_page .browser .address_bar .pathButtons .pathbutton .left_arrow .leftArrowBorder {
+  border-left: 15px solid #92bcb8;
   position: absolute;
-  top: 0px;
-  left: -10px;
-  float: left;
-  width: 0px;
-  height: 0px;
-  margin-left: 10px;
-  border-top: 16px solid transparent;
-  border-left: 16px solid rgba(0, 0, 0, 0.5);
-  border-bottom: 16px solid transparent;
-  z-index: 2;
-}
-.browser_page .browser .address_bar .pathButtons .pathbutton .right_arrow .rightArrowBackground {
-  position: absolute;
-  top: 1px;
   right: -15px;
-  float: left;
-  width: 0px;
-  height: 0px;
-  margin-left: 10px;
+  top: 0;
+  z-index: 1;
+}
+.browser_page .browser .address_bar .path_buttons .pathbutton a:before {
+  content: "";
   border-top: 15px solid transparent;
-  border-left: 15px solid #ffffff;
   border-bottom: 15px solid transparent;
-  z-index: 2;
-}
-.browser_page .browser .address_bar .pathButtons .pathbutton .right_arrow .rightArrowHighlight {
+  border-left: 15px solid #f0f0f0;
   position: absolute;
-  bottom: 1px;
-  right: -4px;
-  float: left;
-  width: 0px;
-  height: 0px;
-  margin-left: 10px;
-  border-top: 0px solid transparent;
-  border-left: 4px solid #2c8eda;
-  border-bottom: 0px solid transparent;
-  z-index: 2;
-  -webkit-transition: 0.1s ease;
-  -moz-transition: 0.1s ease;
-  -ms-transition: 0.1s ease;
-  -o-transition: 0.1s ease;
-  transition: 0.1s ease;
+  left: 0;
+  top: 0;
 }
-.browser_page .browser .address_bar .pathButtons .pathbutton .right_arrow .rightArrowBorder {
-  position: absolute;
-  top: 0px;
-  right: -16px;
-  float: left;
-  width: 0px;
-  height: 0px;
-  margin-left: 10px;
-  border-top: 16px solid transparent;
-  border-left: 16px solid rgba(0, 0, 0, 0.5);
-  border-bottom: 16px solid transparent;
-  z-index: 2;
+.browser_page .browser .address_bar .path_buttons .pathbutton a:active {
+  background: #002b36;
 }
-.browser_page .browser .address_bar .pathButtons .pathbutton.toppathbutton .mino_button {
+.browser_page .browser .address_bar .path_buttons .pathbutton a:active:after {
+  border-left-color: #002b36;
+}
+.browser_page .browser .address_bar .path_buttons .pathbutton.toppathbutton .mino_button {
   padding-left: 10px;
 }
-.browser_page .browser .address_bar .pathButtons .pathbutton.folder_button .mino_button {
+.browser_page .browser .address_bar .path_buttons .pathbutton.folder_button .mino_button {
   border-left: none;
   border-right: none;
 }
-.browser_page .browser .address_bar .pathButtons .pathbutton.endpathbutton {
+.browser_page .browser .address_bar .path_buttons .pathbutton.endpathbutton {
   margin-right: 10px;
 }
-.browser_page .browser .address_bar .pathButtons .pathbutton.endpathbutton .mino_button {
+.browser_page .browser .address_bar .path_buttons .pathbutton.endpathbutton .mino_button {
   padding-right: 10px;
 }
-.browser_page .browser .address_bar .pathButtons .pathbutton .mino_button {
-  padding-left: 23px;
-  padding-right: 5px;
-  margin: 0px;
-  height: 32px;
-  background-color: #ffffff;
-}
-.browser_page .browser .address_bar .pathButtons .pathbutton .mino_button:active:enabled {
-  -webkit-transform: scale(1);
-  -moz-transform: scale(1);
-  -ms-transform: scale(1);
-  -o-transform: scale(1);
-  transform: scale(1);
-}
-.browser_page .browser .address_bar .pathButtons .pathbutton:active .rightArrowHighlight {
-  border-bottom-width: 4px;
-}
-.browser_page .browser .address_bar .pathButtons .pathbutton .typepathbutton {
+.browser_page .browser .address_bar .path_buttons .pathbutton .typepathbutton {
   padding-left: 8px;
   padding-right: 8px;
 }
-.browser_page .browser .address_bar .pathButtons .pathbutton.newLinePathButton {
+.browser_page .browser .address_bar .path_buttons .pathbutton.newLinePathButton {
   margin-left: 0px;
 }
-.browser_page .browser .address_bar .pathButtons .editAddressButtonSquare {
+.browser_page .browser .address_bar .path_buttons .editAddressButtonSquare {
   margin-left: -10px;
   margin-bottom: 6px;
   float: left;
-  -webkit-appearance: none;
   border: none;
   cursor: pointer;
   background-color: #dddddd;
@@ -494,18 +456,18 @@ textarea {
   -o-transition-property: border;
   transition-property: border;
 }
-.browser_page .browser .address_bar .pathButtons .editAddressButtonSquare:active {
+.browser_page .browser .address_bar .path_buttons .editAddressButtonSquare:active {
   border-bottom: 4px solid #555555;
 }
-.browser_page .browser .address_bar .pathButtons .editAddressButtonSquare.newLine {
+.browser_page .browser .address_bar .path_buttons .editAddressButtonSquare.newLine {
   margin-left: 0px;
 }
-.browser_page .browser .address_bar .pathButtons .editAddressButtonFolder {
+.browser_page .browser .address_bar .path_buttons .editAddressButtonFolder {
   margin-top: 0px;
   margin-right: 13px;
   white-space: nowrap;
 }
-.browser_page .browser .address_bar .pathButtons .editAddressButtonFolder button {
+.browser_page .browser .address_bar .path_buttons .editAddressButtonFolder button {
   -webkit-appearance: none;
   border: none;
   cursor: pointer;
@@ -528,14 +490,14 @@ textarea {
   -o-transition-property: border;
   transition-property: border;
 }
-.browser_page .browser .address_bar .pathButtons .editAddressButtonFolder button:active {
+.browser_page .browser .address_bar .path_buttons .editAddressButtonFolder button:active {
   border-bottom: 4px solid #555555;
 }
-.browser_page .browser .address_bar .pathButtons .editAddressButtonFolder.needIndent button {
+.browser_page .browser .address_bar .path_buttons .editAddressButtonFolder.needIndent button {
   padding-left: 23px;
   margin-right: 0px;
 }
-.browser_page .browser .address_bar .pathButtons .editAddressButtonFolder.newLine {
+.browser_page .browser .address_bar .path_buttons .editAddressButtonFolder.newLine {
   margin-left: 0px;
 }
 .browser_page .browser .address_bar .goAddressButton {
@@ -589,6 +551,9 @@ textarea {
   width: 0px;
   height: 30px;
   float: left;
+}
+.browser_page .browser .view_container {
+  padding: 12px;
 }
 .browser_page .browser .resultSetPadding {
   height: 0px;
@@ -644,6 +609,11 @@ textarea {
   padding-top: 5px;
   padding-bottom: 7px;
   cursor: pointer;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
 }
 .auth_page .auth_field_error {
   background-color: #c72a22;
@@ -682,6 +652,11 @@ textarea {
   margin-right: 10px;
   cursor: pointer;
   font-weight: bold;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
 }
 .docs_page .menu_expand_button {
   position: absolute;

@@ -48,7 +48,7 @@ function LinkField(field,details){
 	.addClass("mino_button mino_buttonOnLight linkFieldButton no_top")
 	.appendTo(linkField.element)
 	.text("Select")
-	.tappable(function(){
+	.on('tap',function(){
 		selectObjectModal = new SelectObjectModal(
 			linkField,
 			receiveSelectionFunction
@@ -81,7 +81,7 @@ LinkField.prototype.updateView = function(){
 		.css("display","inline-block")
 		.appendTo(linkField.element)
 		.text("Set to Current")
-		.tappable(function(){
+		.on('tap',function(){
 			var currentPath = field.getCurrentPath();
 			if(currentPath.charAt(0)=='/'){
 				linkField.inputBox.val(currentPath);

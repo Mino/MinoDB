@@ -135,7 +135,7 @@ function LocationField(field,details){
 	locField.selectLocationButton = $("<button />").addClass("mino_button")
 	.text("Search for Location")
 	.css("margin-top","5px")
-	.tappable(function(){
+	.on('tap',function(){
 		new MapModal(locField,function(address,lat,lon){
 
 		});

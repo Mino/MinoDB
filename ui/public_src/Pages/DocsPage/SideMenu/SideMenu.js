@@ -180,7 +180,7 @@ SideMenu.prototype.create_menu_elements = function(){
 				$("<span />").text(title)
 			)
 			.data("section",section_data)
-			.tappable(function(){
+			.on('tap',function(){
 				var titleDiv = $(this);
 				var section_data = titleDiv.data("section");
 				if(!section_data.extended){

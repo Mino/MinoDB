@@ -205,7 +205,7 @@ $(document).ready(function() {
 				$("<span />").text(title)
 			)
 			.data("section",sectionData)
-			.tappable(function(){
+			.on('tap',function(){
 				var titleDiv = $(this);
 				var sectionData = titleDiv.data("section");
 				if(!sectionData.extended){
@@ -375,7 +375,7 @@ $(document).ready(function() {
 								pre.addClass("prettyprint linenums");
 
 								$("<button />").addClass("mino_button").text("Select All")
-								.tappable(function(){
+								.on('tap',function(){
 									pre.selectText();
 								})
 								.insertBefore(pre);

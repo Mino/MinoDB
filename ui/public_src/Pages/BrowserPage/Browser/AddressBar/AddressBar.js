@@ -14,7 +14,7 @@ function AddressBar(browser){
 			.addClass("mino_button goAddressButton no_left no_right no_top")
 			.text("Go")
 			.hide()
-			.tappable(function(){
+			.on('tap',function(){
 				address_bar.go();
 			})
 		)
@@ -23,7 +23,7 @@ function AddressBar(browser){
 			.addClass("mino_button cancel_addressButton no_right no_top")
 			.text("Cancel")
 			.hide()
-			.tappable(function(){
+			.on('tap',function(){
 				address_bar.cancel_address()
 			})
 		)
@@ -53,9 +53,9 @@ function AddressBar(browser){
 		)
 	)
 	.append(
-		address_bar.pathButtons = $("<div />")
-		.addClass("pathButtons")
-		.tappable(function(e){
+		address_bar.path_buttons = $("<ul />")
+		.addClass("path_buttons")
+		.on('tap',function(e){
 			if(e.target !== this){return;}
 			address_bar.editAddress();
 		})
@@ -76,7 +76,7 @@ function AddressBar(browser){
 	// 		.addClass("backButton")
 	// 		.html("&#9668;")
 	// 		.css("width","30px")
-	// 		.tappable(function() {
+	// 		.on('tap',function() {
 	// 			browser.backwardPress();
 	// 		})
 	// 	)
@@ -87,7 +87,7 @@ function AddressBar(browser){
 	// 		.addClass("forwardButton")
 	// 		.html("&#9658;")
 	// 		.css("width","30px")
-	// 		.tappable(function() {
+	// 		.on('tap',function() {
 	// 			browser.forwardPress();
 	// 		})
 	// 	)
@@ -106,7 +106,7 @@ function AddressBar(browser){
 			//createHomeIcon()
 			$("<div />").text("Home").addClass("homeIcon16 dark")
 		)
-		.tappable(function(e){
+		.on('tap',function(e){
 			if(e.metaKey){
 				//Holding Cmd or Ctrl
 				return true;
@@ -140,7 +140,7 @@ AddressBar.prototype.createNavButtonPadding = function(){
 AddressBar.prototype.editAddress = function(){
 	var address_bar = this;
 
-	address_bar.pathButtons.hide();
+	address_bar.path_buttons.hide();
 	address_bar.text_input_holder.show();
 	address_bar.goAddressButton.show();	
 	address_bar.cancel_addressButton.show();	
@@ -168,7 +168,7 @@ AddressBar.prototype.go = function(){
 AddressBar.prototype.cancel_address = function(){
 	var address_bar = this;
 
-	address_bar.pathButtons.show();
+	address_bar.path_buttons.show();
 	address_bar.text_input_holder.hide();
 	address_bar.cancel_addressButton.hide();
 	address_bar.goAddressButton.hide();
@@ -179,7 +179,7 @@ AddressBar.prototype.cancel_address = function(){
 AddressBar.prototype.editAddress = function(){
 	var address_bar = this;
 
-	address_bar.pathButtons.hide();
+	address_bar.path_buttons.hide();
 	address_bar.text_input_holder.show();
 	address_bar.goAddressButton.show();	
 	address_bar.cancel_addressButton.show();	

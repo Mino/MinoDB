@@ -1,99 +1,55 @@
-@pathbutton_border_color: @mino_buttonBorderColor;
-@pathbutton_background: @mino_buttonColor;
-@pathbutton_page_background: white;
+@pathbutton_background: @mino_button_color;
+@pathbutton_background_active: @mino_button_color_active;
+@pathbutton_page_background: @background_color;
 
 .pathbutton{
 	cursor: pointer;
-	display: block;
+	display: inline-block;
 	position: relative;
-	float: left;
 	margin: -1px 10px 0px -10px;
 	height: 32px;
 	white-space: nowrap;
 	
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-o-user-select: none;
-	user-select: none;
+	.no_select;
 
-	.left_arrow{
-		.leftArrowBackground{
-			position: absolute;
-			top:1px;
-			left:-10px;
-			float:left;
-			width: 0px;
-			height: 0px;
-			margin-left: 10px;
+	a{
+		display: inline-block;
+		height: 30px;
+		line-height: 30px;
+		padding-left: 25px;
+		padding-right: 5px;
+		background: @pathbutton_background;
+		text-align: center;
+		box-sizing: border-box;
+		position: relative;
+		margin-right: 5px;
+		
+		text-decoration: none;
+		color: #fff;	
+
+		&:after{
+			content: "";  
 			border-top: 15px solid transparent;
-			border-left: 15px solid @pathbutton_page_background;
-			border-bottom: 15px solid transparent;
-			z-index: 2;
+ 			border-bottom: 15px solid transparent;
+  			border-left: 15px solid @pathbutton_background;
+			position: absolute; right: -15px; top: 0;
+			z-index: 1;
 		}
 
-		.leftArrowBorder{
-			position: absolute;
-			top:0px;
-			left:-10px;
-			float:left;
-			width: 0px;
-			height: 0px;
-			margin-left: 10px;
-			border-top: 16px solid transparent;
-			border-left: 16px solid @pathbutton_border_color;
-			border-bottom: 16px solid transparent;
-			z-index: 2;
-		}
-	}
-
-	.right_arrow{
-		.rightArrowBackground{
-			position: absolute;
-			top:1px;
-			right:-15px;
-			float:left;
-			width: 0px;
-			height: 0px;
-			margin-left: 10px;
+		&:before{
+			content: "";  
 			border-top: 15px solid transparent;
-			border-left: 15px solid @pathbutton_background;
-			border-bottom: 15px solid transparent;
-			z-index: 2;
+  			border-bottom: 15px solid transparent;
+  			border-left: 15px solid @pathbutton_page_background;
+			position: absolute; left: 0; top: 0;
 		}
 
-		.rightArrowHighlight{
-			position: absolute;
-			bottom: 1px;
-			right:-4px;
-			float:left;
-			width: 0px;
-			height: 0px;
-			margin-left: 10px;
-			border-top: 0px solid transparent;
-			border-left: 4px solid @minoActiveButtonColor;
-			border-bottom: 0px solid transparent;
-			z-index: 2;
-
-			-webkit-transition: 0.1s ease;
-			-moz-transition: 0.1s ease;
-			-ms-transition: 0.1s ease;
-			-o-transition: 0.1s ease;
-			transition: 0.1s ease;
+		&:active {
+			background: @pathbutton_background_active;
 		}
 
-		.rightArrowBorder{
-			position: absolute;
-			top:0px;
-			right:-16px;
-			float:left;
-			width: 0px;
-			height: 0px;
-			margin-left: 10px;
-			border-top: 16px solid transparent;
-			border-left: 16px solid @pathbutton_border_color;
-			border-bottom: 16px solid transparent;
-			z-index: 2;
+		&:active:after {
+			border-left-color: @pathbutton_background_active;
 		}
 	}
 
@@ -117,34 +73,6 @@
 			padding-right: 10px;
 		}
 	}
-
-	.mino_button{
-		padding-left: 23px;
-		padding-right: 5px;
-		margin: 0px;
-		height: 32px;
-		background-color: @pathbutton_background;
-
-		&:active:enabled{
-			-webkit-transform: scale(1.0);
-			-moz-transform: scale(1.0);
-			-ms-transform: scale(1.0);
-			-o-transform: scale(1.0);
-			transform: scale(1.0);
-		}
-	}
-
-	//Active
-
-	&:active {
-		.rightArrowHighlight{
-			border-bottom-width: 4px;
-		}
-
-		.mino_button{
-			.mino_button.active;
-		}
-	}
 }
 
 .pathbutton .typepathbutton{
@@ -161,8 +89,6 @@
 	margin-bottom: 6px;
 	float: left;
 
-	.noselect;
-	-webkit-appearance: none;
 	border: none;
 	cursor: pointer;
 	background-color: @grayButtonBackground;
@@ -200,7 +126,6 @@
 	white-space: nowrap;
 
 	button{
-		.noselect;
 		-webkit-appearance: none;
 		border: none;
 		cursor: pointer;

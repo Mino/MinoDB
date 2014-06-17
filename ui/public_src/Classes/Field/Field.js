@@ -336,7 +336,7 @@ Field.prototype.createElement = function(){
 				.addClass("mino_button")
 				.addClass("redmino_button")
 				.addClass("deleteRowButton")
-				.text("×").tappable(function(){
+				.text("×").on('tap',function(){
 					console.log(field.parent);
 					field.parent.removeNested(field);
 				})

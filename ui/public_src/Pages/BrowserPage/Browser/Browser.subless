@@ -4,9 +4,11 @@
 	
 	@import "AddressBar/AddressBar.subless";
 
-	@import "Views/Views.subless";
+	.view_container{
+		padding: 12px;
 
-	padding: 12px;
+		@import "Views/Views.subless";
+	}
 
 	.resultSetPadding{
 		height: 0px;

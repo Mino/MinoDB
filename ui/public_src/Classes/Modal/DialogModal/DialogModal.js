@@ -12,7 +12,7 @@ function DialogModal(title){
 		modal.cancelButton = $("<button />")
 	 	.addClass("mino_button leftButton noBorder")
 	 	.text("Cancel")
-	 	.tappable(function(e){
+	 	.on('tap',function(e){
 			if(e.target !== this){return;}			 		
 			modal.cancelCallback();
 			modal.closeModal();	
@@ -22,7 +22,7 @@ function DialogModal(title){
 		modal.okButton = $("<button />")
 	 	.addClass("mino_button rightButton no_top no_right no_bottom")
 	 	.text("OK")
-	 	.tappable(function(e){
+	 	.on('tap',function(e){
 			if(e.target !== this){return;}				 		
 			modal.okCallback();
 			if(modal.okClosesModal){

@@ -14,7 +14,7 @@ function Tooltip(infoElement,labelElement){
 	}
 	
 	if(isTouchscreen){
-		tooltip.element.tappable(function(){
+		tooltip.element.on('tap',function(){
 			tooltip.show();
 		});
 	} else {

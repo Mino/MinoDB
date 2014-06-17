@@ -64,7 +64,7 @@ SearchField.prototype.createElement = function(){
 						.addClass("plainmino_button")
 						.addClass("removemino_button")
 						.html("&#215;")
-						.tappable(function(){
+						.on('tap',function(){
 							field.removePressed();
 						})
 					)
@@ -100,7 +100,7 @@ SearchField.prototype.createElement = function(){
 				.addClass("mino_button")
 				.addClass("redmino_button")
 				.addClass("deleteRowButton")
-				.text("×").tappable(function(){
+				.text("×").on('tap',function(){
 					console.log(field.parent);
 					field.parent.removeNested(field);
 				})

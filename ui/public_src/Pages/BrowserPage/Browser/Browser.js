@@ -13,25 +13,27 @@ function Browser(){
 
     for(var i = 0; i<5; i++){
         var path_button = new PathButton("Path "+i, "/Test/Path "+i, 0, null);
-        browser.address_bar.pathButtons.append(
+        browser.address_bar.path_buttons.append(
             path_button.element
         )
     }
 
 	browser.latestRequest = null;
 
-	browser.container = $("<div />");
 	browser.element = $("<div />")
 	.addClass("browser")
-	.data("object",browser)
 	.append(
-		browser.address_bar.element
+		browser.address_bar.element,
+		browser.view_container = $("<div />").addClass("view_container")
 	)
-	.appendTo(browser.container);
 
-	var path = new Path("/TestUser/Subfolder//Item");
+	var path = new Path();
+	var path_error = path.init("/TestUser/Subfolder//Item");
+	console.log(path_error);
 
-	console.log(path);
+	var id = new ID();
+	var id_error = id.init("1234567890");
+	console.log(id_error);
 
     browser.view = new FolderView(browser, path);
     browser.element.append(browser.view.element);
@@ -43,7 +45,6 @@ function Browser(){
 	// browser.loadingIndicator.element.appendTo(browser.container);
 
 	browser.capacityElement = window;
-	browser.verticalPadding = 180;
 	browser.onRestore = function(){};
 	browser.onLoad = function(type,object){
 		var browser = this;
@@ -255,7 +256,6 @@ Browser.prototype.forceLoadAddress = function(address){
 	}
 
 	browser.hideElements();
-	browser.element.empty().show();
 	browser.loadingIndicator.hide();
 
 	$(browser.element).append(
@@ -299,7 +299,7 @@ Browser.prototype.loading = function(hide, canCancel){
 
 Browser.prototype.hideElements = function(){
 	var browser = this;
-	browser.element.hide();
+	console.log("hideElements");
 }
 
 Browser.prototype.forward = function(){

@@ -5,11 +5,13 @@
 @import("../../bower_components/fieldval-basicval/fieldval-basicval.js");
 @import("../../bower_components/fieldval-ui/fieldval-ui.js");
 @import("../../extend.js");
+@import("../../errors.js");
 
 @import("common.js");
 
 @import("../../common_classes/Constants.js");
 @import("../../common_classes/Path.js");
+@import("../../common_classes/ID.js");
 
 @import("fieldval_themes/mino_theme.js");
 
