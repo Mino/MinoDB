@@ -6,7 +6,7 @@
     "fieldval": "*",
     "fieldval-basicval": "*",
     "fieldval-ui": "*",
-    "jquery.autoResize": "alexbardas/jQuery.fn.autoResize"
+    "jquery-autosize": "*"
   },
   "private": true
 }

@@ -1,5 +1,5 @@
 @import("../../bower_components/jquery/dist/jquery.js");
-@import("../../bower_components/jquery.autoresize/jquery.autoresize.js");
+@import("../../bower_components/jquery-autosize/jquery.autosize.js");
 @import("../../bower_components/safe/safe.min.js");
 @import("../../bower_components/fieldval/fieldval.js");
 @import("../../bower_components/fieldval-basicval/fieldval-basicval.js");

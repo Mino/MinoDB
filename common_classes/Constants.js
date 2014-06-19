@@ -1,9 +1,9 @@
-var count = 0;
+var constant_count = 0;
 
 var Constants = {
-	NO_PERMISSION : count++,
-	READ_PERMISSION : count++,
-	WRITE_PERMISSION : count++
+	NO_PERMISSION : constant_count++,
+	READ_PERMISSION : constant_count++,
+	WRITE_PERMISSION : constant_count++
 }
 
 if (typeof module != 'undefined') {

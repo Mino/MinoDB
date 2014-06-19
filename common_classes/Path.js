@@ -1,7 +1,7 @@
 var Constants, Common, FieldVal, errors;
 if (typeof require != 'undefined') {
-    Constants = require('../Constants');
-    Common = require('../Common');
+    Constants = require('./Constants');
+    Common = require('./Common');
     FieldVal = require('fieldval');
     errors = require('../errors')
 }

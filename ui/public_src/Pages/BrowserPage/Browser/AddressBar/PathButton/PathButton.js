@@ -10,7 +10,7 @@ function PathButton(text,address,button_type,browser){
 	pb.address = address;
 	pb.browser = browser;
 
-	pb.element = $("<li />").addClass("pathbutton")
+	pb.element = $("<div />").addClass("pathbutton")
 	.append(
 		$("<a />")
 		.ajax_url(function(){

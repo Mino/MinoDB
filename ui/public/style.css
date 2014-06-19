@@ -346,11 +346,18 @@ textarea {
   overflow: visible;
   top: 0px;
   left: 0px;
+  overflow-x: hidden;
+}
+.browser_page .browser .address_bar .nav_buttons {
+  display: inline-block;
+  width: 50px;
+  height: 40px;
+  padding: 0px;
+  z-index: 2;
 }
 .browser_page .browser .address_bar .path_buttons {
-  margin-right: 5px;
   list-style: none;
-  display: inline-table;
+  display: inline;
   -webkit-user-select: none;
   -khtml-user-select: none;
   -moz-user-select: none;
@@ -363,7 +370,6 @@ textarea {
   cursor: pointer;
   display: inline-block;
   position: relative;
-  margin: -1px 10px 0px -10px;
   height: 32px;
   white-space: nowrap;
   -webkit-user-select: none;
@@ -500,24 +506,42 @@ textarea {
 .browser_page .browser .address_bar .path_buttons .editAddressButtonFolder.newLine {
   margin-left: 0px;
 }
+.browser_page .browser .address_bar .edit_address_button {
+  -webkit-appearance: none;
+  border: none;
+  outline: none;
+  min-height: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background-color: #92bcb8;
+  cursor: pointer;
+  margin: 0px;
+}
+.browser_page .browser .address_bar .edit_address_button:active {
+  background-color: #002b36;
+}
 .browser_page .browser .address_bar .goAddressButton {
   float: left;
 }
 .browser_page .browser .address_bar .cancel_addressButton {
   float: left;
 }
-.browser_page .browser .address_bar .text_input {
-  display: inline-block;
-  line-height: 28px;
+.browser_page .browser .address_bar .text_input_holder {
   position: absolute;
   top: 0px;
   left: 0px;
-  padding: 0px;
-  padding-left: 5px;
+}
+.browser_page .browser .address_bar .text_input_holder .text_input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px;
+  line-height: 13px;
   font-size: 13px;
   border-top: none;
   border-left: none;
   -webkit-border-radius: 0px;
+  resize: none;
 }
 .browser_page .browser .address_bar .addressBarButtonsHolder {
   position: absolute;
@@ -537,20 +561,6 @@ textarea {
 }
 .browser_page .browser .address_bar .historybutton.forwardButton {
   margin-right: 0px;
-}
-.browser_page .browser .address_bar .navbuttons {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 0px;
-  height: 40px;
-  padding: 0px;
-  z-index: 2;
-}
-.browser_page .browser .address_bar .navButtonsPadding {
-  width: 0px;
-  height: 30px;
-  float: left;
 }
 .browser_page .browser .view_container {
   padding: 12px;

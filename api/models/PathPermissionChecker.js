@@ -1,4 +1,4 @@
-var Constants = require('../Constants');
+var Constants = require('../../common_classes/Constants');
 var logger = require('tracer').console();
 
 function CallbackObject(callback){

@@ -7,12 +7,20 @@
 	overflow: visible;
 	top:0px;
 	left:0px;
+	overflow-x: hidden;
+
+	.nav_buttons{
+		display: inline-block;
+		width: 50px;
+		height: 40px;
+		padding: 0px;
+		z-index: 2;
+	}
 
 	.path_buttons{
-		margin-right: 5px;
 		
 		list-style: none;
-		display: inline-table;
+		display: inline;
 
 		-webkit-user-select: none;
 		-khtml-user-select: none;
@@ -26,6 +34,10 @@
 		@import "PathButton/PathButton.subless";
 	}
 
+	.edit_address_button{
+		.mino_button;
+	}
+
 	.goAddressButton{
 		float:left;
 	}
@@ -34,18 +46,23 @@
 		float:left;
 	}
 
-	.text_input{
-		display: inline-block;
-		line-height: 28px;
+	.text_input_holder{
+
 		position: absolute;
 		top: 0px;
 		left: 0px;
-		padding: 0px;
-		padding-left: 5px;
-		font-size: 13px;
-		border-top: none;
-		border-left: none;
-		-webkit-border-radius: 0px;
+
+		.text_input{
+			width: 100%;
+			box-sizing: border-box;
+			padding: 5px;
+			line-height: 13px;
+			font-size: 13px;
+			border-top: none;
+			border-left: none;
+			-webkit-border-radius: 0px;
+			resize: none;
+		}
 	}
 		
 	.addressBarButtonsHolder{
@@ -69,21 +86,5 @@
 
 	.historybutton.forwardButton{
 		margin-right: 0px;
-	}
-
-	.navbuttons{
-		position: absolute;
-		top:0px;
-		left:0px;
-		width: 0px;
-		height: 40px;
-		padding: 0px;
-		z-index: 2;
-	}
-
-	.navButtonsPadding{
-		width:0px;
-		height: 30px;
-		float: left;
 	}
 }

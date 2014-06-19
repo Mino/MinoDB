@@ -1,5 +1,5 @@
-var Constants = require('../Constants');
-var Path = require('./Path');
+var Constants = require('../../common_classes/Constants');
+var Path = require('../../common_classes/Path');
 var logger = require('tracer').console();
 var Validator = require('fieldval');
 var bval = require('fieldval-basicval');

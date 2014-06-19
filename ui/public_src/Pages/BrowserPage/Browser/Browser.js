@@ -9,9 +9,9 @@ function Browser(){
 	browser.history = {};
 	browser.historyIndex = -1;
 
-	browser.address_bar = new AddressBar();
+	browser.address_bar = new AddressBar(browser);
 
-    for(var i = 0; i<5; i++){
+    for(var i = 0; i<8; i++){
         var path_button = new PathButton("Path "+i, "/Test/Path "+i, 0, null);
         browser.address_bar.path_buttons.append(
             path_button.element
@@ -153,7 +153,7 @@ Browser.prototype.forwardPress = function(){
 	}
 }
 
-Browser.prototype.loadAddress = function(address){
+Browser.prototype.load_address = function(address){
 	var browser = this;
 
 	//Loading a path without using the history buttons
@@ -334,13 +334,13 @@ Browser.prototype.iconCapacity = function(element,verticalPadding){
 	availableHeight-=verticalPadding;
 	availableWidth-=20;
 	
-	if(listoricon=="list"){
-		var capacity = Math.floor(availableHeight/35.0);
-		if(capacity>3){
-			return capacity;
-		}
-		return 3;
-	} else {	
+	// if(listoricon=="list"){
+	// 	var capacity = Math.floor(availableHeight/35.0);
+	// 	if(capacity>3){
+	// 		return capacity;
+	// 	}
+	// 	return 3;
+	// } else {	
 		var row = Math.floor(availableWidth/71.0);
 		var column = Math.floor(availableHeight/79.0);
 		if(column<1){
@@ -351,5 +351,5 @@ Browser.prototype.iconCapacity = function(element,verticalPadding){
 			return capacity;
 		}
 		return 3;
-	}
+	// }
 }

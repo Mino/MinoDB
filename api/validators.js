@@ -1,4 +1,4 @@
-var Path = require('./Models/Path');
+var Path = require('../common_classes/Path');
 
 exports.path = function(val, emit){
 	var path = new Path()

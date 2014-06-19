@@ -1,6 +1,6 @@
 var FieldVal = require('fieldval');
 var bval = require('fieldval-basicval');
-var Path = require('../Models/Path')
+var Path = require('../../common_classes/Path')
 var logger = require('tracer').console();
 
 module.exports = function(minodb, user, parameters, callback) {

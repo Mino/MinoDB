@@ -6,60 +6,54 @@ function AddressBar(browser){
 
 	address_bar.element = $("<div />")
 	.addClass("address_bar")
+	.on('tap',function(e){
+		if(e.target !== this){return;}
+		address_bar.editAddress();
+	})
 	.append(
-		address_bar.text_inputButtonsHolder = $("<div />")
-		.addClass("text_inputButtonsHolder")
-		.append(		
-			address_bar.goAddressButton = $("<button />")
-			.addClass("mino_button goAddressButton no_left no_right no_top")
-			.text("Go")
-			.hide()
-			.on('tap',function(){
-				address_bar.go();
-			})
-		)
-		.append(
-			address_bar.cancel_addressButton = $("<button />")
-			.addClass("mino_button cancel_addressButton no_right no_top")
-			.text("Cancel")
-			.hide()
-			.on('tap',function(){
-				address_bar.cancel_address()
-			})
-		)
-	)
-	.append(
-		address_bar.navButtons = $("<div />")
-		.addClass("navbuttons")
-	)
-	.append(
+		address_bar.nav_buttons = $("<div />")
+		.addClass("nav_buttons")
+		,
 		address_bar.text_input_holder = $("<div />")
 		.addClass("text_input_holder")
 		.hide()
 		.append(
 			address_bar.text_input = $("<textarea />")
 			.addClass("text_input")
-			.autoResize({
-			    maxHeight: 400,
-			    minHeight: 0,
-			    extraSpace: 1
-			})
 			.on("keydown",function(e){
 				if(e.keyCode==13){
 					e.preventDefault();
 					address_bar.go();
 				}
 			})
+			,
+			address_bar.edit_buttons = $("<div />").addClass("edit_buttons").append(
+				address_bar.go_button = $("<button />").addClass("mino_button").text("Go")
+				.on('tap',function(){
+					address_bar.go();
+				})
+				,
+				address_bar.cancel_button = $("<button />").addClass("mino_button").text("Cancel")
+				.on('tap',function(){
+					address_bar.cancel_address();
+				})
+			)
 		)
-	)
-	.append(
-		address_bar.path_buttons = $("<ul />")
+		,
+		address_bar.path_buttons = $("<div />")
 		.addClass("path_buttons")
-		.on('tap',function(e){
-			if(e.target !== this){return;}
-			address_bar.editAddress();
-		})
-	);
+		,
+		$("<button />").addClass("edit_address_button").text("Edit")
+	)
+
+	setTimeout(function(){
+		address_bar.text_input.autosize(//{
+		    // maxHeight: 400,
+		    // minHeight: 50,
+		    // extraSpace: 1
+		// }
+		)
+	},2000);
 
 	// if(browser.needNavigation==undefined){
 	// 	browser.needNavigation = true;
@@ -68,7 +62,7 @@ function AddressBar(browser){
 	// if(browser.needNavigation){
 	// 	address_bar.element.addClass("hasNavigationButtons");
 		
-	// 	address_bar.navButtons
+	// 	address_bar.nav_buttons
 	// 	.append(
 	// 		address_bar.backButton = $("<button />")
 	// 		.addClass("mino_button")
@@ -93,13 +87,11 @@ function AddressBar(browser){
 	// 	)
 	// }
 
-	address_bar.navButtons
+	address_bar.nav_buttons
 	.append(
 		$("<button />")
 		.addClass("mino_button homeButton no_top no_left")
 		.css({
-			"float" : "left",
-			"font-size" : "24px",
 			"width" : "32px"
 		})
 		.append(
@@ -111,30 +103,9 @@ function AddressBar(browser){
 				//Holding Cmd or Ctrl
 				return true;
 			}
-			address_bar.browser.loadAddress("/"+username+"/");
+			address_bar.browser.load_address("/"+username+"/");
 		})
 	);
-
-	address_bar.recalculateNavButtonWidth();
-}
-
-AddressBar.prototype.recalculateNavButtonWidth = function(){
-	var address_bar = this;
-
-	var accum_width = 0;
-	$(address_bar.navButtons).children().each(function() {
-	   accum_width += $(this).width() + 5;
-	});
-
-	$(address_bar.navButtons).width(accum_width);
-}
-
-AddressBar.prototype.createNavButtonPadding = function(){
-	var address_bar = this;
-
-	return $("<div />")
-	.addClass("navButtonsPadding")
-	.css("width",address_bar.navButtons.width());
 }
 
 AddressBar.prototype.editAddress = function(){
@@ -142,9 +113,8 @@ AddressBar.prototype.editAddress = function(){
 
 	address_bar.path_buttons.hide();
 	address_bar.text_input_holder.show();
-	address_bar.goAddressButton.show();	
-	address_bar.cancel_addressButton.show();	
-	address_bar.navButtons.hide();
+	address_bar.cancel_button.show();	
+	address_bar.nav_buttons.hide();
 
 	if(isTouchscreen){
 		var adr = address_bar.text_input.val();
@@ -158,7 +128,7 @@ AddressBar.prototype.editAddress = function(){
 
 AddressBar.prototype.go = function(){
 	var address_bar = this;
-	address_bar.browser.loadAddress(
+	address_bar.browser.load_address(
 		address_bar.text_input.val()
 	);
 	address_bar.text_input.blur();
@@ -170,9 +140,8 @@ AddressBar.prototype.cancel_address = function(){
 
 	address_bar.path_buttons.show();
 	address_bar.text_input_holder.hide();
-	address_bar.cancel_addressButton.hide();
-	address_bar.goAddressButton.hide();
-	address_bar.navButtons.show();
+	address_bar.cancel_button.hide();
+	address_bar.nav_buttons.show();
 	address_bar.text_input.blur();
 }
 
@@ -181,17 +150,16 @@ AddressBar.prototype.editAddress = function(){
 
 	address_bar.path_buttons.hide();
 	address_bar.text_input_holder.show();
-	address_bar.goAddressButton.show();	
-	address_bar.cancel_addressButton.show();	
-	address_bar.navButtons.hide();	
+	address_bar.cancel_button.show();	
+	address_bar.nav_buttons.hide();	
 		
-	if(isTouchscreen){
-		var adr = address_bar.text_input.val();
-		address_bar.text_input.val("");
-		address_bar.text_input.val(adr);
-	} else {
+	// if(isTouchscreen){
+	// 	var adr = address_bar.text_input.val();
+	// 	address_bar.text_input.val("");
+	// 	address_bar.text_input.val(adr);
+	// } else {
 		address_bar.text_input.focus().select();
-	}
+	// }
 }
 
 AddressBar.prototype.resize = function(resize_obj){
