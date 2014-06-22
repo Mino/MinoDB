@@ -1,6 +1,7 @@
 @import("AddressBar/AddressBar.js");
 @import("Views/Views.js");
 
+@import("RuleCache.js");
 @import("MainBrowser/MainBrowser.js");
 
 function Browser(){
@@ -8,6 +9,8 @@ function Browser(){
 
 	browser.history = {};
 	browser.historyIndex = -1;
+
+	browser.rule_cache = new RuleCache();
 
 	browser.address_bar = new AddressBar(browser);
 
@@ -18,8 +21,6 @@ function Browser(){
         )
     }
 
-	browser.latestRequest = null;
-
 	browser.element = $("<div />")
 	.addClass("browser")
 	.append(
@@ -27,16 +28,23 @@ function Browser(){
 		browser.view_container = $("<div />").addClass("view_container")
 	)
 
-	var path = new Path();
-	var path_error = path.init("/TestUser/Subfolder//Item");
-	console.log(path_error);
-
 	var id = new ID();
 	var id_error = id.init("1234567890");
 	console.log(id_error);
 
-    browser.view = new FolderView(browser, path);
-    browser.element.append(browser.view.element);
+
+	var path = new Path();
+	var path_error = path.init("/TestUser/Subfolder/");
+	console.log(path_error);
+    // browser.view = new FolderView(browser, path);
+    // browser.view_container.append(browser.view.element);
+
+	var path = new Path();
+	var path_error = path.init("/TestUser/Subfolder/Item");
+	console.log(path_error);
+
+    browser.view = new ItemView(browser, path);
+    browser.view_container.append(browser.view.element);
 	
 	// browser.loadingIndicator = new LoadingIndicator();
 	// browser.loadingIndicator.cancel_press = function(){

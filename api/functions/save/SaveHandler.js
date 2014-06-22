@@ -1,16 +1,16 @@
-var errors = require('../../errors')
+var errors = require('../../../errors')
 var Validator = require('fieldval');
 var bval = require('fieldval-basicval');
-var Path = require('../../common_classes/Path')
+var Path = require('../../../common_classes/Path')
 var ValidationRule = require('fieldval-rules');
-var PathPermissionChecker = require('../Models/PathPermissionChecker');
-var SaveObject = require('../Models/SaveObject')
+var PathPermissionChecker = require('../../Models/PathPermissionChecker');
+var SaveObject = require('./SaveObject')
 var logger = require('tracer').console();
 
-function SaveHandler(minodb, user, parameters, callback){
+function SaveHandler(api, user, parameters, callback){
     var sh = this;
 
-    sh.minodb = minodb;
+    sh.api = api;
     sh.user = user;
     sh.parameters = parameters;
     sh.callback = callback;
@@ -31,6 +31,14 @@ function SaveHandler(minodb, user, parameters, callback){
         sh.save_objects.push(new SaveObject(object,sh,index));
     }));
 
+
+    var objects_error = sh.objects_validator.end();
+    if(objects_error){
+        sh.validator.invalid("objects",objects_error);
+        callback(sh.validator.end());
+        return;
+    }
+
     sh.result = {};
     sh.result_object_array = new Array(sh.save_objects.length);
 
@@ -47,25 +55,18 @@ function SaveHandler(minodb, user, parameters, callback){
             var objects_error = sh.objects_validator.end();
             if(objects_error){
                 sh.validator.invalid("objects",objects_error);
+                callback(sh.validator.end());
+                return;
             }
 
-            var returning = sh.validator.end();
-            if(!returning){
-                returning = {};
-            }
+            var returning = {
+                objects: sh.result_object_array
+            };
 
-            returning.objects = sh.result_object_array;
-
-            callback(returning);
+            callback(null, returning);
         }
         sh.do_saving();
     });
-
-    var error = sh.objects_validator.end();
-    if(error){
-        callback(error);
-        return;
-    }
 }
 
 SaveHandler.prototype.request_rule = function(type_name, save_object){
@@ -131,6 +132,13 @@ SaveHandler.prototype.do_saving = function(callback){
     sh.total = sh.save_objects.length;
     sh.completed = 0;
 
+    logger.log(sh.total);
+
+    if(sh.total===0){
+        sh.finished_saving();
+        return;
+    }
+
     for(var i = 0; i < sh.total; i++){
         var save_object = sh.save_objects[i];
         
@@ -157,6 +165,4 @@ SaveHandler.prototype.finished_saving_object = function(save_object,error,save_d
 
 }
 
-module.exports = function(user, parameters, callback){
-    new SaveHandler(user, parameters, callback);
-};
+module.exports = SaveHandler;

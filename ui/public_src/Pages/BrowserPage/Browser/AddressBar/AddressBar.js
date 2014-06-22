@@ -8,7 +8,7 @@ function AddressBar(browser){
 	.addClass("address_bar")
 	.on('tap',function(e){
 		if(e.target !== this){return;}
-		address_bar.editAddress();
+		address_bar.edit_address();
 	})
 	.append(
 		address_bar.nav_buttons = $("<div />")
@@ -43,61 +43,32 @@ function AddressBar(browser){
 		address_bar.path_buttons = $("<div />")
 		.addClass("path_buttons")
 		,
-		$("<button />").addClass("edit_address_button").text("Edit")
+		$("<button />").addClass("edit_address_button mino_button").text("Edit").on('tap',function(){
+			address_bar.edit_address();
+		})
 	)
 
 	setTimeout(function(){
-		address_bar.text_input.autosize(//{
-		    // maxHeight: 400,
-		    // minHeight: 50,
-		    // extraSpace: 1
-		// }
-		)
+		address_bar.text_input.autosize()
 	},2000);
 
-	// if(browser.needNavigation==undefined){
-	// 	browser.needNavigation = true;
-	// }
-
-	// if(browser.needNavigation){
-	// 	address_bar.element.addClass("hasNavigationButtons");
-		
-	// 	address_bar.nav_buttons
-	// 	.append(
-	// 		address_bar.backButton = $("<button />")
-	// 		.addClass("mino_button")
-	// 		.addClass("historybutton")
-	// 		.addClass("backButton")
-	// 		.html("&#9668;")
-	// 		.css("width","30px")
-	// 		.on('tap',function() {
-	// 			browser.backwardPress();
-	// 		})
-	// 	)
-	// 	.append(
-	// 		address_bar.forwardButton = $("<button />")
-	// 		.addClass("mino_button")
-	// 		.addClass("historybutton")
-	// 		.addClass("forwardButton")
-	// 		.html("&#9658;")
-	// 		.css("width","30px")
-	// 		.on('tap',function() {
-	// 			browser.forwardPress();
-	// 		})
-	// 	)
-	// }
 
 	address_bar.nav_buttons
 	.append(
-		$("<button />")
-		.addClass("mino_button homeButton no_top no_left")
-		.css({
-			"width" : "32px"
+		address_bar.backButton = $("<button />")
+		.addClass("mino_button").html("&#9668;")
+		.on('tap',function() {
+			browser.backwardPress();
 		})
-		.append(
-			//createHomeIcon()
-			$("<div />").text("Home").addClass("homeIcon16 dark")
-		)
+		,
+		address_bar.forward_button = $("<button />")
+		.addClass("mino_button").html("&#9658;")
+		.on('tap',function() {
+			browser.forwardPress();
+		})
+		,
+		address_bar.home_button = $("<button />")
+		.addClass("mino_button").text("Home")
 		.on('tap',function(e){
 			if(e.metaKey){
 				//Holding Cmd or Ctrl
@@ -108,7 +79,27 @@ function AddressBar(browser){
 	);
 }
 
-AddressBar.prototype.editAddress = function(){
+AddressBar.prototype.populate_path_buttons = function(path){
+	var address_bar = this;
+
+	address_bar.path_buttons.empty();
+
+	for(var i = 0; i<path.length; i++){
+		
+		var button_text = path.object_names[i];
+		var button_address = path.sub_paths[i];
+
+		var pathbutton = new PathButton(
+			button_text,
+			button_address,
+			address_bar.browser
+		);
+
+		address_bar.path_buttons.append(pathbutton.element);
+	}
+}
+
+AddressBar.prototype.edit_address = function(){
 	var address_bar = this;
 
 	address_bar.path_buttons.hide();
@@ -145,7 +136,7 @@ AddressBar.prototype.cancel_address = function(){
 	address_bar.text_input.blur();
 }
 
-AddressBar.prototype.editAddress = function(){
+AddressBar.prototype.edit_address = function(){
 	var address_bar = this;
 
 	address_bar.path_buttons.hide();

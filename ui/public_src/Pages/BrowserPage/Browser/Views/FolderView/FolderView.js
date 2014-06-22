@@ -1,3 +1,5 @@
+@import("PaginationController/PaginationController.js");
+
 function FolderView(browser, path){
 	var folder_view = this;
 
@@ -25,29 +27,7 @@ function FolderView(browser, path){
 	
 	folder_view.is_main_browser = browser instanceof MainBrowser;
 	
-	var thisFolderSectionDiv = null;
-	var sharingPane = null;
-
-	for(var i = 0; i<path.length; i++){
-		
-		var button_text = path.object_names[i];
-		var button_address = path.sub_paths[i];
-
-		var button_type = 1;
-
-		if(i==0){
-			button_type = 0;
-		}
-
-		var pathbutton = new PathButton(
-			button_text,
-			button_address,
-			button_type,
-			browser
-		);
-
-		browser.topNav.pathButtons.append(pathbutton.element);
-	}
+	browser.address_bar.populate_path_buttons(folder_view.path);
 
 	var editPathButton = $("<div />")
 	.addClass("pathbutton editAddressButtonFolder")
@@ -86,44 +66,11 @@ function FolderView(browser, path){
 	// 	}
 	// }
 
-	folder_view.element
-	.append(
-		folder_view.resultSetPadding = $("<div />")
-		.addClass("resultSetPadding")
-	)
-	.append(
-		folder_view.pageControlsHolder = $("<div />")
-		.addClass("pageControlsHolder")
-		.hide()
-		.append(
-			$("<div />")
-			.addClass("pageControls")
-			.append(
-				folder_view.previousPageButton = $("<button />")
-				.addClass("mino_button previousPageButton left no_left no_top no_bottom")
-				.css("float","left")
-				.css("width","50px")
-				.text("Prev.")
-			)
-			.append(
-				folder_view.pageNumber = $("<div />")
-				.addClass("pageNumber")
-			)
-			.append(
-				folder_view.resultsStatus = $("<div />")
-				.addClass("resultsStatus")
-			)
-			.append(
-				folder_view.nextPageButton = $("<button />")
-				.addClass("mino_button previousPageButton right no_right no_top no_bottom")
-				.css("float","left")
-				.css("width","50px")
-				.text("Next")
-			)
-		)
-	)
+	folder_view.pagination_controller = new PaginationController(folder_view);
 
-	folder_view.displayPageNumbers();
+	folder_view.element.append(
+		folder_view.pagination_controller.element
+	)
 	
 	browser.onRestore = function(){
 		folder_view.onRestore()
@@ -195,11 +142,7 @@ FolderView.prototype.cancelSelection = function(){
 FolderView.prototype.onRestore = function(){
 	var folder_view = this;
 	var browser = folder_view.browser;
-	
-	// browser.onLoad("folder",folder_view.request);
 
-	folder_view.pageControlsHolder.show();
-	folder_view.displayPageNumbers();
 
 	// if(folder_view.is_main_browser){
 	// 	toolbar_menu.list_icons_button.show().on('tap',function() {

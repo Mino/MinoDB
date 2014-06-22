@@ -3,6 +3,9 @@
 @mino_button_color: #92BCB8;
 @mino_button_color_active: #002B36;
 
+@item_section_title: #66AA99;
+@item_section_border: gray;
+
 @background_pane_color: rgba(240,240,240,1.0);
 @background_color: rgba(240,240,240,1.0);
 

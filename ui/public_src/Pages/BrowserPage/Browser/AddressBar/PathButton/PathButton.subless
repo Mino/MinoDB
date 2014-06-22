@@ -51,114 +51,19 @@
 			border-left-color: @pathbutton_background_active;
 		}
 	}
-
-	&.toppathbutton{
-		.mino_button{
-			padding-left: 10px;
-		}
-	}
-
-	&.folder_button{
-		.mino_button{
-			border-left: none;
-			border-right: none;
-		}
-	}
-
-	&.endpathbutton{
-		margin-right: 10px;
-
-		.mino_button{
-			padding-right: 10px;
-		}
-	}
 }
 
-.pathbutton .typepathbutton{
-	padding-left: 8px;
-	padding-right: 8px;
-}
-
-.pathbutton.newLinePathButton{
-	margin-left: 0px;
-}
-
-.editAddressButtonSquare{
-	margin-left: -10px;
-	margin-bottom: 6px;
-	float: left;
-
-	border: none;
-	cursor: pointer;
-	background-color: @grayButtonBackground;
-	color: @textOnBackgroundColor;
-	padding-right: 10px;
-	padding-left: 10px;
-	margin-right: 13px;
-	margin-top: 0px;
-	height: 31px;
-	width: 35px;
-
-	-webkit-transition: 0.1s ease;
-	-moz-transition: 0.1s ease;
-	-ms-transition: 0.1s ease;
-	-o-transition: 0.1s ease;
-	transition: 0.1s ease;
-	-webkit-transition-property: border;
-	-moz-transition-property: border;
-	-ms-transition-property: border;
-	-o-transition-property: border;
-	transition-property: border;
-
-	&:active{
-		border-bottom: 4px solid @grayButtonActiveBorder;
-	}
-
-	&.newLine{
-		margin-left: 0px;
-	}
-}
-
-.editAddressButtonFolder{
-	margin-top: 0px;
-	margin-right: 13px;
-	white-space: nowrap;
-
-	button{
-		-webkit-appearance: none;
-		border: none;
-		cursor: pointer;
-		background-color: @grayButtonBackground;
-		color: @textOnBackgroundColor;
-		padding-right: 10px;
+:first-child{
+	a{
 		padding-left: 10px;
-		margin-left: 0px;
-		margin-right: 13px;
-		margin-top: 0px;
-		height: 31px;
-
-		-webkit-transition: 0.1s ease;
-		-moz-transition: 0.1s ease;
-		-ms-transition: 0.1s ease;
-		-o-transition: 0.1s ease;
-		transition: 0.1s ease;
-		-webkit-transition-property: border;
-		-moz-transition-property: border;
-		-ms-transition-property: border;
-		-o-transition-property: border;
-		transition-property: border;
-
-		&:active{
-			border-bottom: 4px solid @grayButtonActiveBorder;
+		&:before{
+			border-top: none;
+			border-bottom: none;
+			border-left: none;
 		}
 	}
+}
 
-	&.needIndent button{
-		padding-left: 23px;
-		margin-right: 0px;
-	}
-
-	&.newLine{
-		margin-left: 0px;
-	}
+:last-child{
+	margin-right: 15px;
 }

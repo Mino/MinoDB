@@ -1,10 +1,11 @@
 var FieldVal = require('fieldval');
 var bval = require('fieldval-basicval');
-var Path = require('../../common_classes/Path')
+var Path = require('../../../common_classes/Path')
 var logger = require('tracer').console();
 
-module.exports = function(minodb, user, parameters, callback) {
-    
+function GetHandler(api, user, parameters, callback) {
+    var gh = this;
+
     var validator = new FieldVal(parameters);
     var addresses = validator.get("addresses", bval.array(true));
 
@@ -119,3 +120,5 @@ module.exports = function(minodb, user, parameters, callback) {
     })
 
 }
+
+module.exports = GetHandler;

@@ -1,12 +1,13 @@
-var Constants = require('../../common_classes/Constants');
-var Path = require('../../common_classes/Path');
+var Constants = require('../../../common_classes/Constants');
+var Path = require('../../../common_classes/Path');
 var logger = require('tracer').console();
 var Validator = require('fieldval');
 var bval = require('fieldval-basicval');
-var validators = require('../validators');
+var validators = require('../../validators');
 
 function SaveObject(json, handler, index){
 	var so = this;
+
 	so.json = json;
 	so.handler = handler;
 	so.index = index;
@@ -101,6 +102,8 @@ SaveObject.prototype.got_rule = function(error, type){
 
 SaveObject.prototype.do_saving = function(){
 	var so = this;
+
+	var db = so.handler.api.ds;
 
 	if(so.is_new){
 		so.id = ""+(db.id_index++);//Generate id (must be string)

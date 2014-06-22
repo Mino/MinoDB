@@ -4,10 +4,10 @@ var bval = require('fieldval-basicval');
 var PathPermissionChecker = require('../Models/PathPermissionChecker');
 var logger = require('tracer').console();
 
-function SearchHandler(minodb, user, parameters, callback){
+function SearchHandler(api, user, parameters, callback){
     var sh = this;
 
-    sh.minodb = minodb;
+    sh.api = api;
     sh.user = user;
     sh.parameters = parameters;
     sh.callback = callback;

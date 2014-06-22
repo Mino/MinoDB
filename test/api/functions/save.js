@@ -1,8 +1,6 @@
-var should = require('should');
-var expect = require('expect.js');
-
+var assert = require("assert");
 var logger = require('tracer').console();
-var save = require('../../../server/api/functions/save')
+var save = require('../../../api/functions/save')
 
 describe('save', function() {
 

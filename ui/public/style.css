@@ -350,10 +350,9 @@ textarea {
 }
 .browser_page .browser .address_bar .nav_buttons {
   display: inline-block;
-  width: 50px;
-  height: 40px;
-  padding: 0px;
-  z-index: 2;
+}
+.browser_page .browser .address_bar .nav_buttons button {
+  margin-right: 5px;
 }
 .browser_page .browser .address_bar .path_buttons {
   list-style: none;
@@ -417,109 +416,19 @@ textarea {
 .browser_page .browser .address_bar .path_buttons .pathbutton a:active:after {
   border-left-color: #002b36;
 }
-.browser_page .browser .address_bar .path_buttons .pathbutton.toppathbutton .mino_button {
+.browser_page .browser .address_bar .path_buttons :first-child a {
   padding-left: 10px;
 }
-.browser_page .browser .address_bar .path_buttons .pathbutton.folder_button .mino_button {
+.browser_page .browser .address_bar .path_buttons :first-child a:before {
+  border-top: none;
+  border-bottom: none;
   border-left: none;
-  border-right: none;
 }
-.browser_page .browser .address_bar .path_buttons .pathbutton.endpathbutton {
-  margin-right: 10px;
-}
-.browser_page .browser .address_bar .path_buttons .pathbutton.endpathbutton .mino_button {
-  padding-right: 10px;
-}
-.browser_page .browser .address_bar .path_buttons .pathbutton .typepathbutton {
-  padding-left: 8px;
-  padding-right: 8px;
-}
-.browser_page .browser .address_bar .path_buttons .pathbutton.newLinePathButton {
-  margin-left: 0px;
-}
-.browser_page .browser .address_bar .path_buttons .editAddressButtonSquare {
-  margin-left: -10px;
-  margin-bottom: 6px;
-  float: left;
-  border: none;
-  cursor: pointer;
-  background-color: #dddddd;
-  color: #222222;
-  padding-right: 10px;
-  padding-left: 10px;
-  margin-right: 13px;
-  margin-top: 0px;
-  height: 31px;
-  width: 35px;
-  -webkit-transition: 0.1s ease;
-  -moz-transition: 0.1s ease;
-  -ms-transition: 0.1s ease;
-  -o-transition: 0.1s ease;
-  transition: 0.1s ease;
-  -webkit-transition-property: border;
-  -moz-transition-property: border;
-  -ms-transition-property: border;
-  -o-transition-property: border;
-  transition-property: border;
-}
-.browser_page .browser .address_bar .path_buttons .editAddressButtonSquare:active {
-  border-bottom: 4px solid #555555;
-}
-.browser_page .browser .address_bar .path_buttons .editAddressButtonSquare.newLine {
-  margin-left: 0px;
-}
-.browser_page .browser .address_bar .path_buttons .editAddressButtonFolder {
-  margin-top: 0px;
-  margin-right: 13px;
-  white-space: nowrap;
-}
-.browser_page .browser .address_bar .path_buttons .editAddressButtonFolder button {
-  -webkit-appearance: none;
-  border: none;
-  cursor: pointer;
-  background-color: #dddddd;
-  color: #222222;
-  padding-right: 10px;
-  padding-left: 10px;
-  margin-left: 0px;
-  margin-right: 13px;
-  margin-top: 0px;
-  height: 31px;
-  -webkit-transition: 0.1s ease;
-  -moz-transition: 0.1s ease;
-  -ms-transition: 0.1s ease;
-  -o-transition: 0.1s ease;
-  transition: 0.1s ease;
-  -webkit-transition-property: border;
-  -moz-transition-property: border;
-  -ms-transition-property: border;
-  -o-transition-property: border;
-  transition-property: border;
-}
-.browser_page .browser .address_bar .path_buttons .editAddressButtonFolder button:active {
-  border-bottom: 4px solid #555555;
-}
-.browser_page .browser .address_bar .path_buttons .editAddressButtonFolder.needIndent button {
-  padding-left: 23px;
-  margin-right: 0px;
-}
-.browser_page .browser .address_bar .path_buttons .editAddressButtonFolder.newLine {
-  margin-left: 0px;
+.browser_page .browser .address_bar .path_buttons :last-child {
+  margin-right: 15px;
 }
 .browser_page .browser .address_bar .edit_address_button {
-  -webkit-appearance: none;
-  border: none;
-  outline: none;
-  min-height: 30px;
-  font-size: 16px;
-  font-weight: bold;
-  color: white;
-  background-color: #92bcb8;
-  cursor: pointer;
-  margin: 0px;
-}
-.browser_page .browser .address_bar .edit_address_button:active {
-  background-color: #002b36;
+  background-color: gray;
 }
 .browser_page .browser .address_bar .goAddressButton {
   float: left;
@@ -564,6 +473,19 @@ textarea {
 }
 .browser_page .browser .view_container {
   padding: 12px;
+}
+.browser_page .browser .view_container .item_view .item_section {
+  border: 1px solid #808080;
+  background-color: white;
+}
+.browser_page .browser .view_container .item_view .item_section .title {
+  background-color: #66aa99;
+  font-weight: bold;
+  color: white;
+  padding: 5px;
+}
+.browser_page .browser .view_container .item_view .item_section .container {
+  padding: 5px;
 }
 .browser_page .browser .resultSetPadding {
   height: 0px;

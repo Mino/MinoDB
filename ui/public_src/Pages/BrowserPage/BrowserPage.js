@@ -16,6 +16,13 @@ function BrowserPage(parameters, url) {
     )
 }
 Site.add_url("/browser/", BrowserPage);
+Site.add_url("/browser/*", BrowserPage);
+
+BrowserPage.prototype.new_url = function(parameters, url, wildcard){
+    var page = this;
+
+    
+}
 
 BrowserPage.prototype.get_title = function() {
     var page = this;

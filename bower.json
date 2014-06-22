@@ -6,6 +6,7 @@
     "fieldval": "*",
     "fieldval-basicval": "*",
     "fieldval-ui": "*",
+    "fieldval-rules": "*",
     "jquery-autosize": "*"
   },
   "private": true

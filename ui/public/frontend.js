@@ -10611,6 +10611,13 @@ FieldVal.INCORRECT_TYPE_ERROR = function(expected_type, type){
     };
 }
 
+FieldVal.MISSING_ERROR = function(){
+    return {
+        error_message: "Field missing.",
+        error: FieldVal.FIELD_MISSING
+    };
+}
+
 FieldVal.REQUIRED_ERROR = "required";
 FieldVal.NOT_REQUIRED_BUT_MISSING = "notrequired";
 
@@ -10672,7 +10679,9 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
 
     var use_check = function(this_check){
 
-        var this_check_function, stop_if_error;
+        var this_check_function;
+        var stop_on_error = true;//Default to true
+        var flags = {};
         if((typeof this_check) === 'object'){
             if(Object.prototype.toString.call(this_check)==='[object Array]'){
                 for(var i = 0; i < this_check.length; i++){
@@ -10688,13 +10697,13 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
             } else {
                 flags = this_check;
                 this_check_function = flags.check;
-                if(flags!=null && flags.stop_if_error){
-                    stop_if_error = true;
+                if(flags!=null && (flags.stop_on_error!==undefined)){
+                    stop_on_error = flags.stop_on_error;
                 }
             }
         } else {
             this_check_function = this_check;
-            stop_if_error = true;//defaults to true
+            stop_on_error = true;//defaults to true
         }
 
         var check = this_check_function(value, function(new_value){
@@ -10704,16 +10713,15 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
             if(check===FieldVal.REQUIRED_ERROR){
                 if(field_name){
                     if(existing_validator){
-                        existing_validator.missing(field_name);
+                        existing_validator.missing(field_name, flags);
                     } else {
                         return check;
                     }
                 } else {
                     if(existing_validator){
-                        existing_validator.error({
-                            error_message: "Field missing.",
-                            error: FieldVal.FIELD_MISSING
-                        })
+                        existing_validator.error(
+                            FieldVal.create_error(FieldVal.MISSING_ERROR, flags)
+                        )
                     } else {
                         return_missing = true;
                         return;
@@ -10733,7 +10741,7 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
                 }
             }
             had_error = true;
-            if(stop_if_error){
+            if(stop_on_error){
                 stop = true;
             }
         }
@@ -10783,12 +10791,9 @@ FieldVal.required = function(required, flags){//required defaults to true
 };
 
 
-FieldVal.type = function(desired_type, required, flags) {
+FieldVal.type = function(desired_type, flags) {
 
-    if((typeof required)==="object"){
-        flags = required;
-        required = typeof flags.required !== 'undefined' ? flags.required : true;
-    }
+    var required = (flags.required !== undefined) ? flags.required : true;
 
     var check = function(value, emit) {
 
@@ -10880,13 +10885,10 @@ FieldVal.prototype.invalid = function(field_name, error) {
     return fv;
 },
 
-FieldVal.prototype.missing = function(field_name) {
+FieldVal.prototype.missing = function(field_name, flags) {
     var fv = this;
 
-    fv.missing_keys[field_name] = {
-        error_message: "Field missing.",
-        error: FieldVal.FIELD_MISSING
-    };
+    fv.missing_keys[field_name] = FieldVal.create_error(FieldVal.MISSING_ERROR, flags);
     fv.missing_count++;
     return fv;
 },
@@ -10982,10 +10984,26 @@ FieldVal.create_error = function(default_error, flags){
     if(!flags){
         return default_error.apply(null, Array.prototype.slice.call(arguments,2));
     }
-    if((typeof flags.error) === 'function'){
-        return flags.error.apply(null, Array.prototype.slice.call(arguments,2));
-    } else if((typeof flags.error) === 'object'){
-        return flags.error;
+    if(default_error===FieldVal.MISSING_ERROR){
+        if((typeof flags.missing_error) === 'function'){
+            return flags.missing_error.apply(null, Array.prototype.slice.call(arguments,2));
+        } else if((typeof flags.missing_error) === 'object'){
+            return flags.missing_error;
+        } else if((typeof flags.missing_error) === 'string'){
+            return {
+                error_message: flags.missing_error
+            }
+        }
+    } else {
+        if((typeof flags.error) === 'function'){
+            return flags.error.apply(null, Array.prototype.slice.call(arguments,2));
+        } else if((typeof flags.error) === 'object'){
+            return flags.error;
+        } else if((typeof flags.error) === 'string'){
+            return {
+                error_message: flags.error
+            }
+        }
     }
 
     return default_error.apply(null, Array.prototype.slice.call(arguments,2));
@@ -11013,6 +11031,11 @@ FieldVal.Error = function(number, message, data) {
 if (typeof module != 'undefined') {
     module.exports = FieldVal;
 }
+var logger;
+if((typeof require) === 'function'){
+    logger = require('tracer').console();
+}
+
 var _validator_ref;
 
 if((typeof require) === 'function'){
@@ -11090,28 +11113,40 @@ var BasicVal = {
             }
         }
     },
-    integer: function(required,flags){
-        return _validator_ref.type("integer",required,flags);
+    merge_required_and_flags: function(required, flags){
+        if((typeof required)==="object"){
+            flags = required;
+        } else {
+            if(!flags){
+                flags = {};
+            }
+            flags.required = required;
+        }
+        return flags;
     },
-    number: function(required,flags){
-        return _validator_ref.type("number",required,flags);
+    integer: function(required, flags){
+        return _validator_ref.type("integer",BasicVal.merge_required_and_flags(required, flags));
     },
-    array: function(required,flags){
-        return _validator_ref.type("array",required,flags);
+    number: function(required, flags){
+        return _validator_ref.type("number",BasicVal.merge_required_and_flags(required, flags));
     },
-    object: function(required,flags){
-        return _validator_ref.type("object",required,flags);
+    array: function(required, flags){
+        return _validator_ref.type("array",BasicVal.merge_required_and_flags(required, flags));
     },
-    float: function(required,flags){
-        return _validator_ref.type("float",required,flags);
+    object: function(required, flags){
+        return _validator_ref.type("object",BasicVal.merge_required_and_flags(required, flags));
     },
-    boolean: function(required,flags){
-        return _validator_ref.type("boolean",required,flags);
+    float: function(required, flags){
+        return _validator_ref.type("float",BasicVal.merge_required_and_flags(required, flags));
     },
-    string: function(required,flags){
+    boolean: function(required, flags){
+        return _validator_ref.type("boolean",BasicVal.merge_required_and_flags(required, flags));
+    },
+    string: function(required, flags){
+        flags = BasicVal.merge_required_and_flags(required, flags);
         var check = function(value, emit) {
 
-            var core_check = _validator_ref.type("string",required,flags);
+            var core_check = _validator_ref.type("string",flags);
             if(typeof core_check === 'object'){
                 //Passing flags turns the check into an object
                 core_check = core_check.check;
@@ -12170,6 +12205,347 @@ ObjectField.prototype.val = function(set_val) {
     	}
         return field;
     }
+}
+if((typeof require) === 'function'){
+    FieldVal = require('fieldval')
+    BasicVal = require('fieldval-basicval')
+}
+
+function fieldval_rules_extend(sub, sup) {
+    function emptyclass() {}
+    emptyclass.prototype = sup.prototype;
+    sub.prototype = new emptyclass();
+    sub.prototype.constructor = sub;
+    sub.superConstructor = sup;
+    sub.superClass = sup.prototype;
+}
+fieldval_rules_extend(TextRuleField, RuleField);
+
+function TextRuleField(json, validator) {
+    var field = this;
+
+    TextRuleField.superConstructor.call(this, json, validator);
+}
+
+TextRuleField.prototype.create_ui = function(parent){
+    var field = this;
+
+    if(TextField){
+        parent.add_field(field.name, new TextField(field.display_name || field.name, field.json));
+    }
+}
+
+TextRuleField.prototype.init = function() {
+    var field = this;
+
+    field.min_length = field.validator.get("min_length", BasicVal.integer(false));
+    field.max_length = field.validator.get("max_length", BasicVal.integer(false));
+
+    field.phrase = field.validator.get("phrase", BasicVal.string(false));
+    field.equal_to = field.validator.get("equal_to", BasicVal.string(false));
+    field.ci_equal_to = field.validator.get("ci_equal_to", BasicVal.string(false));
+    field.prefix = field.validator.get("prefix", BasicVal.string(false));
+    field.ci_prefix = field.validator.get("ci_prefix", BasicVal.string(false));
+    field.query = field.validator.get("query", BasicVal.string(false));
+    
+    return field.validator.end();
+}
+
+TextRuleField.prototype.create_checks = function(){
+    var field = this;
+
+    field.checks.push(BasicVal.string(field.required));
+
+    if(field.min_length){
+        field.checks.push(BasicVal.min_length(field.min_length,{stop_on_error:false}));
+    }
+    if(field.max_length){
+        field.checks.push(BasicVal.max_length(field.max_length,{stop_on_error:false}));
+    }
+}
+fieldval_rules_extend(NumberRuleField, RuleField);
+
+function NumberRuleField(json, validator) {
+    var field = this;
+
+    NumberRuleField.superConstructor.call(this, json, validator);
+}
+
+NumberRuleField.prototype.create_ui = function(parent){
+    var field = this;
+
+    if(TextField){
+        parent.add_field(field.name, new TextField(field.display_name || field.name, field.json));
+    }
+}
+
+NumberRuleField.prototype.init = function() {
+    var field = this;
+
+    field.minimum = field.validator.get("minimum", BasicVal.number(false));
+    if (field.minimum != null) {
+
+    }
+
+    field.maximum = field.validator.get("maximum", BasicVal.number(false));
+    if (field.maximum != null) {
+
+    }
+
+    field.integer = field.validator.get("integer", BasicVal.boolean(false));
+
+    return field.validator.end();
+}
+
+NumberRuleField.prototype.create_checks = function(){
+    var field = this;
+    
+    field.checks.push(BasicVal.number(field.required));
+
+    if(field.minimum){
+        field.checks.push(BasicVal.minimum(field.minimum,{stop_on_error:false}));
+    }
+    if(field.maximum){
+        field.checks.push(BasicVal.maximum(field.maximum,{stop_on_error:false}));
+    }
+    if(field.integer){
+        field.checks.push(BasicVal.integer(false,{stop_on_error:false}));
+    }
+}
+fieldval_rules_extend(NestedRuleField, RuleField);
+
+function NestedRuleField(json, validator) {
+    var field = this;
+
+    NestedRuleField.superConstructor.call(this, json, validator);
+}
+
+NestedRuleField.prototype.create_ui = function(parent,form){
+    var field = this;
+
+    if(ObjectField){
+        var object_field;
+        if(form){
+            object_field = form;
+        } else {
+            object_field = new ObjectField(field.display_name || field.name, field.json);
+        }
+
+        for(var i in field.fields){
+            var inner_field = field.fields[i];
+            inner_field.create_ui(object_field);
+        }
+
+        if(!form){
+            parent.add_field(field.name, object_field);
+        }
+    }
+}
+
+NestedRuleField.prototype.init = function() {
+    var field = this;
+
+    field.fields = {};
+
+    var fields_json = field.validator.get("fields", BasicVal.object(false));
+    if (fields_json != null) {
+        var fields_validator = new FieldVal(null);
+
+        //TODO prevent duplicate name keys
+
+        for (var name in fields_json) {
+            var field_json = fields_json[name];
+
+            if(!field_json.name){
+                field_json.name = name;
+            }
+
+            var field_creation = RuleField.create_field(field_json);
+            var err = field_creation[0];
+            var nested_field = field_creation[1];
+
+            if(err!=null){
+                fields_validator.invalid(name,err);
+            }
+
+            field.fields[name] = nested_field;
+        }
+
+        var fields_error = fields_validator.end();
+        if(fields_error!=null){
+            field.validator.invalid("fields",fields_error);
+        }
+    }
+
+    return field.validator.end();
+}
+
+NestedRuleField.prototype.create_checks = function(validator){
+    var field = this;
+
+    field.checks.push(BasicVal.object(field.required));
+
+    field.checks.push(function(value,emit){
+
+        var inner_validator = new FieldVal(value);
+
+        for(var i in field.fields){
+            var inner_field = field.fields[i];
+            inner_field.validate_as_field(i, inner_validator);
+        }
+
+        var inner_error = inner_validator.end();
+
+        return inner_error;
+    });
+}
+fieldval_rules_extend(ChoiceRuleField, RuleField);
+
+function ChoiceRuleField(json, validator) {
+    var field = this;
+
+    ChoiceRuleField.superConstructor.call(this, json, validator);
+}
+
+ChoiceRuleField.prototype.create_ui = function(parent){
+    var field = this;
+
+    if(ChoiceField){
+        parent.add_field(field.name, new ChoiceField(field.display_name || field.name, field.choices, field.json));
+    }
+}
+
+ChoiceRuleField.prototype.init = function() {
+    var field = this;
+
+    field.choices = field.validator.get("choices", BasicVal.array(true));
+
+    return field.validator.end();
+}
+
+ChoiceRuleField.prototype.create_checks = function(){
+    var field = this;
+
+    field.checks.push(FieldVal.required(true))
+    if(field.choices){
+        field.checks.push(BasicVal.one_of(field.choices,{stop_on_error:false}));
+    }
+}
+
+function RuleField(json, validator) {
+    var field = this;
+
+    field.json = json;
+    field.checks = [];
+    field.validator = (typeof validator != 'undefined') ? validator : new FieldVal(json);
+
+    field.name = field.validator.get("name", BasicVal.string(false));
+    field.display_name = field.validator.get("display_name", BasicVal.string(false));
+    field.description = field.validator.get("description", BasicVal.string(false));
+    field.type = field.validator.get("type", BasicVal.string(true));
+    field.required = field.validator.default(true).get("required", BasicVal.boolean(false))
+
+    if (json != null) {
+        var exists = field.validator.get("exists", BasicVal.boolean(false));
+        if (exists != null) {
+            existsFilter = exists ? 1 : 2;
+        }
+    }
+}
+
+RuleField.types = {
+    text: TextRuleField,
+    string: TextRuleField,
+    number: NumberRuleField,
+    nested: NestedRuleField,
+    choice: ChoiceRuleField
+};
+
+RuleField.create_field = function(json) {
+    var field = null;
+
+    var validator = new FieldVal(json);
+
+    var type = validator.get("type", BasicVal.string(true), BasicVal.one_of(RuleField.types));
+
+    if(type){
+        var field_class = RuleField.types[type];
+        field = new field_class(json, validator)
+    } else {
+        //Create a generic field to create the correct errors for the "RuleField" fields
+        return [validator.end(), null];
+    }
+
+    var init_res = field.init();
+    if (init_res != null) {
+        return [init_res, null];
+    }
+
+    field.create_checks();
+
+    return [null, field];
+}
+
+RuleField.prototype.validate_as_field = function(name, validator){
+    var field = this;
+
+    var value = validator.get(name, field.checks);
+
+    return value;
+}
+
+RuleField.prototype.validate = function(value){
+    var field = this;
+
+    var validator = new FieldVal(null);
+
+    var error = FieldVal.use_checks(value, field.checks);
+    if(error){
+        validator.error(error);
+    }
+
+    return validator.end();
+}
+
+function ValidationRule() {
+    var vr = this;
+}
+
+//Performs validation required for saving
+ValidationRule.prototype.init = function(json) {
+    var vr = this;
+
+    var field_res = RuleField.create_field(json);
+
+    //There was an error creating the field
+    if(field_res[0]){
+        return field_res[0];
+    }
+
+    //Keep the created field
+    vr.field = field_res[1];
+}
+
+ValidationRule.prototype.create_form = function(){
+    var vr = this;
+
+    if(Form){
+        var form = new Form();
+        vr.field.create_ui(form,form);
+        return form;
+    }
+}
+
+ValidationRule.prototype.validate = function(value) {
+    var vr = this;
+
+    var error = vr.field.validate(value);
+
+    return error;
+}
+
+if (typeof module != 'undefined') {
+    module.exports = ValidationRule;
 }
 function extend(sub, sup) {
     function emptyclass() {}
@@ -13389,7 +13765,7 @@ function AddressBar(browser){
 	.addClass("address_bar")
 	.on('tap',function(e){
 		if(e.target !== this){return;}
-		address_bar.editAddress();
+		address_bar.edit_address();
 	})
 	.append(
 		address_bar.nav_buttons = $("<div />")
@@ -13424,61 +13800,32 @@ function AddressBar(browser){
 		address_bar.path_buttons = $("<div />")
 		.addClass("path_buttons")
 		,
-		$("<button />").addClass("edit_address_button").text("Edit")
+		$("<button />").addClass("edit_address_button mino_button").text("Edit").on('tap',function(){
+			address_bar.edit_address();
+		})
 	)
 
 	setTimeout(function(){
-		address_bar.text_input.autosize(//{
-		    // maxHeight: 400,
-		    // minHeight: 50,
-		    // extraSpace: 1
-		// }
-		)
+		address_bar.text_input.autosize()
 	},2000);
 
-	// if(browser.needNavigation==undefined){
-	// 	browser.needNavigation = true;
-	// }
-
-	// if(browser.needNavigation){
-	// 	address_bar.element.addClass("hasNavigationButtons");
-		
-	// 	address_bar.nav_buttons
-	// 	.append(
-	// 		address_bar.backButton = $("<button />")
-	// 		.addClass("mino_button")
-	// 		.addClass("historybutton")
-	// 		.addClass("backButton")
-	// 		.html("&#9668;")
-	// 		.css("width","30px")
-	// 		.on('tap',function() {
-	// 			browser.backwardPress();
-	// 		})
-	// 	)
-	// 	.append(
-	// 		address_bar.forwardButton = $("<button />")
-	// 		.addClass("mino_button")
-	// 		.addClass("historybutton")
-	// 		.addClass("forwardButton")
-	// 		.html("&#9658;")
-	// 		.css("width","30px")
-	// 		.on('tap',function() {
-	// 			browser.forwardPress();
-	// 		})
-	// 	)
-	// }
 
 	address_bar.nav_buttons
 	.append(
-		$("<button />")
-		.addClass("mino_button homeButton no_top no_left")
-		.css({
-			"width" : "32px"
+		address_bar.backButton = $("<button />")
+		.addClass("mino_button").html("&#9668;")
+		.on('tap',function() {
+			browser.backwardPress();
 		})
-		.append(
-			//createHomeIcon()
-			$("<div />").text("Home").addClass("homeIcon16 dark")
-		)
+		,
+		address_bar.forward_button = $("<button />")
+		.addClass("mino_button").html("&#9658;")
+		.on('tap',function() {
+			browser.forwardPress();
+		})
+		,
+		address_bar.home_button = $("<button />")
+		.addClass("mino_button").text("Home")
 		.on('tap',function(e){
 			if(e.metaKey){
 				//Holding Cmd or Ctrl
@@ -13489,7 +13836,27 @@ function AddressBar(browser){
 	);
 }
 
-AddressBar.prototype.editAddress = function(){
+AddressBar.prototype.populate_path_buttons = function(path){
+	var address_bar = this;
+
+	address_bar.path_buttons.empty();
+
+	for(var i = 0; i<path.length; i++){
+		
+		var button_text = path.object_names[i];
+		var button_address = path.sub_paths[i];
+
+		var pathbutton = new PathButton(
+			button_text,
+			button_address,
+			address_bar.browser
+		);
+
+		address_bar.path_buttons.append(pathbutton.element);
+	}
+}
+
+AddressBar.prototype.edit_address = function(){
 	var address_bar = this;
 
 	address_bar.path_buttons.hide();
@@ -13526,7 +13893,7 @@ AddressBar.prototype.cancel_address = function(){
 	address_bar.text_input.blur();
 }
 
-AddressBar.prototype.editAddress = function(){
+AddressBar.prototype.edit_address = function(){
 	var address_bar = this;
 
 	address_bar.path_buttons.hide();
@@ -13550,6 +13917,35 @@ AddressBar.prototype.resize = function(resize_obj){
 		width: resize_obj.window_width + "px"
 	})
 }
+function PaginationController(pc){
+	var pc = this;
+
+	pc.element = $("<div />")
+	.addClass("pagination_controller")
+	.append(
+		$("<div />")
+		.addClass("pageControls")
+		.append(
+			pc.previous_button = $("<button />")
+			.addClass("mino_button previousPageButton left no_left no_top no_bottom")
+			.css("float","left")
+			.css("width","50px")
+			.text("Prev.")
+		)
+		.append(
+			pc.page_number = $("<div />")
+			.addClass("pageNumber")
+		)
+		.append(
+			pc.next_button = $("<button />")
+			.addClass("mino_button previousPageButton right no_right no_top no_bottom")
+			.css("float","left")
+			.css("width","50px")
+			.text("Next")
+		)
+	)
+}
+
 function FolderView(browser, path){
 	var folder_view = this;
 
@@ -13577,29 +13973,7 @@ function FolderView(browser, path){
 	
 	folder_view.is_main_browser = browser instanceof MainBrowser;
 	
-	var thisFolderSectionDiv = null;
-	var sharingPane = null;
-
-	for(var i = 0; i<path.length; i++){
-		
-		var button_text = path.object_names[i];
-		var button_address = path.sub_paths[i];
-
-		var button_type = 1;
-
-		if(i==0){
-			button_type = 0;
-		}
-
-		var pathbutton = new PathButton(
-			button_text,
-			button_address,
-			button_type,
-			browser
-		);
-
-		browser.topNav.pathButtons.append(pathbutton.element);
-	}
+	browser.address_bar.populate_path_buttons(folder_view.path);
 
 	var editPathButton = $("<div />")
 	.addClass("pathbutton editAddressButtonFolder")
@@ -13638,44 +14012,11 @@ function FolderView(browser, path){
 	// 	}
 	// }
 
-	folder_view.element
-	.append(
-		folder_view.resultSetPadding = $("<div />")
-		.addClass("resultSetPadding")
-	)
-	.append(
-		folder_view.pageControlsHolder = $("<div />")
-		.addClass("pageControlsHolder")
-		.hide()
-		.append(
-			$("<div />")
-			.addClass("pageControls")
-			.append(
-				folder_view.previousPageButton = $("<button />")
-				.addClass("mino_button previousPageButton left no_left no_top no_bottom")
-				.css("float","left")
-				.css("width","50px")
-				.text("Prev.")
-			)
-			.append(
-				folder_view.pageNumber = $("<div />")
-				.addClass("pageNumber")
-			)
-			.append(
-				folder_view.resultsStatus = $("<div />")
-				.addClass("resultsStatus")
-			)
-			.append(
-				folder_view.nextPageButton = $("<button />")
-				.addClass("mino_button previousPageButton right no_right no_top no_bottom")
-				.css("float","left")
-				.css("width","50px")
-				.text("Next")
-			)
-		)
-	)
+	folder_view.pagination_controller = new PaginationController(folder_view);
 
-	folder_view.displayPageNumbers();
+	folder_view.element.append(
+		folder_view.pagination_controller.element
+	)
 	
 	browser.onRestore = function(){
 		folder_view.onRestore()
@@ -13747,11 +14088,7 @@ FolderView.prototype.cancelSelection = function(){
 FolderView.prototype.onRestore = function(){
 	var folder_view = this;
 	var browser = folder_view.browser;
-	
-	// browser.onLoad("folder",folder_view.request);
 
-	folder_view.pageControlsHolder.show();
-	folder_view.displayPageNumbers();
 
 	// if(folder_view.is_main_browser){
 	// 	toolbar_menu.list_icons_button.show().on('tap',function() {
@@ -14132,7 +14469,143 @@ FolderView.prototype.clickSelectable = function(objectRep,forceSelect){
 	// }
 
 }
+function ItemSection(name, item_view){
+	var section = this;
 
+	section.name = this;
+	section.item_view = item_view;
+
+	section.element = $("<div />").addClass("item_section").append(
+		section.title_div = $("<div />").addClass("title").text(name),
+		section.container = $("<div />").addClass("container")
+	)
+
+	item_view.browser.rule_cache.load(name, function(err, data){
+		console.log(err);
+		console.log(data);
+	})
+}
+
+ItemSection.prototype.populate = function(data){
+	var section = this;
+
+	section.data = data;
+}
+
+ItemSection.prototype.populate_rule = function(rule){
+	var section = this;
+
+	section.rule = rule;
+
+
+
+	var type_object = {
+		name: "person",
+		display_name: "Person",
+        type: "nested",
+        fields:{
+        	"first_name" : {
+        		display_name: "First Name",
+        		type: "text",
+        		min_length: 5
+        	},
+        	"last_name" : {
+        		display_name: "Last Name",
+        		type: "text",
+        		max_length: 3
+        	},
+        	"office_number" : {
+        		display_name: "Office Number",
+        		type: "number",
+                description: "Please enter your office number",
+        		minimum: 1,
+        		maximum: 30,
+        		integer: true
+        	}
+        }
+    }
+
+    var vr = new ValidationRule();
+	console.log(vr.init(type_object));
+
+	var form = vr.create_form();
+
+	section.container.append(
+		form.element
+	)
+
+	section.title_div.text(type_object.display_name || type_object.name);
+
+}
+
+function ItemView(browser, path){
+	var item_view = this;
+
+	item_view.browser = browser;
+	item_view.path = path;
+
+	item_view.element = $("<div />").addClass("item_view");
+
+	item_view.core_form = new Form();
+	item_view.core_form.add_field("id", new TextField("ID"));
+	item_view.core_form.add_field("name", new TextField("Name"));
+	item_view.core_form.add_field("path", new TextField("Path"));
+	item_view.element.append(
+		item_view.core_form.element
+	)
+
+	var section = new ItemSection("person", item_view);
+	section.populate_rule();
+
+	item_view.element.append(
+		section.element
+	)
+
+	browser.view_container.empty();
+	browser.view_container.append(item_view.element);
+	
+	browser.address_bar.populate_path_buttons(item_view.path);
+}
+
+function RuleCache(){
+	var rc = this;
+
+	rc.loading = {};
+	rc.loaded = {};
+}
+
+RuleCache.prototype.load = function(name, callback) {
+	var rc = this;
+
+	if(rc.loaded[name]){
+		callback(rc.loaded[name]);
+		return;
+	}
+
+	var loading = rc.loading[name];
+	if(!loading){
+		loading = [];
+		rc.loading[name] = loading;
+	}
+	loading.push(callback);
+
+	$.ajax({
+        type: "POST",
+        url: ui_path+"ajax/",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify({
+        	message: "HELLO WORLD!"
+        }),
+        success: function(response) {
+            console.log(response);
+        },
+        error: function(err, response) {
+        	console.log(err);
+        	console.log(response);
+        }
+    })
+};
 extend(MainBrowser, Browser);
 
 function MainBrowser(needNavigation){
@@ -14205,6 +14678,8 @@ function Browser(){
 	browser.history = {};
 	browser.historyIndex = -1;
 
+	browser.rule_cache = new RuleCache();
+
 	browser.address_bar = new AddressBar(browser);
 
     for(var i = 0; i<8; i++){
@@ -14214,8 +14689,6 @@ function Browser(){
         )
     }
 
-	browser.latestRequest = null;
-
 	browser.element = $("<div />")
 	.addClass("browser")
 	.append(
@@ -14223,16 +14696,23 @@ function Browser(){
 		browser.view_container = $("<div />").addClass("view_container")
 	)
 
-	var path = new Path();
-	var path_error = path.init("/TestUser/Subfolder//Item");
-	console.log(path_error);
-
 	var id = new ID();
 	var id_error = id.init("1234567890");
 	console.log(id_error);
 
-    browser.view = new FolderView(browser, path);
-    browser.element.append(browser.view.element);
+
+	var path = new Path();
+	var path_error = path.init("/TestUser/Subfolder/");
+	console.log(path_error);
+    // browser.view = new FolderView(browser, path);
+    // browser.view_container.append(browser.view.element);
+
+	var path = new Path();
+	var path_error = path.init("/TestUser/Subfolder/Item");
+	console.log(path_error);
+
+    browser.view = new ItemView(browser, path);
+    browser.view_container.append(browser.view.element);
 	
 	// browser.loadingIndicator = new LoadingIndicator();
 	// browser.loadingIndicator.cancel_press = function(){
@@ -14566,6 +15046,13 @@ function BrowserPage(parameters, url) {
     )
 }
 Site.add_url("/browser/", BrowserPage);
+Site.add_url("/browser/*", BrowserPage);
+
+BrowserPage.prototype.new_url = function(parameters, url, wildcard){
+    var page = this;
+
+    
+}
 
 BrowserPage.prototype.get_title = function() {
     var page = this;
@@ -14631,26 +15118,9 @@ var body_contents_holder;
 
 $(document).ready(function() {
 
-    Site.on_resize = function(resize_obj) {
-
-        // resize_obj.body_width = body_contents_holder.contents.width();
-        // resize_obj.proportion = resize_obj.body_width / max_width;
-        // if (resize_obj.proportion > 1.0) {
-        //     resize_obj.proportion = 1.0;
-        // }
-
-        // body_contents_holder.resize(resize_obj);
-
-        // header.resize(resize_obj);
-    }
-
-    // header = new Header();
-    // header.element.appendTo("body");
+    Site.on_resize = function(resize_obj) {}
 
     Site.element.addClass("page_holder").appendTo("body");
-
-    // footer = new Footer();
-    // footer.element.appendTo(body_contents_holder.contents);
 
     Site.transition_page_callback = function(new_page, old_page) {
         var title = new_page.get_title();

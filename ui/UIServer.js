@@ -23,7 +23,7 @@ function UIServer(minodb){
     us.express_server.use(express.logger('dev'));
     us.express_server.use(express.errorHandler());
 
-    // require('./ajax/routes').add_routes(us.express_server);
+    require('./ajax/routes').add_routes(us);
 
     us.express_server.get('*', process_session(false), function(req, res) {
         res.render('index', {

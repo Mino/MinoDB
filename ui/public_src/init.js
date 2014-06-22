@@ -4,6 +4,7 @@
 @import("../../bower_components/fieldval/fieldval.js");
 @import("../../bower_components/fieldval-basicval/fieldval-basicval.js");
 @import("../../bower_components/fieldval-ui/fieldval-ui.js");
+@import("../../bower_components/fieldval-rules/fieldval-rules.js");
 @import("../../extend.js");
 @import("../../errors.js");
 
@@ -25,26 +26,9 @@ var body_contents_holder;
 
 $(document).ready(function() {
 
-    Site.on_resize = function(resize_obj) {
-
-        // resize_obj.body_width = body_contents_holder.contents.width();
-        // resize_obj.proportion = resize_obj.body_width / max_width;
-        // if (resize_obj.proportion > 1.0) {
-        //     resize_obj.proportion = 1.0;
-        // }
-
-        // body_contents_holder.resize(resize_obj);
-
-        // header.resize(resize_obj);
-    }
-
-    // header = new Header();
-    // header.element.appendTo("body");
+    Site.on_resize = function(resize_obj) {}
 
     Site.element.addClass("page_holder").appendTo("body");
-
-    // footer = new Footer();
-    // footer.element.appendTo(body_contents_holder.contents);
 
     Site.transition_page_callback = function(new_page, old_page) {
         var title = new_page.get_title();

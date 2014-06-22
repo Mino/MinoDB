@@ -4,7 +4,6 @@ var http = require('http');
 var path = require('path');
 
 var settings = require('./settings');
-var DataStore = require('./datastore');
 var API = require('./api/API');
 var APIServer = require('./api/APIServer');
 var UIServer = require('./ui/UIServer');
@@ -20,21 +19,7 @@ function MinoDB(config){
     mdb._api_server = new APIServer(mdb);
     mdb._ui_server = new UIServer(mdb);
 
-    mdb.api = new API(mdb);
-
-    mdb.ds = new DataStore({
-        address: mdb.config.db_address
-    })
-}
-
-MinoDB.prototype.connect = function(callback){
-    var mdb = this;
-
-    mdb.ds.connect(function(err){
-        if(err) throw err;
-
-        callback();
-    })
+    mdb.api = new API(mdb, mdb.config.db_address);
 }
 
 MinoDB.prototype.ui_server = function(){
