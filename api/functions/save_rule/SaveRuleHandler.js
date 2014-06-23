@@ -30,6 +30,15 @@ function SaveRuleHandler(api, user, parameters, callback){
         return;
     }
 
+    var db = api.ds;
+
+    db.rule_collection.insert(rule, function(err, response){
+        logger.log(err);
+        logger.log(response);
+    });
+
+
+
     callback(null,{
         success: true
     })

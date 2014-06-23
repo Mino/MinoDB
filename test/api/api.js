@@ -64,8 +64,14 @@ describe('MinoDB API', function() {
                 "function": "save",
                 "parameters": {
                     "objects" : [{
+                        "_id":"436",
                         "name": "Test"+Math.random(),
-                        "path":"/TestUser/"
+                        "path":"/TestUser/",
+                        "person":{
+                            "first_name":"Marcus",
+                            "last_name":"L2",
+                            "office_number" : 25
+                        }
                     }]
                 }
             }, function(error, response) {

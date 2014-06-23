@@ -21,7 +21,7 @@ function SaveObject(json, handler, index){
 	so.granted_new_path = false;
 
 	so.id = so.validator.get("_id", bval.string(false)); //,bval.minimum(1));
-	so.is_new = so.id===null;
+	so.is_new = so.id===undefined;
 
 	so.folder = so.validator.get("folder", bval.boolean(false));
 	so.version = so.validator.get("version", bval.integer(false));
@@ -84,19 +84,22 @@ SaveObject.prototype.create_saving_json = function(){
 	}
 }
 
-SaveObject.prototype.got_rule = function(error, type){
+SaveObject.prototype.got_rule = function(name, error, rule){
 	var so = this;
 
-	so.validator.recognized(type.name);
+	logger.log(error);
+	logger.log(rule);
+	logger.log("rule.name: ",name);
 
-	// logger.log("got type: ");
-	// logger.log(type);
+	so.validator.recognized(name);
 
-	var error = type.validate_object(so);
+	var value = so.json[name];
+
+	var error = rule.validate(value);
 
 	logger.log(error);
 	if(error!=null){
-		so.validator.invalid(type.name, error);
+		so.validator.invalid(name, error);
 	}
 }
 

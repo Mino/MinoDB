@@ -17,6 +17,9 @@ function SaveHandler(api, user, parameters, callback){
 
     sh.save_objects = [];
     sh.types_to_retrieve = {};
+    
+    sh.permissions_checked = false;
+    sh.waiting_for_types = 0;
 
     sh.path_permission_checker = new PathPermissionChecker(sh);
 
@@ -48,24 +51,9 @@ function SaveHandler(api, user, parameters, callback){
         //Turn the path_permission_checker to immediate_mode to make subsequent permission checks immediate
         sh.path_permission_checker.immediate_mode = true;
 
-        //NEED TO PREVENT SOME ITEMS FROM CONTINUING
+        sh.permissions_checked = true;
 
-        sh.finished_saving = function(){
-
-            var objects_error = sh.objects_validator.end();
-            if(objects_error){
-                sh.validator.invalid("objects",objects_error);
-                callback(sh.validator.end());
-                return;
-            }
-
-            var returning = {
-                objects: sh.result_object_array
-            };
-
-            callback(null, returning);
-        }
-        sh.do_saving();
+        sh.check_ready_to_save();
     });
 }
 
@@ -74,54 +62,106 @@ SaveHandler.prototype.request_rule = function(type_name, save_object){
 
     var existing = sh.types_to_retrieve[type_name];
     if(existing===undefined){
+        sh.waiting_for_types++;
         existing = [];
         sh.types_to_retrieve[type_name] = existing;
     }
     existing.push(save_object);
 }
 
+SaveHandler.prototype.check_ready_to_save = function(){
+    var sh = this;
+
+    if(sh.waiting_for_types===0 && sh.permissions_checked){
+        logger.log("FINISHED GETTING TYPES AND PERMISSIONS");
+
+        //NEED TO PREVENT SOME ITEMS FROM CONTINUING
+
+        for(var i = 0; i < sh.save_objects.length; i++){
+            var save_object = sh.save_objects[i];
+
+            var object_error = save_object.validator.end();
+
+            if(object_error){
+                logger.log(object_error);
+                logger.log(save_object.index);
+                sh.objects_validator.invalid(save_object.index, object_error);
+            }
+        }
+
+        var objects_error = sh.objects_validator.end();
+        if(objects_error){
+            sh.validator.invalid("objects",objects_error);
+            sh.callback(sh.validator.end());
+            return;
+        }
+
+
+        sh.finished_saving = function(){
+
+            var objects_error = sh.objects_validator.end();
+            if(objects_error){
+                sh.validator.invalid("objects",objects_error);
+                sh.callback(sh.validator.end());
+                return;
+            }
+
+            var returning = {
+                objects: sh.result_object_array
+            };
+
+            sh.callback(null, returning);
+        }
+        sh.do_saving();
+    }
+}
+
 SaveHandler.prototype.retrieve_rules = function(){
     var sh = this;
 
-    //TODO replace mocking
-    var person_rule = new ValidationRule();
-    person_rule.init({
-        "description": "A person type",
-        "name": "person",
-        "display_name": "Person",
-        "fields": [{
-            "name": "first_name",
-            "display_name": "First Name",
-            "type": "Text",
-            "min_length": 2,
-            "max_length": 32
-        },{
-            "name": "last_name",
-            "display_name": "Last Name",
-            "type": "Text",
-            "min_length": 2,
-            "max_length": 32
-        }]
-    });
+    logger.log(sh.types_to_retrieve);
 
     for(var i in sh.types_to_retrieve){
-        var save_objects = sh.types_to_retrieve[i];
-        if(i==="person"){
-            for(var k = 0; k < save_objects.length; k++){
-                var save_object = save_objects[k];
-                save_object.got_rule(null, person_rule);
+        sh.get_rule(i);
+    }
+}
+
+SaveHandler.prototype.get_rule = function(name){
+    var sh = this;
+
+    var db = sh.api.ds;
+
+
+    var save_objects = sh.types_to_retrieve[name];
+
+    db.rule_collection.findOne({
+        name: name
+    },function(err, res){
+        sh.waiting_for_types--;
+        logger.log(err);
+        logger.log(res);
+        if(res){
+            logger.log(res);
+            delete res._id;
+            for(var i = 0; i < save_objects.length; i++){
+                var save_object = save_objects[i];
+                var validation_rule = new ValidationRule();
+                var rule_init = validation_rule.init(res);
+                logger.log(validation_rule);
+                logger.log(rule_init);
+                save_object.got_rule(name, null, validation_rule);
+            }
+        } else {
+            for(var i = 0; i < save_objects.length; i++){
+                var save_object = save_objects[i];
+                var error = save_object.validator.end();
+                if(error!=null){
+                    sh.objects_validator.invalid(save_object.index, error);
+                }
             }
         }
-    }
-
-    for(var i = 0; i < sh.save_objects.length; i++){
-        var save_object = sh.save_objects[i];
-
-        var error = save_object.validator.end();
-        if(error!=null){
-            sh.objects_validator.invalid(save_object.index, error);
-        }
-    }
+        sh.check_ready_to_save();
+    })
 }
 
 SaveHandler.prototype.do_saving = function(callback){
