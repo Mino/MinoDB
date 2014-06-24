@@ -34,6 +34,16 @@ DataStore.prototype.connect = function(callback) {
 	    	logger.log(res);
 	    })
 
+	    ds.object_collection.ensureIndex( { path: 1 }, function(err,res){
+	    	logger.log(err);
+	    	logger.log(res);
+	    })
+
+	    ds.object_collection.ensureIndex( { name: 1 }, function(err,res){
+	    	logger.log(err);
+	    	logger.log(res);
+	    })
+
 	    ds.rule_collection.ensureIndex( { name: 1 }, { unique: true }, function(err,res){
 	    	logger.log(err);
 	    	logger.log(res);

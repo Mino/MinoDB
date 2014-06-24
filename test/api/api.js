@@ -31,48 +31,17 @@ describe('MinoDB API', function() {
     //     });
     // });
 
-    // describe('When I make a simple get request', function() {
-    //     it('should return a 200 OK', function(done) {
-    //         db.platform_request("/", {
-    //             "function": "get",
-    //             "parameters": {
-    //                 "addresses" : [
-    //                     "/TestUser/",
-    //                     1113
-    //                 ]
-    //             }
-    //         }, function(error, response) {
-    //             if (error != null) {
-    //                 logger.log(error);
-    //                 assert.fail('Just threw a connection error')
-    //             } else {
-    //                 if (response.error != null) {
-    //                     jsonout(response);
-    //                     assert.fail('Returned an error')
-    //                 } else {
-    //                     jsonout(response);
-    //                 }
-    //                 done();
-    //             }
-    //         });
-    //     });
-    // });
-
-    describe('When I make a simple save request', function() {
+    describe('When I make a simple get request', function() {
         it('should return a 200 OK', function(done) {
             db.platform_request("/", {
-                "function": "save",
+                "function": "get",
                 "parameters": {
-                    "objects" : [{
-                        "_id":"436",
-                        "name": "Test"+Math.random(),
-                        "path":"/TestUser/",
-                        "person":{
-                            "first_name":"Marcus",
-                            "last_name":"L2",
-                            "office_number" : 25
-                        }
-                    }]
+                    "addresses" : [
+                        "/TestUser/",
+                        "/AnotherUser/Shared/Another/Folder/One",
+                        81,
+                        "person"
+                    ]
                 }
             }, function(error, response) {
                 if (error != null) {
@@ -90,6 +59,39 @@ describe('MinoDB API', function() {
             });
         });
     });
+
+    // describe('When I make a simple save request', function() {
+    //     it('should return a 200 OK', function(done) {
+    //         db.platform_request("/", {
+    //             "function": "save",
+    //             "parameters": {
+    //                 "objects" : [{
+    //                     "_id":"436",
+    //                     "name": "Test"+Math.random(),
+    //                     "path":"/TestUser/",
+    //                     "person":{
+    //                         "first_name":"Marcus",
+    //                         "last_name":"L2",
+    //                         "office_number" : 25
+    //                     }
+    //                 }]
+    //             }
+    //         }, function(error, response) {
+    //             if (error != null) {
+    //                 logger.log(error);
+    //                 assert.fail('Just threw a connection error')
+    //             } else {
+    //                 if (response.error != null) {
+    //                     jsonout(response);
+    //                     assert.fail('Returned an error')
+    //                 } else {
+    //                     jsonout(response);
+    //                 }
+    //                 done();
+    //             }
+    //         });
+    //     });
+    // });
 
     // describe('When I make a save a simple rule', function() {
     //     it('should return a 200 OK', function(done) {
