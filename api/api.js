@@ -4,15 +4,14 @@ var logger = require('tracer').console();
 
 var DataStore = require('./datastore');
 
-var GetHandler = require('./functions/get/GetHandler.js');
-var SaveHandler = require('./functions/save/SaveHandler.js');
-var SaveRuleHandler = require('./functions/save_rule/SaveRuleHandler.js');
+var GetHandler = require('./handlers/GetHandler/GetHandler.js');
+var SaveHandler = require('./handlers/SaveHandler/SaveHandler.js');
+var SaveRuleHandler = require('./handlers/SaveRuleHandler/SaveRuleHandler.js');
 
 function API(minodb, db_address){
 	var api = this;
 
 	api.minodb = minodb;
-
 
     api.ds = new DataStore({
         address: db_address

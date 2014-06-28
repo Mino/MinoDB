@@ -9,7 +9,7 @@
 @background_pane_color: rgba(240,240,240,1.0);
 @background_color: rgba(240,240,240,1.0);
 
-@borderColor: blue;
+@border_color: blue;
 @lighterBorderColor: gray;
 @errorColor: purple;
 @linkOnBackground: pink;

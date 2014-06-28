@@ -20,20 +20,28 @@ RuleCache.prototype.load = function(name, callback) {
 	}
 	loading.push(callback);
 
-	$.ajax({
-        type: "POST",
-        url: ui_path+"ajax/",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: JSON.stringify({
-        	message: "HELLO WORLD!"
-        }),
-        success: function(response) {
-            console.log(response);
-        },
-        error: function(err, response) {
-        	console.log(err);
-        	console.log(response);
-        }
-    })
+	var request = {
+		"function" : "get",
+		"parameters" : {
+			"addresses" : [
+				name
+			]
+		}
+	};
+
+	ajax_request(request,function(err, response){
+		console.log(err);
+
+		var rule = response.objects[0];
+		if(rule){
+			rc.loaded[name] = rule;
+		}
+
+		var callbacks = rc.loading[name];
+		for(var i = 0; i < callbacks.length; i++){
+			var callback = callbacks[i];
+
+			callback(null,rule);
+		}
+	})
 };

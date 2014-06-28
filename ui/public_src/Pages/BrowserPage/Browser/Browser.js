@@ -3,6 +3,7 @@
 
 @import("RuleCache.js");
 @import("MainBrowser/MainBrowser.js");
+@import("Toolbar/Toolbar.js");
 
 function Browser(){
 	var browser = this;
@@ -13,6 +14,8 @@ function Browser(){
 	browser.rule_cache = new RuleCache();
 
 	browser.address_bar = new AddressBar(browser);
+
+	browser.toolbar = new Toolbar(browser);
 
     for(var i = 0; i<8; i++){
         var path_button = new PathButton("Path "+i, "/Test/Path "+i, 0, null);
@@ -25,13 +28,15 @@ function Browser(){
 	.addClass("browser")
 	.append(
 		browser.address_bar.element,
-		browser.view_container = $("<div />").addClass("view_container")
+		browser.view_container = $("<div />").addClass("view_container"),
+		browser.toolbar.element
 	)
+
+	console.log(browser.toolbar.element)
 
 	var id = new ID();
 	var id_error = id.init("1234567890");
 	console.log(id_error);
-
 
 	var path = new Path();
 	var path_error = path.init("/TestUser/Subfolder/");
@@ -43,7 +48,23 @@ function Browser(){
 	var path_error = path.init("/TestUser/Subfolder/Item");
 	console.log(path_error);
 
-    browser.view = new ItemView(browser, path);
+    browser.view = new ItemView(
+    	path,
+    	{
+    		"_id" : 1234,
+    		"name" : "John Smith",
+    		"path" : "/TestUser/Mocked/",
+    		"person" : {
+    			"first_name" : "John",
+    			"last_name" : "Smith"
+    		}//,
+    		// "employee": {
+    		// 	"job_title" : "Tester",
+    		// 	"start_date" : "2013-08-27"
+    		// }
+	    },
+	    browser
+    );
     browser.view_container.append(browser.view.element);
 	
 	// browser.loadingIndicator = new LoadingIndicator();

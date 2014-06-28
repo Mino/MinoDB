@@ -1,6 +1,7 @@
 var FieldVal = require('fieldval');
 var bval = require('fieldval-basicval');
 var Path = require('../../../common_classes/Path')
+var Common = require('../../../common_classes/Common')
 var logger = require('tracer').console();
 
 function GetHandler(api, user, parameters, callback) {
@@ -34,67 +35,29 @@ function GetHandler(api, user, parameters, callback) {
 
         logger.log("TESTING: ", this_address);
 
-        var type_of = typeof this_address;
+        var address_details = Common.get_resource_type(this_address);
+        logger.log("address_details ",address_details);
+        var address_type = address_details[0];
+        var address_value = address_details[1];
 
-        var to_add_to_final;
-
-        if (type_of == 'string') {
-
-            var index_of_slash = this_address.indexOf('/');
-
-            if (index_of_slash == -1) {
-                //Could be a number or Type
-                var numeric_value = this_address;
-                var is_integer = numeric_value % 1 == 0;
-                if (isNaN(numeric_value) || !is_integer || numeric_value < 0) {
-                    gh.rules.push([this_address, index]);
-                } else {
-                    gh.ids.push([numeric_value, index]);
-                }
-                to_add_to_final = null;
-            } else if (index_of_slash == 0) {
-                //First char is slash - must be path
-                logger.log("path");
-
-                var path = new Path();
-                var path_error = path.init(this_address);
-                if (path_error != null) {
-                    to_add_to_final = path_error;
-                } else {
-                    //Valid path
-                    to_add_to_final = null;
-                    gh.paths.push([path, index]);
-                }
-            } else {
-                //Could be id/version
-                var split_1 = this_address.substring(0, index_of_slash);
-                var num_1 = +split_1;
-                var is_integer_1 = num_1 % 1 == 0;
-                var split_2 = this_address.substring(index_of_slash + 1);
-                var num_2 = +split_2;
-                var is_integer_2 = num_2 % 1 == 0;
-
-                if (isNaN(num_1) || !is_integer_1 || num_1 < 1 || isNaN(num_2) || !is_integer_2 || num_2 < 1) {
-                    to_add_to_final = FieldVal.Error(0);
-                } else {
-                    logger.log([num_1, num_2, index]);
-                    gh.id_versions.push([num_1, num_2, index]);
-                }
-            }
-        } else if (type_of == 'number') {
-
-            var is_integer = this_address % 1 === 0;
-            if (is_integer && this_address > 0) {
-                gh.ids.push([this_address, index]);
-            } else {
-                to_add_to_final = FieldVal.Error(0);
-            }
-
+        var recognized = true;
+        if(address_type==="rule"){
+            gh.rules.push([address_value, index]);
+        } else if(address_type==="path"){
+            gh.paths.push([address_value, index]);
+        } else if(address_type==="id"){
+            gh.ids.push([address_value, index]);
+        } else if(address_type==="id_version"){
+            gh.id_versions.push([address_value, index]);
         } else {
-            to_add_to_final = FieldVal.Error(0);
+            logger.log("address_type ",address_type);
+            recognized = false;
         }
 
-        gh.response_array.push(to_add_to_final);
+        if(recognized){
+            gh.response_array.push(FieldVal.Error(0));
+        }
+
     }));
 
     var val_error = validator.end();
@@ -103,10 +66,17 @@ function GetHandler(api, user, parameters, callback) {
         return;
     }
 
+    logger.log(gh.rules);
+    logger.log(gh.ids);
+    logger.log(gh.id_versions);
+    logger.log(gh.paths);
+
     gh.waiting_for = gh.ids.length +
         gh.id_versions.length +
         gh.paths.length +
         gh.rules.length;
+
+    logger.log("gh.waiting_for ", gh.waiting_for);
 
     if(gh.waiting_for === 0){
         gh.send_response();
@@ -185,7 +155,7 @@ GetHandler.prototype.get_rule = function(rule_object){
         logger.log(err);
         logger.log(res);
         if(res){
-            //NEED PERMISSIONS CHECK
+            delete res._id;//Remove _id
             gh.response_array[response_index] = res;
         } else {
 

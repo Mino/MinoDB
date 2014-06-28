@@ -2,6 +2,8 @@
 	border: 1px solid @item_section_border;
 	background-color: white;
 
+	margin-bottom: 10px;
+
 	.title{
 		background-color: @item_section_title;
 		.bold;

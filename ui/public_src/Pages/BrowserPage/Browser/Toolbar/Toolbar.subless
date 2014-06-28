@@ -1,0 +1,17 @@
+.toolbar{
+	position: fixed;
+	bottom: 0px;
+	left: 50%;
+	width: 320px;
+	height: 40px;
+	margin-left: -160px;
+	box-sizing: border-box;
+	padding: 5px;
+	background-color: white;
+	border: 1px solid @border_color;
+	border-bottom: none;
+
+	button{
+		margin-right: 5px;
+	}
+}

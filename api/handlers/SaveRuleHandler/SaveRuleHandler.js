@@ -32,10 +32,24 @@ function SaveRuleHandler(api, user, parameters, callback){
 
     var db = api.ds;
 
-    db.rule_collection.insert(rule, function(err, response){
-        logger.log(err);
-        logger.log(response);
-    });
+    var name = rule.name;
+
+    logger.log(rule);
+    logger.log("name ",name);
+
+    db.rule_collection.update(
+        {
+            name: name
+        },
+        rule,
+        {
+            upsert: true
+        },
+        function(err, response){
+            logger.log(err);
+            logger.log(response);
+        }
+    );
 
 
 

@@ -1,7 +1,7 @@
-function ItemSection(name, item_view){
+function ItemSection(name, value, item_view){
 	var section = this;
 
-	section.name = this;
+	section.name = this;3
 	section.item_view = item_view;
 
 	section.element = $("<div />").addClass("item_section").append(
@@ -9,16 +9,47 @@ function ItemSection(name, item_view){
 		section.container = $("<div />").addClass("container")
 	)
 
+    section.is_edit_mode = true;
+
+    console.log(name);
+    console.log(value);
+    console.log(item_view.browser);
+
 	item_view.browser.rule_cache.load(name, function(err, data){
+        console.log("ITEM SECTION");
 		console.log(err);
 		console.log(data);
+        section.populate_rule(data);
+        section.populate(value);
 	})
 }
 
-ItemSection.prototype.populate = function(data){
-	var section = this;
+ItemSection.prototype.edit_mode = function(){
+    var section = this;
+    
+    section.is_edit_mode = true;
 
-	section.data = data;
+    if(section.form){
+        section.form.edit_mode();
+    }
+}
+
+ItemSection.prototype.view_mode = function(){
+    var section = this;
+ 
+    section.is_edit_mode = false;
+
+    if(section.form){
+        section.form.view_mode();
+    }
+}
+
+ItemSection.prototype.populate = function(data){
+    var section = this;
+
+    if(section.form){
+        section.form.val(data);
+    }
 }
 
 ItemSection.prototype.populate_rule = function(rule){
@@ -26,43 +57,21 @@ ItemSection.prototype.populate_rule = function(rule){
 
 	section.rule = rule;
 
-
-
-	var type_object = {
-		name: "person",
-		display_name: "Person",
-        type: "nested",
-        fields:{
-        	"first_name" : {
-        		display_name: "First Name",
-        		type: "text",
-        		min_length: 5
-        	},
-        	"last_name" : {
-        		display_name: "Last Name",
-        		type: "text",
-        		max_length: 3
-        	},
-        	"office_number" : {
-        		display_name: "Office Number",
-        		type: "number",
-                description: "Please enter your office number",
-        		minimum: 1,
-        		maximum: 30,
-        		integer: true
-        	}
-        }
-    }
-
     var vr = new ValidationRule();
-	console.log(vr.init(type_object));
+	console.log(vr.init(rule));
 
-	var form = vr.create_form();
+	section.form = vr.create_form();
 
 	section.container.append(
-		form.element
+		section.form.element
 	)
 
-	section.title_div.text(type_object.display_name || type_object.name);
+	section.title_div.text(rule.display_name || rule.name);
+
+    if(section.is_edit_mode){
+        section.edit_mode();
+    } else {
+        section.view_mode();
+    }
 
 }

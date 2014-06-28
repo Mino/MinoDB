@@ -8,7 +8,11 @@
 		padding: 12px;
 
 		@import "Views/Views.subless";
+
+		padding-bottom: 50px;
 	}
+
+	@import "Toolbar/Toolbar.subless";
 
 	.resultSetPadding{
 		height: 0px;

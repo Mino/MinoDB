@@ -31,34 +31,34 @@ describe('MinoDB API', function() {
     //     });
     // });
 
-    describe('When I make a simple get request', function() {
-        it('should return a 200 OK', function(done) {
-            db.platform_request("/", {
-                "function": "get",
-                "parameters": {
-                    "addresses" : [
-                        "/TestUser/",
-                        "/AnotherUser/Shared/Another/Folder/One",
-                        81,
-                        "person"
-                    ]
-                }
-            }, function(error, response) {
-                if (error != null) {
-                    logger.log(error);
-                    assert.fail('Just threw a connection error')
-                } else {
-                    if (response.error != null) {
-                        jsonout(response);
-                        assert.fail('Returned an error')
-                    } else {
-                        jsonout(response);
-                    }
-                    done();
-                }
-            });
-        });
-    });
+    // describe('When I make a simple get request', function() {
+    //     it('should return a 200 OK', function(done) {
+    //         db.platform_request("/", {
+    //             "function": "get",
+    //             "parameters": {
+    //                 "addresses" : [
+    //                     "/TestUser/",
+    //                     "/AnotherUser/Shared/Another/Folder/One",
+    //                     81,
+    //                     "person"
+    //                 ]
+    //             }
+    //         }, function(error, response) {
+    //             if (error != null) {
+    //                 logger.log(error);
+    //                 assert.fail('Just threw a connection error')
+    //             } else {
+    //                 if (response.error != null) {
+    //                     jsonout(response);
+    //                     assert.fail('Returned an error')
+    //                 } else {
+    //                     jsonout(response);
+    //                 }
+    //                 done();
+    //             }
+    //         });
+    //     });
+    // });
 
     // describe('When I make a simple save request', function() {
     //     it('should return a 200 OK', function(done) {
@@ -93,52 +93,52 @@ describe('MinoDB API', function() {
     //     });
     // });
 
-    // describe('When I make a save a simple rule', function() {
-    //     it('should return a 200 OK', function(done) {
-    //         db.platform_request("/", {
-    //             "function": "save_rule",
-    //             "parameters": {
-    //                 "rule" : {
-    //                     name: "person",
-    //                     display_name: "Person",
-    //                     type: "nested",
-    //                     fields:{
-    //                         "first_name" : {
-    //                             display_name: "First Name",
-    //                             type: "text",
-    //                             min_length: 5
-    //                         },
-    //                         "last_name" : {
-    //                             display_name: "Last Name",
-    //                             type: "text",
-    //                             max_length: 3
-    //                         },
-    //                         "office_number" : {
-    //                             display_name: "Office Number",
-    //                             type: "number",
-    //                             description: "Please enter your office number",
-    //                             minimum: 1,
-    //                             maximum: 30,
-    //                             integer: true
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }, function(error, response) {
-    //             if (error != null) {
-    //                 logger.log(error);
-    //                 assert.fail('Just threw a connection error')
-    //             } else {
-    //                 if (response.error != null) {
-    //                     jsonout(response);
-    //                     assert.fail('Returned an error')
-    //                 } else {
-    //                     jsonout(response);
-    //                 }
-    //                 done();
-    //             }
-    //         });
-    //     });
-    // });
+    describe('When I make a save a simple rule', function() {
+        it('should return a 200 OK', function(done) {
+            db.platform_request("/", {
+                "function": "save_rule",
+                "parameters": {
+                    "rule" : {
+                        name: "person",
+                        display_name: "Person",
+                        type: "nested",
+                        fields:{
+                            "first_name" : {
+                                display_name: "First Name",
+                                type: "text",
+                                min_length: 10
+                            },
+                            "last_name" : {
+                                display_name: "Last Name",
+                                type: "text",
+                                max_length: 3
+                            },
+                            "office_number" : {
+                                display_name: "Office Number",
+                                type: "number",
+                                description: "Please enter your office number",
+                                minimum: 1,
+                                maximum: 30,
+                                integer: true
+                            }
+                        }
+                    }
+                }
+            }, function(error, response) {
+                if (error != null) {
+                    logger.log(error);
+                    assert.fail('Just threw a connection error')
+                } else {
+                    if (response.error != null) {
+                        jsonout(response);
+                        assert.fail('Returned an error')
+                    } else {
+                        jsonout(response);
+                    }
+                    done();
+                }
+            });
+        });
+    });
 
 });

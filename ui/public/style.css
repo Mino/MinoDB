@@ -84,6 +84,12 @@
   width: 100%;
   font-size: 14px;
 }
+.text_field.view_mode > .input_holder > input.text_input {
+  border: 1px solid #EEE;
+}
+.text_field.view_mode > .input_holder > textarea.text_input {
+  border: 1px solid #EEE;
+}
 .date_field > .input_holder > .date_input {
   display: inline-block;
 }
@@ -473,10 +479,12 @@ textarea {
 }
 .browser_page .browser .view_container {
   padding: 12px;
+  padding-bottom: 50px;
 }
 .browser_page .browser .view_container .item_view .item_section {
   border: 1px solid #808080;
   background-color: white;
+  margin-bottom: 10px;
 }
 .browser_page .browser .view_container .item_view .item_section .title {
   background-color: #66aa99;
@@ -486,6 +494,22 @@ textarea {
 }
 .browser_page .browser .view_container .item_view .item_section .container {
   padding: 5px;
+}
+.browser_page .browser .toolbar {
+  position: fixed;
+  bottom: 0px;
+  left: 50%;
+  width: 320px;
+  height: 40px;
+  margin-left: -160px;
+  box-sizing: border-box;
+  padding: 5px;
+  background-color: white;
+  border: 1px solid #0000ff;
+  border-bottom: none;
+}
+.browser_page .browser .toolbar button {
+  margin-right: 5px;
 }
 .browser_page .browser .resultSetPadding {
   height: 0px;

@@ -8,19 +8,13 @@ exports.add_routes = function(ui_server) {
 
     	var api = ui_server.minodb.api;
 
+        logger.log(req.body);
+
     	api.call({
     		username: "TestUser"
-    	}, {
-    		function: "get",
-    		parameters: {
-    			addresses: [
-    				"/TestUser/"
-    			]
-    		}
-    	},function(api_err, api_res){
+    	}, req.body ,function(api_err, api_res){
     		logger.log(api_err);
     		logger.log(api_res);
-
     		res.json(api_res)
     	})
     })
