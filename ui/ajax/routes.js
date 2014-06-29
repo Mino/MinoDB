@@ -15,7 +15,12 @@ exports.add_routes = function(ui_server) {
     	}, req.body ,function(api_err, api_res){
     		logger.log(api_err);
     		logger.log(api_res);
-    		res.json(api_res)
+            if(api_err){
+                res.json(api_err);
+                return;
+            }
+            res.json(api_res);
+            return;
     	})
     })
 

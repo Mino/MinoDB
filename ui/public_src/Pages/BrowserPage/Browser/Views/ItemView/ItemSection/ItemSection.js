@@ -1,7 +1,7 @@
 function ItemSection(name, value, item_view){
 	var section = this;
 
-	section.name = this;3
+	section.name = name;
 	section.item_view = item_view;
 
 	section.element = $("<div />").addClass("item_section").append(
@@ -22,6 +22,22 @@ function ItemSection(name, value, item_view){
         section.populate_rule(data);
         section.populate(value);
 	})
+}
+
+ItemSection.prototype.val = function(argument){
+    var section = this;
+
+    if(arguments.length===0){
+        return section.form.val();
+    } else {
+        return section.form.val(argument);
+    }
+}
+
+ItemSection.prototype.error = function(argument){
+    var section = this;
+
+    return section.form.error(argument);
 }
 
 ItemSection.prototype.edit_mode = function(){

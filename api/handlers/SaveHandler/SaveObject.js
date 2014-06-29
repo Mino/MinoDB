@@ -28,6 +28,10 @@ function SaveObject(json, handler, index){
 	if(so.folder===null){
 		so.folder = false;
 	}
+
+	//full_path might be present, but it should be ignored
+	so.validator.get("full_path",bval.string(false), validators.path);
+	
 	so.path = so.validator.get("path", bval.string(true), validators.path);
 	if(so.path!=null){
 		var username_for_permission = so.path.username_for_permission(handler.user.username);
@@ -91,6 +95,8 @@ SaveObject.prototype.got_rule = function(name, error, rule){
 	logger.log(rule);
 	logger.log("rule.name: ",name);
 
+	logger.log(so.validator);
+
 	so.validator.recognized(name);
 
 	var value = so.json[name];
@@ -123,7 +129,7 @@ SaveObject.prototype.do_saving = function(){
     				error: -1,
     				error_message: "FULL PATH ALREADY EXISTS"
     			})
-		       so.handler.finished_saving_object(so,so.validator.end(),null);
+		       	so.handler.finished_saving_object(so,so.validator.end(),null);
     		} else {
     			so.handler.finished_saving_object(so,null,{
     				_id : so.id,

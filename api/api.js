@@ -58,8 +58,8 @@ API.prototype.call = function(user, request, callback){
     if (handler != null) {
         logger.log(parameters);
         new handler(api, user, parameters, function(error, response) {
-            logger.log(error);
-            logger.log(response);
+            logger.log(JSON.stringify(error, null, 4));
+            logger.log(JSON.stringify(response, null, 4));
             if (error != null) {
                 return callback(api_val.invalid("parameters", error).end());
             } else {

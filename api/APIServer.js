@@ -30,6 +30,8 @@ function APIServer(minodb){
         var user_api_key = req.user_api_key;
 
         as.minodb.api.call(user, params, function(api_err, api_res){
+            logger.log(api_err);
+            logger.log(api_res);
             if(api_err){
                 res.json(api_err);
                 return;

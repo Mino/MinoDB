@@ -36,12 +36,15 @@ function ItemView(path, data, browser){
 	)
 	item_view.core_form.val(data);
 
-	item_view.sections = [];
+	item_view.sections = {};
+
+	//Used so that ItemView can use FieldVal.Form's .error function
+	item_view.fields = item_view.sections;
 
 	for(var key in data){
 		if(!is_object_key(key)){
 			var section = new ItemSection(key, data[key], item_view);
-			item_view.sections.push(section);
+			item_view.sections[key] = section;
 			item_view.element.append(
 				section.element
 			)
@@ -106,16 +109,57 @@ ItemView.prototype.view_mode = function(){
 	}
 }
 
+ItemView.prototype.val = function(){
+	var item_view = this;
+
+	var value = item_view.core_form.val();
+
+	for(var i = 0; i < item_view.sections.length; i++){
+		var section = item_view.sections[i];
+		value[section.name] = section.val();
+	}
+
+	return value;
+}
+
+ItemView.prototype.error = function(error_data){
+	var item_view = this;
+
+	console.log("error_data", error_data);
+
+	alert(error);
+}
+
 ItemView.prototype.save = function(){
 	var item_view = this;
 
-	var core = item_view.core_form.val();
+	var value = item_view.val();
 
-	item_view.view_mode();
+	console.log(value);
 
-	item_view.save_button.hide();
-	item_view.cancel_button.hide();
-	item_view.edit_button.show();
+	ajax_request({
+		"function" : "save",
+		"parameters" : {
+			"objects" : [
+				value
+			]
+		}
+	},function(err, response){
+		console.log("err ",err);
+		console.log("response ",response);
+
+		if(response.error){
+			ItemView.error(response);
+		} else {
+			alert("Success?");
+		}
+	})
+
+	// item_view.view_mode();
+
+	// item_view.save_button.hide();
+	// item_view.cancel_button.hide();
+	// item_view.edit_button.show();
 }
 
 
