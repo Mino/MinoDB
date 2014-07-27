@@ -40,7 +40,6 @@ function GetHandler(api, user, parameters, callback) {
         var address_type = address_details[0];
         var address_value = address_details[1];
 
-        var recognized = true;
         if(address_type==="rule"){
             gh.rules.push([address_value, index]);
         } else if(address_type==="path"){
@@ -51,16 +50,14 @@ function GetHandler(api, user, parameters, callback) {
             gh.id_versions.push([address_value, index]);
         } else {
             logger.log("address_type ",address_type);
-            recognized = false;
+            return FieldVal.Error(0)
         }
 
-        if(recognized){
-            gh.response_array.push(FieldVal.Error(0));
-        }
-
+        gh.response_array.push(null);
     }));
 
     var val_error = validator.end();
+    logger.log("val_error ", val_error)
     if (val_error != null) {
         gh.callback(val_error);
         return;

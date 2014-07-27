@@ -22,6 +22,7 @@ function UIServer(minodb){
     us.express_server.use(express.static(path.join(__dirname, 'public')));
     us.express_server.use(express.logger('dev'));
     us.express_server.use(express.errorHandler());
+    us.express_server.disable('etag');//Prevents 304s
 
     require('./ajax/routes').add_routes(us);
 

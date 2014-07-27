@@ -19,48 +19,4 @@
 		width: 100%;
 		float: left;
 	}
-
-	.pageControlsHolder{
-		float: left;
-		clear: left;
-		margin-left: 50%;
-		margin-top: 5px;
-		margin-bottom: 10px;
-
-		.pageControls{
-			position: relative;
-			margin-left: -160px;
-			background-color: white;
-			background-color: @paneBackgroundColor;
-			border: 1px solid @borderColor;
-			width: 310px;
-			height: 40px;
-			padding-left: 4px;
-			padding-right: 4px;
-
-			.mino_button{
-				position: absolute;
-				top: 0px;
-				height: 40px;
-
-				&.left{
-					left: 0px;
-				}
-
-				&.right{
-					right: 0px;
-				}
-			}
-
-			.pageNumber{
-				position: absolute;
-				top: 5px;
-				left: 56px;
-				width: 206px; 
-				float:left; 
-				line-height:15px; 
-				text-align:center;
-			}
-		}	
-	}
 }

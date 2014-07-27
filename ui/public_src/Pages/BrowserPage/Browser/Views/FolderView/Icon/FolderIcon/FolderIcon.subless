@@ -1,0 +1,6 @@
+.folder_icon{
+	
+	>.holder{
+		background-color: orange;
+	}
+}

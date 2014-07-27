@@ -2,7 +2,7 @@
 
 extend(BrowserPage, Page);
 
-function BrowserPage(parameters, url) {
+function BrowserPage(req) {
     var page = this;
 
     BrowserPage.superConstructor.call(this);
@@ -14,14 +14,18 @@ function BrowserPage(parameters, url) {
     .append(
         page.browser.element
     )
+
+    page.new_url(req);
 }
 Site.add_url("/browser/", BrowserPage);
 Site.add_url("/browser/*", BrowserPage);
 
-BrowserPage.prototype.new_url = function(parameters, url, wildcard){
+BrowserPage.prototype.new_url = function(req){
     var page = this;
 
-    
+    if(req.params['*']){
+        page.browser.load(req.params['*']);
+    }
 }
 
 BrowserPage.prototype.get_title = function() {

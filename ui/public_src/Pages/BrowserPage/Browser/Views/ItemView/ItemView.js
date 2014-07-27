@@ -5,7 +5,9 @@ var object_keys = [
 	"_id",
 	"name",
 	"path",
-	"full_path"
+	"full_path",
+	"version",
+	"folder"
 ];
 
 function is_object_key(key){
@@ -24,30 +26,34 @@ function ItemView(path, data, browser){
 	item_view.path = path;
 	item_view.item_data = data;
 
+	for(var i = 0; i<path.length; i++){
+        var path_button = new PathButton(path.object_names[i], path.sub_paths[i], 0, null);
+        browser.address_bar.path_buttons.append(
+            path_button.element
+        )
+    }
+
 	item_view.element = $("<div />").addClass("item_view");
 
-	item_view.core_form = new Form();
-	item_view.core_form.add_field("_id", new TextField("ID"));
-	item_view.core_form.add_field("name", new TextField("Name"));
-	item_view.core_form.add_field("path", new TextField("Path"));
-	item_view.core_form.add_field("full_path", new TextField("Full Path"));
+	item_view.form = new FVForm();
+	item_view.form.add_field("_id", new TextField("ID"));
+	item_view.form.add_field("name", new TextField("Name"));
+	item_view.form.add_field("path", new TextField("Path"));
+	item_view.form.add_field("full_path", new TextField("Full Path"));
 	item_view.element.append(
-		item_view.core_form.element
+		item_view.form.element
 	)
-	item_view.core_form.val(data);
+	item_view.form.val(data);
 
 	item_view.sections = {};
 
-	//Used so that ItemView can use FieldVal.Form's .error function
+	//Used so that ItemView can use FieldVal.FVForm's .error function
 	item_view.fields = item_view.sections;
 
 	for(var key in data){
 		if(!is_object_key(key)){
 			var section = new ItemSection(key, data[key], item_view);
-			item_view.sections[key] = section;
-			item_view.element.append(
-				section.element
-			)
+			item_view.form.add_field(key, section);
 		}
 	}
 
@@ -90,34 +96,19 @@ ItemView.prototype.edit = function(){
 ItemView.prototype.edit_mode = function(){
 	var item_view = this;
 
-	item_view.core_form.edit_mode();
-
-	for(var i = 0; i < item_view.sections.length; i++){
-		var section = item_view.sections[i];
-		section.edit_mode();
-	}
+	item_view.form.edit_mode();
 }
 
 ItemView.prototype.view_mode = function(){
 	var item_view = this;
 
-	item_view.core_form.view_mode();
-
-	for(var i = 0; i < item_view.sections.length; i++){
-		var section = item_view.sections[i];
-		section.view_mode();
-	}
+	item_view.form.view_mode();
 }
 
 ItemView.prototype.val = function(){
 	var item_view = this;
 
-	var value = item_view.core_form.val();
-
-	for(var i = 0; i < item_view.sections.length; i++){
-		var section = item_view.sections[i];
-		value[section.name] = section.val();
-	}
+	var value = item_view.form.val();
 
 	return value;
 }
@@ -125,9 +116,9 @@ ItemView.prototype.val = function(){
 ItemView.prototype.error = function(error_data){
 	var item_view = this;
 
-	console.log("error_data", error_data);
+	console.log("error_data ",error_data);
 
-	alert(error);
+	item_view.form.error(error_data);
 }
 
 ItemView.prototype.save = function(){
@@ -148,8 +139,8 @@ ItemView.prototype.save = function(){
 		console.log("err ",err);
 		console.log("response ",response);
 
-		if(response.error){
-			ItemView.error(response);
+		if(response.error!==undefined){
+			item_view.error(response.invalid.parameters.invalid.objects.invalid[0]);
 		} else {
 			alert("Success?");
 		}
@@ -171,4 +162,6 @@ ItemView.prototype.cancel = function(){
 	item_view.cancel_button.hide();
 	item_view.save_button.hide();
 	item_view.edit_button.show();
+
+	item_view.error(null);
 }

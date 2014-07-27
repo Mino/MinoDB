@@ -20,6 +20,10 @@ String.prototype.replaceAll = function(re, replace) {
 
 Common.get_resource_type = function(this_address){
 
+    if((typeof Path)==='undefined' && (typeof require)!=='undefined'){
+        Path = require('./Path');
+    }
+
     var type_of = typeof this_address;
 
     if (type_of == 'string') {
@@ -28,11 +32,11 @@ Common.get_resource_type = function(this_address){
 
         if (index_of_slash == -1) {
             //Could be a number or rule
-            var numeric_value = this_address;
+            var numeric_value = parseFloat(this_address);
             var is_integer = numeric_value % 1 == 0;
-            if (isNaN(numeric_value) || !is_integer || numeric_value < 0) {
+            if (isNaN(numeric_value)){
                 return ["rule",this_address];
-            } else {
+            } else if(is_integer && numeric_value > 1) {
                 return ["id",numeric_value];
             }
         } else if (index_of_slash == 0) {
@@ -55,7 +59,6 @@ Common.get_resource_type = function(this_address){
             if (isNaN(num_1) || !is_integer_1 || num_1 < 1 || isNaN(num_2) || !is_integer_2 || num_2 < 1) {
 
             } else {
-                logger.log([num_1, num_2, index]);
                 return ["id_version",[num_1,num_2]];
             }
         }
@@ -63,8 +66,7 @@ Common.get_resource_type = function(this_address){
 
         var is_integer = this_address % 1 === 0;
         if (is_integer && this_address > 0) {
-            gh.ids.push([this_address, index]);
-            return ["id",numeric_value];9
+            return ["id",this_address];
         }
 
     }

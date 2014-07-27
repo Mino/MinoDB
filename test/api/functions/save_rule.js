@@ -13,7 +13,7 @@ describe('save_rule', function() {
             var rule = {
 				name: "person",
 				display_name: "Person",
-		        type: "nested",
+		        type: "object",
 		        fields:{
 		        	"first_name" : {
 		        		display_name: "First Name",

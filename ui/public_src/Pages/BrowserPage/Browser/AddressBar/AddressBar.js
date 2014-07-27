@@ -119,7 +119,7 @@ AddressBar.prototype.edit_address = function(){
 
 AddressBar.prototype.go = function(){
 	var address_bar = this;
-	address_bar.browser.load_address(
+	address_bar.browser.load(
 		address_bar.text_input.val()
 	);
 	address_bar.text_input.blur();

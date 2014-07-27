@@ -9,7 +9,7 @@ RuleCache.prototype.load = function(name, callback) {
 	var rc = this;
 
 	if(rc.loaded[name]){
-		callback(rc.loaded[name]);
+		callback(null, rc.loaded[name]);
 		return;
 	}
 

@@ -27,14 +27,6 @@
 }
 .fieldval_ui_form .field_container > .field_title {
   font-size: 16px;
-  line-height: 16px;
-  display: inline-block;
-  padding-right: 5px;
-}
-.fieldval_ui_form .field_container > .field_description {
-  font-size: 14px;
-  line-height: 16px;
-  color: gray;
   display: inline-block;
   padding-right: 5px;
 }
@@ -69,9 +61,6 @@
   min-height: 100px;
   box-sizing: border-box;
   border: 1px solid #999;
-}
-.object_field > .input_holder {
-  margin-left: 10px;
 }
 .display_field > .input_holder > div {
   font-size: 14px;
@@ -481,6 +470,84 @@ textarea {
   padding: 12px;
   padding-bottom: 50px;
 }
+.browser_page .browser .view_container .folder_view .pagination_controller {
+  text-align: center;
+}
+.browser_page .browser .view_container .folder_view .pagination_controller .page_controls {
+  background-color: white;
+  display: inline-block;
+  position: relative;
+  width: 250px;
+  height: 30px;
+}
+.browser_page .browser .view_container .folder_view .pagination_controller .page_controls .mino_button {
+  position: absolute;
+  width: 50px;
+  top: 0px;
+}
+.browser_page .browser .view_container .folder_view .pagination_controller .page_controls .mino_button.previous_button {
+  left: 0px;
+}
+.browser_page .browser .view_container .folder_view .pagination_controller .page_controls .mino_button.next_button {
+  right: 0px;
+}
+.browser_page .browser .view_container .folder_view .pagination_controller .page_controls .page_number {
+  position: absolute;
+  top: 0px;
+  left: 50px;
+  width: 150px;
+  line-height: 30px;
+  text-align: center;
+}
+.browser_page .browser .view_container .folder_view .contents {
+  margin-left: -5px;
+  margin-right: -5px;
+  margin-bottom: 20px;
+}
+.browser_page .browser .view_container .folder_view .contents .icon {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  width: 90px;
+  height: 120px;
+  margin: 5px;
+}
+.browser_page .browser .view_container .folder_view .contents .icon > .holder {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 70px;
+  height: 70px;
+  background-color: green;
+}
+.browser_page .browser .view_container .folder_view .contents .icon > .text {
+  position: absolute;
+  top: 85px;
+  left: 0px;
+  width: 90px;
+  line-height: 15px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+.browser_page .browser .view_container .folder_view .contents .icon:hover > .text {
+  text-overflow: none;
+  background-color: white;
+  overflow: hidden;
+  text-align: center;
+  word-wrap: break-word;
+  hyphens: auto;
+  white-space: normal;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  border: 1px solid #999;
+}
+.browser_page .browser .view_container .folder_view .contents .folder_icon > .holder {
+  background-color: orange;
+}
 .browser_page .browser .view_container .item_view .item_section {
   border: 1px solid #808080;
   background-color: white;
@@ -495,6 +562,20 @@ textarea {
 .browser_page .browser .view_container .item_view .item_section .container {
   padding: 5px;
 }
+.browser_page .browser .view_container .rule_view .rule_field {
+  border: 1px solid #808080;
+  background-color: white;
+  margin-bottom: 10px;
+}
+.browser_page .browser .view_container .rule_view .rule_field .title {
+  background-color: #ffa500;
+  font-weight: bold;
+  color: white;
+  padding: 5px;
+}
+.browser_page .browser .view_container .rule_view .rule_field .container {
+  padding: 5px;
+}
 .browser_page .browser .toolbar {
   position: fixed;
   bottom: 0px;
@@ -505,7 +586,7 @@ textarea {
   box-sizing: border-box;
   padding: 5px;
   background-color: white;
-  border: 1px solid #0000ff;
+  border: 1px solid #808080;
   border-bottom: none;
 }
 .browser_page .browser .toolbar button {
@@ -515,44 +596,6 @@ textarea {
   height: 0px;
   width: 100%;
   float: left;
-}
-.browser_page .browser .pageControlsHolder {
-  float: left;
-  clear: left;
-  margin-left: 50%;
-  margin-top: 5px;
-  margin-bottom: 10px;
-}
-.browser_page .browser .pageControlsHolder .pageControls {
-  position: relative;
-  margin-left: -160px;
-  background-color: white;
-  background-color: rgba(245, 245, 245, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.5);
-  width: 310px;
-  height: 40px;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-.browser_page .browser .pageControlsHolder .pageControls .mino_button {
-  position: absolute;
-  top: 0px;
-  height: 40px;
-}
-.browser_page .browser .pageControlsHolder .pageControls .mino_button.left {
-  left: 0px;
-}
-.browser_page .browser .pageControlsHolder .pageControls .mino_button.right {
-  right: 0px;
-}
-.browser_page .browser .pageControlsHolder .pageControls .pageNumber {
-  position: absolute;
-  top: 5px;
-  left: 56px;
-  width: 206px;
-  float: left;
-  line-height: 15px;
-  text-align: center;
 }
 .auth_page {
   background-color: red;

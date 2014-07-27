@@ -11,6 +11,7 @@
 @import("common.js");
 
 @import("../../common_classes/Constants.js");
+@import("../../common_classes/Common.js");
 @import("../../common_classes/Path.js");
 @import("../../common_classes/ID.js");
 

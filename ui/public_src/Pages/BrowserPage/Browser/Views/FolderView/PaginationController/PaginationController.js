@@ -5,23 +5,20 @@ function PaginationController(pc){
 	.addClass("pagination_controller")
 	.append(
 		$("<div />")
-		.addClass("pageControls")
+		.addClass("page_controls")
 		.append(
 			pc.previous_button = $("<button />")
-			.addClass("mino_button previousPageButton left no_left no_top no_bottom")
-			.css("float","left")
-			.css("width","50px")
+			.addClass("mino_button previous_button")
 			.text("Prev.")
 		)
 		.append(
 			pc.page_number = $("<div />")
-			.addClass("pageNumber")
+			.addClass("page_number")
+			.text("Page 1 of 1")//MOCKED
 		)
 		.append(
 			pc.next_button = $("<button />")
-			.addClass("mino_button previousPageButton right no_right no_top no_bottom")
-			.css("float","left")
-			.css("width","50px")
+			.addClass("mino_button next_button")
 			.text("Next")
 		)
 	)

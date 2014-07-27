@@ -1,0 +1,48 @@
+.icon{
+	cursor: pointer;
+	position: relative;
+	display: inline-block;
+	width: 90px;
+	height: 120px;
+	margin: 5px;
+
+	>.holder{
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		width: 70px;
+		height: 70px;
+		background-color: green;
+	}
+
+	>.text{
+		position: absolute;
+		top: 85px;
+		left: 0px;
+		width: 90px;
+		line-height: 15px;
+		text-align: center;
+		overflow:hidden;
+		text-overflow: ellipsis;
+		word-wrap: break-word;
+		white-space: nowrap;
+		box-sizing: border-box;
+	}
+
+	&:hover{
+		>.text{
+			text-overflow: none;
+			background-color: white;
+			overflow:hidden;
+			text-align: center;
+			word-wrap: break-word;
+		    hyphens:auto;
+		    white-space: normal;
+			-webkit-hyphens: auto;
+		    -moz-hyphens:auto;
+		    border: 1px solid #999;
+		}
+	}
+}
+
+@import "FolderIcon/FolderIcon.subless";

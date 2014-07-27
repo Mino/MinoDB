@@ -10580,10 +10580,16 @@ return jQuery;
 	};
 }(window.jQuery || window.$)); // jQuery or jQuery-like library, such as Zepto
 
-function Page(){var e=this;e.element=$("<div />")}function SAFE(){var e=this;Site=this,e.debug=!1,e.initial_url=!0,e.map={},e.ignore_next_url=!1,e.origin=window.location.protocol+"//"+window.location.hostname,""!=window.location.port&&(e.origin+=":"+window.location.port),e.path="/",e.previous_url=document.referrer,e.load_page_class=null,e.loading_page=null,e.scroll_bar_width_value=-1,e.element=$("<div />"),e.is_touchscreen="ontouchstart"in document.documentElement,e.history_state_supported=!(!window.history||!window.history.pushState),e.current_page=null,e.no_page_found_class=null}if(function(e,t){"use strict";var n=e.History=e.History||{},r=e.jQuery;if("undefined"!=typeof n.Adapter)throw new Error("History.js Adapter has already been loaded...");n.Adapter={bind:function(e,t,n){r(e).bind(t,n)},trigger:function(e,t,n){r(e).trigger(t,n)},extractEventData:function(e,n,r){var a=n&&n.originalEvent&&n.originalEvent[e]||r&&r[e]||t;return a},onDomLoad:function(e){r(e)}},"undefined"!=typeof n.init&&n.init()}(window),function(e,t){"use strict";var n=e.console||t,r=e.document,a=e.navigator,o=e.sessionStorage||!1,i=e.setTimeout,s=e.clearTimeout,l=e.setInterval,u=e.clearInterval,c=e.JSON,d=e.alert,p=e.History=e.History||{},g=e.history;try{o.setItem("TEST","1"),o.removeItem("TEST")}catch(f){o=!1}if(c.stringify=c.stringify||c.encode,c.parse=c.parse||c.decode,"undefined"!=typeof p.init)throw new Error("History.js Core has already been loaded...");p.init=function(){return"undefined"==typeof p.Adapter?!1:("undefined"!=typeof p.initCore&&p.initCore(),"undefined"!=typeof p.initHtml4&&p.initHtml4(),!0)},p.initCore=function(){if("undefined"!=typeof p.initCore.initialized)return!1;if(p.initCore.initialized=!0,p.options=p.options||{},p.options.hashChangeInterval=p.options.hashChangeInterval||100,p.options.safariPollInterval=p.options.safariPollInterval||500,p.options.doubleCheckInterval=p.options.doubleCheckInterval||500,p.options.disableSuid=p.options.disableSuid||!1,p.options.storeInterval=p.options.storeInterval||1e3,p.options.busyDelay=p.options.busyDelay||250,p.options.debug=p.options.debug||!1,p.options.initialTitle=p.options.initialTitle||r.title,p.options.html4Mode=p.options.html4Mode||!1,p.options.delayInit=p.options.delayInit||!1,p.intervalList=[],p.clearAllIntervals=function(){var e,t=p.intervalList;if("undefined"!=typeof t&&null!==t){for(e=0;e<t.length;e++)u(t[e]);p.intervalList=null}},p.debug=function(){p.options.debug&&p.log.apply(p,arguments)},p.log=function(){var e,t,a,o,i,s=!("undefined"==typeof n||"undefined"==typeof n.log||"undefined"==typeof n.log.apply),l=r.getElementById("log");for(s?(o=Array.prototype.slice.call(arguments),e=o.shift(),"undefined"!=typeof n.debug?n.debug.apply(n,[e,o]):n.log.apply(n,[e,o])):e="\n"+arguments[0]+"\n",t=1,a=arguments.length;a>t;++t){if(i=arguments[t],"object"==typeof i&&"undefined"!=typeof c)try{i=c.stringify(i)}catch(u){}e+="\n"+i+"\n"}return l?(l.value+=e+"\n-----\n",l.scrollTop=l.scrollHeight-l.clientHeight):s||d(e),!0},p.getInternetExplorerMajorVersion=function(){var e=p.getInternetExplorerMajorVersion.cached="undefined"!=typeof p.getInternetExplorerMajorVersion.cached?p.getInternetExplorerMajorVersion.cached:function(){for(var e=3,t=r.createElement("div"),n=t.getElementsByTagName("i");(t.innerHTML="<!--[if gt IE "+ ++e+"]><i></i><![endif]-->")&&n[0];);return e>4?e:!1}();return e},p.isInternetExplorer=function(){var e=p.isInternetExplorer.cached="undefined"!=typeof p.isInternetExplorer.cached?p.isInternetExplorer.cached:Boolean(p.getInternetExplorerMajorVersion());return e},p.emulated=p.options.html4Mode?{pushState:!0,hashChange:!0}:{pushState:!Boolean(e.history&&e.history.pushState&&e.history.replaceState&&!(/ Mobile\/([1-7][a-z]|(8([abcde]|f(1[0-8]))))/i.test(a.userAgent)||/AppleWebKit\/5([0-2]|3[0-2])/i.test(a.userAgent))),hashChange:Boolean(!("onhashchange"in e||"onhashchange"in r)||p.isInternetExplorer()&&p.getInternetExplorerMajorVersion()<8)},p.enabled=!p.emulated.pushState,p.bugs={setHash:Boolean(!p.emulated.pushState&&"Apple Computer, Inc."===a.vendor&&/AppleWebKit\/5([0-2]|3[0-3])/.test(a.userAgent)),safariPoll:Boolean(!p.emulated.pushState&&"Apple Computer, Inc."===a.vendor&&/AppleWebKit\/5([0-2]|3[0-3])/.test(a.userAgent)),ieDoubleCheck:Boolean(p.isInternetExplorer()&&p.getInternetExplorerMajorVersion()<8),hashEscape:Boolean(p.isInternetExplorer()&&p.getInternetExplorerMajorVersion()<7)},p.isEmptyObject=function(e){for(var t in e)if(e.hasOwnProperty(t))return!1;return!0},p.cloneObject=function(e){var t,n;return e?(t=c.stringify(e),n=c.parse(t)):n={},n},p.getRootUrl=function(){var e=r.location.protocol+"//"+(r.location.hostname||r.location.host);return r.location.port&&(e+=":"+r.location.port),e+="/"},p.getBaseHref=function(){var e=r.getElementsByTagName("base"),t=null,n="";return 1===e.length&&(t=e[0],n=t.href.replace(/[^\/]+$/,"")),n=n.replace(/\/+$/,""),n&&(n+="/"),n},p.getBaseUrl=function(){var e=p.getBaseHref()||p.getBasePageUrl()||p.getRootUrl();return e},p.getPageUrl=function(){var e,t=p.getState(!1,!1),n=(t||{}).url||p.getLocationHref();return e=n.replace(/\/+$/,"").replace(/[^\/]+$/,function(e){return/\./.test(e)?e:e+"/"})},p.getBasePageUrl=function(){var e=p.getLocationHref().replace(/[#\?].*/,"").replace(/[^\/]+$/,function(e){return/[^\/]$/.test(e)?"":e}).replace(/\/+$/,"")+"/";return e},p.getFullUrl=function(e,t){var n=e,r=e.substring(0,1);return t="undefined"==typeof t?!0:t,/[a-z]+\:\/\//.test(e)||(n="/"===r?p.getRootUrl()+e.replace(/^\/+/,""):"#"===r?p.getPageUrl().replace(/#.*/,"")+e:"?"===r?p.getPageUrl().replace(/[\?#].*/,"")+e:t?p.getBaseUrl()+e.replace(/^(\.\/)+/,""):p.getBasePageUrl()+e.replace(/^(\.\/)+/,"")),n.replace(/\#$/,"")},p.getShortUrl=function(e){var t=e,n=p.getBaseUrl(),r=p.getRootUrl();return p.emulated.pushState&&(t=t.replace(n,"")),t=t.replace(r,"/"),p.isTraditionalAnchor(t)&&(t="./"+t),t=t.replace(/^(\.\/)+/g,"./").replace(/\#$/,"")},p.getLocationHref=function(e){return e=e||r,e.URL===e.location.href?e.location.href:e.location.href===decodeURIComponent(e.URL)?e.URL:e.location.hash&&decodeURIComponent(e.location.href.replace(/^[^#]+/,""))===e.location.hash?e.location.href:-1==e.URL.indexOf("#")&&-1!=e.location.href.indexOf("#")?e.location.href:e.URL||e.location.href},p.store={},p.idToState=p.idToState||{},p.stateToId=p.stateToId||{},p.urlToId=p.urlToId||{},p.storedStates=p.storedStates||[],p.savedStates=p.savedStates||[],p.normalizeStore=function(){p.store.idToState=p.store.idToState||{},p.store.urlToId=p.store.urlToId||{},p.store.stateToId=p.store.stateToId||{}},p.getState=function(e,t){"undefined"==typeof e&&(e=!0),"undefined"==typeof t&&(t=!0);var n=p.getLastSavedState();return!n&&t&&(n=p.createStateObject()),e&&(n=p.cloneObject(n),n.url=n.cleanUrl||n.url),n},p.getIdByState=function(e){var t,n=p.extractId(e.url);if(!n)if(t=p.getStateString(e),"undefined"!=typeof p.stateToId[t])n=p.stateToId[t];else if("undefined"!=typeof p.store.stateToId[t])n=p.store.stateToId[t];else{for(;;)if(n=(new Date).getTime()+String(Math.random()).replace(/\D/g,""),"undefined"==typeof p.idToState[n]&&"undefined"==typeof p.store.idToState[n])break;p.stateToId[t]=n,p.idToState[n]=e}return n},p.normalizeState=function(e){var t,n;return e&&"object"==typeof e||(e={}),"undefined"!=typeof e.normalized?e:(e.data&&"object"==typeof e.data||(e.data={}),t={},t.normalized=!0,t.title=e.title||"",t.url=p.getFullUrl(e.url?e.url:p.getLocationHref()),t.hash=p.getShortUrl(t.url),t.data=p.cloneObject(e.data),t.id=p.getIdByState(t),t.cleanUrl=t.url.replace(/\??\&_suid.*/,""),t.url=t.cleanUrl,n=!p.isEmptyObject(t.data),(t.title||n)&&p.options.disableSuid!==!0&&(t.hash=p.getShortUrl(t.url).replace(/\??\&_suid.*/,""),/\?/.test(t.hash)||(t.hash+="?"),t.hash+="&_suid="+t.id),t.hashedUrl=p.getFullUrl(t.hash),(p.emulated.pushState||p.bugs.safariPoll)&&p.hasUrlDuplicate(t)&&(t.url=t.hashedUrl),t)},p.createStateObject=function(e,t,n){var r={data:e,title:t,url:n};return r=p.normalizeState(r)},p.getStateById=function(e){e=String(e);var n=p.idToState[e]||p.store.idToState[e]||t;return n},p.getStateString=function(e){var t,n,r;return t=p.normalizeState(e),n={data:t.data,title:e.title,url:e.url},r=c.stringify(n)},p.getStateId=function(e){var t,n;return t=p.normalizeState(e),n=t.id},p.getHashByState=function(e){var t,n;return t=p.normalizeState(e),n=t.hash},p.extractId=function(e){var t,n,r,a;return a=-1!=e.indexOf("#")?e.split("#")[0]:e,n=/(.*)\&_suid=([0-9]+)$/.exec(a),r=n?n[1]||e:e,t=n?String(n[2]||""):"",t||!1},p.isTraditionalAnchor=function(e){var t=!/[\/\?\.]/.test(e);return t},p.extractState=function(e,t){var n,r,a=null;return t=t||!1,n=p.extractId(e),n&&(a=p.getStateById(n)),a||(r=p.getFullUrl(e),n=p.getIdByUrl(r)||!1,n&&(a=p.getStateById(n)),a||!t||p.isTraditionalAnchor(e)||(a=p.createStateObject(null,null,r))),a},p.getIdByUrl=function(e){var n=p.urlToId[e]||p.store.urlToId[e]||t;return n},p.getLastSavedState=function(){return p.savedStates[p.savedStates.length-1]||t},p.getLastStoredState=function(){return p.storedStates[p.storedStates.length-1]||t},p.hasUrlDuplicate=function(e){var t,n=!1;return t=p.extractState(e.url),n=t&&t.id!==e.id},p.storeState=function(e){return p.urlToId[e.url]=e.id,p.storedStates.push(p.cloneObject(e)),e},p.isLastSavedState=function(e){var t,n,r,a=!1;return p.savedStates.length&&(t=e.id,n=p.getLastSavedState(),r=n.id,a=t===r),a},p.saveState=function(e){return p.isLastSavedState(e)?!1:(p.savedStates.push(p.cloneObject(e)),!0)},p.getStateByIndex=function(e){var t=null;return t="undefined"==typeof e?p.savedStates[p.savedStates.length-1]:0>e?p.savedStates[p.savedStates.length+e]:p.savedStates[e]},p.getCurrentIndex=function(){var e=null;return e=p.savedStates.length<1?0:p.savedStates.length-1},p.getHash=function(e){var t,n=p.getLocationHref(e);return t=p.getHashByUrl(n)},p.unescapeHash=function(e){var t=p.normalizeHash(e);return t=decodeURIComponent(t)},p.normalizeHash=function(e){var t=e.replace(/[^#]*#/,"").replace(/#.*/,"");return t},p.setHash=function(e,t){var n,a;return t!==!1&&p.busy()?(p.pushQueue({scope:p,callback:p.setHash,args:arguments,queue:t}),!1):(p.busy(!0),n=p.extractState(e,!0),n&&!p.emulated.pushState?p.pushState(n.data,n.title,n.url,!1):p.getHash()!==e&&(p.bugs.setHash?(a=p.getPageUrl(),p.pushState(null,null,a+"#"+e,!1)):r.location.hash=e),p)},p.escapeHash=function(t){var n=p.normalizeHash(t);return n=e.encodeURIComponent(n),p.bugs.hashEscape||(n=n.replace(/\%21/g,"!").replace(/\%26/g,"&").replace(/\%3D/g,"=").replace(/\%3F/g,"?")),n},p.getHashByUrl=function(e){var t=String(e).replace(/([^#]*)#?([^#]*)#?(.*)/,"$2");return t=p.unescapeHash(t)},p.setTitle=function(e){var t,n=e.title;n||(t=p.getStateByIndex(0),t&&t.url===e.url&&(n=t.title||p.options.initialTitle));try{r.getElementsByTagName("title")[0].innerHTML=n.replace("<","&lt;").replace(">","&gt;").replace(" & "," &amp; ")}catch(a){}return r.title=n,p},p.queues=[],p.busy=function(e){if("undefined"!=typeof e?p.busy.flag=e:"undefined"==typeof p.busy.flag&&(p.busy.flag=!1),!p.busy.flag){s(p.busy.timeout);var t=function(){var e,n,r;if(!p.busy.flag)for(e=p.queues.length-1;e>=0;--e)n=p.queues[e],0!==n.length&&(r=n.shift(),p.fireQueueItem(r),p.busy.timeout=i(t,p.options.busyDelay))};p.busy.timeout=i(t,p.options.busyDelay)}return p.busy.flag},p.busy.flag=!1,p.fireQueueItem=function(e){return e.callback.apply(e.scope||p,e.args||[])},p.pushQueue=function(e){return p.queues[e.queue||0]=p.queues[e.queue||0]||[],p.queues[e.queue||0].push(e),p},p.queue=function(e,t){return"function"==typeof e&&(e={callback:e}),"undefined"!=typeof t&&(e.queue=t),p.busy()?p.pushQueue(e):p.fireQueueItem(e),p},p.clearQueue=function(){return p.busy.flag=!1,p.queues=[],p},p.stateChanged=!1,p.doubleChecker=!1,p.doubleCheckComplete=function(){return p.stateChanged=!0,p.doubleCheckClear(),p},p.doubleCheckClear=function(){return p.doubleChecker&&(s(p.doubleChecker),p.doubleChecker=!1),p},p.doubleCheck=function(e){return p.stateChanged=!1,p.doubleCheckClear(),p.bugs.ieDoubleCheck&&(p.doubleChecker=i(function(){return p.doubleCheckClear(),p.stateChanged||e(),!0},p.options.doubleCheckInterval)),p},p.safariStatePoll=function(){var t,n=p.extractState(p.getLocationHref());if(!p.isLastSavedState(n))return t=n,t||(t=p.createStateObject()),p.Adapter.trigger(e,"popstate"),p},p.back=function(e){return e!==!1&&p.busy()?(p.pushQueue({scope:p,callback:p.back,args:arguments,queue:e}),!1):(p.busy(!0),p.doubleCheck(function(){p.back(!1)}),g.go(-1),!0)},p.forward=function(e){return e!==!1&&p.busy()?(p.pushQueue({scope:p,callback:p.forward,args:arguments,queue:e}),!1):(p.busy(!0),p.doubleCheck(function(){p.forward(!1)}),g.go(1),!0)},p.go=function(e,t){var n;if(e>0)for(n=1;e>=n;++n)p.forward(t);else{if(!(0>e))throw new Error("History.go: History.go requires a positive or negative integer passed.");for(n=-1;n>=e;--n)p.back(t)}return p},p.emulated.pushState){var f=function(){};p.pushState=p.pushState||f,p.replaceState=p.replaceState||f}else p.onPopState=function(t,n){var r,a,o=!1,i=!1;return p.doubleCheckComplete(),(r=p.getHash())?(a=p.extractState(r||p.getLocationHref(),!0),a?p.replaceState(a.data,a.title,a.url,!1):(p.Adapter.trigger(e,"anchorchange"),p.busy(!1)),p.expectedStateId=!1,!1):(o=p.Adapter.extractEventData("state",t,n)||!1,i=o?p.getStateById(o):p.expectedStateId?p.getStateById(p.expectedStateId):p.extractState(p.getLocationHref()),i||(i=p.createStateObject(null,null,p.getLocationHref())),p.expectedStateId=!1,p.isLastSavedState(i)?(p.busy(!1),!1):(p.storeState(i),p.saveState(i),p.setTitle(i),p.Adapter.trigger(e,"statechange"),p.busy(!1),!0))},p.Adapter.bind(e,"popstate",p.onPopState),p.pushState=function(t,n,r,a){if(p.getHashByUrl(r)&&p.emulated.pushState)throw new Error("History.js does not support states with fragement-identifiers (hashes/anchors).");if(a!==!1&&p.busy())return p.pushQueue({scope:p,callback:p.pushState,args:arguments,queue:a}),!1;p.busy(!0);var o=p.createStateObject(t,n,r);return p.isLastSavedState(o)?p.busy(!1):(p.storeState(o),p.expectedStateId=o.id,g.pushState(o.id,o.title,o.url),p.Adapter.trigger(e,"popstate")),!0},p.replaceState=function(t,n,r,a){if(p.getHashByUrl(r)&&p.emulated.pushState)throw new Error("History.js does not support states with fragement-identifiers (hashes/anchors).");if(a!==!1&&p.busy())return p.pushQueue({scope:p,callback:p.replaceState,args:arguments,queue:a}),!1;p.busy(!0);var o=p.createStateObject(t,n,r);return p.isLastSavedState(o)?p.busy(!1):(p.storeState(o),p.expectedStateId=o.id,g.replaceState(o.id,o.title,o.url),p.Adapter.trigger(e,"popstate")),!0};if(o){try{p.store=c.parse(o.getItem("History.store"))||{}}catch(h){p.store={}}p.normalizeStore()}else p.store={},p.normalizeStore();p.Adapter.bind(e,"unload",p.clearAllIntervals),p.saveState(p.storeState(p.extractState(p.getLocationHref(),!0))),o&&(p.onUnload=function(){var e,t,n;try{e=c.parse(o.getItem("History.store"))||{}}catch(r){e={}}e.idToState=e.idToState||{},e.urlToId=e.urlToId||{},e.stateToId=e.stateToId||{};for(t in p.idToState)p.idToState.hasOwnProperty(t)&&(e.idToState[t]=p.idToState[t]);for(t in p.urlToId)p.urlToId.hasOwnProperty(t)&&(e.urlToId[t]=p.urlToId[t]);for(t in p.stateToId)p.stateToId.hasOwnProperty(t)&&(e.stateToId[t]=p.stateToId[t]);p.store=e,p.normalizeStore(),n=c.stringify(e);try{o.setItem("History.store",n)}catch(a){if(a.code!==DOMException.QUOTA_EXCEEDED_ERR)throw a;o.length&&(o.removeItem("History.store"),o.setItem("History.store",n))}},p.intervalList.push(l(p.onUnload,p.options.storeInterval)),p.Adapter.bind(e,"beforeunload",p.onUnload),p.Adapter.bind(e,"unload",p.onUnload)),p.emulated.pushState||(p.bugs.safariPoll&&p.intervalList.push(l(p.safariStatePoll,p.options.safariPollInterval)),("Apple Computer, Inc."===a.vendor||"Mozilla"===(a.appCodeName||""))&&(p.Adapter.bind(e,"hashchange",function(){p.Adapter.trigger(e,"popstate")}),p.getHash()&&p.Adapter.onDomLoad(function(){p.Adapter.trigger(e,"hashchange")})))},p.options&&p.options.delayInit||p.init()}(window),function(e){e.fn.ajax_url=function(t,n){var r=this;return r.on("tap",function(a){var o=null;null!=t&&(o=t(a)),null==o||o===!0?(null!=n&&n(a),a.metaKey===!0||Site.history_state_supported&&(a.isDefaultPrevented()||(a.preventDefault(),Site.load_url(e(r).attr("href"),!0)))):a.preventDefault()}),r}}(jQuery),function(e,t){"use strict";var n,r,a,o="._tap",i="._tapActive",s="tap",l="clientX clientY screenX screenY pageX pageY".split(" "),u={count:0,event:0},c=function(e,n){var r=n.originalEvent,a=t.Event(r);a.type=e;for(var o=0,i=l.length;i>o;o++)a[l[o]]=n[l[o]];return a},d=function(e){if(e.isTrigger)return!1;var n=u.event,r=Math.abs(e.pageX-n.pageX),a=Math.abs(e.pageY-n.pageY),o=Math.max(r,a);return e.timeStamp-n.timeStamp<t.tap.TIME_DELTA&&o<t.tap.POSITION_DELTA&&(!n.touches||1===u.count)&&f.isTracking},p=function(e){if(!a)return!1;var n=Math.abs(e.pageX-a.pageX),r=Math.abs(e.pageY-a.pageY),o=Math.max(n,r);return Math.abs(e.timeStamp-a.timeStamp)<750&&o<t.tap.POSITION_DELTA},g=function(e){if(0===e.type.indexOf("touch")){e.touches=e.originalEvent.changedTouches;for(var t=e.touches[0],n=0,r=l.length;r>n;n++)e[l[n]]=t[l[n]]}e.timeStamp=Date.now?Date.now():+new Date},f={isEnabled:!1,isTracking:!1,enable:function(){f.isEnabled||(f.isEnabled=!0,n=t(e.body).on("touchstart"+o,f.onStart).on("mousedown"+o,f.onStart).on("click"+o,f.onClick))},disable:function(){f.isEnabled&&(f.isEnabled=!1,n.off(o))},onStart:function(e){e.isTrigger||(g(e),(!t.tap.LEFT_BUTTON_ONLY||e.touches||1===e.which)&&(e.touches&&(u.count=e.touches.length),f.isTracking||(e.touches||!p(e))&&(f.isTracking=!0,u.event=e,e.touches?(a=e,n.on("touchend"+o+i,f.onEnd).on("touchcancel"+o+i,f.onCancel)):n.on("mouseup"+o+i,f.onEnd))))},onEnd:function(e){var n;e.isTrigger||(g(e),d(e)&&(n=c(s,e),r=n,t(u.event.target).trigger(n)),f.onCancel(e))},onCancel:function(e){e&&"touchcancel"===e.type&&e.preventDefault(),f.isTracking=!1,n.off(i)},onClick:function(e){return!e.isTrigger&&r&&r.isDefaultPrevented()&&r.target===e.target&&r.pageX===e.pageX&&r.pageY===e.pageY&&e.timeStamp-r.timeStamp<750?(r=null,!1):void 0}};t(e).ready(f.enable),t.tap={POSITION_DELTA:10,TIME_DELTA:400,LEFT_BUTTON_ONLY:!0}}(document,jQuery),Page.prototype.new_url=function(){return"NOT_SET"},Page.prototype.get_title=function(){return null},Page.prototype.resize=function(){},Page.prototype.init=function(){},Page.prototype.remove=function(){},"undefined"==typeof console){var cons={};cons.log=cons.error=cons.info=cons.debug=cons.warn=cons.trace=cons.dir=cons.dirxml=cons.group=cons.groupEnd=cons.time=cons.timeEnd=cons.assert=cons.profile=function(){},SAFE.console=cons}else SAFE.console=console;SAFE.prototype.extend=function(e,t){function n(){}n.prototype=t.prototype,e.prototype=new n,e.prototype.constructor=e,e.superConstructor=t,e.superClass=t.prototype},SAFE.prototype.url_changed=function(){},SAFE.prototype.on_resize=function(){},SAFE.prototype.pre_load=function(){},SAFE.prototype.transition_page=function(){return!1},SAFE.prototype.parse_query_string=function(e){for(var t=e.split("&"),n={},r=0;r<t.length;r++)pair=t[r].split("="),n[decodeURIComponent(pair[0])]=decodeURIComponent(pair[1]);return n},SAFE.prototype.build_query_string=function(e){var t="",n=!1,r=[];for(var a in e)n=!0,r.push(encodeURIComponent(a)+"="+encodeURIComponent(e[a]));return n&&(t="?"+r.join("&")),t},SAFE.prototype.scroll_to_anchor=function(e){e&&$(window).scrollTop(e.offset().top)},SAFE.prototype.use_page_class=function(e){var t,n,r=this,t=e.class_name;if("string"==typeof t){var a=window[t];if(void 0===a)if(null!==r.load_page_class){var o=t;if(r.load_page_class(o,function(t,n){var a=document.createElement("style");a.type="text/css",a.styleSheet?a.styleSheet.cssText=n:a.appendChild(document.createTextNode(n)),$("head")[0].appendChild(a),r.use_page_class(e)}),null===r.loading_page)return;n=r.loading_page}else SAFE.console.error("The requested class ("+t+") was not found and dynamic class loading is not enabled"),n=null;else n=a}else n=t;if(null==n){if(null==r.no_page_found_class)return null!=r.current_page&&(r.current_page.remove(),r.current_page=null,r.previous_class=null),void SAFE.console.error("No 404 page set. Use Site.set_no_page_found_class(class_name) to set one.");n=r.no_page_found_class}if(n===r.previous_class){var i=r.current_page.new_url(e);if("NOT_SET"!=i)return void(e.anchor&&r.scroll_to_anchor($("a[name*='"+e.anchor+"']")))}var s=null;null!=r.current_page&&(r.current_page.remove(),s=r.current_page,e.previous_page=s);var l=r.pre_load(n,e);if(void 0===l){var u=new n(e);r.current_page=u,r.previous_class=n;var c=r.transition_page(r.current_page,s);c===!0||(r.element.empty(),r.element.append(r.current_page.element)),r.current_page.init(),r.resize(),e.anchor&&r.scroll_to_anchor($("a[name*='"+e.anchor+"']"))}else if("function"==typeof l);else{if(null===l)return e.class_name=null,void r.use_page_class(e);r.load_url(l,!0)}},SAFE.prototype.set_no_page_found_class=function(e){var t=this;t.no_page_found_class=e},SAFE.prototype.set_404=function(e){var t=this;t.no_page_found_class=e},SAFE.prototype.ajax_post=function(e){return e.cache=!1,e.type="post",e.contentType="application/json; charset=utf-8",e.data=JSON.stringify(e.data),e.dataType="json",$.ajax(e)},SAFE.prototype.ajax_get=function(e){return e.cache=!1,e.dataType="json",e.type="get",$.ajax(e)},SAFE.prototype.ajax_delete=function(e){return e.cache=!1,e.dataType="json",e.type="delete",$.ajax(e)},SAFE.prototype.resize=function(){var e=this,t=$(document).width()-e.scroll_bar_width(),n=$(document).height(),r=$(window).outerWidth(),a=$(window).outerHeight();e.resize_obj={scroll_bar_width:e.scroll_bar_width(),doc_width:t,doc_height:n,window_width:r,window_height:a},e.on_resize(e.resize_obj),null!=e.current_page&&e.current_page.resize(e.resize_obj)},SAFE.prototype.init=function(e){var t=this,n=window.location.pathname;null!=window.location.search&&(n+=window.location.search);var r=decodeURIComponent(n);return null==e||e==r||(r=e,t.history_state_supported)?(t.history_state_supported&&(History.replaceState(null,"",Site.origin+r),History.Adapter.bind(window,"statechange",function(){if(t.ignore_next_url)return void(t.ignore_next_url=!1);var e=History.getState();null!=e&&t.load_url(decodeURIComponent(e.url),!1)})),$(window).resize(function(){t.resize()}).resize(),null==r&&(r=""),void t.load_url(r,!1)):void(window.location=e)},SAFE.prototype.reload_page=function(){var e=this;e.use_page_class(e.current_class_and_details)},SAFE.prototype.replace_current_url=function(e,t){var n=this;t="undefined"!=typeof t?t:!0;var r=n.ignore_next_url;n.ignore_next_url=!0,History.replaceState(null,"",Site.origin+e),n.ignore_next_url=r,t&&n.url_changed(window.location.toString(),window.location.pathname,window.location.toString().substring(Site.origin.length),!1)},SAFE.prototype.add_url=function(e,t){var n=this;n.map[e]=t},SAFE.prototype.scroll_bar_width=function(){var e=this;if(-1!=e.scroll_bar_width_value)return e.scroll_bar_width_value;var t=$('<div style="width:50px;height:50px;overflow:hidden;position:absolute;top:-200px;left:-200px;"><div style="height:100px;"></div>');$("body").append(t);var n=$("div",t).innerWidth();t.css("overflow-y","scroll");var r=$("div",t).innerWidth();return t.remove(),e.scroll_bar_width_value=n-r,e.scroll_bar_width_value},SAFE.prototype.get_class_for_url=function(e){var t=this,n=t.get_class_and_details_for_url(e),r=window[n.class_name];return void 0===r&&(r=n.class_name),null!=n?r:null},SAFE.prototype.get_class_and_details_for_url=function(e){var t=this,n={},r=e.split("#"),a=r[1],o=r[0].split("?");o.length>1&&(n=t.parse_query_string(o[1]));var i=o[0];i.length>=t.origin.length&&i.substring(0,t.origin.length)==t.origin&&(i=i.substring(t.origin.length));var s=t.path;if(""!=s&&("/"!=s[0]&&(s="/"+s),"/"!=s[s.length-1]&&(s+="/")),s.length>0){if(s.length>i.length||i.substring(0,s.length)!=s)return SAFE.console.error("The requested url ("+e+") was not relative to the domain/origin and within the Site.path scope"),null;i=i.substring(s.length-1)}var l=i.split("/");""===l[l.length-1]&&l.pop();var u=null,c={},d=null;for(var p in t.map){var g={},f=p.split("/");if(""===f[f.length-1]&&f.pop(),f.length===l.length){for(var h=!0,S=0;S<f.length;S++){var _=f[S],y=l[S];if(":"===_[0]){var v=_.substring(1);g[v]=y}else if(_!==y){h=!1;break}}h&&(u=t.map[p],c=g,d=p)}}return{class_name:u,query:n,url:i,url_scheme:d,params:c,anchor:a}},SAFE.prototype.load_url=function(e,t){var n=this,r=Site.origin+e;if(n.history_state_supported)t&&(n.ignore_next_url=!0,History.pushState(null,"",r),n.previous_url=r);else{var a=encodeURI(r);if(window.location!=a)return void(window.location=a)}n.current_url=r,n.current_class_and_details=n.get_class_and_details_for_url(e),null==n.current_class_and_details.class_name&&SAFE.console.error("Page not found for url ("+n.current_class_and_details.url+"). The full url was ("+e+")"),n.use_page_class(n.current_class_and_details),n.url_changed(window.location.toString(),window.location.pathname,window.location.toString().substring(Site.origin.length),n.initial_url),n.initial_url=!1};var Site;new SAFE;
+function Page(){var e=this;e.element=$("<div />")}function SAFE(){var e=this;Site=this,e.debug=!1,e.initial_url=!0,e.map={},e.ignore_next_url=!1,e.origin=window.location.protocol+"//"+window.location.hostname,""!=window.location.port&&(e.origin+=":"+window.location.port),e.path="/",e.previous_url=document.referrer,e.load_page_class=null,e.loading_page=null,e.scroll_bar_width_value=-1,e.element=$("<div />"),e.is_touchscreen="ontouchstart"in document.documentElement,e.history_state_supported=!(!window.history||!window.history.pushState),e.current_page=null,e.no_page_found_class=null}if(function(e,t){"use strict";var n=e.History=e.History||{},r=e.jQuery;if("undefined"!=typeof n.Adapter)throw new Error("History.js Adapter has already been loaded...");n.Adapter={bind:function(e,t,n){r(e).bind(t,n)},trigger:function(e,t,n){r(e).trigger(t,n)},extractEventData:function(e,n,r){var a=n&&n.originalEvent&&n.originalEvent[e]||r&&r[e]||t;return a},onDomLoad:function(e){r(e)}},"undefined"!=typeof n.init&&n.init()}(window),function(e,t){"use strict";var n=e.console||t,r=e.document,a=e.navigator,o=e.sessionStorage||!1,i=e.setTimeout,s=e.clearTimeout,l=e.setInterval,u=e.clearInterval,c=e.JSON,d=e.alert,p=e.History=e.History||{},g=e.history;try{o.setItem("TEST","1"),o.removeItem("TEST")}catch(f){o=!1}if(c.stringify=c.stringify||c.encode,c.parse=c.parse||c.decode,"undefined"!=typeof p.init)throw new Error("History.js Core has already been loaded...");p.init=function(){return"undefined"==typeof p.Adapter?!1:("undefined"!=typeof p.initCore&&p.initCore(),"undefined"!=typeof p.initHtml4&&p.initHtml4(),!0)},p.initCore=function(){if("undefined"!=typeof p.initCore.initialized)return!1;if(p.initCore.initialized=!0,p.options=p.options||{},p.options.hashChangeInterval=p.options.hashChangeInterval||100,p.options.safariPollInterval=p.options.safariPollInterval||500,p.options.doubleCheckInterval=p.options.doubleCheckInterval||500,p.options.disableSuid=p.options.disableSuid||!1,p.options.storeInterval=p.options.storeInterval||1e3,p.options.busyDelay=p.options.busyDelay||250,p.options.debug=p.options.debug||!1,p.options.initialTitle=p.options.initialTitle||r.title,p.options.html4Mode=p.options.html4Mode||!1,p.options.delayInit=p.options.delayInit||!1,p.intervalList=[],p.clearAllIntervals=function(){var e,t=p.intervalList;if("undefined"!=typeof t&&null!==t){for(e=0;e<t.length;e++)u(t[e]);p.intervalList=null}},p.debug=function(){p.options.debug&&p.log.apply(p,arguments)},p.log=function(){var e,t,a,o,i,s=!("undefined"==typeof n||"undefined"==typeof n.log||"undefined"==typeof n.log.apply),l=r.getElementById("log");for(s?(o=Array.prototype.slice.call(arguments),e=o.shift(),"undefined"!=typeof n.debug?n.debug.apply(n,[e,o]):n.log.apply(n,[e,o])):e="\n"+arguments[0]+"\n",t=1,a=arguments.length;a>t;++t){if(i=arguments[t],"object"==typeof i&&"undefined"!=typeof c)try{i=c.stringify(i)}catch(u){}e+="\n"+i+"\n"}return l?(l.value+=e+"\n-----\n",l.scrollTop=l.scrollHeight-l.clientHeight):s||d(e),!0},p.getInternetExplorerMajorVersion=function(){var e=p.getInternetExplorerMajorVersion.cached="undefined"!=typeof p.getInternetExplorerMajorVersion.cached?p.getInternetExplorerMajorVersion.cached:function(){for(var e=3,t=r.createElement("div"),n=t.getElementsByTagName("i");(t.innerHTML="<!--[if gt IE "+ ++e+"]><i></i><![endif]-->")&&n[0];);return e>4?e:!1}();return e},p.isInternetExplorer=function(){var e=p.isInternetExplorer.cached="undefined"!=typeof p.isInternetExplorer.cached?p.isInternetExplorer.cached:Boolean(p.getInternetExplorerMajorVersion());return e},p.emulated=p.options.html4Mode?{pushState:!0,hashChange:!0}:{pushState:!Boolean(e.history&&e.history.pushState&&e.history.replaceState&&!(/ Mobile\/([1-7][a-z]|(8([abcde]|f(1[0-8]))))/i.test(a.userAgent)||/AppleWebKit\/5([0-2]|3[0-2])/i.test(a.userAgent))),hashChange:Boolean(!("onhashchange"in e||"onhashchange"in r)||p.isInternetExplorer()&&p.getInternetExplorerMajorVersion()<8)},p.enabled=!p.emulated.pushState,p.bugs={setHash:Boolean(!p.emulated.pushState&&"Apple Computer, Inc."===a.vendor&&/AppleWebKit\/5([0-2]|3[0-3])/.test(a.userAgent)),safariPoll:Boolean(!p.emulated.pushState&&"Apple Computer, Inc."===a.vendor&&/AppleWebKit\/5([0-2]|3[0-3])/.test(a.userAgent)),ieDoubleCheck:Boolean(p.isInternetExplorer()&&p.getInternetExplorerMajorVersion()<8),hashEscape:Boolean(p.isInternetExplorer()&&p.getInternetExplorerMajorVersion()<7)},p.isEmptyObject=function(e){for(var t in e)if(e.hasOwnProperty(t))return!1;return!0},p.cloneObject=function(e){var t,n;return e?(t=c.stringify(e),n=c.parse(t)):n={},n},p.getRootUrl=function(){var e=r.location.protocol+"//"+(r.location.hostname||r.location.host);return r.location.port&&(e+=":"+r.location.port),e+="/"},p.getBaseHref=function(){var e=r.getElementsByTagName("base"),t=null,n="";return 1===e.length&&(t=e[0],n=t.href.replace(/[^\/]+$/,"")),n=n.replace(/\/+$/,""),n&&(n+="/"),n},p.getBaseUrl=function(){var e=p.getBaseHref()||p.getBasePageUrl()||p.getRootUrl();return e},p.getPageUrl=function(){var e,t=p.getState(!1,!1),n=(t||{}).url||p.getLocationHref();return e=n.replace(/\/+$/,"").replace(/[^\/]+$/,function(e){return/\./.test(e)?e:e+"/"})},p.getBasePageUrl=function(){var e=p.getLocationHref().replace(/[#\?].*/,"").replace(/[^\/]+$/,function(e){return/[^\/]$/.test(e)?"":e}).replace(/\/+$/,"")+"/";return e},p.getFullUrl=function(e,t){var n=e,r=e.substring(0,1);return t="undefined"==typeof t?!0:t,/[a-z]+\:\/\//.test(e)||(n="/"===r?p.getRootUrl()+e.replace(/^\/+/,""):"#"===r?p.getPageUrl().replace(/#.*/,"")+e:"?"===r?p.getPageUrl().replace(/[\?#].*/,"")+e:t?p.getBaseUrl()+e.replace(/^(\.\/)+/,""):p.getBasePageUrl()+e.replace(/^(\.\/)+/,"")),n.replace(/\#$/,"")},p.getShortUrl=function(e){var t=e,n=p.getBaseUrl(),r=p.getRootUrl();return p.emulated.pushState&&(t=t.replace(n,"")),t=t.replace(r,"/"),p.isTraditionalAnchor(t)&&(t="./"+t),t=t.replace(/^(\.\/)+/g,"./").replace(/\#$/,"")},p.getLocationHref=function(e){return e=e||r,e.URL===e.location.href?e.location.href:e.location.href===decodeURIComponent(e.URL)?e.URL:e.location.hash&&decodeURIComponent(e.location.href.replace(/^[^#]+/,""))===e.location.hash?e.location.href:-1==e.URL.indexOf("#")&&-1!=e.location.href.indexOf("#")?e.location.href:e.URL||e.location.href},p.store={},p.idToState=p.idToState||{},p.stateToId=p.stateToId||{},p.urlToId=p.urlToId||{},p.storedStates=p.storedStates||[],p.savedStates=p.savedStates||[],p.normalizeStore=function(){p.store.idToState=p.store.idToState||{},p.store.urlToId=p.store.urlToId||{},p.store.stateToId=p.store.stateToId||{}},p.getState=function(e,t){"undefined"==typeof e&&(e=!0),"undefined"==typeof t&&(t=!0);var n=p.getLastSavedState();return!n&&t&&(n=p.createStateObject()),e&&(n=p.cloneObject(n),n.url=n.cleanUrl||n.url),n},p.getIdByState=function(e){var t,n=p.extractId(e.url);if(!n)if(t=p.getStateString(e),"undefined"!=typeof p.stateToId[t])n=p.stateToId[t];else if("undefined"!=typeof p.store.stateToId[t])n=p.store.stateToId[t];else{for(;;)if(n=(new Date).getTime()+String(Math.random()).replace(/\D/g,""),"undefined"==typeof p.idToState[n]&&"undefined"==typeof p.store.idToState[n])break;p.stateToId[t]=n,p.idToState[n]=e}return n},p.normalizeState=function(e){var t,n;return e&&"object"==typeof e||(e={}),"undefined"!=typeof e.normalized?e:(e.data&&"object"==typeof e.data||(e.data={}),t={},t.normalized=!0,t.title=e.title||"",t.url=p.getFullUrl(e.url?e.url:p.getLocationHref()),t.hash=p.getShortUrl(t.url),t.data=p.cloneObject(e.data),t.id=p.getIdByState(t),t.cleanUrl=t.url.replace(/\??\&_suid.*/,""),t.url=t.cleanUrl,n=!p.isEmptyObject(t.data),(t.title||n)&&p.options.disableSuid!==!0&&(t.hash=p.getShortUrl(t.url).replace(/\??\&_suid.*/,""),/\?/.test(t.hash)||(t.hash+="?"),t.hash+="&_suid="+t.id),t.hashedUrl=p.getFullUrl(t.hash),(p.emulated.pushState||p.bugs.safariPoll)&&p.hasUrlDuplicate(t)&&(t.url=t.hashedUrl),t)},p.createStateObject=function(e,t,n){var r={data:e,title:t,url:n};return r=p.normalizeState(r)},p.getStateById=function(e){e=String(e);var n=p.idToState[e]||p.store.idToState[e]||t;return n},p.getStateString=function(e){var t,n,r;return t=p.normalizeState(e),n={data:t.data,title:e.title,url:e.url},r=c.stringify(n)},p.getStateId=function(e){var t,n;return t=p.normalizeState(e),n=t.id},p.getHashByState=function(e){var t,n;return t=p.normalizeState(e),n=t.hash},p.extractId=function(e){var t,n,r,a;return a=-1!=e.indexOf("#")?e.split("#")[0]:e,n=/(.*)\&_suid=([0-9]+)$/.exec(a),r=n?n[1]||e:e,t=n?String(n[2]||""):"",t||!1},p.isTraditionalAnchor=function(e){var t=!/[\/\?\.]/.test(e);return t},p.extractState=function(e,t){var n,r,a=null;return t=t||!1,n=p.extractId(e),n&&(a=p.getStateById(n)),a||(r=p.getFullUrl(e),n=p.getIdByUrl(r)||!1,n&&(a=p.getStateById(n)),a||!t||p.isTraditionalAnchor(e)||(a=p.createStateObject(null,null,r))),a},p.getIdByUrl=function(e){var n=p.urlToId[e]||p.store.urlToId[e]||t;return n},p.getLastSavedState=function(){return p.savedStates[p.savedStates.length-1]||t},p.getLastStoredState=function(){return p.storedStates[p.storedStates.length-1]||t},p.hasUrlDuplicate=function(e){var t,n=!1;return t=p.extractState(e.url),n=t&&t.id!==e.id},p.storeState=function(e){return p.urlToId[e.url]=e.id,p.storedStates.push(p.cloneObject(e)),e},p.isLastSavedState=function(e){var t,n,r,a=!1;return p.savedStates.length&&(t=e.id,n=p.getLastSavedState(),r=n.id,a=t===r),a},p.saveState=function(e){return p.isLastSavedState(e)?!1:(p.savedStates.push(p.cloneObject(e)),!0)},p.getStateByIndex=function(e){var t=null;return t="undefined"==typeof e?p.savedStates[p.savedStates.length-1]:0>e?p.savedStates[p.savedStates.length+e]:p.savedStates[e]},p.getCurrentIndex=function(){var e=null;return e=p.savedStates.length<1?0:p.savedStates.length-1},p.getHash=function(e){var t,n=p.getLocationHref(e);return t=p.getHashByUrl(n)},p.unescapeHash=function(e){var t=p.normalizeHash(e);return t=decodeURIComponent(t)},p.normalizeHash=function(e){var t=e.replace(/[^#]*#/,"").replace(/#.*/,"");return t},p.setHash=function(e,t){var n,a;return t!==!1&&p.busy()?(p.pushQueue({scope:p,callback:p.setHash,args:arguments,queue:t}),!1):(p.busy(!0),n=p.extractState(e,!0),n&&!p.emulated.pushState?p.pushState(n.data,n.title,n.url,!1):p.getHash()!==e&&(p.bugs.setHash?(a=p.getPageUrl(),p.pushState(null,null,a+"#"+e,!1)):r.location.hash=e),p)},p.escapeHash=function(t){var n=p.normalizeHash(t);return n=e.encodeURIComponent(n),p.bugs.hashEscape||(n=n.replace(/\%21/g,"!").replace(/\%26/g,"&").replace(/\%3D/g,"=").replace(/\%3F/g,"?")),n},p.getHashByUrl=function(e){var t=String(e).replace(/([^#]*)#?([^#]*)#?(.*)/,"$2");return t=p.unescapeHash(t)},p.setTitle=function(e){var t,n=e.title;n||(t=p.getStateByIndex(0),t&&t.url===e.url&&(n=t.title||p.options.initialTitle));try{r.getElementsByTagName("title")[0].innerHTML=n.replace("<","&lt;").replace(">","&gt;").replace(" & "," &amp; ")}catch(a){}return r.title=n,p},p.queues=[],p.busy=function(e){if("undefined"!=typeof e?p.busy.flag=e:"undefined"==typeof p.busy.flag&&(p.busy.flag=!1),!p.busy.flag){s(p.busy.timeout);var t=function(){var e,n,r;if(!p.busy.flag)for(e=p.queues.length-1;e>=0;--e)n=p.queues[e],0!==n.length&&(r=n.shift(),p.fireQueueItem(r),p.busy.timeout=i(t,p.options.busyDelay))};p.busy.timeout=i(t,p.options.busyDelay)}return p.busy.flag},p.busy.flag=!1,p.fireQueueItem=function(e){return e.callback.apply(e.scope||p,e.args||[])},p.pushQueue=function(e){return p.queues[e.queue||0]=p.queues[e.queue||0]||[],p.queues[e.queue||0].push(e),p},p.queue=function(e,t){return"function"==typeof e&&(e={callback:e}),"undefined"!=typeof t&&(e.queue=t),p.busy()?p.pushQueue(e):p.fireQueueItem(e),p},p.clearQueue=function(){return p.busy.flag=!1,p.queues=[],p},p.stateChanged=!1,p.doubleChecker=!1,p.doubleCheckComplete=function(){return p.stateChanged=!0,p.doubleCheckClear(),p},p.doubleCheckClear=function(){return p.doubleChecker&&(s(p.doubleChecker),p.doubleChecker=!1),p},p.doubleCheck=function(e){return p.stateChanged=!1,p.doubleCheckClear(),p.bugs.ieDoubleCheck&&(p.doubleChecker=i(function(){return p.doubleCheckClear(),p.stateChanged||e(),!0},p.options.doubleCheckInterval)),p},p.safariStatePoll=function(){var t,n=p.extractState(p.getLocationHref());if(!p.isLastSavedState(n))return t=n,t||(t=p.createStateObject()),p.Adapter.trigger(e,"popstate"),p},p.back=function(e){return e!==!1&&p.busy()?(p.pushQueue({scope:p,callback:p.back,args:arguments,queue:e}),!1):(p.busy(!0),p.doubleCheck(function(){p.back(!1)}),g.go(-1),!0)},p.forward=function(e){return e!==!1&&p.busy()?(p.pushQueue({scope:p,callback:p.forward,args:arguments,queue:e}),!1):(p.busy(!0),p.doubleCheck(function(){p.forward(!1)}),g.go(1),!0)},p.go=function(e,t){var n;if(e>0)for(n=1;e>=n;++n)p.forward(t);else{if(!(0>e))throw new Error("History.go: History.go requires a positive or negative integer passed.");for(n=-1;n>=e;--n)p.back(t)}return p},p.emulated.pushState){var f=function(){};p.pushState=p.pushState||f,p.replaceState=p.replaceState||f}else p.onPopState=function(t,n){var r,a,o=!1,i=!1;return p.doubleCheckComplete(),(r=p.getHash())?(a=p.extractState(r||p.getLocationHref(),!0),a?p.replaceState(a.data,a.title,a.url,!1):(p.Adapter.trigger(e,"anchorchange"),p.busy(!1)),p.expectedStateId=!1,!1):(o=p.Adapter.extractEventData("state",t,n)||!1,i=o?p.getStateById(o):p.expectedStateId?p.getStateById(p.expectedStateId):p.extractState(p.getLocationHref()),i||(i=p.createStateObject(null,null,p.getLocationHref())),p.expectedStateId=!1,p.isLastSavedState(i)?(p.busy(!1),!1):(p.storeState(i),p.saveState(i),p.setTitle(i),p.Adapter.trigger(e,"statechange"),p.busy(!1),!0))},p.Adapter.bind(e,"popstate",p.onPopState),p.pushState=function(t,n,r,a){if(p.getHashByUrl(r)&&p.emulated.pushState)throw new Error("History.js does not support states with fragement-identifiers (hashes/anchors).");if(a!==!1&&p.busy())return p.pushQueue({scope:p,callback:p.pushState,args:arguments,queue:a}),!1;p.busy(!0);var o=p.createStateObject(t,n,r);return p.isLastSavedState(o)?p.busy(!1):(p.storeState(o),p.expectedStateId=o.id,g.pushState(o.id,o.title,o.url),p.Adapter.trigger(e,"popstate")),!0},p.replaceState=function(t,n,r,a){if(p.getHashByUrl(r)&&p.emulated.pushState)throw new Error("History.js does not support states with fragement-identifiers (hashes/anchors).");if(a!==!1&&p.busy())return p.pushQueue({scope:p,callback:p.replaceState,args:arguments,queue:a}),!1;p.busy(!0);var o=p.createStateObject(t,n,r);return p.isLastSavedState(o)?p.busy(!1):(p.storeState(o),p.expectedStateId=o.id,g.replaceState(o.id,o.title,o.url),p.Adapter.trigger(e,"popstate")),!0};if(o){try{p.store=c.parse(o.getItem("History.store"))||{}}catch(h){p.store={}}p.normalizeStore()}else p.store={},p.normalizeStore();p.Adapter.bind(e,"unload",p.clearAllIntervals),p.saveState(p.storeState(p.extractState(p.getLocationHref(),!0))),o&&(p.onUnload=function(){var e,t,n;try{e=c.parse(o.getItem("History.store"))||{}}catch(r){e={}}e.idToState=e.idToState||{},e.urlToId=e.urlToId||{},e.stateToId=e.stateToId||{};for(t in p.idToState)p.idToState.hasOwnProperty(t)&&(e.idToState[t]=p.idToState[t]);for(t in p.urlToId)p.urlToId.hasOwnProperty(t)&&(e.urlToId[t]=p.urlToId[t]);for(t in p.stateToId)p.stateToId.hasOwnProperty(t)&&(e.stateToId[t]=p.stateToId[t]);p.store=e,p.normalizeStore(),n=c.stringify(e);try{o.setItem("History.store",n)}catch(a){if(a.code!==DOMException.QUOTA_EXCEEDED_ERR)throw a;o.length&&(o.removeItem("History.store"),o.setItem("History.store",n))}},p.intervalList.push(l(p.onUnload,p.options.storeInterval)),p.Adapter.bind(e,"beforeunload",p.onUnload),p.Adapter.bind(e,"unload",p.onUnload)),p.emulated.pushState||(p.bugs.safariPoll&&p.intervalList.push(l(p.safariStatePoll,p.options.safariPollInterval)),("Apple Computer, Inc."===a.vendor||"Mozilla"===(a.appCodeName||""))&&(p.Adapter.bind(e,"hashchange",function(){p.Adapter.trigger(e,"popstate")}),p.getHash()&&p.Adapter.onDomLoad(function(){p.Adapter.trigger(e,"hashchange")})))},p.options&&p.options.delayInit||p.init()}(window),function(e){e.fn.ajax_url=function(t,n){var r=this;return r.on("tap",function(a){var o=null;null!=t&&(o=t(a)),null==o||o===!0?(null!=n&&n(a),a.originalEvent.metaKey===!0||Site.history_state_supported&&(a.isDefaultPrevented()||(a.preventDefault(),Site.load_url(e(r).attr("href"),!0)))):a.preventDefault()}),r}}(jQuery),function(e,t){"use strict";var n,r,a,o="._tap",i="._tapActive",s="tap",l="clientX clientY screenX screenY pageX pageY".split(" "),u={count:0,event:0},c=function(e,n){var r=n.originalEvent,a=t.Event(r);a.type=e;for(var o=0,i=l.length;i>o;o++)a[l[o]]=n[l[o]];return a},d=function(e){if(e.isTrigger)return!1;var n=u.event,r=Math.abs(e.pageX-n.pageX),a=Math.abs(e.pageY-n.pageY),o=Math.max(r,a);return e.timeStamp-n.timeStamp<t.tap.TIME_DELTA&&o<t.tap.POSITION_DELTA&&(!n.touches||1===u.count)&&f.isTracking},p=function(e){if(!a)return!1;var n=Math.abs(e.pageX-a.pageX),r=Math.abs(e.pageY-a.pageY),o=Math.max(n,r);return Math.abs(e.timeStamp-a.timeStamp)<750&&o<t.tap.POSITION_DELTA},g=function(e){if(0===e.type.indexOf("touch")){e.touches=e.originalEvent.changedTouches;for(var t=e.touches[0],n=0,r=l.length;r>n;n++)e[l[n]]=t[l[n]]}e.timeStamp=Date.now?Date.now():+new Date},f={isEnabled:!1,isTracking:!1,enable:function(){f.isEnabled||(f.isEnabled=!0,n=t(e.body).on("touchstart"+o,f.onStart).on("mousedown"+o,f.onStart).on("click"+o,f.onClick))},disable:function(){f.isEnabled&&(f.isEnabled=!1,n.off(o))},onStart:function(e){e.isTrigger||(g(e),(!t.tap.LEFT_BUTTON_ONLY||e.touches||1===e.which)&&(e.touches&&(u.count=e.touches.length),f.isTracking||(e.touches||!p(e))&&(f.isTracking=!0,u.event=e,e.touches?(a=e,n.on("touchend"+o+i,f.onEnd).on("touchcancel"+o+i,f.onCancel)):n.on("mouseup"+o+i,f.onEnd))))},onEnd:function(e){var n;e.isTrigger||(g(e),d(e)&&(n=c(s,e),r=n,t(u.event.target).trigger(n)),f.onCancel(e))},onCancel:function(e){e&&"touchcancel"===e.type&&e.preventDefault(),f.isTracking=!1,n.off(i)},onClick:function(e){return!e.isTrigger&&r&&r.isDefaultPrevented()&&r.target===e.target&&r.pageX===e.pageX&&r.pageY===e.pageY&&e.timeStamp-r.timeStamp<750?(r=null,!1):void 0}};t(e).ready(f.enable),t.tap={POSITION_DELTA:10,TIME_DELTA:400,LEFT_BUTTON_ONLY:!0}}(document,jQuery),Page.prototype.new_url=function(){return"NOT_SET"},Page.prototype.get_title=function(){return null},Page.prototype.resize=function(){},Page.prototype.init=function(){},Page.prototype.remove=function(){},"undefined"==typeof console){var cons={};cons.log=cons.error=cons.info=cons.debug=cons.warn=cons.trace=cons.dir=cons.dirxml=cons.group=cons.groupEnd=cons.time=cons.timeEnd=cons.assert=cons.profile=function(){},SAFE.console=cons}else SAFE.console=console;SAFE.prototype.extend=function(e,t){function n(){}n.prototype=t.prototype,e.prototype=new n,e.prototype.constructor=e,e.superConstructor=t,e.superClass=t.prototype},SAFE.prototype.url_changed=function(){},SAFE.prototype.on_resize=function(){},SAFE.prototype.pre_load=function(){},SAFE.prototype.transition_page=function(){return!1},SAFE.prototype.parse_query_string=function(e){for(var t=e.split("&"),n={},r=0;r<t.length;r++)pair=t[r].split("="),n[decodeURIComponent(pair[0])]=decodeURIComponent(pair[1]);return n},SAFE.prototype.build_query_string=function(e){var t="",n=!1,r=[];for(var a in e)n=!0,r.push(encodeURIComponent(a)+"="+encodeURIComponent(e[a]));return n&&(t="?"+r.join("&")),t},SAFE.prototype.scroll_to_anchor=function(e){e&&$(window).scrollTop(e.offset().top)},SAFE.prototype.use_page_class=function(e){var t,n,r=this,t=e.class_name;if(r.current_details=e,"string"==typeof t){var a=window[t];if(void 0===a)if(null!==r.load_page_class){var o=t;if(r.load_page_class(o,function(n,a){var o=document.createElement("style");o.type="text/css",o.styleSheet?o.styleSheet.cssText=a:o.appendChild(document.createTextNode(a)),$("head")[0].appendChild(o),e.class_name=t,r.current_details===e&&r.use_page_class(e)}),null===r.loading_page)return;n=r.loading_page}else SAFE.console.error("The requested class ("+t+") was not found and dynamic class loading is not enabled"),n=null;else n=a}else n=t;if(null==n){if(null==r.no_page_found_class)return null!=r.current_page&&(r.current_page.remove(),r.current_page=null,r.previous_class=null),void SAFE.console.error("No 404 page set. Use Site.set_no_page_found_class(class_name) to set one.");n=r.no_page_found_class}if(n===r.previous_class){var i=r.current_page.new_url(e);if("NOT_SET"!=i)return void(e.anchor&&r.scroll_to_anchor($("a[name*='"+e.anchor+"']")))}var s=null;null!=r.current_page&&(r.current_page.remove(),s=r.current_page);var l=r.pre_load(n,e,s);if(void 0===l){delete e.class_name;var u=new n(e,s);r.current_page=u,r.previous_class=n,r.resize();var c=r.transition_page(r.current_page,s);c===!0||(r.element.empty(),r.element.append(r.current_page.element)),r.current_page.init(),r.resize(),e.anchor&&r.scroll_to_anchor($("a[name*='"+e.anchor+"']"))}else if("function"==typeof l);else{if(null===l)return e.class_name=null,void r.use_page_class(e);r.load_url(l,!0)}},SAFE.prototype.set_no_page_found_class=function(e){var t=this;t.no_page_found_class=e},SAFE.prototype.set_404=function(e){var t=this;t.no_page_found_class=e},SAFE.prototype.ajax_post=function(e){return e.cache=!1,e.type="post",e.contentType="application/json; charset=utf-8",e.data=JSON.stringify(e.data),e.dataType="json",$.ajax(e)},SAFE.prototype.ajax_get=function(e){return e.cache=!1,e.dataType="json",e.type="get",$.ajax(e)},SAFE.prototype.ajax_delete=function(e){return e.cache=!1,e.dataType="json",e.type="delete",$.ajax(e)},SAFE.prototype.resize=function(){var e=this,t=$(document).width()-e.scroll_bar_width(),n=$(document).height(),r=$(window).outerWidth(),a=$(window).outerHeight();e.resize_obj={scroll_bar_width:e.scroll_bar_width(),doc_width:t,doc_height:n,window_width:r,window_height:a},e.on_resize(e.resize_obj),null!=e.current_page&&e.current_page.resize(e.resize_obj)},SAFE.prototype.init=function(e){var t=this,n=window.location.pathname;null!=window.location.search&&(n+=window.location.search);var r=decodeURIComponent(n);return null==e||e==r||(r=e,t.history_state_supported)?(t.history_state_supported&&(History.replaceState(null,"",Site.origin+r),History.Adapter.bind(window,"statechange",function(){if(t.ignore_next_url)return void(t.ignore_next_url=!1);var e=History.getState();null!=e&&t.load_url(decodeURIComponent(e.url),!1)})),$(window).resize(function(){t.resize()}).resize(),null==r&&(r=""),void t.load_url(r,!1)):void(window.location=e)},SAFE.prototype.reload_page=function(){var e=this;e.use_page_class(e.current_class_and_details)},SAFE.prototype.replace_current_url=function(e,t){var n=this;t="undefined"!=typeof t?t:!0;var r=n.ignore_next_url;n.ignore_next_url=!0,History.replaceState(null,"",Site.origin+e),n.ignore_next_url=r,t&&n.url_changed(window.location.toString(),window.location.pathname,window.location.toString().substring(Site.origin.length),!1)},SAFE.prototype.add_url=function(e,t){var n=this;n.map[e]=t},SAFE.prototype.add_url_map=function(e,t){var n=this;for(var r in e){var t=e[r];n.add_url(r,t)}},SAFE.prototype.scroll_bar_width=function(){var e=this;if(-1!=e.scroll_bar_width_value)return e.scroll_bar_width_value;var t=$('<div style="width:50px;height:50px;overflow:hidden;position:absolute;top:-200px;left:-200px;"><div style="height:100px;"></div>');$("body").append(t);var n=$("div",t).innerWidth();t.css("overflow-y","scroll");var r=$("div",t).innerWidth();return t.remove(),e.scroll_bar_width_value=n-r,e.scroll_bar_width_value},SAFE.prototype.get_class_for_url=function(e){var t=this,n=t.get_class_and_details_for_url(e),r=window[n.class_name];return void 0===r&&(r=n.class_name),null!=n?r:null},SAFE.prototype.get_class_and_details_for_url=function(e){var t=this,n={},r=e.split("#"),a=r[1],o=r[0].split("?");o.length>1&&(n=t.parse_query_string(o[1]));var i=o[0];i.length>=t.origin.length&&i.substring(0,t.origin.length)==t.origin&&(i=i.substring(t.origin.length));var s=t.path;if(""!=s&&("/"!=s[0]&&(s="/"+s),"/"!=s[s.length-1]&&(s+="/")),s.length>0){if(s.length>i.length||i.substring(0,s.length)!=s)return SAFE.console.error("The requested url ("+e+") was not relative to the domain/origin and within the Site.path scope"),null;i=i.substring(s.length-1)}var l=i.split("/");""===l[l.length-1]&&l.pop(),""===l[0]&&l.shift();var u=null,c={},d=null;for(var p in t.map){var g={},f=p.split("/");""===f[f.length-1]&&f.pop();var h=0;if(""===f[0]&&(f.shift(),h++),!(f.length>l.length)){for(var _=!0,S=!1,y=0;y<f.length;y++){var v=f[y],b=l[y];if(":"===v[0]){var m=v.substring(1);g[m]=b}else{if("*"===v[0]){_=!0,S=!0,console.log(i,h,i.substring(h)),g["*"]=i.substring(h);break}if(v!==b){_=!1;break}}h+=b.length+1}S||l.length===f.length||(_=!1),_&&(u=t.map[p],c=g,d=p)}}return{class_name:u,query:n,url:i,url_pattern:d,url_with_query:e.substring(s.length-1),params:c,anchor:a}},SAFE.prototype.load_url=function(e,t){var n=this,r=Site.origin+e;if(n.history_state_supported)t&&(n.ignore_next_url=!0,History.pushState(null,"",r),n.previous_url=r);else{var a=encodeURI(r);if(window.location!=a)return void(window.location=a)}n.current_url=r,n.current_class_and_details=n.get_class_and_details_for_url(e),null==n.current_class_and_details.class_name&&SAFE.console.error("Page not found for url ("+n.current_class_and_details.url+"). The full url was ("+e+")"),n.use_page_class(n.current_class_and_details),n.url_changed(window.location.toString(),window.location.pathname,window.location.toString().substring(Site.origin.length),n.initial_url),n.initial_url=!1};var Site;new SAFE;
 var logger;
 if((typeof require) === 'function'){
     logger = require('tracer').console();
+}
+
+if(!Array.isArray){
+    Array.isArray = function(value){
+        return Object.prototype.toString.call(value)==='[object Array]';
+    }
 }
 
 FieldVal = function(validating) {
@@ -10618,8 +10624,8 @@ FieldVal.MISSING_ERROR = function(){
     };
 }
 
-FieldVal.REQUIRED_ERROR = "required";
-FieldVal.NOT_REQUIRED_BUT_MISSING = "notrequired";
+FieldVal.REQUIRED_ERROR = {};
+FieldVal.NOT_REQUIRED_BUT_MISSING = {};
 
 FieldVal.ONE_OR_MORE_ERRORS = 0;
 FieldVal.FIELD_MISSING = 1;
@@ -10683,7 +10689,7 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
         var stop_on_error = true;//Default to true
         var flags = {};
         if((typeof this_check) === 'object'){
-            if(Object.prototype.toString.call(this_check)==='[object Array]'){
+            if(Array.isArray(this_check)){
                 for(var i = 0; i < this_check.length; i++){
                     use_check(this_check[i]);
                     if(stop){
@@ -11124,8 +11130,20 @@ var BasicVal = {
         },
         no_suffix: function(suffix) {
             return {
-                error: 106,
+                error: 110,
                 error_message: "Value does not have suffix: " + suffix
+            }
+        },
+        invalid_date_format: function() {
+            return {
+                error: 111,
+                error_message: "Invalid date format."
+            }
+        },
+        invalid_date: function() {
+            return {
+                error: 112,
+                error_message: "Invalid date."
             }
         }
     },
@@ -11187,7 +11205,9 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
     },
     length: function(len, flags) {
         var check = function(value) {
@@ -11199,7 +11219,9 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
     },
     min_length: function(min_len, flags) {
         var check = function(value) {
@@ -11211,7 +11233,9 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
     },
     max_length: function(max_len, flags) {
         var check = function(value) {
@@ -11223,7 +11247,9 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
     },
     minimum: function(min_val, flags) {
         var check = function(value) {
@@ -11235,7 +11261,9 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
     },
     maximum: function(max_val, flags) {
         var check = function(value) {
@@ -11247,7 +11275,9 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
     },
     range: function(min_val, max_val, flags) {
         //Effectively combines minimum and maximum
@@ -11262,7 +11292,9 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
     },
     one_of: function(array, flags) {
         var valid_values = [];
@@ -11289,7 +11321,9 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
     },
     not_empty: function(trim, flags) {
         var check = function(value) {
@@ -11309,7 +11343,9 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
     },
     prefix: function(prefix, flags) {
         var check = function(value) {
@@ -11325,7 +11361,9 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
     },
     suffix: function(suffix, flags) {
         var check = function(value) {
@@ -11341,7 +11379,9 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
     },
     each: function(on_each, flags) {
         var check = function(array, stop) {
@@ -11363,7 +11403,9 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
     },
     email: function(flags){
         var check = function(value) {
@@ -11376,7 +11418,180 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
+    },
+    date: function(format, flags){
+
+        var valid_components = {
+            "YYYY": [4],
+            "YY": [2],
+            "MM": [2],
+            "M": [1,2],
+            "DD": [2],
+            "D": [1,2],
+            " ": 0,
+            "-": 0,
+            "/": 0,
+            ":": 0
+        }
+
+        var format_array = [];
+
+        var f = 0;
+        var error = false;
+        while(f < format.length && !error){
+            var handled = false;
+            for(var c in valid_components){
+                var substring = format.substring(f,f+c.length);
+                if(substring===c){
+                    format_array.push(c);
+                    f += c.length;
+                    handled = true;
+                    break;
+                }
+            }
+            if(!handled){
+                error = true;
+            }
+        }
+
+        if(error){
+            if(console.error){
+                console.error("Invalid date format");
+            }
+        }
+
+        var check = function(value) {
+            var values = {};
+
+            var i = 0;
+            var current_component = null;
+            var current_component_value = null;
+            var component_index = -1;
+            var error = false;
+            while(i < value.length && !error){
+                component_index++;
+                current_component = format_array[component_index];
+                current_component_value = valid_components[current_component];
+
+                if(current_component_value===0){
+                    //Expecting a particular delimiter
+                    if(value[i]!==current_component){
+                        error = true;
+                        break;
+                    } else {
+                        i++;
+                        continue;
+                    }
+                }
+
+                var min = current_component_value[0];
+                var max = current_component_value[current_component_value.length-1];
+
+                var incremented = false;
+                var numeric_string = "";
+                for(var n = 0; n < max; n++){
+                    var character = value[i + n];
+                    if(character===undefined){
+                        break;
+                    }
+                    var char_code = character.charCodeAt(0);
+                    if(char_code < 48 || char_code > 57){
+                        if(n===min){
+                            //Stopped at min
+                            break;
+                        } else {
+                            error = true;
+                            break;
+                        }
+                    } else {
+                        numeric_string+=character;
+                    }
+                }
+                
+                i += n;
+
+                if(error){
+                    break;
+                }
+
+                var int_val = parseInt(numeric_string);
+
+                if(current_component==='YYYY' || current_component==='YY'){
+                    values['year'] = int_val;
+                } else if(current_component==='MM' || current_component==='M'){
+                    values['month'] = int_val;
+                } else if(current_component==='DD' || current_component==='D'){
+                    values['day'] = int_val;
+                }
+
+            }
+
+            if(error){
+                return FieldVal.create_error(BasicVal.errors.invalid_date_format, flags);
+            }
+
+
+            if(values.month!==undefined){
+                var month = values.month;
+                if(month>12){
+                    return FieldVal.create_error(BasicVal.errors.invalid_date, flags);
+                }
+
+                if(values.day){
+                    var day = values.day;
+
+                    if(values.year){
+                        var year = values.year;
+                        if(month==2){
+                            if(year%400==0 || (year%100!=0 && year%4==0)){
+                                if(day>29){
+                                    return FieldVal.create_error(BasicVal.errors.invalid_date, flags);
+                                }
+                            } else {
+                                if(day>28){
+                                    return FieldVal.create_error(BasicVal.errors.invalid_date, flags);
+                                }
+                            }
+                        }
+                    }
+    
+                    if(month===4 || month===6 || month===9 || month===11){
+                        if(day>30){
+                            return FieldVal.create_error(BasicVal.errors.invalid_date, flags);
+                        }
+                    } else if(month===2){
+                        if(day>29){
+                            return FieldVal.create_error(BasicVal.errors.invalid_date, flags);
+                        }
+                    } else {
+                        if(day>31){
+                            return FieldVal.create_error(BasicVal.errors.invalid_date, flags);
+                        }
+                    }
+                }
+            } else {
+                //Don't have month, but days shouldn't be greater than 31 anyway
+                if(values.day){
+                    if(values.day>31){
+                        return FieldVal.create_error(BasicVal.errors.invalid_date, flags);
+                    }
+                }
+            }
+
+            //SUCCESS
+            return;
+
+        }
+        if(flags){
+            flags.check = check;
+            return flags
+        }
+        return {
+            check: check
+        }
     },
     url: function(flags){
         var check = function(value) {
@@ -11389,12 +11604,14 @@ var BasicVal = {
             flags.check = check;
             return flags
         }
-        return check;
+        return {
+            check: check
+        }
     }
 }
 
 BasicVal.email_regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-BasicVal.url_regex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+BasicVal.url_regex = /^(https?):\/\/(((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|((([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])))(:[1-9][0-9]+)?(\/)?([\/?].+)?$/;
 
 if (typeof module != 'undefined') {
     module.exports = BasicVal;
@@ -11408,7 +11625,7 @@ function fieldval_ui_extend(sub, sup) {
 	sub.superConstructor = sup;
 	sub.superClass = sup.prototype;
 }
-function Form(fields){
+function FVForm(fields){
 	var form = this;
 
 	form.element = $("<form />").addClass("fieldval_ui_form").append(
@@ -11420,13 +11637,24 @@ function Form(fields){
 
 	form.fields = fields || {};
 
-	//Used because ObjectField uses some Form.prototype functions
+	//Used because ObjectField uses some FVForm.prototype functions
 	form.fields_element = form.element;
 
 	form.submit_callbacks = [];
 }
 
-Form.prototype.edit_mode = function(callback){
+FVForm.prototype.blur = function() {
+    var form = this;
+
+    for(var i in form.fields){
+        var inner_field = form.fields[i];
+        inner_field.blur();
+    }
+
+    return form;
+}
+
+FVForm.prototype.edit_mode = function(callback){
 	var form = this;
 
 	for(var i in form.fields){
@@ -11436,7 +11664,7 @@ Form.prototype.edit_mode = function(callback){
 	return form;
 }
 
-Form.prototype.view_mode = function(callback){
+FVForm.prototype.view_mode = function(callback){
 	var form = this;
 
 	for(var i in form.fields){
@@ -11446,7 +11674,7 @@ Form.prototype.view_mode = function(callback){
 	return form;
 }
 
-Form.prototype.on_submit = function(callback){
+FVForm.prototype.on_submit = function(callback){
 	var form = this;
 
 	form.submit_callbacks.push(callback);
@@ -11454,7 +11682,7 @@ Form.prototype.on_submit = function(callback){
 	return form;
 }
 
-Form.prototype.submit = function(){
+FVForm.prototype.submit = function(){
 	var form = this;
 
 	var compiled = form.val();
@@ -11469,20 +11697,22 @@ Form.prototype.submit = function(){
 	return compiled;
 }
 
-Form.prototype.add_field = function(name, field){
+FVForm.prototype.add_field = function(name, field){
 	var form = this;
 
     field.container.appendTo(form.fields_element);
     form.fields[name] = field;
+
+    return form;
 }
 
-//Same as Form.error(null)
-Form.prototype.clear_errors = function(){
+//Same as FVForm.error(null)
+FVForm.prototype.clear_errors = function(){
 	var form = this;
 	form.error(null);
 }
 
-Form.prototype.fields_error = function(error){
+FVForm.prototype.fields_error = function(error){
 	var form = this;
 
 	if(error){
@@ -11505,17 +11735,17 @@ Form.prototype.fields_error = function(error){
 	}
 }
 
-Form.prototype.show_error = function(){
+FVForm.prototype.show_error = function(){
     var form = this;
     form.error_message.show();
 }
 
-Form.prototype.hide_error = function(){
+FVForm.prototype.hide_error = function(){
     var form = this;
     form.error_message.hide();
 }
 
-Form.prototype.error = function(error) {
+FVForm.prototype.error = function(error) {
     var form = this;
 
     form.error_message.empty();
@@ -11560,7 +11790,7 @@ Form.prototype.error = function(error) {
     }
 }
 
-Form.prototype.disable = function(){
+FVForm.prototype.disable = function(){
 	var form = this;
 
 	for(var i in form.fields){
@@ -11569,7 +11799,7 @@ Form.prototype.disable = function(){
 	}
 }
 
-Form.prototype.enable = function(){
+FVForm.prototype.enable = function(){
 	var form = this;
 
 	for(var i in form.fields){
@@ -11578,7 +11808,7 @@ Form.prototype.enable = function(){
 	}	
 }
 
-Form.prototype.val = function(set_val){
+FVForm.prototype.val = function(set_val){
     var form = this;
 
     if (arguments.length===0) {
@@ -11586,7 +11816,10 @@ Form.prototype.val = function(set_val){
 		for(var i in form.fields){
 			var field = form.fields[i];
 			if(field.show_on_form_flag){
-				output[i] = field.val();
+				var value = field.val();
+				if(value!=null){
+					output[i] = value;
+				}
 			}
 		}
 		return output;
@@ -11743,21 +11976,34 @@ Field.prototype.error = function(error) {
 }
 fieldval_ui_extend(TextField, Field);
 
-function TextField(name, input_type) {
+function TextField(name, options) {
     var field = this;
 
-    field.input_type = input_type || "text";
+    var options_type = typeof options;
+
+    if(options_type === "string"){
+        field.input_type = options;
+        options = {};
+    } else if(options_type === "object"){
+        field.input_type = options.type || "text";
+    } else {
+        options = {};
+    }
+
+
+
+    field.options = options;
 
     TextField.superConstructor.call(this, name);
 
     field.element.addClass("text_field");
 
-    if(input_type==='textarea'){
+    if(field.input_type==='textarea'){
         field.input = $("<textarea />")
-    } else if(input_type==='text' || input_type==='number' || !input_type) {
+    } else if(field.input_type==='text' || field.input_type==='number') {
         field.input = $("<input type='text' />")
     } else {
-        field.input = $("<input type='"+input_type+"' />")
+        field.input = $("<input type='"+field.input_type+"' />")
     }
     
     field.input.addClass("text_input")
@@ -11837,7 +12083,7 @@ TextField.prototype.blur = function() {
     return field;
 }
 
-TextField.numeric_regex = /^\d+(?:\.\d+)$/;
+TextField.numeric_regex = /^\d+(\.\d+)?$/;
 
 TextField.prototype.val = function(set_val) {
     var field = this;
@@ -11931,6 +12177,8 @@ function ChoiceField(name, properties) {
 
     ChoiceField.superConstructor.call(this, name, properties);
 
+    field.properties = properties;
+
     field.choices = field.properties.choices || [];
     field.allow_empty = field.properties.allow_empty || false;
 
@@ -11938,20 +12186,23 @@ function ChoiceField(name, properties) {
 
     field.select = $("<select/>")
     .addClass("choice_input")
-    .on("change",function(){
-        field.did_change()
-    })
     .appendTo(field.input_holder);
+
+    setTimeout(function(){
+        field.select.on("change",function(){
+            field.did_change()
+        })
+    },100)
 
     field.choice_values = [];
 
-    if(allow_empty){
+    if(field.allow_empty){
         var option = $("<option />").attr("value",null).text("")
         field.select.append(option);
     }
 
-    for(var i = 0; i < choices.length; i++){
-        var choice = choices[i];
+    for(var i = 0; i < field.choices.length; i++){
+        var choice = field.choices[i];
 
         var choice_value,choice_text;
         if((typeof choice)=="object"){
@@ -11963,7 +12214,13 @@ function ChoiceField(name, properties) {
 
         field.choice_values.push(choice_value);
 
-        var option = $("<option />").attr("value",choice_value).text(choice_text)
+        console.log(choice_value);
+
+        var option = $("<option />")
+            .attr("value",choice_value)
+            .data("value",choice_value)
+            .text(choice_text)
+
         field.select.append(option);
     }
 }
@@ -11996,7 +12253,8 @@ ChoiceField.prototype.val = function(set_val) {
     var field = this;
 
     if (arguments.length===0) {
-        return field.select.find(":selected").attr("value")
+        console.log($(field.select.find(":selected")[0]).data());
+        return field.select.find(":selected").data("value")
     } else {
         if(set_val!=null){
             field.select.val(set_val);
@@ -12191,7 +12449,7 @@ function ObjectField(name) {
 }
 
 ObjectField.prototype.add_field = function(name, field){
-	Form.prototype.add_field.call(this,name,field);
+	FVForm.prototype.add_field.call(this,name,field);
 }
 
 ObjectField.prototype.change_name = function(name) {
@@ -12233,22 +12491,29 @@ ObjectField.prototype.focus = function() {
 
 ObjectField.prototype.blur = function() {
     var field = this;
-    return field;
+
+    FVForm.prototype.blur.call(this);
 }
 
 ObjectField.prototype.error = function(error){
-	var field = this;
+    var field = this;
 
-	ObjectField.superClass.error.call(this,error);
+    ObjectField.superClass.error.call(this,error);
 
-	Form.prototype.error.call(this,error);
+    FVForm.prototype.error.call(this,error);
+}
+
+ObjectField.prototype.fields_error = function(error){
+    var field = this;
+
+    FVForm.prototype.fields_error.call(this,error);
 }
 
 
 ObjectField.prototype.clear_errors = function(){
 	var field = this;
 
-	Form.prototype.clear_errors.call(this);
+	FVForm.prototype.clear_errors.call(this);
 }
 
 ObjectField.prototype.val = function(set_val) {
@@ -12294,7 +12559,9 @@ TextRuleField.prototype.create_ui = function(parent){
     var field = this;
 
     if(TextField){
-        parent.add_field(field.name, new TextField(field.display_name || field.name, field.json));
+        var ui_field = new TextField(field.display_name || field.name, field.json);
+        parent.add_field(field.name, ui_field);
+        return ui_field;
     }
 }
 
@@ -12338,7 +12605,9 @@ NumberRuleField.prototype.create_ui = function(parent){
     var field = this;
 
     if(TextField){
-        parent.add_field(field.name, new TextField(field.display_name || field.name, field.json));
+        var ui_field = new TextField(field.display_name || field.name, field.json);
+        parent.add_field(field.name, ui_field);
+        return ui_field;
     }
 }
 
@@ -12375,15 +12644,15 @@ NumberRuleField.prototype.create_checks = function(){
         field.checks.push(BasicVal.integer(false,{stop_on_error:false}));
     }
 }
-fieldval_rules_extend(NestedRuleField, RuleField);
+fieldval_rules_extend(ObjectRuleField, RuleField);
 
-function NestedRuleField(json, validator) {
+function ObjectRuleField(json, validator) {
     var field = this;
 
-    NestedRuleField.superConstructor.call(this, json, validator);
+    ObjectRuleField.superConstructor.call(this, json, validator);
 }
 
-NestedRuleField.prototype.create_ui = function(parent,form){
+ObjectRuleField.prototype.create_ui = function(parent,form){
     var field = this;
 
     if(ObjectField){
@@ -12402,10 +12671,12 @@ NestedRuleField.prototype.create_ui = function(parent,form){
         if(!form){
             parent.add_field(field.name, object_field);
         }
+
+        return object_field;
     }
 }
 
-NestedRuleField.prototype.init = function() {
+ObjectRuleField.prototype.init = function() {
     var field = this;
 
     field.fields = {};
@@ -12443,7 +12714,7 @@ NestedRuleField.prototype.init = function() {
     return field.validator.end();
 }
 
-NestedRuleField.prototype.create_checks = function(validator){
+ObjectRuleField.prototype.create_checks = function(validator){
     var field = this;
 
     field.checks.push(BasicVal.object(field.required));
@@ -12474,7 +12745,9 @@ ChoiceRuleField.prototype.create_ui = function(parent){
     var field = this;
 
     if(ChoiceField){
-        parent.add_field(field.name, new ChoiceField(field.display_name || field.name, field.choices, field.json));
+        var ui_field = new ChoiceField(field.display_name || field.name, field.choices, field.json);
+        parent.add_field(field.name, ui_field);
+        return ui_field;
     }
 }
 
@@ -12520,7 +12793,7 @@ RuleField.types = {
     text: TextRuleField,
     string: TextRuleField,
     number: NumberRuleField,
-    nested: NestedRuleField,
+    object: ObjectRuleField,
     choice: ChoiceRuleField
 };
 
@@ -12592,8 +12865,8 @@ ValidationRule.prototype.init = function(json) {
 ValidationRule.prototype.create_form = function(){
     var vr = this;
 
-    if(Form){
-        var form = new Form();
+    if(FVForm){
+        var form = new FVForm();
         vr.field.create_ui(form,form);
         return form;
     }
@@ -13250,6 +13523,9 @@ function isEmptyObject(object){
 }
 
 function ajax_request(params, callback){
+    console.trace();
+    var id = Math.random();
+    console.log("ajax_request",id, params);
 	$.ajax({
         type: "POST",
         url: ui_path+"ajax/",
@@ -13257,7 +13533,7 @@ function ajax_request(params, callback){
         dataType: "json",
         data: JSON.stringify(params),
         success: function(response) {
-            console.log(response);
+            console.log("ajax_response",id,response);
             callback(null, response);
         },
         error: function(err, response) {
@@ -13277,6 +13553,558 @@ var Constants = {
 
 if (typeof module != 'undefined') {
     module.exports = Constants;
+}
+String.prototype.replaceAll = function(re, replace) {
+    return this.replace(new RegExp(re, "g"), replace);
+}
+
+ var Common = {
+    SECONDSDATEFORMAT : "yyyy-MM-dd HH:mm:ss",
+    MINUTESDATEFORMAT : "yyyy-MM-dd HH:mm",
+    HOURSDATEFORMAT : "yyyy-MM-ddHH",
+    DAYDATEFORMAT : "yyyy-MM-dd",
+    secondsInOneDay : 60 * 60 * 24,
+    MINIMUM_USERNAME_LENGTH : 3,
+    MAXIMUM_USERNAME_LENGTH : 15,
+    minimumTypeMiddleName : 3,
+    maximumTypeMiddleName : 20,
+    minimumShortTypeMiddleName : 3,
+    maximumShortTypeMiddleName : 20
+}
+
+
+
+Common.get_resource_type = function(this_address){
+
+    if((typeof Path)==='undefined' && (typeof require)!=='undefined'){
+        Path = require('./Path');
+    }
+
+    var type_of = typeof this_address;
+
+    if (type_of == 'string') {
+
+        var index_of_slash = this_address.indexOf('/');
+
+        if (index_of_slash == -1) {
+            //Could be a number or rule
+            var numeric_value = parseFloat(this_address);
+            var is_integer = numeric_value % 1 == 0;
+            if (isNaN(numeric_value)){
+                return ["rule",this_address];
+            } else if(is_integer && numeric_value > 1) {
+                return ["id",numeric_value];
+            }
+        } else if (index_of_slash == 0) {
+            //First char is slash - must be pat
+
+            var path = new Path();
+            var path_error = path.init(this_address);
+            if (!path_error) {
+                return ["path",path];
+            }
+        } else {
+            //Could be id/version
+            var split_1 = this_address.substring(0, index_of_slash);
+            var num_1 = +split_1;
+            var is_integer_1 = num_1 % 1 == 0;
+            var split_2 = this_address.substring(index_of_slash + 1);
+            var num_2 = +split_2;
+            var is_integer_2 = num_2 % 1 == 0;
+
+            if (isNaN(num_1) || !is_integer_1 || num_1 < 1 || isNaN(num_2) || !is_integer_2 || num_2 < 1) {
+
+            } else {
+                return ["id_version",[num_1,num_2]];
+            }
+        }
+    } else if (type_of == 'number') {
+
+        var is_integer = this_address % 1 === 0;
+        if (is_integer && this_address > 0) {
+            return ["id",this_address];
+        }
+
+    }
+
+    return [null,null];
+}
+
+
+var isValidEmailAddress = function(emailAddress) {
+    return EmailValidator.getInstance().isValid(emailAddress);
+}
+
+Common.hasPrefix = function(test, prefix) {
+    if (test.length >= prefix.length) {
+        if (test.substring(0, prefix.length).equals(prefix)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+Common.isValidPassword = function(pass) {
+    if (pass.length < 8) {
+        return false;
+    }
+    if (pass.length > 32) {
+        return false;
+    }
+    return true;
+}
+
+//Returns true if the string is valid for use as an object name when saving
+Common.isValidSavingObjectName = function(string) {
+    if (string.getBytes().length > 100 || string.isEmpty()) {
+        return false;
+    }
+    for (var i = 0; i < string.length; i++) {
+        var thisChar = string.charCodeAt(i);
+        if (!Common.isValidCharacterForObjectName(thisChar, false)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+//Returns true if the string is valid for use as an object name when looking up (Not containing invalid characters)
+Common.isValidObjectName = function(string) {
+    if (string.isEmpty()) {
+        return false;
+    }
+    for (var i = 0; i < string.length; i++) {
+        var thisChar = string.charCodeAt(i);
+        if (!Common.isValidCharacterForObjectName(thisChar, true)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+//Returns 1 if the string conforms to the DateTime format (YYYY-MM-DD HH:MM:SS) and is valid e.g. 11th May 1992 at 7:32:48pm is 1992-05-11 19:32:48
+//0 for valid format, but invalid date
+//-1 for invalid format
+Common.isValidDateTime = function(string) {
+    if (string.length != 19) {
+        return -1;
+    }
+
+    if (string.charCodeAt(4) != '-' || string.charCodeAt(7) != '-' || string.charCodeAt(10) != ' ' || string.charCodeAt(13) != ':' || string.charCodeAt(16) != ':') {
+        return -1;
+    }
+
+    for (var i = 0; i < 10; i++) {
+        if (i != 4 && i != 7 && i != 10 && i != 13 && i != 16) {
+            var thisChar = string.charCodeAt(i);
+            if (thisChar < 48 || thisChar > 57) {
+                return -1;
+            }
+        }
+    }
+
+    var year = Integer.parseInt(string.substring(0, 4));
+    var month = Integer.parseInt(string.substring(5, 7));
+    var day = Integer.parseInt(string.substring(8, 10));
+    var hour = Integer.parseInt(string.substring(11, 13));
+    var minute = Integer.parseInt(string.substring(14, 16));
+    var second = Integer.parseInt(string.substring(17, 19));
+
+    if (month > 12) {
+        return 0;
+    }
+
+    if (month == 2) {
+        if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
+            if (day > 29) {
+                return 0;
+            }
+        } else {
+            if (day > 28) {
+                return 0;
+            }
+        }
+    }
+
+    if (month == 4 || month == 6 || month == 9 || month == 11) {
+        if (day > 30) {
+            return 0;
+        }
+    } else {
+        if (day > 31) {
+            return 0;
+        }
+    }
+
+    if (hour > 23) {
+        return 0;
+    }
+    if (minute > 59) {
+        return 0;
+    }
+    if (second > 59) {
+        return 0;
+    }
+
+    return 1;
+}
+
+//Returns 1 if the string conforms to the Date format (YYYY-MM-DD) and is valid e.g. 11th May 1992 is 1992-05-11
+//0 for valid format, but invalid date
+//-1 for invalid format
+Common.isValidDate = function(string) {
+    if (string.length != 10) {
+        return -1;
+    }
+
+    if (string.charCodeAt(4) != '-' || string.charCodeAt(7) != '-') {
+        return -1;
+    }
+
+    for (var i = 0; i < 10; i++) {
+        if (i != 4 && i != 7) {
+            var thisChar = string.charCodeAt(i);
+            if (thisChar < 48 || thisChar > 57) {
+                return -1;
+            }
+        }
+    }
+
+    var year = Integer.parseInt(string.substring(0, 4));
+    var month = Integer.parseInt(string.substring(5, 7));
+    var day = Integer.parseInt(string.substring(8, 10));
+
+    if (month > 12) {
+        return 0;
+    }
+
+    if (month == 2) {
+        if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
+            if (day > 29) {
+                return 0;
+            }
+        } else {
+            if (day > 28) {
+                return 0;
+            }
+        }
+    }
+
+    if (month == 4 || month == 6 || month == 9 || month == 11) {
+        if (day > 30) {
+            return 0;
+        }
+    } else {
+        if (day > 31) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+//Returns true if the string is a valid username (Less than 15 characters, more than 1 and not containing the reserved space replacements (ascii 30 or 31), whitespace, dot or /.)
+Common.is_valid_username = function(string) {
+    var length = string.length;
+    if (length > Common.MAXIMUM_USERNAME_LENGTH || length < Common.MINIMUM_USERNAME_LENGTH) {
+        return false;
+    }
+
+    var letters = /^[a-zA-Z][0-9a-zA-Z]+$/;  
+    if(string.match(letters)){
+        return true;
+    }
+    return false;
+}
+
+Common.isValidNewUsername = function(string) {
+    if (Common.isValidUsername(string)) {
+        for (var i = 0; i < string.length; i++) {
+            var thisChar = string.charCodeAt(i);
+            if (thisChar == '_') {
+                return false;
+            }
+        }
+    }
+    return false;
+}
+
+Common.isValidID = function(string) {
+    if (string.length == 0) {
+        return false;
+    }
+    for (var len = 0; len < string.length; len++) {
+        var thisChar = string.charCodeAt(len);
+        if (thisChar < 48 || thisChar > 57) { //Other than 0 to 9
+            return false;
+        }
+    }
+    return true;
+}
+
+Common.isTypeVersionAutoGranted = function(name, username) {
+    return Common.isValidTypeVersionName(name, username);
+}
+
+Common.splitToIDAndVersion = function(toSplit) {
+    var split = toSplit.split("/");
+    return [
+        Long.parseLong(split[0]), Long.parseLong(split[1])
+    ];
+}
+
+Common.splitToIDAndVersionString = function(toSplit) {
+    return toSplit.split("/");
+}
+
+
+Common.convertObjectToIDString = function(value) {
+
+    if (value instanceof Integer) {
+        if (value < 1) {
+            throw new ValidatorError(38);
+        }
+        return value.toString();
+    } else if (value instanceof Long) {
+        if (value < 1) {
+            throw new ValidatorError(38);
+        }
+        return value.toString();
+    } else if (value instanceof String) {
+        var id = Long.parseLong(value);
+        if (id < 1) {
+            throw new ValidatorError(38);
+        }
+        return value;
+    }
+    throw new ValidatorError(2);
+}
+
+Common.convertObjectToVersionLong = function(value) {
+
+    if (value instanceof Integer) {
+        if (value < 1) {
+            throw new ValidatorError(138);
+        }
+        return new Long(value);
+    } else if (value instanceof Long) {
+        if (value < 1) {
+            throw new ValidatorError(138);
+        }
+        return value;
+    } else if (value instanceof String) {
+        var id = Long.parseLong(value);
+        if (id < 1) {
+            throw new ValidatorError(138);
+        }
+        return id;
+    }
+    throw new ValidatorError(2);
+}
+
+Common.convert_path_to_tilde_path = function(path) {
+    return path.replaceAll('/', '~');
+}
+
+Common.convertTildePathToPath = function(path) {
+    return path.replace('~', '/');
+}
+
+Common.convertPathToStorePath = function(path) {
+    return path.replaceAll('/', String.fromCharCode(30)).replaceAll(' ', String.fromCharCode(31));
+}
+
+Common.convertStorePathToPath = function(path) {
+    return path.replaceAll(String.fromCharCode(31), ' ').replaceAll(String.fromCharCode(30), '/');
+}
+
+Common.getObjectFromID = function(id) {
+
+    // if (idAndVersionAndCreated == null || idAndVersionAndCreated.equals("DELETED")) {
+    //     return null;
+    // }
+
+    // var idVersionAndCreatedSplit = Common.splitIDValueToVersionAndPathAndCreated(idAndVersionAndCreated);
+    // idAndVersion = idVersionAndCreatedSplit[0];
+    // if (idAndVersion == null) {
+    //     return null;
+    // }
+
+    // object = (String) client.get(CouchbasePool.toKVIDVersionKey(idAndVersion));
+
+    // if (object == null) {
+    //     return null;
+    // }
+
+    // try {
+    //     return new JSONObject(objectString);
+    // } catch (JSONException e) {
+    //     ServerDaemon.error(e);
+    // }
+
+    // return null;
+}
+
+Common.getObjectFromPath = function(path) {
+
+    // CouchbaseClient client = CouchbasePool.getInstance().getCache();
+
+    // idAndVersion = (String) client.get(CouchbasePool.toKVPathKey(path));
+
+    // if (idAndVersion == null || idAndVersion.equals("DELETED")) {
+    //     return null;
+    // }
+
+    // object = (String) client.get(CouchbasePool.toKVIDVersionKey(idAndVersion));
+
+    // if (object == null) {
+    //     return null;
+    // }
+
+    // try {
+    //     return new JSONObject(objectString);
+    // } catch (JSONException e) {
+    //     ServerDaemon.error(e);
+    // }
+
+    return null;
+}
+
+Common.getMultipleObjectsFromPaths = function(paths) {
+    return Common.getMultipleObjectsFromPaths(paths.toArray(new String[paths.size()]));
+}
+
+
+//This method will use the parameter to store intermediate values. Don't pass it something you want to keep.
+Common.getMultipleObjectsFromPaths = function(paths) {
+
+    // JSONObject[] returning = new JSONObject[paths.length];
+
+    // GetFuture < Object > [] futures = new GetFuture[paths.length];
+
+    // for (var i = 0; i < paths.length; i++) {
+    //     if (paths[i] != null) {
+    //         futures[i] = client.asyncGet(CouchbasePool.toKVPathKey(paths[i]));
+    //     }
+    // }
+
+    // for (var i = 0; i < paths.length; i++) {
+    //     try {
+    //         if (paths[i] != null) {
+    //             paths[i] = (String) futures[i].get();
+
+    //             if (paths[i] == null || paths[i].equals("DELETED")) {
+    //                 paths[i] = null;
+    //                 futures[i] = null;
+    //             } else {
+    //                 futures[i] = client.asyncGet(CouchbasePool.toKVIDVersionKey(paths[i]));
+    //             }
+    //         }
+    //     } catch (Exception e) {
+    //         paths[i] = null;
+    //         futures[i] = null;
+    //     }
+    // }
+
+    // for (var i = 0; i < paths.length; i++) {
+    //     try {
+    //         if (futures[i] != null) {
+    //             paths[i] = (String) futures[i].get();
+
+    //             if (paths[i].equals("DELETED")) {
+    //                 returning[i] = null;
+    //             } else {
+    //                 returning[i] = new JSONObject(paths[i]);
+    //             }
+    //         }
+    //     } catch (Exception e) {
+    //         returning[i] = null;
+    //     }
+    // }
+    return returning;
+}
+
+//This method will use the parameter to store intermediate values. Don't pass it something you want to keep.
+Common.getMultipleObjectsFromIDs = function(ids) {
+
+    // CouchbaseClient client = CouchbasePool.getInstance().getCache();
+
+    // JSONObject[] returning = new JSONObject[ids.length];
+
+    // GetFuture < Object > [] futures = new GetFuture[ids.length];
+
+    // for (var i = 0; i < ids.length; i++) {
+    //     futures[i] = client.asyncGet(CouchbasePool.toKVIDKey(ids[i]));
+    // }
+
+    // for (var i = 0; i < ids.length; i++) {
+    //     try {
+    //         ids[i] = (String) futures[i].get();
+
+    //         if (ids[i] == null || ids[i].equals("DELETED")) {
+    //             ids[i] = null;
+    //             futures[i] = null;
+    //         } else {
+    //             var idVersionAndCreatedSplit = Common.splitIDValueToVersionAndPathAndCreated(ids[i]);
+    //             idAndVersion = idVersionAndCreatedSplit[0];
+    //             if (idAndVersion == null) {
+    //                 ids[i] = null;
+    //                 futures[i] = null;
+    //             } else {
+    //                 futures[i] = client.asyncGet(CouchbasePool.toKVIDVersionKey(idAndVersion));
+    //             }
+    //         }
+    //     } catch (Exception e) {
+    //         ids[i] = null;
+    //         futures[i] = null;
+    //     }
+    // }
+
+    // for (var i = 0; i < ids.length; i++) {
+    //     try {
+    //         if (futures[i] != null) {
+    //             ids[i] = (String) futures[i].get();
+
+    //             if (ids[i].equals("DELETED")) {
+    //                 returning[i] = null;
+    //             } else {
+    //                 returning[i] = new JSONObject(ids[i]);
+    //             }
+    //         }
+    //     } catch (Exception e) {
+    //         returning[i] = null;
+    //     }
+    // }
+
+
+    return returning;
+}
+
+Common.getDateTimeString = function(format) {
+    // final SimpleDateFormat sdf = new SimpleDateFormat(format);
+    // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+    // final utcTime = sdf.format(new Date());
+    // return utcTime;
+}
+
+Common.buildIDValueFromIDVersionPathAndCreated = function(idVersion, path, created) {
+    return idVersion + " " + Common.convertPathToStorePath(path) + " " + created;
+}
+
+Common.idFromCounterAddress = function(address) {
+    var split = address.split("\\.");
+
+    if (Common.isValidID(split[0]) && Common.isValidTypeVersionName(split[1] + "." + split[2] + "." + split[3]) && Common.isValidFieldName(split[4])) {
+        return split[0];
+    }
+
+    throw new ValidatorError(112);
+}
+
+
+if (typeof module != 'undefined') {
+    module.exports = Common;
 }
 var Constants, Common, FieldVal, errors;
 if (typeof require != 'undefined') {
@@ -13956,7 +14784,7 @@ AddressBar.prototype.edit_address = function(){
 
 AddressBar.prototype.go = function(){
 	var address_bar = this;
-	address_bar.browser.load_address(
+	address_bar.browser.load(
 		address_bar.text_input.val()
 	);
 	address_bar.text_input.blur();
@@ -14004,550 +14832,112 @@ function PaginationController(pc){
 	.addClass("pagination_controller")
 	.append(
 		$("<div />")
-		.addClass("pageControls")
+		.addClass("page_controls")
 		.append(
 			pc.previous_button = $("<button />")
-			.addClass("mino_button previousPageButton left no_left no_top no_bottom")
-			.css("float","left")
-			.css("width","50px")
+			.addClass("mino_button previous_button")
 			.text("Prev.")
 		)
 		.append(
 			pc.page_number = $("<div />")
-			.addClass("pageNumber")
+			.addClass("page_number")
+			.text("Page 1 of 1")//MOCKED
 		)
 		.append(
 			pc.next_button = $("<button />")
-			.addClass("mino_button previousPageButton right no_right no_top no_bottom")
-			.css("float","left")
-			.css("width","50px")
+			.addClass("mino_button next_button")
 			.text("Next")
 		)
 	)
 }
+function Icon(data, view){
+	var icon = this;
 
-function FolderView(browser, path){
+	icon.data = data;
+	icon.view = view;
+
+	icon.element = $("<a />").attr({
+		"href" : Site.path + "browser/"+data.full_path
+	}).ajax_url().addClass("icon").append(
+		icon.holder = $("<div />").addClass("holder")
+	,
+		icon.text = $("<div />").addClass("text").text(data.name)
+	)
+}
+
+extend(FolderIcon, Icon);
+
+function FolderIcon(data, view){
+	var icon = this;
+
+	FolderIcon.superConstructor.call(this, data, view);
+
+	icon.element.addClass("folder_icon")
+}
+
+function FolderView(path, data, browser){
 	var folder_view = this;
-
-	console.log(path);
 
 	folder_view.browser = browser;
 	folder_view.path = path;
+	folder_view.item_data = data;
 
-	// folder_view.isSearch = folder_view.isSearchRequest();
+	for(var i = 0; i<path.length; i++){
+        var path_button = new PathButton(path.object_names[i], path.sub_paths[i], 0, null);
+        browser.address_bar.path_buttons.append(
+            path_button.element
+        )
+    }
 
-	folder_view.displayedObjects = new Object();
+    folder_view.pagination_controller = new PaginationController(folder_view);
 
-	folder_view.selectModeEnabled = false;
-	folder_view.selectedObjects = new Object();
+	folder_view.element = $("<div />").addClass("folder_view").append(
+		folder_view.contents = $("<div />").addClass("contents")
+	,
+		folder_view.pagination_controller.element
+	)
 
-	folder_view.element = $("<div />").addClass("folder_view")
-	.data("object",folder_view);
 
-	folder_view.objectsContainer = $("<div />")
-	.appendTo(folder_view.element);
+	folder_view.toolbar_element = $("<div />").append(
+		
+	)
 
-	browser.hideElements();
 	browser.view_container.empty();
 	browser.view_container.append(folder_view.element);
-	
-	folder_view.is_main_browser = browser instanceof MainBrowser;
+
+	browser.toolbar.element.empty();
+	browser.toolbar.element.append(folder_view.toolbar_element);
 	
 	browser.address_bar.populate_path_buttons(folder_view.path);
 
-	var editPathButton = $("<div />")
-	.addClass("pathbutton editAddressButtonFolder")
-	.on('tap',function(){
-		browser.topNav.editAddress()
-	});
+	folder_view.load({});
+}
 
-	// $("<button />").append(
-	// 	$("<div />").append(createPenIcon().addClass("penIcon16"))
-	// ).appendTo(editPathButton);
-	// browser.topNav.pathButtons.append(editPathButton);
-	
-	var hasOtherObjects = false;
+FolderView.prototype.load = function(options){
+	var folder_view = this;
 
-	// for (var i = 0; i < json['Objects'].length; i++){
-	// 	var objectRepresentation = new MinoObjectRepresentation(json['Objects'][i],folder_view);
-	// 	folder_view.displayedObjects[objectRepresentation.id] = objectRepresentation;
-	// 	folder_view.objectsContainer.append(objectRepresentation.element);
-
-	// 	var name = objectRepresentation.objectName;
-	// 	if(name!="Apps" && name!="App Privileges" && name!="Type Privileges" && name!="Privileges"){
-	// 		hasOtherObjects = true;
-	// 	}
-	// }
-
-	// if(!folder_view.isSearch && folder_view.path=="/"+username+"/" && !loadedFirstHomeFolder){
-	// 	loadedFirstHomeFolder = true;
-			
-	// 	if(!hasOtherObjects){
-	// 		var alertModal = new AlertModal("Create some data");
-	// 		alertModal.view.append(
-	// 			$("<div />").css({
-	// 				"padding" : "10px"
-	// 			}).html("You don't have any data. If you're not already following it, try the <a href=\"http://minocloud.com/docs/?Quick Start Tutorial\">Quick Start Tutorial</a>.<br /><br />To prevent this notice from appearing, create a folder or item in your home folder.")
-	// 		)
-	// 	}
-	// }
-
-	folder_view.pagination_controller = new PaginationController(folder_view);
-
-	folder_view.element.append(
-		folder_view.pagination_controller.element
-	)
-	
-	browser.onRestore = function(){
-		folder_view.onRestore()
+	var request = {
+		"function" : "search",
+		"parameters" : {
+			"paths" : [folder_view.path.toString()]
+		}
 	};
 
-	folder_view.onRestore();
-	
-	// resize(true);
+	ajax_request(request,function(err, response){
+		console.log(err, response);
+		folder_view.populate(options, response);
+	});
 }
 
-FolderView.prototype.updateView = function(){
+FolderView.prototype.populate = function(options, data){
 	var folder_view = this;
 
-	if(folder_view.noElementsWarning!=undefined){
-		folder_view.noElementsWarning.remove();
-		delete folder_view.noElementsWarning;
+	var objects = data.objects;
+
+	for(var i = 0; i < objects.length; i++){
+		var icon = new FolderIcon(objects[i],folder_view);
+		folder_view.contents.append(icon.element);
 	}
-
-	if(isEmptyObject(folder_view.displayedObjects)){
-		if(folder_view.isSearch){
-			folder_view.noElementsWarning = $("<div />")
-			.addClass("largeWarning")
-			.text("No results.")
-			.prependTo(folder_view.element);
-		} else {			
-			folder_view.noElementsWarning = $("<div />")
-			.addClass("largeWarning")
-			.text("No objects in this folder.")
-			.prependTo(folder_view.element);		
-		}
-	}
-}
-
-FolderView.prototype.isSearchRequest = function(){
-	var folder_view = this;
-
-	if(folder_view.request['Parameters']['Include Subfolders']==true){
-		return true;
-	}
-	for(key in folder_view.request['Parameters']){
-		if(isTypeVersionNameStructure(key)){
-			return true;
-		}
-	}
-	return false;
-}
-
-FolderView.prototype.cancelSelection = function(){
-	var folder_view = this;
-	var browser = folder_view.browser;
-
-	for(i in folder_view.selectedObjects){
-		var obj = folder_view.selectedObjects[i];
-		folder_view.clickSelectable(obj,false);
-	}
-	folder_view.selectModeEnabled = false;
-
-	// toolbar_menu.sharing_button.show();
-	// toolbar_menu.select_button.show();
-	// toolbar_menu.list_icons_button.show();
-	// toolbar_menu.new_item_button.show();
-	// toolbar_menu.new_folder_button.show();
-	// toolbar_menu.cancel_button.hide();
-	// toolbar_menu.move_button.hide();
-	// toolbar_menu.delete_button.hide();
-	// toolbar_menu.select_all_button.hide();
-};
-
-FolderView.prototype.onRestore = function(){
-	var folder_view = this;
-	var browser = folder_view.browser;
-
-
-	// if(folder_view.is_main_browser){
-	// 	toolbar_menu.list_icons_button.show().on('tap',function() {
-			
-	// 		if(listoricon=="list"){
-	// 			toolbar_menu.list_icons_button.text("List");
-	// 			$.cookie('listoricon', "icon", {expires: 60*60*24*365, path: '/'});
-	// 			listoricon = "icon";
-	// 		} else {
-	// 			toolbar_menu.list_icons_button.text("Icons");
-	// 			$.cookie('listoricon', "list", {expires: 60*60*24*365, path: '/'});
-	// 			listoricon = "list";
-	// 		}
-
-	// 		for(i in folder_view.displayedObjects){
-	// 			var objectRep = folder_view.displayedObjects[i];
-	// 			objectRep.drawIcon();
-	// 		}
-			
-	//   		resize(false);
-	// 	});
-	
-	// 	toolbar_menu.sharing_button.show().on('tap',function(){
-		
-
-	// 		var preventShareReason = null;
-			
-	// 		if(folder_view.path==('/'+username+"/")){
-	// 			preventShareReason = "You cannot share your home folder.";
-	// 		} else if(folder_view.path.startsWith("/"+username+"/Apps/") && !folder_view.path.startsWith("/"+username+"/Apps/"+username+"/")){
-	// 			preventShareReason = "You cannot share any folder in your Apps folder.";
-	// 		} else if(folder_view.path.startsWith("/"+username+"/App Privileges/")){
-	// 			preventShareReason = "You cannot share any folder in your App Privileges folder.";
-	// 		} else if(folder_view.path.startsWith("/"+username+"/Privileges/")){
-	// 			preventShareReason = "You cannot share any folder in your Privileges folder.";
-	// 		} else if(folder_view.path.startsWith("/"+username+"/Type Privileges/")){
-	// 			preventShareReason = "You cannot share any folder in your Type Privileges folder.";
-	// 		}
-			
-			
-	// 		var doOwn = false;
-	// 		if(folder_view.addressSplit.length>2){
-	// 			if(folder_view.addressSplit[1]=="Apps" && folder_view.addressSplit[2]==username){
-	// 				doOwn = true;
-	// 			}
-	// 		}
-			
-	// 		if(folder_view.addressSplit[0]==username){
-	// 			doOwn = true;
-	// 		}
-			
-	// 		if(!doOwn){
-	// 			preventShareReason = "You do not own this folder.";
-	// 		}
-			
-	// 		if(preventShareReason!=null){
-	// 			var alertModal = new AlertModal("Unable to Share");
-	// 			alertModal.view.append(
-	// 				$("<div />")
-	// 				.text(preventShareReason)
-	// 				.css("padding","10px")
-	// 			);
-	// 			return;
-	// 		}
-			
-		
-	// 		var sharingModal = new SharingFolderModal(folder_view.path);
-			
-	// 	});
-		
-	// 	toolbar_menu.select_button.show().on('tap',function(){
-	// 		folder_view.selectModeEnabled = true;
-	// 		folder_view.selectedObjects = new Object();
-	// 		folder_view.selectedFolders = new Object();
-			
-	// 		toolbar_menu.sharing_button.hide();
-	// 		toolbar_menu.select_button.hide();
-	// 		toolbar_menu.list_icons_button.hide();
-	// 		toolbar_menu.new_item_button.hide();
-	// 		toolbar_menu.new_folder_button.hide();
-	// 		toolbar_menu.move_button.on('tap',function(){
-				
-	// 			var modalTable = null;
-	// 			var pathField = null;
-				
-	// 			var modalWindow = new MoveModal(folder_view,folder_view.selectedObjects,folder_view.path);
-					
-	// 		});
-	// 		toolbar_menu.delete_button.on('tap',function(){
-
-	// 			var deleteModal = new DeleteModal();
-			
-	// 			deleteModal.okCallback = function(){
-						
-	// 				var deleteList = new Array();
-	// 				var objectList = new Array();
-					
-	// 				for(selInd in folder_view.selectedObjects){
-	// 					var selDiv = folder_view.selectedObjects[selInd];
-	// 					deleteList.push(selDiv.id);
-	// 					objectList.push(selDiv);
-	// 				}
-					
-	// 				var request = {
-	// 					"Function" : "Delete",
-	// 					"Parameters" : {
-	// 						"Delete" : deleteList
-	// 					}
-	// 				};
-					
-	// 				if(doLogging){
-	// 					console.log(request);
-	// 				}
-					
-	// 				folder_view.cancelSelection();
-
-	// 				browser.makeRequest(
-	// 					request,
-	// 					function(returnedJSON){	
-	// 						var failedReportDiv = $("<div />")
-	// 						.css("padding","10px");
-	// 						var hasFailures = false;
-						
-	// 						if(returnedJSON['Objects']!=undefined){
-	// 							for(resInd in returnedJSON['Objects']){
-	// 								var result = returnedJSON['Objects'][resInd];
-	// 								if(result['Error']!=undefined){
-	// 									hasFailures = true;
-	// 									$(failedReportDiv)
-	// 									.append(
-	// 										$("<div />")
-	// 										.append(
-	// 											$("<span />")
-	// 											.addClass("bold")
-	// 											.text(objectList[resInd].object['Name']+" - ")
-	// 										)
-	// 										.append(
-	// 											$("<span />")
-	// 											.css("color","red")
-	// 											.text(result['Error'])							
-	// 										)
-	// 									);
-	// 								} else {
-	// 									delete folder_view.displayedObjects[objectList[resInd].id];
-	// 									objectList[resInd].element.remove();
-	// 								}
-	// 							}
-	// 							folder_view.updateView();
-	// 						}
-							
-	// 						if(returnedJSON['Error']!=undefined && returnedJSON['Invalid']['Delete']['Invalid']!=undefined){
-	// 							var deleteErrors = returnedJSON['Invalid']['Delete']['Invalid'];
-	// 							for(resInd in deleteErrors){
-	// 								var result = deleteErrors[resInd];
-	// 								if(result['Error']!=undefined){
-	// 									hasFailures = true;
-	// 									var errorString;
-	// 									if(result['Invalid']['ID']!=undefined){
-	// 										errorString = result['Invalid']['ID']['Error'];
-	// 									} else if(result['Invalid']['Path']!=undefined){
-	// 										errorString = result['Invalid']['Path']['Error']
-	// 									} else {
-	// 										errorString = "Unknown error occurred";
-	// 									}
-	// 									$(failedReportDiv)
-	// 									.append(
-	// 										$("<div />")
-	// 										.append(
-	// 											$("<span />")
-	// 											.addClass("bold")
-	// 											.text(objectList[resInd].object['Name']+" - ")
-	// 										)
-	// 										.append(
-	// 											$("<span />")
-	// 											.css("color","red")
-	// 											.text(errorString)							
-	// 										)
-	// 									);
-	// 								}
-	// 							}
-	// 						}
-							
-	// 						if(hasFailures==true){
-	// 							var alertModal = new AlertModal("Deletion Failures");
-	// 							alertModal.view.append(
-	// 								failedReportDiv
-	// 							);
-	// 						}
-	// 					},
-	// 					false,
-	// 					false
-	// 				);
-	// 			}										
-	// 		});
-	// 		toolbar_menu.select_all_button.show().on('tap',function(){
-	// 			for(i in folder_view.displayedObjects){
-	// 				var obj = folder_view.displayedObjects[i];
-	// 				folder_view.clickSelectable(obj,true);
-	// 			}
-	// 		});
-	// 		toolbar_menu.cancel_button.show().on('tap',function(){
-	// 			folder_view.cancelSelection();
-	// 		});
-	// 	});
-	// 	toolbar_menu.new_item_button.show().on('tap',function(){
-			
-	// 		var newItemFakeResponse = {
-	// 			"Objects" : [
-	// 				{
-	// 					"Name" : "",
-	// 					"Path" : folder_view.path,
-	// 					"Full Path" : folder_view.path+"New item",
-	// 					"Folder" : false,
-	// 					"Version" : 1
-	// 				}
-	// 			]
-	// 		};
-
-	// 		var itemView = new ItemView({}, newItemFakeResponse, true, browser);
-	// 		itemView.element.appendTo(browser.element);
-	// 		itemView.updateView();
-
-	// 	});
-	// 	toolbar_menu.new_folder_button.show().on('tap',function(){
-			
-	// 		var newFolderModal = new NewFolderModal(folder_view.path);
-
-	// 		newFolderModal.onSuccessCallback = function(newFolderInfo,name){
-				
-	// 			if(doLogging){
-	// 				console.log(newFolderInfo);
-	// 			}
-				
-	// 			var newObject = {
-	// 				"ID" : newFolderInfo['Objects'][0]['ID'],
-	// 				"Name" : name,
-	// 				"Path" : folder_view.path,
-	// 				"Full Path" : newFolderInfo['Objects'][0]['Full Path'],
-	// 				"Folder" : true
-	// 			};
-		
-	// 			var objectRepresentation = new MinoObjectRepresentation(
-	// 				newObject,
-	// 				folder_view
-	// 			);
-	// 			folder_view.displayedObjects[objectRepresentation.id] = objectRepresentation;
-	// 			folder_view.objectsContainer.append(objectRepresentation.element);
-
-	// 			folder_view.updateView();
-				
-	// 		};
-			
-	// 	});
-	// }
-
-	folder_view.updateView();
-}
-
-
-FolderView.prototype.displayPageNumbers = function(){
-	var folder_view = this;
-
-	if(folder_view.isError){
-		return;
-	}
-	
-	var request = folder_view.request;
-	var response = folder_view.response;
-
-	if(request==null || response==null){
-		return;
-	}
-	
-	var currentsize = response['Returned Amount'];
-	var start = response['Starting Index'];
-	var total = response['Total'];
-
-	var othersize = folder_view.browser.iconCapacity();
-
-	var before = Math.ceil(start/othersize);
-	var current = before+1;
-	var next = Math.ceil((total-(start+(currentsize)))/othersize);
-	var totalpages = before+next+1;
-	
-	folder_view.pageNumber.text("Page "+current+" of "+totalpages);
-	folder_view.resultsStatus.text("Showing "+(start+1)+"-"+(start+currentsize)+" of "+total);
-
-	if(current==1 && totalpages==1){
-		folder_view.pageControlsHolder.hide();
-	}
-	
-	if(current==1){
-		folder_view.previousPageButton.attr("disabled", "disabled");
-	} else {
-		folder_view.previousPageButton.removeAttr("disabled").on('tap',function() {
-			if($(this).is(':disabled') == false){
-				var newRequest = JSON.parse(JSON.stringify(request));
-				var iconcap = othersize;
-				var newStart = start-iconcap;
-				if(newStart<0){
-					newStart = 0;
-				}
-				newRequest['Parameters']['Starting Index'] = newStart;
-				newRequest['Parameters']['Result Size'] = othersize;
-				
-				if(folder_view.isSearch){
-					folder_view.browser.loadAddress("Search:"+JSON.stringify(newRequest['Parameters']));
-				} else {
-					folder_view.browser.loadAddress("Start:"+(newRequest['Parameters']['Starting Index'])+"&"+newRequest['Parameters']['Path']);
-				}
-			}
-		});
-	}
-	
-	if(current==totalpages){
-		folder_view.nextPageButton.attr("disabled", "disabled");
-	} else {
-		folder_view.nextPageButton.removeAttr("disabled").on('tap',function() {
-			if($(this).is(':disabled') == false){
-				var newRequest = JSON.parse(JSON.stringify(request));
-				newRequest['Parameters']['Starting Index'] = start+currentsize;
-				newRequest['Parameters']['Result Size'] = othersize;
-								
-				
-				
-				if(folder_view.isSearch){
-					folder_view.browser.loadAddress("Search:"+JSON.stringify(newRequest['Parameters']));
-				} else {
-					folder_view.browser.loadAddress("Start:"+(newRequest['Parameters']['Starting Index'])+"&"+newRequest['Parameters']['Path']);
-				}
-			}
-		});
-	}	
-}
-
-FolderView.prototype.clickSelectable = function(objectRep,forceSelect){
-	var folder_view = this;
-
-	if(forceSelect==undefined){
-		forceSelect = null;
-	}
-
-	if(forceSelect==true || (folder_view.selectedObjects[objectRep.id]==undefined && forceSelect!=false)){
-		folder_view.selectedObjects[objectRep.id] = objectRep;
-		if(objectRep.isFolder){
-			folder_view.selectedFolders[objectRep.id] = objectRep;
-		}
-		objectRep.select();
-	} else {
-		delete folder_view.selectedObjects[objectRep.id];
-		if(objectRep.isFolder){
-			delete folder_view.selectedFolders[objectRep.id];
-		}
-		objectRep.deselect();
-
-	}
-
-	var totalSelected = 0;
-	var foldersSelected = 0;
-	for(i in folder_view.selectedObjects){
-		var thisObjectRep = folder_view.selectedObjects[i];
-		if(thisObjectRep.isFolder){
-			foldersSelected++;
-		}
-		totalSelected++;
-	}
-	
-	// if(totalSelected==0){
-	// 	toolbar_menu.delete_button.hide();
-	// 	toolbar_menu.move_button.hide();
-	// } else {
-	// 	toolbar_menu.delete_button.show();
-	// 	if(foldersSelected==0){
-	// 		toolbar_menu.move_button.show();
-	// 	} else {
-	// 		toolbar_menu.move_button.hide();
-	// 	}
-	// }
-
 }
 function ItemSection(name, value, item_view){
 	var section = this;
@@ -14562,14 +14952,14 @@ function ItemSection(name, value, item_view){
 
     section.is_edit_mode = true;
 
-    console.log(name);
-    console.log(value);
-    console.log(item_view.browser);
+    // console.log(name);
+    // console.log(value);
+    // console.log(item_view.browser);
 
 	item_view.browser.rule_cache.load(name, function(err, data){
-        console.log("ITEM SECTION");
-		console.log(err);
-		console.log(data);
+  //       console.log("ITEM SECTION");
+		// console.log(err);
+		// console.log(data);
         section.populate_rule(data);
         section.populate(value);
 	})
@@ -14579,16 +14969,16 @@ ItemSection.prototype.val = function(argument){
     var section = this;
 
     if(arguments.length===0){
-        return section.form.val();
+        return section.field.val();
     } else {
-        return section.form.val(argument);
+        return section.field.val(argument);
     }
 }
 
 ItemSection.prototype.error = function(argument){
     var section = this;
 
-    return section.form.error(argument);
+    return section.field.error(argument);
 }
 
 ItemSection.prototype.edit_mode = function(){
@@ -14596,8 +14986,8 @@ ItemSection.prototype.edit_mode = function(){
     
     section.is_edit_mode = true;
 
-    if(section.form){
-        section.form.edit_mode();
+    if(section.field){
+        section.field.edit_mode();
     }
 }
 
@@ -14606,16 +14996,17 @@ ItemSection.prototype.view_mode = function(){
  
     section.is_edit_mode = false;
 
-    if(section.form){
-        section.form.view_mode();
+    if(section.field){
+        section.field.view_mode();
     }
 }
 
 ItemSection.prototype.populate = function(data){
     var section = this;
 
-    if(section.form){
-        section.form.val(data);
+    if(section.field){
+        console.log(section.field)
+        section.field.val(data);
     }
 }
 
@@ -14624,22 +15015,30 @@ ItemSection.prototype.populate_rule = function(rule){
 
 	section.rule = rule;
 
-    var vr = new ValidationRule();
-	console.log(vr.init(rule));
+    // console.trace();
+    // console.log(rule);
 
-	section.form = vr.create_form();
+    section.vr = new ValidationRule();
+	console.log(section.vr.init(rule));
 
-	section.container.append(
-		section.form.element
-	)
 
-	section.title_div.text(rule.display_name || rule.name);
 
-    if(section.is_edit_mode){
-        section.edit_mode();
-    } else {
-        section.view_mode();
-    }
+	section.field = section.vr.field.create_ui(section.item_view.form);
+
+    // console.log(section.vr.field);
+    // console.log(section.field);
+
+	// section.container.append(
+	// 	section.field.element
+	// )
+
+	// section.title_div.text(rule.display_name || rule.name);
+
+ //    if(section.is_edit_mode){
+ //        section.edit_mode();
+ //    } else {
+ //        section.view_mode();
+ //    }
 
 }
 
@@ -14648,7 +15047,9 @@ var object_keys = [
 	"_id",
 	"name",
 	"path",
-	"full_path"
+	"full_path",
+	"version",
+	"folder"
 ];
 
 function is_object_key(key){
@@ -14667,30 +15068,34 @@ function ItemView(path, data, browser){
 	item_view.path = path;
 	item_view.item_data = data;
 
+	for(var i = 0; i<path.length; i++){
+        var path_button = new PathButton(path.object_names[i], path.sub_paths[i], 0, null);
+        browser.address_bar.path_buttons.append(
+            path_button.element
+        )
+    }
+
 	item_view.element = $("<div />").addClass("item_view");
 
-	item_view.core_form = new Form();
-	item_view.core_form.add_field("_id", new TextField("ID"));
-	item_view.core_form.add_field("name", new TextField("Name"));
-	item_view.core_form.add_field("path", new TextField("Path"));
-	item_view.core_form.add_field("full_path", new TextField("Full Path"));
+	item_view.form = new FVForm();
+	item_view.form.add_field("_id", new TextField("ID"));
+	item_view.form.add_field("name", new TextField("Name"));
+	item_view.form.add_field("path", new TextField("Path"));
+	item_view.form.add_field("full_path", new TextField("Full Path"));
 	item_view.element.append(
-		item_view.core_form.element
+		item_view.form.element
 	)
-	item_view.core_form.val(data);
+	item_view.form.val(data);
 
 	item_view.sections = {};
 
-	//Used so that ItemView can use FieldVal.Form's .error function
+	//Used so that ItemView can use FieldVal.FVForm's .error function
 	item_view.fields = item_view.sections;
 
 	for(var key in data){
 		if(!is_object_key(key)){
 			var section = new ItemSection(key, data[key], item_view);
-			item_view.sections[key] = section;
-			item_view.element.append(
-				section.element
-			)
+			item_view.form.add_field(key, section);
 		}
 	}
 
@@ -14733,34 +15138,19 @@ ItemView.prototype.edit = function(){
 ItemView.prototype.edit_mode = function(){
 	var item_view = this;
 
-	item_view.core_form.edit_mode();
-
-	for(var i = 0; i < item_view.sections.length; i++){
-		var section = item_view.sections[i];
-		section.edit_mode();
-	}
+	item_view.form.edit_mode();
 }
 
 ItemView.prototype.view_mode = function(){
 	var item_view = this;
 
-	item_view.core_form.view_mode();
-
-	for(var i = 0; i < item_view.sections.length; i++){
-		var section = item_view.sections[i];
-		section.view_mode();
-	}
+	item_view.form.view_mode();
 }
 
 ItemView.prototype.val = function(){
 	var item_view = this;
 
-	var value = item_view.core_form.val();
-
-	for(var i = 0; i < item_view.sections.length; i++){
-		var section = item_view.sections[i];
-		value[section.name] = section.val();
-	}
+	var value = item_view.form.val();
 
 	return value;
 }
@@ -14768,9 +15158,9 @@ ItemView.prototype.val = function(){
 ItemView.prototype.error = function(error_data){
 	var item_view = this;
 
-	console.log("error_data", error_data);
+	console.log("error_data ",error_data);
 
-	alert(error);
+	item_view.form.error(error_data);
 }
 
 ItemView.prototype.save = function(){
@@ -14791,8 +15181,8 @@ ItemView.prototype.save = function(){
 		console.log("err ",err);
 		console.log("response ",response);
 
-		if(response.error){
-			ItemView.error(response);
+		if(response.error!==undefined){
+			item_view.error(response.invalid.parameters.invalid.objects.invalid[0]);
 		} else {
 			alert("Success?");
 		}
@@ -14814,6 +15204,251 @@ ItemView.prototype.cancel = function(){
 	item_view.cancel_button.hide();
 	item_view.save_button.hide();
 	item_view.edit_button.show();
+
+	item_view.error(null);
+}
+function RuleField(name, value, parent){
+	var rf = this;
+
+	rf.name = name;
+	rf.parent = parent;
+	rf.value = value;
+
+	rf.element = $("<div />").addClass("rule_field").append(
+		rf.title_div = $("<div />").addClass("title"),
+		rf.container = $("<div />").addClass("container")
+	)
+
+	rf.form = new FVForm();
+	rf.form.add_field("name", new TextField("Name"));
+	rf.form.add_field("display_name", new TextField("Display Name"));
+	rf.form.add_field("type", new ChoiceField("Type", {
+		choices: [
+			["text", "Text"],
+			["number", "Number"],
+			["boolean", "Boolean"],
+			["date", "Date"],
+			["object", "Object"]
+		]
+	}).on_change(function(){
+		console.log("DID CHANGE");
+		rf.update_type_fields();
+	}));
+	rf.container.append(
+		rf.form.element
+	)
+	rf.form.val(value);
+
+    rf.is_edit_mode = true;
+
+    console.log(name);
+    console.log(value);
+
+    rf.update_title_name();
+    rf.update_type_fields();
+}
+
+RuleField.prototype.update_title_name = function(){
+	var rf = this;
+
+	var title_name;
+	var display_name_val = rf.form.fields.display_name.val();
+	var name_val = rf.form.fields.name.val();
+	if(display_name_val){
+		title_name = "("+display_name_val+") "+name_val;
+	} else {
+		title_name = name_val;
+	}
+
+	rf.title_div.text(title_name);
+}
+
+RuleField.prototype.update_type_fields = function(){
+	var rf = this;
+
+	var type = rf.form.fields.type.val();
+
+	console.log("update_type_fields ",rf,type);
+
+	if(type==='text'){
+
+	} else if(type==='number'){
+
+	} else if(type==='object'){
+		for(var i in rf.value.fields){
+			var field_data = rf.value.fields[i];
+
+			var inner_field = new RuleField(i, field_data, rf);
+			rf.container.append(inner_field.element);
+		}
+	}
+}
+
+RuleField.prototype.val = function(argument){
+    var rf = this;
+
+    if(arguments.length===0){
+        return rf.field.val();
+    } else {
+        return rf.field.val(argument);
+    }
+}
+
+RuleField.prototype.error = function(argument){
+    var rf = this;
+
+    return rf.form.error(argument);
+}
+
+RuleField.prototype.edit_mode = function(){
+    var rf = this;
+    
+    rf.is_edit_mode = true;
+
+    if(rf.form){
+        rf.form.edit_mode();
+    }
+}
+
+RuleField.prototype.view_mode = function(){
+    var rf = this;
+ 
+    rf.is_edit_mode = false;
+
+    if(rf.form){
+        rf.form.view_mode();
+    }
+}
+
+function RuleView(name, data, browser){
+	var rule_view = this;
+
+	rule_view.browser = browser;
+	rule_view.name = name;
+	rule_view.rule_data = data;
+
+	rule_view.element = $("<div />").addClass("rule_view");
+
+	rule_view.rule_field = new RuleField(name, rule_view.rule_data, rule_view);
+
+	rule_view.element.append(
+		rule_view.rule_field.element
+	)
+
+	rule_view.is_edit_mode = false;
+	rule_view.view_mode();
+
+	rule_view.toolbar_element = $("<div />").append(
+		rule_view.edit_button = $("<button />").addClass("mino_button").text("Edit").on('tap',function(){
+			rule_view.edit();
+		}).hide(),
+		rule_view.save_button = $("<button />").addClass("mino_button").text("Save").on('tap',function(){
+			rule_view.save();
+		}).hide(),
+		rule_view.cancel_button = $("<button />").addClass("mino_button").text("Cancel").on('tap',function(){
+			rule_view.cancel();
+		}).hide()
+	)
+
+	rule_view.edit_button.show();
+
+	browser.view_container.empty();
+	browser.view_container.append(rule_view.element);
+
+	browser.toolbar.element.empty();
+	browser.toolbar.element.append(rule_view.toolbar_element);
+	
+	// browser.address_bar.populate_path_buttons(rule_view.path);
+}
+
+RuleView.prototype.edit = function(){
+	var rule_view = this;
+
+	rule_view.edit_mode();
+
+	rule_view.edit_button.hide();
+	rule_view.cancel_button.show();
+	rule_view.save_button.show();
+}
+
+RuleView.prototype.edit_mode = function(){
+	var rule_view = this;
+
+	rule_view.rule_field.edit_mode();
+}
+
+RuleView.prototype.view_mode = function(){
+	var rule_view = this;
+
+	rule_view.rule_field.view_mode();
+}
+
+RuleView.prototype.val = function(){
+	var rule_view = this;
+
+	var value = rule_view.rule_field.val();
+
+	return value;
+}
+
+RuleView.prototype.error = function(error_data){
+	var rule_view = this;
+
+	console.log("error_data ",error_data);
+
+	rule_view.rule_field.error(error_data);
+}
+
+RuleView.prototype.save = function(){
+	var rule_view = this;
+
+	var value = rule_view.val();
+
+	console.log(value);
+
+	ajax_request({
+		"function" : "save",
+		"parameters" : {
+			"objects" : [
+				value
+			]
+		}
+	},function(err, response){
+		console.log("err ",err);
+		console.log("response ",response);
+
+		if(response.error!==undefined){
+			rule_view.error(response.invalid.parameters.invalid.objects.invalid[0]);
+		} else {
+			alert("Success?");
+		}
+	})
+
+	// rule_view.view_mode();
+
+	// rule_view.save_button.hide();
+	// rule_view.cancel_button.hide();
+	// rule_view.edit_button.show();
+}
+
+
+RuleView.prototype.cancel = function(){
+	var rule_view = this;
+
+	rule_view.view_mode();
+
+	rule_view.cancel_button.hide();
+	rule_view.save_button.hide();
+	rule_view.edit_button.show();
+
+	rule_view.error(null);
+}
+
+function LoadingView(){
+	var loading_view = this;
+
+	loading_view.element = $("<div />").addClass("loading_view").text("Loading");
+
 }
 
 function RuleCache(){
@@ -14827,7 +15462,7 @@ RuleCache.prototype.load = function(name, callback) {
 	var rc = this;
 
 	if(rc.loaded[name]){
-		callback(rc.loaded[name]);
+		callback(null, rc.loaded[name]);
 		return;
 	}
 
@@ -14948,13 +15583,6 @@ function Browser(){
 
 	browser.toolbar = new Toolbar(browser);
 
-    for(var i = 0; i<8; i++){
-        var path_button = new PathButton("Path "+i, "/Test/Path "+i, 0, null);
-        browser.address_bar.path_buttons.append(
-            path_button.element
-        )
-    }
-
 	browser.element = $("<div />")
 	.addClass("browser")
 	.append(
@@ -14962,48 +15590,7 @@ function Browser(){
 		browser.view_container = $("<div />").addClass("view_container"),
 		browser.toolbar.element
 	)
-
-	console.log(browser.toolbar.element)
-
-	var id = new ID();
-	var id_error = id.init("1234567890");
-	console.log(id_error);
-
-	var path = new Path();
-	var path_error = path.init("/TestUser/Subfolder/");
-	console.log(path_error);
-    // browser.view = new FolderView(browser, path);
-    // browser.view_container.append(browser.view.element);
-
-	var path = new Path();
-	var path_error = path.init("/TestUser/Subfolder/Item");
-	console.log(path_error);
-
-    browser.view = new ItemView(
-    	path,
-    	{
-    		"_id" : 1234,
-    		"name" : "John Smith",
-    		"path" : "/TestUser/Mocked/",
-    		"person" : {
-    			"first_name" : "John",
-    			"last_name" : "Smith"
-    		}//,
-    		// "employee": {
-    		// 	"job_title" : "Tester",
-    		// 	"start_date" : "2013-08-27"
-    		// }
-	    },
-	    browser
-    );
-    browser.view_container.append(browser.view.element);
 	
-	// browser.loadingIndicator = new LoadingIndicator();
-	// browser.loadingIndicator.cancel_press = function(){
-	// 	browser.cancelLoading();
-	// }
-	// browser.loadingIndicator.element.appendTo(browser.container);
-
 	browser.capacityElement = window;
 	browser.onRestore = function(){};
 	browser.onLoad = function(type,object){
@@ -15023,79 +15610,6 @@ Browser.prototype.isLoading = function(){
 	return browser.latestRequest!=null;
 }
 
-Browser.prototype.makeRequest = function(request,callback,hide,canCancel){
-	var browser = this;
-
-	if(hide==undefined){
-		hide = true;
-	}
-	if(canCancel==undefined){
-		canCancel = true;
-	}
-
-	var apiAddress = ajaxAddress;
-	if(browser.apiAddress!=undefined){
-		apiAddress = browser.apiAddress;
-	}
-
-	var postName = 'json';
-	if(browser.postName!=undefined){
-		postName = browser.postName;
-	}
-
-	var postData = {};
-	postData[postName] = JSON.stringify(request);
-
-	var thisRequest = $.ajax({
-		type: 'POST',
-		url: apiAddress,
-		data: postData,
-		cache: false,
-		success: function(returnedData) {
-			var returnedJSON=null;
-			try{
-				returnedJSON=JSON.parse(returnedData);
-			} catch(e){
-				alert(JSON.stringify(returnedData));
-			}
-			
-			if(doLogging){
-				console.log(returnedJSON);
-			}
-			
-			if(browser.latestRequest==thisRequest){
-				browser.finishedLoading();
-				browser.currentRequest = request;
-				browser.currentResponse = returnedJSON;
-				browser.latestRequest = null;
-
-				if(returnedJSON['Error Number']==124){
-					signedOut();
-				} else {
-					callback(returnedJSON);
-				}
-			}
-		},
-		error: function(){
-			if(browser.latestRequest == thisRequest){
-				browser.element.html("Error").show();
-			}
-		}
-	});
-	browser.latestRequest = thisRequest;
-	
-	setTimeout(function(){
-		if(browser.latestRequest == thisRequest){
-			browser.loading(hide,canCancel);
-		}
-	},loadIndicatorDelay);
-}
-
-Browser.prototype.setAddress = function(address){
-	var browser = this;
-
-}
-
 Browser.prototype.backwardPress = function(){
 	var browser = this;
 	if(browser.history[browser.historyIndex-1]!=undefined){
@@ -15113,6 +15627,73 @@ Browser.prototype.forwardPress = function(){
 	}
 }
 
+Browser.prototype.load = function(address){
+	var browser = this;
+
+	console.log(address);
+	
+	var type_and_value = Common.get_resource_type(address);
+
+	console.log(type_and_value);
+
+	var type = type_and_value[0];
+	var value = type_and_value[1];
+
+	if(type===null){
+		alert("INVALID TYPE");
+		return;
+	}
+
+	browser.view = new LoadingView();
+	browser.view_container.empty().append(browser.view.element);
+
+	var request = {
+		"function" : "get",
+		"parameters" : {
+			"addresses" : [
+				address
+			]
+		}
+	};
+
+	ajax_request(request,function(err, response){
+		console.log(err);
+
+		var object = response.objects[0];
+		console.log(object);
+		if(type==='id'){
+			console.log("ID");
+		} else if(type==='path'){
+			var path = value;
+
+			if(path.is_folder){
+				console.log("FOLDER!");
+				browser.view = new FolderView(
+			    	path,
+			    	object,
+				    browser
+			    );
+			} else {
+				console.log("ITEM!");
+				browser.view = new ItemView(
+			    	path,
+			    	object,
+				    browser
+			    );
+			}
+		} else if(type==='rule'){
+			console.log("RULE!");
+			browser.view = new RuleView(
+		    	address,
+		    	object,
+			    browser
+		    );
+		}
+		browser.view_container.empty().append(browser.view.element);
+
+	})
+}
+
 Browser.prototype.load_address = function(address){
 	var browser = this;
 
@@ -15128,138 +15709,10 @@ Browser.prototype.load_address = function(address){
 
 	browser.forceLoadAddress(address);
 }
-	
-Browser.prototype.forceLoadAddress = function(address){
-	var browser = this;
-
-	var start = 0;
-	
-	if(address.substring(0,6)=="Start:"){
-		var param = address.substring(6);
-		
-		var ampindex = param.indexOf("&");
-		
-		var start = parseInt(param.substring(0,ampindex));
-		address = param.substring(ampindex+1);
-	}
-	
-	if(address.substring(0,7)=="Search:"){
-		var param = address.substring(7);
-		
-		searchPane.search = JSON.parse(param);
-		searchPane.performSearch();
-
-		return;	
-	}
-	
-	if(address.charCodeAt(0)>48 && address.charCodeAt(0)<58){//ID (CHAR IS BETWEEN 0 and 9
-		
-		var request = {
-			"Function" : "Get",
-			"Parameters" : {
-				"Addresses" : [address]
-			}
-		};
-				
-		browser.makeRequest(request,function(returnedJSON){
-			var itemView = new ItemView(request, returnedJSON, false, browser);
-			itemView.element.appendTo(browser.element);
-			itemView.updateView();
-		});
-		return;
-	} else if(address.charCodeAt(0)==47){// FORWARD SLASH
-		if(address.charCodeAt(address.length-1)==47){
-		
-			var request = {
-				'Function' : 'Search',
-				'Parameters' : {
-					'Path' : address,
-					'Include Subfolders' : false,
-					'Starting Index' : start,
-					'Sort By' : 'Name',
-					'Sort Order' : "Ascending",
-					'Result Size' : browser.iconCapacity()
-				}
-			};
-			
-			browser.makeRequest(request,function(returnedJSON){
-				var folderView = new FolderView(request,returnedJSON,browser);
-				folderView.element.appendTo(browser.element);
-			});
-			return;
-			
-		} else {
-		
-			var request = {
-				"Function" : "Get",
-				"Parameters" : {
-					"Addresses" : [address]
-				}
-			};
-					
-			browser.makeRequest(request,function(returnedJSON){
-				var itemView = new ItemView(request, returnedJSON, false, browser);
-				itemView.element.appendTo(browser.element);
-				itemView.updateView();
-			});
-			return;
-			
-		}
-	} else if(isTypeVersionNameStructure(address)){
-		loadDisplayType(address,browser,function(typeObj){
-			console.log(typeObj);
-			var typeView = new TypeView(typeObj, false, browser);
-			typeView.element.appendTo(browser.element);
-			typeView.updateView();
-		});
-		return;
-	}
-
-	browser.hideElements();
-	browser.loadingIndicator.hide();
-
-	$(browser.element).append(
-		$("<div />")
-		.addClass("largeWarning")
-		.addClass("error")
-		.text("Invalid format for an address.")
-	);
-}
 
 Browser.prototype.finishedLoading = function(){
 	var browser = this;
 	browser.loadingIndicator.hide()
-}
-
-Browser.prototype.cancelLoading = function(){
-	var browser = this;
-	browser.latestRequest = null;
-	browser.element.show();	
-	browser.loadingIndicator.hide();
-
-	browser.onRestore();
-}
-
-Browser.prototype.loading = function(hide, canCancel){
-	var browser = this;
-
-	browser.loadingIndicator.show();
-
-		if(canCancel==true){
-			$(browser.loadingIndicator).css("width","160px").css("margin-left","-80px");
-			$(browser.loadingIndicator).children("button").show();
-		} else {
-			$(browser.loadingIndicator).css("width","100px").css("margin-left","-50px");
-			$(browser.loadingIndicator).children("button").hide();	
-		}
-		if(hide==true){
-			browser.hideElements();
-		}
-}
-
-Browser.prototype.hideElements = function(){
-	var browser = this;
-	console.log("hideElements");
 }
 
 Browser.prototype.forward = function(){
@@ -15274,13 +15727,6 @@ Browser.prototype.back = function(){
 	
 }
 
-
-
-
-
-function isFolderPath(address){
-	return address.charAt(address.length-1)=="/";
-}
 
 Browser.prototype.iconCapacity = function(element,verticalPadding){
 	var browser = this;
@@ -15316,7 +15762,7 @@ Browser.prototype.iconCapacity = function(element,verticalPadding){
 
 extend(BrowserPage, Page);
 
-function BrowserPage(parameters, url) {
+function BrowserPage(req) {
     var page = this;
 
     BrowserPage.superConstructor.call(this);
@@ -15328,14 +15774,18 @@ function BrowserPage(parameters, url) {
     .append(
         page.browser.element
     )
+
+    page.new_url(req);
 }
 Site.add_url("/browser/", BrowserPage);
 Site.add_url("/browser/*", BrowserPage);
 
-BrowserPage.prototype.new_url = function(parameters, url, wildcard){
+BrowserPage.prototype.new_url = function(req){
     var page = this;
 
-    
+    if(req.params['*']){
+        page.browser.load(req.params['*']);
+    }
 }
 
 BrowserPage.prototype.get_title = function() {

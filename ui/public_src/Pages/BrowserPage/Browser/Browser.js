@@ -17,13 +17,6 @@ function Browser(){
 
 	browser.toolbar = new Toolbar(browser);
 
-    for(var i = 0; i<8; i++){
-        var path_button = new PathButton("Path "+i, "/Test/Path "+i, 0, null);
-        browser.address_bar.path_buttons.append(
-            path_button.element
-        )
-    }
-
 	browser.element = $("<div />")
 	.addClass("browser")
 	.append(
@@ -31,48 +24,7 @@ function Browser(){
 		browser.view_container = $("<div />").addClass("view_container"),
 		browser.toolbar.element
 	)
-
-	console.log(browser.toolbar.element)
-
-	var id = new ID();
-	var id_error = id.init("1234567890");
-	console.log(id_error);
-
-	var path = new Path();
-	var path_error = path.init("/TestUser/Subfolder/");
-	console.log(path_error);
-    // browser.view = new FolderView(browser, path);
-    // browser.view_container.append(browser.view.element);
-
-	var path = new Path();
-	var path_error = path.init("/TestUser/Subfolder/Item");
-	console.log(path_error);
-
-    browser.view = new ItemView(
-    	path,
-    	{
-    		"_id" : 1234,
-    		"name" : "John Smith",
-    		"path" : "/TestUser/Mocked/",
-    		"person" : {
-    			"first_name" : "John",
-    			"last_name" : "Smith"
-    		}//,
-    		// "employee": {
-    		// 	"job_title" : "Tester",
-    		// 	"start_date" : "2013-08-27"
-    		// }
-	    },
-	    browser
-    );
-    browser.view_container.append(browser.view.element);
 	
-	// browser.loadingIndicator = new LoadingIndicator();
-	// browser.loadingIndicator.cancel_press = function(){
-	// 	browser.cancelLoading();
-	// }
-	// browser.loadingIndicator.element.appendTo(browser.container);
-
 	browser.capacityElement = window;
 	browser.onRestore = function(){};
 	browser.onLoad = function(type,object){
@@ -92,79 +44,6 @@ Browser.prototype.isLoading = function(){
 	return browser.latestRequest!=null;
 }
 
-Browser.prototype.makeRequest = function(request,callback,hide,canCancel){
-	var browser = this;
-
-	if(hide==undefined){
-		hide = true;
-	}
-	if(canCancel==undefined){
-		canCancel = true;
-	}
-
-	var apiAddress = ajaxAddress;
-	if(browser.apiAddress!=undefined){
-		apiAddress = browser.apiAddress;
-	}
-
-	var postName = 'json';
-	if(browser.postName!=undefined){
-		postName = browser.postName;
-	}
-
-	var postData = {};
-	postData[postName] = JSON.stringify(request);
-
-	var thisRequest = $.ajax({
-		type: 'POST',
-		url: apiAddress,
-		data: postData,
-		cache: false,
-		success: function(returnedData) {
-			var returnedJSON=null;
-			try{
-				returnedJSON=JSON.parse(returnedData);
-			} catch(e){
-				alert(JSON.stringify(returnedData));
-			}
-			
-			if(doLogging){
-				console.log(returnedJSON);
-			}
-			
-			if(browser.latestRequest==thisRequest){
-				browser.finishedLoading();
-				browser.currentRequest = request;
-				browser.currentResponse = returnedJSON;
-				browser.latestRequest = null;
-
-				if(returnedJSON['Error Number']==124){
-					signedOut();
-				} else {
-					callback(returnedJSON);
-				}
-			}
-		},
-		error: function(){
-			if(browser.latestRequest == thisRequest){
-				browser.element.html("Error").show();
-			}
-		}
-	});
-	browser.latestRequest = thisRequest;
-	
-	setTimeout(function(){
-		if(browser.latestRequest == thisRequest){
-			browser.loading(hide,canCancel);
-		}
-	},loadIndicatorDelay);
-}
-
-Browser.prototype.setAddress = function(address){
-	var browser = this;
-
-}
-
 Browser.prototype.backwardPress = function(){
 	var browser = this;
 	if(browser.history[browser.historyIndex-1]!=undefined){
@@ -182,6 +61,73 @@ Browser.prototype.forwardPress = function(){
 	}
 }
 
+Browser.prototype.load = function(address){
+	var browser = this;
+
+	console.log(address);
+	
+	var type_and_value = Common.get_resource_type(address);
+
+	console.log(type_and_value);
+
+	var type = type_and_value[0];
+	var value = type_and_value[1];
+
+	if(type===null){
+		alert("INVALID TYPE");
+		return;
+	}
+
+	browser.view = new LoadingView();
+	browser.view_container.empty().append(browser.view.element);
+
+	var request = {
+		"function" : "get",
+		"parameters" : {
+			"addresses" : [
+				address
+			]
+		}
+	};
+
+	ajax_request(request,function(err, response){
+		console.log(err);
+
+		var object = response.objects[0];
+		console.log(object);
+		if(type==='id'){
+			console.log("ID");
+		} else if(type==='path'){
+			var path = value;
+
+			if(path.is_folder){
+				console.log("FOLDER!");
+				browser.view = new FolderView(
+			    	path,
+			    	object,
+				    browser
+			    );
+			} else {
+				console.log("ITEM!");
+				browser.view = new ItemView(
+			    	path,
+			    	object,
+				    browser
+			    );
+			}
+		} else if(type==='rule'){
+			console.log("RULE!");
+			browser.view = new RuleView(
+		    	address,
+		    	object,
+			    browser
+		    );
+		}
+		browser.view_container.empty().append(browser.view.element);
+
+	})
+}
+
 Browser.prototype.load_address = function(address){
 	var browser = this;
 
@@ -197,138 +143,10 @@ Browser.prototype.load_address = function(address){
 
 	browser.forceLoadAddress(address);
 }
-	
-Browser.prototype.forceLoadAddress = function(address){
-	var browser = this;
-
-	var start = 0;
-	
-	if(address.substring(0,6)=="Start:"){
-		var param = address.substring(6);
-		
-		var ampindex = param.indexOf("&");
-		
-		var start = parseInt(param.substring(0,ampindex));
-		address = param.substring(ampindex+1);
-	}
-	
-	if(address.substring(0,7)=="Search:"){
-		var param = address.substring(7);
-		
-		searchPane.search = JSON.parse(param);
-		searchPane.performSearch();
-
-		return;	
-	}
-	
-	if(address.charCodeAt(0)>48 && address.charCodeAt(0)<58){//ID (CHAR IS BETWEEN 0 and 9
-		
-		var request = {
-			"Function" : "Get",
-			"Parameters" : {
-				"Addresses" : [address]
-			}
-		};
-				
-		browser.makeRequest(request,function(returnedJSON){
-			var itemView = new ItemView(request, returnedJSON, false, browser);
-			itemView.element.appendTo(browser.element);
-			itemView.updateView();
-		});
-		return;
-	} else if(address.charCodeAt(0)==47){// FORWARD SLASH
-		if(address.charCodeAt(address.length-1)==47){
-		
-			var request = {
-				'Function' : 'Search',
-				'Parameters' : {
-					'Path' : address,
-					'Include Subfolders' : false,
-					'Starting Index' : start,
-					'Sort By' : 'Name',
-					'Sort Order' : "Ascending",
-					'Result Size' : browser.iconCapacity()
-				}
-			};
-			
-			browser.makeRequest(request,function(returnedJSON){
-				var folderView = new FolderView(request,returnedJSON,browser);
-				folderView.element.appendTo(browser.element);
-			});
-			return;
-			
-		} else {
-		
-			var request = {
-				"Function" : "Get",
-				"Parameters" : {
-					"Addresses" : [address]
-				}
-			};
-					
-			browser.makeRequest(request,function(returnedJSON){
-				var itemView = new ItemView(request, returnedJSON, false, browser);
-				itemView.element.appendTo(browser.element);
-				itemView.updateView();
-			});
-			return;
-			
-		}
-	} else if(isTypeVersionNameStructure(address)){
-		loadDisplayType(address,browser,function(typeObj){
-			console.log(typeObj);
-			var typeView = new TypeView(typeObj, false, browser);
-			typeView.element.appendTo(browser.element);
-			typeView.updateView();
-		});
-		return;
-	}
-
-	browser.hideElements();
-	browser.loadingIndicator.hide();
-
-	$(browser.element).append(
-		$("<div />")
-		.addClass("largeWarning")
-		.addClass("error")
-		.text("Invalid format for an address.")
-	);
-}
 
 Browser.prototype.finishedLoading = function(){
 	var browser = this;
 	browser.loadingIndicator.hide()
-}
-
-Browser.prototype.cancelLoading = function(){
-	var browser = this;
-	browser.latestRequest = null;
-	browser.element.show();	
-	browser.loadingIndicator.hide();
-
-	browser.onRestore();
-}
-
-Browser.prototype.loading = function(hide, canCancel){
-	var browser = this;
-
-	browser.loadingIndicator.show();
-
-		if(canCancel==true){
-			$(browser.loadingIndicator).css("width","160px").css("margin-left","-80px");
-			$(browser.loadingIndicator).children("button").show();
-		} else {
-			$(browser.loadingIndicator).css("width","100px").css("margin-left","-50px");
-			$(browser.loadingIndicator).children("button").hide();	
-		}
-		if(hide==true){
-			browser.hideElements();
-		}
-}
-
-Browser.prototype.hideElements = function(){
-	var browser = this;
-	console.log("hideElements");
 }
 
 Browser.prototype.forward = function(){
@@ -343,13 +161,6 @@ Browser.prototype.back = function(){
 	
 }
 
-
-
-
-
-function isFolderPath(address){
-	return address.charAt(address.length-1)=="/";
-}
 
 Browser.prototype.iconCapacity = function(element,verticalPadding){
 	var browser = this;

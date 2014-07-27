@@ -6,6 +6,7 @@ var DataStore = require('./datastore');
 
 var GetHandler = require('./handlers/GetHandler/GetHandler.js');
 var SaveHandler = require('./handlers/SaveHandler/SaveHandler.js');
+var SearchHandler = require('./handlers/SearchHandler/SearchHandler.js');
 var SaveRuleHandler = require('./handlers/SaveRuleHandler/SaveRuleHandler.js');
 
 function API(minodb, db_address){
@@ -37,7 +38,7 @@ API.prototype.call = function(user, request, callback){
 
     var api_val = new FieldVal(request);
 
-    var function_name = api_val.get("function", bval.string(true), bval.one_of(["get","save","save_rule"]));
+    var function_name = api_val.get("function", bval.string(true), bval.one_of(["get","save","save_rule","search"]));
     var parameters = api_val.get("parameters", bval.object(true));
 
     var handler = null;
@@ -47,6 +48,8 @@ API.prototype.call = function(user, request, callback){
         handler = SaveHandler;
     } else if (function_name === "save_rule") {
         handler = SaveRuleHandler;
+    } else if (function_name === "search") {
+        handler = SearchHandler;
     }
 
     var error = api_val.end();
@@ -56,8 +59,7 @@ API.prototype.call = function(user, request, callback){
     }
 
     if (handler != null) {
-        logger.log(parameters);
-        new handler(api, user, parameters, function(error, response) {
+        var handler_callback = function(error, response) {
             logger.log(JSON.stringify(error, null, 4));
             logger.log(JSON.stringify(response, null, 4));
             if (error != null) {
@@ -65,7 +67,8 @@ API.prototype.call = function(user, request, callback){
             } else {
                 callback(null, response);
             }
-        })
+        };
+        new handler(api, user, parameters, handler_callback)
     }
 }
 

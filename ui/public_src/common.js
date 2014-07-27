@@ -6,6 +6,9 @@ function isEmptyObject(object){
 }
 
 function ajax_request(params, callback){
+    console.trace();
+    var id = Math.random();
+    console.log("ajax_request",id, params);
 	$.ajax({
         type: "POST",
         url: ui_path+"ajax/",
@@ -13,7 +16,7 @@ function ajax_request(params, callback){
         dataType: "json",
         data: JSON.stringify(params),
         success: function(response) {
-            console.log(response);
+            console.log("ajax_response",id,response);
             callback(null, response);
         },
         error: function(err, response) {
