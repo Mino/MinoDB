@@ -13,7 +13,7 @@ function SaveObject(json, handler, index){
 	so.index = index;
 	logger.log(so.index);
 
-	so.waiting_for_rules = {};
+	so.waiting_for_types = {};
 	so.type_keys = {};
 
 	so.validator = new Validator(json);
@@ -67,7 +67,7 @@ function SaveObject(json, handler, index){
 	for(var i = 0; i < unrecognized.length; i++){
 		var key = unrecognized[i];
 		so.type_keys[key] = so.json[key];
-		so.handler.request_rule(key, so);
+		so.handler.request_type(key, so);
 	}
 }
 
@@ -88,12 +88,12 @@ SaveObject.prototype.create_saving_json = function(){
 	}
 }
 
-SaveObject.prototype.got_rule = function(name, error, rule){
+SaveObject.prototype.got_type = function(name, error, type){
 	var so = this;
 
 	logger.log(error);
-	logger.log(rule);
-	logger.log("rule.name: ",name);
+	logger.log(type);
+	logger.log("type.name: ",name);
 
 	logger.log(so.validator);
 
@@ -101,7 +101,7 @@ SaveObject.prototype.got_rule = function(name, error, rule){
 
 	var value = so.json[name];
 
-	var error = rule.validate(value);
+	var error = type.validate(value);
 
 	logger.log(error);
 	if(error!=null){

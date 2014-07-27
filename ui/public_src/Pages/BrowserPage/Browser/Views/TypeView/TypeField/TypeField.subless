@@ -1,11 +1,11 @@
-.rule_field{
-	border: 1px solid @rule_field_border;
+.type_field{
+	border: 1px solid @type_field_border;
 	background-color: white;
 
 	margin-bottom: 10px;
 
 	.title{
-		background-color: @rule_field_title;
+		background-color: @type_field_title;
 		.bold;
 		color: white;
 		padding: 5px;

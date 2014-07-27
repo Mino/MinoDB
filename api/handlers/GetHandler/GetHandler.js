@@ -19,7 +19,7 @@ function GetHandler(api, user, parameters, callback) {
     gh.ids = [];
     gh.id_versions = [];
     gh.paths = [];
-    gh.rules = [];
+    gh.types = [];
 
     var validator = new FieldVal(parameters);
 
@@ -40,8 +40,8 @@ function GetHandler(api, user, parameters, callback) {
         var address_type = address_details[0];
         var address_value = address_details[1];
 
-        if(address_type==="rule"){
-            gh.rules.push([address_value, index]);
+        if(address_type==="type"){
+            gh.types.push([address_value, index]);
         } else if(address_type==="path"){
             gh.paths.push([address_value, index]);
         } else if(address_type==="id"){
@@ -63,7 +63,7 @@ function GetHandler(api, user, parameters, callback) {
         return;
     }
 
-    logger.log(gh.rules);
+    logger.log(gh.types);
     logger.log(gh.ids);
     logger.log(gh.id_versions);
     logger.log(gh.paths);
@@ -71,7 +71,7 @@ function GetHandler(api, user, parameters, callback) {
     gh.waiting_for = gh.ids.length +
         gh.id_versions.length +
         gh.paths.length +
-        gh.rules.length;
+        gh.types.length;
 
     logger.log("gh.waiting_for ", gh.waiting_for);
 
@@ -92,10 +92,10 @@ function GetHandler(api, user, parameters, callback) {
         gh.get_id(id_object);
     }
 
-    for (var i = 0; i < gh.rules.length; i++) {
-        var rule_object = gh.rules[i];
+    for (var i = 0; i < gh.types.length; i++) {
+        var type_object = gh.types[i];
 
-        gh.get_rule(rule_object);
+        gh.get_type(type_object);
     }
 }
 
@@ -140,14 +140,14 @@ GetHandler.prototype.get_path = function(path_object){
     })
 }
 
-GetHandler.prototype.get_rule = function(rule_object){
+GetHandler.prototype.get_type = function(type_object){
     var gh = this;
 
-    var rule_name = rule_object[0];
-    var response_index = rule_object[1];
+    var type_name = type_object[0];
+    var response_index = type_object[1];
     
-    gh.db.rule_collection.findOne({
-        "name": rule_name
+    gh.db.type_collection.findOne({
+        "name": type_name
     }, function(err, res){
         logger.log(err);
         logger.log(res);

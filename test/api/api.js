@@ -93,15 +93,15 @@ describe('MinoDB API', function() {
     //     });
     // });
 
-    describe('When I make a save a simple rule', function() {
+    describe('When I make a save a simple type', function() {
         it('should return a 200 OK', function(done) {
             db.platform_request("/", {
-                "function": "save_rule",
+                "function": "save_type",
                 "parameters": {
-                    "rule" : {
+                    "type" : {
                         name: "person",
                         display_name: "Person",
-                        type: "nested",
+                        type: "object",
                         fields:{
                             "first_name" : {
                                 display_name: "First Name",

@@ -13587,11 +13587,11 @@ Common.get_resource_type = function(this_address){
         var index_of_slash = this_address.indexOf('/');
 
         if (index_of_slash == -1) {
-            //Could be a number or rule
+            //Could be a number or type
             var numeric_value = parseFloat(this_address);
             var is_integer = numeric_value % 1 == 0;
             if (isNaN(numeric_value)){
-                return ["rule",this_address];
+                return ["type",this_address];
             } else if(is_integer && numeric_value > 1) {
                 return ["id",numeric_value];
             }
@@ -14956,11 +14956,11 @@ function ItemSection(name, value, item_view){
     // console.log(value);
     // console.log(item_view.browser);
 
-	item_view.browser.rule_cache.load(name, function(err, data){
+	item_view.browser.type_cache.load(name, function(err, data){
   //       console.log("ITEM SECTION");
 		// console.log(err);
 		// console.log(data);
-        section.populate_rule(data);
+        section.populate_type(data);
         section.populate(value);
 	})
 }
@@ -15010,16 +15010,16 @@ ItemSection.prototype.populate = function(data){
     }
 }
 
-ItemSection.prototype.populate_rule = function(rule){
+ItemSection.prototype.populate_type = function(type){
 	var section = this;
 
-	section.rule = rule;
+	section.type = type;
 
     // console.trace();
-    // console.log(rule);
+    // console.log(type);
 
     section.vr = new ValidationRule();
-	console.log(section.vr.init(rule));
+	console.log(section.vr.init(type));
 
 
 
@@ -15032,7 +15032,7 @@ ItemSection.prototype.populate_rule = function(rule){
 	// 	section.field.element
 	// )
 
-	// section.title_div.text(rule.display_name || rule.name);
+	// section.title_div.text(type.display_name || type.name);
 
  //    if(section.is_edit_mode){
  //        section.edit_mode();
@@ -15207,14 +15207,14 @@ ItemView.prototype.cancel = function(){
 
 	item_view.error(null);
 }
-function RuleField(name, value, parent){
+function TypeField(name, value, parent){
 	var rf = this;
 
 	rf.name = name;
 	rf.parent = parent;
 	rf.value = value;
 
-	rf.element = $("<div />").addClass("rule_field").append(
+	rf.element = $("<div />").addClass("type_field").append(
 		rf.title_div = $("<div />").addClass("title"),
 		rf.container = $("<div />").addClass("container")
 	)
@@ -15248,7 +15248,7 @@ function RuleField(name, value, parent){
     rf.update_type_fields();
 }
 
-RuleField.prototype.update_title_name = function(){
+TypeField.prototype.update_title_name = function(){
 	var rf = this;
 
 	var title_name;
@@ -15263,7 +15263,7 @@ RuleField.prototype.update_title_name = function(){
 	rf.title_div.text(title_name);
 }
 
-RuleField.prototype.update_type_fields = function(){
+TypeField.prototype.update_type_fields = function(){
 	var rf = this;
 
 	var type = rf.form.fields.type.val();
@@ -15278,13 +15278,13 @@ RuleField.prototype.update_type_fields = function(){
 		for(var i in rf.value.fields){
 			var field_data = rf.value.fields[i];
 
-			var inner_field = new RuleField(i, field_data, rf);
+			var inner_field = new TypeField(i, field_data, rf);
 			rf.container.append(inner_field.element);
 		}
 	}
 }
 
-RuleField.prototype.val = function(argument){
+TypeField.prototype.val = function(argument){
     var rf = this;
 
     if(arguments.length===0){
@@ -15294,13 +15294,13 @@ RuleField.prototype.val = function(argument){
     }
 }
 
-RuleField.prototype.error = function(argument){
+TypeField.prototype.error = function(argument){
     var rf = this;
 
     return rf.form.error(argument);
 }
 
-RuleField.prototype.edit_mode = function(){
+TypeField.prototype.edit_mode = function(){
     var rf = this;
     
     rf.is_edit_mode = true;
@@ -15310,7 +15310,7 @@ RuleField.prototype.edit_mode = function(){
     }
 }
 
-RuleField.prototype.view_mode = function(){
+TypeField.prototype.view_mode = function(){
     var rf = this;
  
     rf.is_edit_mode = false;
@@ -15320,89 +15320,89 @@ RuleField.prototype.view_mode = function(){
     }
 }
 
-function RuleView(name, data, browser){
-	var rule_view = this;
+function TypeView(name, data, browser){
+	var type_view = this;
 
-	rule_view.browser = browser;
-	rule_view.name = name;
-	rule_view.rule_data = data;
+	type_view.browser = browser;
+	type_view.name = name;
+	type_view.type_data = data;
 
-	rule_view.element = $("<div />").addClass("rule_view");
+	type_view.element = $("<div />").addClass("type_view");
 
-	rule_view.rule_field = new RuleField(name, rule_view.rule_data, rule_view);
+	type_view.type_field = new TypeField(name, type_view.type_data, type_view);
 
-	rule_view.element.append(
-		rule_view.rule_field.element
+	type_view.element.append(
+		type_view.type_field.element
 	)
 
-	rule_view.is_edit_mode = false;
-	rule_view.view_mode();
+	type_view.is_edit_mode = false;
+	type_view.view_mode();
 
-	rule_view.toolbar_element = $("<div />").append(
-		rule_view.edit_button = $("<button />").addClass("mino_button").text("Edit").on('tap',function(){
-			rule_view.edit();
+	type_view.toolbar_element = $("<div />").append(
+		type_view.edit_button = $("<button />").addClass("mino_button").text("Edit").on('tap',function(){
+			type_view.edit();
 		}).hide(),
-		rule_view.save_button = $("<button />").addClass("mino_button").text("Save").on('tap',function(){
-			rule_view.save();
+		type_view.save_button = $("<button />").addClass("mino_button").text("Save").on('tap',function(){
+			type_view.save();
 		}).hide(),
-		rule_view.cancel_button = $("<button />").addClass("mino_button").text("Cancel").on('tap',function(){
-			rule_view.cancel();
+		type_view.cancel_button = $("<button />").addClass("mino_button").text("Cancel").on('tap',function(){
+			type_view.cancel();
 		}).hide()
 	)
 
-	rule_view.edit_button.show();
+	type_view.edit_button.show();
 
 	browser.view_container.empty();
-	browser.view_container.append(rule_view.element);
+	browser.view_container.append(type_view.element);
 
 	browser.toolbar.element.empty();
-	browser.toolbar.element.append(rule_view.toolbar_element);
+	browser.toolbar.element.append(type_view.toolbar_element);
 	
-	// browser.address_bar.populate_path_buttons(rule_view.path);
+	// browser.address_bar.populate_path_buttons(type_view.path);
 }
 
-RuleView.prototype.edit = function(){
-	var rule_view = this;
+TypeView.prototype.edit = function(){
+	var type_view = this;
 
-	rule_view.edit_mode();
+	type_view.edit_mode();
 
-	rule_view.edit_button.hide();
-	rule_view.cancel_button.show();
-	rule_view.save_button.show();
+	type_view.edit_button.hide();
+	type_view.cancel_button.show();
+	type_view.save_button.show();
 }
 
-RuleView.prototype.edit_mode = function(){
-	var rule_view = this;
+TypeView.prototype.edit_mode = function(){
+	var type_view = this;
 
-	rule_view.rule_field.edit_mode();
+	type_view.type_field.edit_mode();
 }
 
-RuleView.prototype.view_mode = function(){
-	var rule_view = this;
+TypeView.prototype.view_mode = function(){
+	var type_view = this;
 
-	rule_view.rule_field.view_mode();
+	type_view.type_field.view_mode();
 }
 
-RuleView.prototype.val = function(){
-	var rule_view = this;
+TypeView.prototype.val = function(){
+	var type_view = this;
 
-	var value = rule_view.rule_field.val();
+	var value = type_view.type_field.val();
 
 	return value;
 }
 
-RuleView.prototype.error = function(error_data){
-	var rule_view = this;
+TypeView.prototype.error = function(error_data){
+	var type_view = this;
 
 	console.log("error_data ",error_data);
 
-	rule_view.rule_field.error(error_data);
+	type_view.type_field.error(error_data);
 }
 
-RuleView.prototype.save = function(){
-	var rule_view = this;
+TypeView.prototype.save = function(){
+	var type_view = this;
 
-	var value = rule_view.val();
+	var value = type_view.val();
 
 	console.log(value);
 
@@ -15418,30 +15418,30 @@ RuleView.prototype.save = function(){
 		console.log("response ",response);
 
 		if(response.error!==undefined){
-			rule_view.error(response.invalid.parameters.invalid.objects.invalid[0]);
+			type_view.error(response.invalid.parameters.invalid.objects.invalid[0]);
 		} else {
 			alert("Success?");
 		}
 	})
 
-	// rule_view.view_mode();
+	// type_view.view_mode();
 
-	// rule_view.save_button.hide();
-	// rule_view.cancel_button.hide();
-	// rule_view.edit_button.show();
+	// type_view.save_button.hide();
+	// type_view.cancel_button.hide();
+	// type_view.edit_button.show();
 }
 
 
-RuleView.prototype.cancel = function(){
-	var rule_view = this;
+TypeView.prototype.cancel = function(){
+	var type_view = this;
 
-	rule_view.view_mode();
+	type_view.view_mode();
 
-	rule_view.cancel_button.hide();
-	rule_view.save_button.hide();
-	rule_view.edit_button.show();
+	type_view.cancel_button.hide();
+	type_view.save_button.hide();
+	type_view.edit_button.show();
 
-	rule_view.error(null);
+	type_view.error(null);
 }
 
 function LoadingView(){
@@ -15451,14 +15451,14 @@ function LoadingView(){
 
 }
 
-function RuleCache(){
+function TypeCache(){
 	var rc = this;
 
 	rc.loading = {};
 	rc.loaded = {};
 }
 
-RuleCache.prototype.load = function(name, callback) {
+TypeCache.prototype.load = function(name, callback) {
 	var rc = this;
 
 	if(rc.loaded[name]){
@@ -15485,16 +15485,16 @@ RuleCache.prototype.load = function(name, callback) {
 	ajax_request(request,function(err, response){
 		console.log(err);
 
-		var rule = response.objects[0];
-		if(rule){
-			rc.loaded[name] = rule;
+		var type = response.objects[0];
+		if(type){
+			rc.loaded[name] = type;
 		}
 
 		var callbacks = rc.loading[name];
 		for(var i = 0; i < callbacks.length; i++){
 			var callback = callbacks[i];
 
-			callback(null,rule);
+			callback(null,type);
 		}
 	})
 };
@@ -15577,7 +15577,7 @@ function Browser(){
 	browser.history = {};
 	browser.historyIndex = -1;
 
-	browser.rule_cache = new RuleCache();
+	browser.type_cache = new TypeCache();
 
 	browser.address_bar = new AddressBar(browser);
 
@@ -15681,9 +15681,9 @@ Browser.prototype.load = function(address){
 				    browser
 			    );
 			}
-		} else if(type==='rule'){
+		} else if(type==='type'){
 			console.log("RULE!");
-			browser.view = new RuleView(
+			browser.view = new TypeView(
 		    	address,
 		    	object,
 			    browser

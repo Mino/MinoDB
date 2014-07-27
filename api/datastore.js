@@ -26,7 +26,7 @@ DataStore.prototype.connect = function(callback) {
 
 	    ds.object_collection = mongo.collection('objects');
 	    ds.config_collection = mongo.collection('config');
-	    ds.rule_collection = mongo.collection('rules');
+	    ds.type_collection = mongo.collection('types');
 	    ds.users_collection = mongo.collection('users');
 
 	    ds.object_collection.ensureIndex( { full_path: 1 }, { unique: true }, function(err,res){
@@ -44,7 +44,7 @@ DataStore.prototype.connect = function(callback) {
 	    	logger.log(res);
 	    })
 
-	    ds.rule_collection.ensureIndex( { name: 1 }, { unique: true }, function(err,res){
+	    ds.type_collection.ensureIndex( { name: 1 }, { unique: true }, function(err,res){
 	    	logger.log(err);
 	    	logger.log(res);
 	    })

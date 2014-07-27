@@ -15,11 +15,11 @@ function ItemSection(name, value, item_view){
     // console.log(value);
     // console.log(item_view.browser);
 
-	item_view.browser.rule_cache.load(name, function(err, data){
+	item_view.browser.type_cache.load(name, function(err, data){
   //       console.log("ITEM SECTION");
 		// console.log(err);
 		// console.log(data);
-        section.populate_rule(data);
+        section.populate_type(data);
         section.populate(value);
 	})
 }
@@ -69,16 +69,16 @@ ItemSection.prototype.populate = function(data){
     }
 }
 
-ItemSection.prototype.populate_rule = function(rule){
+ItemSection.prototype.populate_type = function(type){
 	var section = this;
 
-	section.rule = rule;
+	section.type = type;
 
     // console.trace();
-    // console.log(rule);
+    // console.log(type);
 
     section.vr = new ValidationRule();
-	console.log(section.vr.init(rule));
+	console.log(section.vr.init(type));
 
 
 
@@ -91,7 +91,7 @@ ItemSection.prototype.populate_rule = function(rule){
 	// 	section.field.element
 	// )
 
-	// section.title_div.text(rule.display_name || rule.name);
+	// section.title_div.text(type.display_name || type.name);
 
  //    if(section.is_edit_mode){
  //        section.edit_mode();

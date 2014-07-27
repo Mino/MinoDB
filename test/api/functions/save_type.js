@@ -1,16 +1,16 @@
 var assert = require("assert");
 var logger = require('tracer').console();
-var save_rule = require('../../../api/functions/save_rule')
+var save_type = require('../../../api/functions/save_type')
 
-describe('save_rule', function() {
+describe('save_type', function() {
 
     describe('Construction', function() {
 
-        it('should save a basic rule', function(done) {
+        it('should save a basic type', function(done) {
             var user = {
                 username: "TestUser"
             }
-            var rule = {
+            var type = {
 				name: "person",
 				display_name: "Person",
 		        type: "object",
@@ -38,8 +38,8 @@ describe('save_rule', function() {
 
             //Connect the database
             require('../../../server/database').connect(function(){
-                save_rule(user,{
-                    rule: rule
+                save_type(user,{
+                    type: type
                 },function(output){
                     logger.log(JSON.stringify(output, null, 4))
                     assert.equal(output.error,undefined);

@@ -31,11 +31,11 @@ Common.get_resource_type = function(this_address){
         var index_of_slash = this_address.indexOf('/');
 
         if (index_of_slash == -1) {
-            //Could be a number or rule
+            //Could be a number or type
             var numeric_value = parseFloat(this_address);
             var is_integer = numeric_value % 1 == 0;
             if (isNaN(numeric_value)){
-                return ["rule",this_address];
+                return ["type",this_address];
             } else if(is_integer && numeric_value > 1) {
                 return ["id",numeric_value];
             }

@@ -1,7 +1,7 @@
 @import("AddressBar/AddressBar.js");
 @import("Views/Views.js");
 
-@import("RuleCache.js");
+@import("TypeCache.js");
 @import("MainBrowser/MainBrowser.js");
 @import("Toolbar/Toolbar.js");
 
@@ -11,7 +11,7 @@ function Browser(){
 	browser.history = {};
 	browser.historyIndex = -1;
 
-	browser.rule_cache = new RuleCache();
+	browser.type_cache = new TypeCache();
 
 	browser.address_bar = new AddressBar(browser);
 
@@ -115,9 +115,9 @@ Browser.prototype.load = function(address){
 				    browser
 			    );
 			}
-		} else if(type==='rule'){
+		} else if(type==='type'){
 			console.log("RULE!");
-			browser.view = new RuleView(
+			browser.view = new TypeView(
 		    	address,
 		    	object,
 			    browser

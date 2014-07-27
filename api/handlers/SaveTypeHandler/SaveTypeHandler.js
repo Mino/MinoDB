@@ -5,7 +5,7 @@ var Path = require('../../../common_classes/Path')
 var ValidationRule = require('fieldval-rules');
 var logger = require('tracer').console();
 
-function SaveRuleHandler(api, user, parameters, callback){
+function SaveTypeHandler(api, user, parameters, callback){
     var sh = this;
 
     sh.api = api;
@@ -14,13 +14,13 @@ function SaveRuleHandler(api, user, parameters, callback){
 
     sh.validator = new Validator(parameters);
 
-    var rule = sh.validator.get("rule", bval.object(true));
-    if(rule){
+    var type = sh.validator.get("type", bval.object(true));
+    if(type){
 
-        sh.rule = new ValidationRule();
-        var rule_error = sh.rule.init(rule);
-        if(rule_error){
-            sh.validator.invalid("rule",rule_error);
+        sh.type = new ValidationRule();
+        var type_error = sh.type.init(type);
+        if(type_error){
+            sh.validator.invalid("type",type_error);
         }
     }
 
@@ -32,16 +32,16 @@ function SaveRuleHandler(api, user, parameters, callback){
 
     var db = api.ds;
 
-    var name = rule.name;
+    var name = type.name;
 
-    logger.log(rule);
+    logger.log(type);
     logger.log("name ",name);
 
-    db.rule_collection.update(
+    db.type_collection.update(
         {
             name: name
         },
-        rule,
+        type,
         {
             upsert: true
         },
@@ -59,4 +59,4 @@ function SaveRuleHandler(api, user, parameters, callback){
     return;
 }
 
-module.exports = SaveRuleHandler;
+module.exports = SaveTypeHandler;

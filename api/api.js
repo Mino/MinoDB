@@ -7,7 +7,7 @@ var DataStore = require('./datastore');
 var GetHandler = require('./handlers/GetHandler/GetHandler.js');
 var SaveHandler = require('./handlers/SaveHandler/SaveHandler.js');
 var SearchHandler = require('./handlers/SearchHandler/SearchHandler.js');
-var SaveRuleHandler = require('./handlers/SaveRuleHandler/SaveRuleHandler.js');
+var SaveTypeHandler = require('./handlers/SaveTypeHandler/SaveTypeHandler.js');
 
 function API(minodb, db_address){
 	var api = this;
@@ -38,7 +38,7 @@ API.prototype.call = function(user, request, callback){
 
     var api_val = new FieldVal(request);
 
-    var function_name = api_val.get("function", bval.string(true), bval.one_of(["get","save","save_rule","search"]));
+    var function_name = api_val.get("function", bval.string(true), bval.one_of(["get","save","save_type","search"]));
     var parameters = api_val.get("parameters", bval.object(true));
 
     var handler = null;
@@ -46,8 +46,8 @@ API.prototype.call = function(user, request, callback){
         handler = GetHandler;
     } else if (function_name === "save") {
         handler = SaveHandler;
-    } else if (function_name === "save_rule") {
-        handler = SaveRuleHandler;
+    } else if (function_name === "save_type") {
+        handler = SaveTypeHandler;
     } else if (function_name === "search") {
         handler = SearchHandler;
     }

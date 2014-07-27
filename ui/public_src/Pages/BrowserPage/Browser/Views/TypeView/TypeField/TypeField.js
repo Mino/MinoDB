@@ -1,11 +1,11 @@
-function RuleField(name, value, parent){
+function TypeField(name, value, parent){
 	var rf = this;
 
 	rf.name = name;
 	rf.parent = parent;
 	rf.value = value;
 
-	rf.element = $("<div />").addClass("rule_field").append(
+	rf.element = $("<div />").addClass("type_field").append(
 		rf.title_div = $("<div />").addClass("title"),
 		rf.container = $("<div />").addClass("container")
 	)
@@ -39,7 +39,7 @@ function RuleField(name, value, parent){
     rf.update_type_fields();
 }
 
-RuleField.prototype.update_title_name = function(){
+TypeField.prototype.update_title_name = function(){
 	var rf = this;
 
 	var title_name;
@@ -54,7 +54,7 @@ RuleField.prototype.update_title_name = function(){
 	rf.title_div.text(title_name);
 }
 
-RuleField.prototype.update_type_fields = function(){
+TypeField.prototype.update_type_fields = function(){
 	var rf = this;
 
 	var type = rf.form.fields.type.val();
@@ -69,13 +69,13 @@ RuleField.prototype.update_type_fields = function(){
 		for(var i in rf.value.fields){
 			var field_data = rf.value.fields[i];
 
-			var inner_field = new RuleField(i, field_data, rf);
+			var inner_field = new TypeField(i, field_data, rf);
 			rf.container.append(inner_field.element);
 		}
 	}
 }
 
-RuleField.prototype.val = function(argument){
+TypeField.prototype.val = function(argument){
     var rf = this;
 
     if(arguments.length===0){
@@ -85,13 +85,13 @@ RuleField.prototype.val = function(argument){
     }
 }
 
-RuleField.prototype.error = function(argument){
+TypeField.prototype.error = function(argument){
     var rf = this;
 
     return rf.form.error(argument);
 }
 
-RuleField.prototype.edit_mode = function(){
+TypeField.prototype.edit_mode = function(){
     var rf = this;
     
     rf.is_edit_mode = true;
@@ -101,7 +101,7 @@ RuleField.prototype.edit_mode = function(){
     }
 }
 
-RuleField.prototype.view_mode = function(){
+TypeField.prototype.view_mode = function(){
     var rf = this;
  
     rf.is_edit_mode = false;
