@@ -54,9 +54,9 @@ $(document).ready(function() {
                 "height": old_page.element.height(),
                 "position": "absolute"
             })
-                .fadeOut(500, function() {
-                    old_page.element.remove();
-                })
+            .fadeOut(500, function() {
+                old_page.element.remove();
+            })
 
             new_page.element.hide().fadeIn(500);
         }

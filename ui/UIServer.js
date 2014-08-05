@@ -36,6 +36,7 @@ function UIServer(minodb){
 
     us.express_server.get('*', process_session(false), function(req, res) {
         res.render('index', {
+            custom_fields: JSON.stringify(us.minodb.custom_fields),
             ui_path: "/ui/",
             user: JSON.stringify(req.user)
         });

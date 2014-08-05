@@ -15363,9 +15363,8 @@ function ChoiceField(name, properties) {
         console.log(choice_value);
 
         var option = $("<option />")
-            .attr("value",choice_value)
-            .data("value",choice_value)
-            .text(choice_text)
+        .attr("value",choice_value)
+        .text(choice_text)
 
         field.select.append(option);
     }
@@ -15399,8 +15398,9 @@ ChoiceField.prototype.val = function(set_val) {
     var field = this;
 
     if (arguments.length===0) {
-        console.log($(field.select.find(":selected")[0]).data());
-        return field.select.find(":selected").data("value")
+        var selected = field.select.find(":selected");
+        console.log(selected);
+        return field.choice_values[selected.index()]
     } else {
         if(set_val!=null){
             field.select.val(set_val);
@@ -15680,20 +15680,105 @@ ObjectField.prototype.val = function(set_val) {
         return field;
     }
 }
-if((typeof require) === 'function'){
-    FieldVal = require('fieldval')
-    BasicVal = require('fieldval-basicval')
+//Used to subclass Javascript classes
+function extend(sub, sup) {
+	function emptyclass() {}
+	emptyclass.prototype = sup.prototype;
+	sub.prototype = new emptyclass();
+	sub.prototype.constructor = sub;
+	sub.superConstructor = sup;
+	sub.superClass = sup.prototype;
 }
 
-function fieldval_rules_extend(sub, sup) {
-    function emptyclass() {}
-    emptyclass.prototype = sup.prototype;
-    sub.prototype = new emptyclass();
-    sub.prototype.constructor = sub;
-    sub.superConstructor = sup;
-    sub.superClass = sup.prototype;
+if (typeof module != 'undefined') {
+    module.exports = extend;
 }
-fieldval_rules_extend(TextRuleField, RuleField);
+
+function RuleField(json, validator) {
+    var field = this;
+
+    field.json = json;
+    field.checks = [];
+    field.validator = (typeof validator != 'undefined') ? validator : new FieldVal(json);
+
+    field.name = field.validator.get("name", BasicVal.string(false));
+    field.display_name = field.validator.get("display_name", BasicVal.string(false));
+    field.description = field.validator.get("description", BasicVal.string(false));
+    field.type = field.validator.get("type", BasicVal.string(true));
+    field.required = field.validator.default(true).get("required", BasicVal.boolean(false))
+
+    if (json != null) {
+        var exists = field.validator.get("exists", BasicVal.boolean(false));
+        if (exists != null) {
+            existsFilter = exists ? 1 : 2;
+        }
+    }
+}
+
+RuleField.types = {};
+
+RuleField.add_field_type = function(field_type_data){
+    RuleField.types[field_type_data.name] = {
+        display_name: field_type_data.display_name,
+        class: field_type_data.class
+    }
+}
+
+RuleField.create_field = function(json) {
+    var field = null;
+
+    var validator = new FieldVal(json);
+
+    var type = validator.get("type", BasicVal.string(true), BasicVal.one_of(RuleField.types));
+
+    if(type){
+        var field_type_data = RuleField.types[type];
+        var field_class = field_type_data.class;
+        field = new field_class(json, validator)
+    } else {
+        //Create a generic field to create the correct errors for the "RuleField" fields
+        return [validator.end(), null];
+    }
+
+    var init_res = field.init();
+    if (init_res != null) {
+        return [init_res, null];
+    }
+
+    field.create_checks();
+
+    return [null, field];
+}
+
+RuleField.prototype.validate_as_field = function(name, validator){
+    var field = this;
+
+    var value = validator.get(name, field.checks);
+
+    return value;
+}
+
+RuleField.prototype.validate = function(value){
+    var field = this;
+
+    var validator = new FieldVal(null);
+
+    var error = FieldVal.use_checks(value, field.checks);
+    if(error){
+        validator.error(error);
+    }
+
+    return validator.end();
+}
+
+if (typeof module != 'undefined') {
+    module.exports = RuleField;
+}
+
+if((typeof require) === 'function'){
+    extend = require('extend')
+}
+extend(TextRuleField, RuleField);
 
 function TextRuleField(json, validator) {
     var field = this;
@@ -15739,7 +15824,14 @@ TextRuleField.prototype.create_checks = function(){
         field.checks.push(BasicVal.max_length(field.max_length,{stop_on_error:false}));
     }
 }
-fieldval_rules_extend(NumberRuleField, RuleField);
+
+if (typeof module != 'undefined') {
+    module.exports = TextRuleField;
+}
+if((typeof require) === 'function'){
+    extend = require('extend')
+}
+extend(NumberRuleField, RuleField);
 
 function NumberRuleField(json, validator) {
     var field = this;
@@ -15790,7 +15882,14 @@ NumberRuleField.prototype.create_checks = function(){
         field.checks.push(BasicVal.integer(false,{stop_on_error:false}));
     }
 }
-fieldval_rules_extend(ObjectRuleField, RuleField);
+
+if (typeof module != 'undefined') {
+    module.exports = NumberRuleField;
+}
+if((typeof require) === 'function'){
+    extend = require('extend')
+}
+extend(ObjectRuleField, RuleField);
 
 function ObjectRuleField(json, validator) {
     var field = this;
@@ -15876,7 +15975,14 @@ ObjectRuleField.prototype.create_checks = function(validator){
         return inner_error;
     });
 }
-fieldval_rules_extend(ChoiceRuleField, RuleField);
+
+if (typeof module != 'undefined') {
+    module.exports = ObjectRuleField;
+}
+if((typeof require) === 'function'){
+    extend = require('extend')
+}
+extend(ChoiceRuleField, RuleField);
 
 function ChoiceRuleField(json, validator) {
     var field = this;
@@ -15911,84 +16017,42 @@ ChoiceRuleField.prototype.create_checks = function(){
     }
 }
 
-function RuleField(json, validator) {
-    var field = this;
-
-    field.json = json;
-    field.checks = [];
-    field.validator = (typeof validator != 'undefined') ? validator : new FieldVal(json);
-
-    field.name = field.validator.get("name", BasicVal.string(false));
-    field.display_name = field.validator.get("display_name", BasicVal.string(false));
-    field.description = field.validator.get("description", BasicVal.string(false));
-    field.type = field.validator.get("type", BasicVal.string(true));
-    field.required = field.validator.default(true).get("required", BasicVal.boolean(false))
-
-    if (json != null) {
-        var exists = field.validator.get("exists", BasicVal.boolean(false));
-        if (exists != null) {
-            existsFilter = exists ? 1 : 2;
-        }
-    }
+if (typeof module != 'undefined') {
+    module.exports = ChoiceRuleField;
 }
 
-RuleField.types = {
-    text: TextRuleField,
-    string: TextRuleField,
-    number: NumberRuleField,
-    object: ObjectRuleField,
-    choice: ChoiceRuleField
-};
-
-RuleField.create_field = function(json) {
-    var field = null;
-
-    var validator = new FieldVal(json);
-
-    var type = validator.get("type", BasicVal.string(true), BasicVal.one_of(RuleField.types));
-
-    if(type){
-        var field_class = RuleField.types[type];
-        field = new field_class(json, validator)
-    } else {
-        //Create a generic field to create the correct errors for the "RuleField" fields
-        return [validator.end(), null];
-    }
-
-    var init_res = field.init();
-    if (init_res != null) {
-        return [init_res, null];
-    }
-
-    field.create_checks();
-
-    return [null, field];
+if((typeof require) === 'function'){
+    FieldVal = require('fieldval')
+    BasicVal = require('fieldval-basicval')
+    RuleField = require('./fields/RuleField');
 }
 
-RuleField.prototype.validate_as_field = function(name, validator){
-    var field = this;
-
-    var value = validator.get(name, field.checks);
-
-    return value;
-}
-
-RuleField.prototype.validate = function(value){
-    var field = this;
-
-    var validator = new FieldVal(null);
-
-    var error = FieldVal.use_checks(value, field.checks);
-    if(error){
-        validator.error(error);
-    }
-
-    return validator.end();
-}
+RuleField.add_field_type({
+    name: 'text',
+    display_name: 'Text',
+    class: (typeof TextRuleField) !== 'undefined' ? TextRuleField : require('./fields/TextRuleField')
+});
+RuleField.add_field_type({
+    name: 'number',
+    display_name: 'Number',
+    class: (typeof NumberRuleField) !== 'undefined' ? NumberRuleField : require('./fields/NumberRuleField')
+});
+RuleField.add_field_type({
+    name: 'object',
+    display_name: 'Object',
+    class: (typeof ObjectRuleField) !== 'undefined' ? ObjectRuleField : require('./fields/ObjectRuleField')
+});
+RuleField.add_field_type({
+    name: 'choice',
+    display_name: 'Choice',
+    class: (typeof ChoiceRuleField) !== 'undefined' ? ChoiceRuleField : require('./fields/ChoiceRuleField')
+});
 
 function ValidationRule() {
     var vr = this;
 }
+
+ValidationRule.RuleField = RuleField;
 
 //Performs validation required for saving
 ValidationRule.prototype.init = function(json) {
@@ -16026,13 +16090,11 @@ ValidationRule.prototype.validate = function(value) {
 if (typeof module != 'undefined') {
     module.exports = ValidationRule;
 }
+//Used to subclass Javascript classes
 function extend(sub, sup) {
 	function emptyclass() {}
 	emptyclass.prototype = sup.prototype;
-	var empty_instance = new emptyclass();
-	for(var i in empty_instance){
-		sub.prototype[i] = empty_instance[i];
-	}
+	sub.prototype = new emptyclass();
 	sub.prototype.constructor = sub;
 	sub.superConstructor = sup;
 	sub.superClass = sup.prototype;
@@ -18472,17 +18534,24 @@ function TypeField(value, parent){
 		rf.container = $("<div />").addClass("container")
 	)
 
+	var field_type_choices = [];
+	for(var i in ValidationRule.RuleField.types){
+		var field_type_class = ValidationRule.RuleField.types[i];
+
+		var name = i;
+		var display_name = field_type_class.display_name;
+		if(display_name){
+			field_type_choices.push([name, display_name])
+		} else {
+			field_type_choices.push(name);
+		}
+	}
+
 	rf.form = new FVForm();
 	rf.form.add_field("name", new TextField("Name"));
 	rf.form.add_field("display_name", new TextField("Display Name"));
 	rf.form.add_field("type", new ChoiceField("Type", {
-		choices: [
-			["text", "Text"],
-			["number", "Number"],
-			["boolean", "Boolean"],
-			["date", "Date"],
-			["object", "Object"]
-		]
+		choices: field_type_choices
 	}).on_change(function(){
 		rf.update_type_fields();
 	}));
@@ -18519,7 +18588,7 @@ TypeField.prototype.update_type_fields = function(){
 
 	var type = rf.form.fields.type.val();
 
-	console.log("update_type_fields ",rf,type);
+	console.log("update_type_fields ",rf, type);
 
 	if(type==='text'){
 		rf.form.add_field("min_length", new TextField("Minimum Length", {type: "number"}));
@@ -18541,9 +18610,9 @@ TypeField.prototype.val = function(argument){
     var rf = this;
 
     if(arguments.length===0){
-        return rf.field.val();
+        return rf.form.val();
     } else {
-        return rf.field.val(argument);
+        return rf.form.val(argument);
     }
 }
 
@@ -18664,18 +18733,16 @@ TypeView.prototype.save = function(){
 	console.log(value);
 
 	ajax_request({
-		"function" : "save",
+		"function" : "save_type",
 		"parameters" : {
-			"objects" : [
-				value
-			]
+			"type" : value
 		}
 	},function(err, response){
 		console.log("err ",err);
 		console.log("response ",response);
 
 		if(response.error!==undefined){
-			type_view.error(response.invalid.parameters.invalid.objects.invalid[0]);
+			type_view.error(response.invalid.parameters.invalid.type);
 		} else {
 			alert("Success?");
 		}
@@ -19048,6 +19115,8 @@ function BrowserPage(req) {
 
     page.browser = new MainBrowser();
 
+    console.log(page.browser);
+
     page.element
     .addClass("browser_page")
     .append(
@@ -19162,9 +19231,9 @@ $(document).ready(function() {
                 "height": old_page.element.height(),
                 "position": "absolute"
             })
-                .fadeOut(500, function() {
-                    old_page.element.remove();
-                })
+            .fadeOut(500, function() {
+                old_page.element.remove();
+            })
 
             new_page.element.hide().fadeIn(500);
         }

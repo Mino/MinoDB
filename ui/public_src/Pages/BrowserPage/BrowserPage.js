@@ -11,6 +11,8 @@ function BrowserPage(req) {
 
     page.browser = new MainBrowser();
 
+    console.log(page.browser);
+
     page.element
     .addClass("browser_page")
     .append(

@@ -9,17 +9,24 @@ function TypeField(value, parent){
 		rf.container = $("<div />").addClass("container")
 	)
 
+	var field_type_choices = [];
+	for(var i in ValidationRule.RuleField.types){
+		var field_type_class = ValidationRule.RuleField.types[i];
+
+		var name = i;
+		var display_name = field_type_class.display_name;
+		if(display_name){
+			field_type_choices.push([name, display_name])
+		} else {
+			field_type_choices.push(name);
+		}
+	}
+
 	rf.form = new FVForm();
 	rf.form.add_field("name", new TextField("Name"));
 	rf.form.add_field("display_name", new TextField("Display Name"));
 	rf.form.add_field("type", new ChoiceField("Type", {
-		choices: [
-			["text", "Text"],
-			["number", "Number"],
-			["boolean", "Boolean"],
-			["date", "Date"],
-			["object", "Object"]
-		]
+		choices: field_type_choices
 	}).on_change(function(){
 		rf.update_type_fields();
 	}));
@@ -56,7 +63,7 @@ TypeField.prototype.update_type_fields = function(){
 
 	var type = rf.form.fields.type.val();
 
-	console.log("update_type_fields ",rf,type);
+	console.log("update_type_fields ",rf, type);
 
 	if(type==='text'){
 		rf.form.add_field("min_length", new TextField("Minimum Length", {type: "number"}));
@@ -78,9 +85,9 @@ TypeField.prototype.val = function(argument){
     var rf = this;
 
     if(arguments.length===0){
-        return rf.field.val();
+        return rf.form.val();
     } else {
-        return rf.field.val(argument);
+        return rf.form.val(argument);
     }
 }
 

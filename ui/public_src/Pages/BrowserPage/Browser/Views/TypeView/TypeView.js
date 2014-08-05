@@ -91,18 +91,16 @@ TypeView.prototype.save = function(){
 	console.log(value);
 
 	ajax_request({
-		"function" : "save",
+		"function" : "save_type",
 		"parameters" : {
-			"objects" : [
-				value
-			]
+			"type" : value
 		}
 	},function(err, response){
 		console.log("err ",err);
 		console.log("response ",response);
 
 		if(response.error!==undefined){
-			type_view.error(response.invalid.parameters.invalid.objects.invalid[0]);
+			type_view.error(response.invalid.parameters.invalid.type);
 		} else {
 			alert("Success?");
 		}
