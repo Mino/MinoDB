@@ -1,5 +1,5 @@
 extend(DocsPage, Page);
-function DocsPage(parameters,url,wildcard_contents){
+function DocsPage(req){
 	var page = this;
 
 	DocsPage.superConstructor.call(this);
@@ -46,7 +46,7 @@ function DocsPage(parameters,url,wildcard_contents){
 Site.add_url("/docs/",DocsPage);
 Site.add_url("/docs/*",DocsPage);
 
-DocsPage.prototype.new_url = function(parameters,url,wildcard_contents){
+DocsPage.prototype.new_url = function(req){
 	var page = this;
 
 	page.doc = wildcard_contents;

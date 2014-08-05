@@ -19,8 +19,10 @@ function is_object_key(key){
 	return false;
 }
 
-function ItemView(path, data, browser){
+function ItemView(path, data, browser, options){
 	var item_view = this;
+
+	item_view.options = options || {};
 
 	item_view.browser = browser;
 	item_view.path = path;
@@ -50,15 +52,15 @@ function ItemView(path, data, browser){
 	//Used so that ItemView can use FieldVal.FVForm's .error function
 	item_view.fields = item_view.sections;
 
+	console.log("data ",data);
+
 	for(var key in data){
+		console.log("key ",key);
 		if(!is_object_key(key)){
 			var section = new ItemSection(key, data[key], item_view);
 			item_view.form.add_field(key, section);
 		}
 	}
-
-	item_view.is_edit_mode = false;
-	item_view.view_mode();
 
 	item_view.toolbar_element = $("<div />").append(
 		item_view.edit_button = $("<button />").addClass("mino_button").text("Edit").on('tap',function(){
@@ -69,6 +71,14 @@ function ItemView(path, data, browser){
 		}).hide(),
 		item_view.cancel_button = $("<button />").addClass("mino_button").text("Cancel").on('tap',function(){
 			item_view.cancel();
+		}).hide(),
+		item_view.add_type_button = $("<button />").addClass("mino_button").text("Add Type").on('tap',function(){
+			var type_name = "person";
+			var section = new ItemSection(type_name, null, item_view);
+			item_view.form.add_field(type_name, section);
+			if(item_view.is_edit_mode){
+				section.edit_mode();
+			}
 		}).hide()
 	)
 
@@ -81,26 +91,54 @@ function ItemView(path, data, browser){
 	browser.toolbar.element.append(item_view.toolbar_element);
 	
 	browser.address_bar.populate_path_buttons(item_view.path);
+
+
+	if(item_view.options.create){
+		item_view.form.fields.path.val(item_view.path);
+		item_view.edit_mode();
+	} else {
+		item_view.view_mode();
+	}
+}
+
+ItemView.prototype.init = function(){
+	var item_view = this;
+
+	if(item_view.options.create){
+		item_view.form.fields.name.focus();
+	}
 }
 
 ItemView.prototype.edit = function(){
 	var item_view = this;
 
 	item_view.edit_mode();
-
-	item_view.edit_button.hide();
-	item_view.cancel_button.show();
-	item_view.save_button.show();
 }
 
 ItemView.prototype.edit_mode = function(){
 	var item_view = this;
+
+	item_view.is_edit_mode = true;
+
+	item_view.edit_button.hide();
+	item_view.cancel_button.show();
+	item_view.save_button.show();
+	item_view.add_type_button.show();
 
 	item_view.form.edit_mode();
 }
 
 ItemView.prototype.view_mode = function(){
 	var item_view = this;
+
+	item_view.is_edit_mode = false;
+	
+	item_view.cancel_button.hide();
+	item_view.save_button.hide();
+	item_view.add_type_button.hide();
+	item_view.edit_button.show();
+
+	item_view.error(null);
 
 	item_view.form.view_mode();
 }
@@ -158,10 +196,4 @@ ItemView.prototype.cancel = function(){
 	var item_view = this;
 
 	item_view.view_mode();
-
-	item_view.cancel_button.hide();
-	item_view.save_button.hide();
-	item_view.edit_button.show();
-
-	item_view.error(null);
 }

@@ -1,7 +1,6 @@
-function TypeField(name, value, parent){
+function TypeField(value, parent){
 	var rf = this;
 
-	rf.name = name;
 	rf.parent = parent;
 	rf.value = value;
 
@@ -22,7 +21,6 @@ function TypeField(name, value, parent){
 			["object", "Object"]
 		]
 	}).on_change(function(){
-		console.log("DID CHANGE");
 		rf.update_type_fields();
 	}));
 	rf.container.append(
@@ -32,7 +30,6 @@ function TypeField(name, value, parent){
 
     rf.is_edit_mode = true;
 
-    console.log(name);
     console.log(value);
 
     rf.update_title_name();
@@ -62,14 +59,16 @@ TypeField.prototype.update_type_fields = function(){
 	console.log("update_type_fields ",rf,type);
 
 	if(type==='text'){
-
+		rf.form.add_field("min_length", new TextField("Minimum Length", {type: "number"}));
+		rf.form.add_field("max_length", new TextField("Maximum Length", {type: "number"}));
 	} else if(type==='number'){
 
 	} else if(type==='object'){
-		for(var i in rf.value.fields){
+		console.log(rf.value);
+		for(var i = 0; i < rf.value.fields.length; i++){
 			var field_data = rf.value.fields[i];
 
-			var inner_field = new TypeField(i, field_data, rf);
+			var inner_field = new TypeField(field_data, rf);
 			rf.container.append(inner_field.element);
 		}
 	}

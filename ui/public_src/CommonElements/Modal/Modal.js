@@ -1,40 +1,42 @@
-function Modal(titleText,zIndex){
+function Modal(props){
 	var modal = this;
 
-	if(zIndex==null){
-		zIndex = 2001;
+	console.log(props);
+
+	if(!props){
+		props = {};
 	}
+
+	modal.z_index = props.z_index || 2001;
 
 	modal.initial_position = false;
 
-	modal.closeCallback = function(){};
-	modal.okCallback = function(){};
-	modal.onFinishedLoading = function(){};
+	modal.close_callback = function(){};
+	modal.ok_callback = function(){};
+	modal.on_finished_loading = function(){};
 
-	if(titleText==undefined){
-		titleText = "";
-	}
+	modal.title_text = props.title || "";
 
 	modal.shadow = $("<div />")
-	.addClass("modalShadow")
+	.addClass("modal_shadow")
 	.appendTo("body")
-	.css("z-index",zIndex)
+	.css("z-index",modal.z_index)
 	.hide();
 
 	modal.element = $("<div />")
 	.addClass("modal")
-	.css("z-index",zIndex+1)
+	.css("z-index",modal.z_index+1)
 	.append(
-		modal.TopBar = $("<div />")
-		.addClass("modalTitle")
+		modal.title_holder = $("<div />")
+		.addClass("modal_title_holder")
 		.append(
 			modal.title = $("<div />")
-			.addClass("modalTitleText")
-			.text(titleText)
+			.addClass("modal_title_text")
+			.text(modal.title_text)
 		)
 	).append(
-		$("<button />")
-		.addClass("f8_button modalCloseButton no_top no_right no_bottom")
+		modal.close_button = $("<button />")
+		.addClass("mino_button modal_close_button")
 		.css("float","right")
 		.text("×")
 		.on('tap',function(){
@@ -42,13 +44,12 @@ function Modal(titleText,zIndex){
 		})
 	)
 	.append(
-		modal.view = $("<div />")
-		.addClass("modalContents")
+		modal.contents = $("<div />")
+		.addClass("modal_contents")
 	)
 	.append(
-		modal.bottomBar = $("<div />")
-		.addClass("modalBottomBar")
-		.addClass("interfacebox")
+		modal.bottom_bar = $("<div />")
+		.addClass("modal_bottom_bar")
 	)
 	.appendTo("body");
 
@@ -62,9 +63,9 @@ function Modal(titleText,zIndex){
 		if(e.keyCode==27){
 		 	modal.close();
 		} else if(e.keyCode==13){//Enter
-		 	modal.okCallback();
-			if(modal.okClosesModal){
-				modal.closeModal();
+		 	modal.ok_callback();
+			if(modal.ok_closes_modal){
+				modal.close_modal();
 			}
 		}
 	});
@@ -72,7 +73,7 @@ function Modal(titleText,zIndex){
 	modal.shadow.show();
 	modal.element.fadeIn(400, 
 		function(){
-			modal.onFinishedLoading();
+			modal.on_finished_loading();
 			modal.reposition();
 		}
 	);
@@ -97,8 +98,8 @@ Modal.prototype.close = function(){
 	modal.shadow.remove();
 
 	$(document).off('keyup.modal');
-	if(modal.callbackCalled==undefined){
-		modal.callbackCalled = true;
-		modal.closeCallback();
+	if(modal.callback_called==undefined){
+		modal.callback_called = true;
+		modal.close_callback();
 	}
 }

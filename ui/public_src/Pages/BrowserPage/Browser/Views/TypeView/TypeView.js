@@ -9,7 +9,7 @@ function TypeView(name, data, browser){
 
 	type_view.element = $("<div />").addClass("type_view");
 
-	type_view.type_field = new TypeField(name, type_view.type_data, type_view);
+	type_view.type_field = new TypeField(type_view.type_data, type_view);
 
 	type_view.element.append(
 		type_view.type_field.element
@@ -77,6 +77,10 @@ TypeView.prototype.error = function(error_data){
 	console.log("error_data ",error_data);
 
 	type_view.type_field.error(error_data);
+}
+
+TypeView.prototype.init = function(){
+	var type_view = this;
 }
 
 TypeView.prototype.save = function(){

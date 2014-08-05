@@ -10580,7 +10580,3153 @@ return jQuery;
 	};
 }(window.jQuery || window.$)); // jQuery or jQuery-like library, such as Zepto
 
-function Page(){var e=this;e.element=$("<div />")}function SAFE(){var e=this;Site=this,e.debug=!1,e.initial_url=!0,e.map={},e.ignore_next_url=!1,e.origin=window.location.protocol+"//"+window.location.hostname,""!=window.location.port&&(e.origin+=":"+window.location.port),e.path="/",e.previous_url=document.referrer,e.load_page_class=null,e.loading_page=null,e.scroll_bar_width_value=-1,e.element=$("<div />"),e.is_touchscreen="ontouchstart"in document.documentElement,e.history_state_supported=!(!window.history||!window.history.pushState),e.current_page=null,e.no_page_found_class=null}if(function(e,t){"use strict";var n=e.History=e.History||{},r=e.jQuery;if("undefined"!=typeof n.Adapter)throw new Error("History.js Adapter has already been loaded...");n.Adapter={bind:function(e,t,n){r(e).bind(t,n)},trigger:function(e,t,n){r(e).trigger(t,n)},extractEventData:function(e,n,r){var a=n&&n.originalEvent&&n.originalEvent[e]||r&&r[e]||t;return a},onDomLoad:function(e){r(e)}},"undefined"!=typeof n.init&&n.init()}(window),function(e,t){"use strict";var n=e.console||t,r=e.document,a=e.navigator,o=e.sessionStorage||!1,i=e.setTimeout,s=e.clearTimeout,l=e.setInterval,u=e.clearInterval,c=e.JSON,d=e.alert,p=e.History=e.History||{},g=e.history;try{o.setItem("TEST","1"),o.removeItem("TEST")}catch(f){o=!1}if(c.stringify=c.stringify||c.encode,c.parse=c.parse||c.decode,"undefined"!=typeof p.init)throw new Error("History.js Core has already been loaded...");p.init=function(){return"undefined"==typeof p.Adapter?!1:("undefined"!=typeof p.initCore&&p.initCore(),"undefined"!=typeof p.initHtml4&&p.initHtml4(),!0)},p.initCore=function(){if("undefined"!=typeof p.initCore.initialized)return!1;if(p.initCore.initialized=!0,p.options=p.options||{},p.options.hashChangeInterval=p.options.hashChangeInterval||100,p.options.safariPollInterval=p.options.safariPollInterval||500,p.options.doubleCheckInterval=p.options.doubleCheckInterval||500,p.options.disableSuid=p.options.disableSuid||!1,p.options.storeInterval=p.options.storeInterval||1e3,p.options.busyDelay=p.options.busyDelay||250,p.options.debug=p.options.debug||!1,p.options.initialTitle=p.options.initialTitle||r.title,p.options.html4Mode=p.options.html4Mode||!1,p.options.delayInit=p.options.delayInit||!1,p.intervalList=[],p.clearAllIntervals=function(){var e,t=p.intervalList;if("undefined"!=typeof t&&null!==t){for(e=0;e<t.length;e++)u(t[e]);p.intervalList=null}},p.debug=function(){p.options.debug&&p.log.apply(p,arguments)},p.log=function(){var e,t,a,o,i,s=!("undefined"==typeof n||"undefined"==typeof n.log||"undefined"==typeof n.log.apply),l=r.getElementById("log");for(s?(o=Array.prototype.slice.call(arguments),e=o.shift(),"undefined"!=typeof n.debug?n.debug.apply(n,[e,o]):n.log.apply(n,[e,o])):e="\n"+arguments[0]+"\n",t=1,a=arguments.length;a>t;++t){if(i=arguments[t],"object"==typeof i&&"undefined"!=typeof c)try{i=c.stringify(i)}catch(u){}e+="\n"+i+"\n"}return l?(l.value+=e+"\n-----\n",l.scrollTop=l.scrollHeight-l.clientHeight):s||d(e),!0},p.getInternetExplorerMajorVersion=function(){var e=p.getInternetExplorerMajorVersion.cached="undefined"!=typeof p.getInternetExplorerMajorVersion.cached?p.getInternetExplorerMajorVersion.cached:function(){for(var e=3,t=r.createElement("div"),n=t.getElementsByTagName("i");(t.innerHTML="<!--[if gt IE "+ ++e+"]><i></i><![endif]-->")&&n[0];);return e>4?e:!1}();return e},p.isInternetExplorer=function(){var e=p.isInternetExplorer.cached="undefined"!=typeof p.isInternetExplorer.cached?p.isInternetExplorer.cached:Boolean(p.getInternetExplorerMajorVersion());return e},p.emulated=p.options.html4Mode?{pushState:!0,hashChange:!0}:{pushState:!Boolean(e.history&&e.history.pushState&&e.history.replaceState&&!(/ Mobile\/([1-7][a-z]|(8([abcde]|f(1[0-8]))))/i.test(a.userAgent)||/AppleWebKit\/5([0-2]|3[0-2])/i.test(a.userAgent))),hashChange:Boolean(!("onhashchange"in e||"onhashchange"in r)||p.isInternetExplorer()&&p.getInternetExplorerMajorVersion()<8)},p.enabled=!p.emulated.pushState,p.bugs={setHash:Boolean(!p.emulated.pushState&&"Apple Computer, Inc."===a.vendor&&/AppleWebKit\/5([0-2]|3[0-3])/.test(a.userAgent)),safariPoll:Boolean(!p.emulated.pushState&&"Apple Computer, Inc."===a.vendor&&/AppleWebKit\/5([0-2]|3[0-3])/.test(a.userAgent)),ieDoubleCheck:Boolean(p.isInternetExplorer()&&p.getInternetExplorerMajorVersion()<8),hashEscape:Boolean(p.isInternetExplorer()&&p.getInternetExplorerMajorVersion()<7)},p.isEmptyObject=function(e){for(var t in e)if(e.hasOwnProperty(t))return!1;return!0},p.cloneObject=function(e){var t,n;return e?(t=c.stringify(e),n=c.parse(t)):n={},n},p.getRootUrl=function(){var e=r.location.protocol+"//"+(r.location.hostname||r.location.host);return r.location.port&&(e+=":"+r.location.port),e+="/"},p.getBaseHref=function(){var e=r.getElementsByTagName("base"),t=null,n="";return 1===e.length&&(t=e[0],n=t.href.replace(/[^\/]+$/,"")),n=n.replace(/\/+$/,""),n&&(n+="/"),n},p.getBaseUrl=function(){var e=p.getBaseHref()||p.getBasePageUrl()||p.getRootUrl();return e},p.getPageUrl=function(){var e,t=p.getState(!1,!1),n=(t||{}).url||p.getLocationHref();return e=n.replace(/\/+$/,"").replace(/[^\/]+$/,function(e){return/\./.test(e)?e:e+"/"})},p.getBasePageUrl=function(){var e=p.getLocationHref().replace(/[#\?].*/,"").replace(/[^\/]+$/,function(e){return/[^\/]$/.test(e)?"":e}).replace(/\/+$/,"")+"/";return e},p.getFullUrl=function(e,t){var n=e,r=e.substring(0,1);return t="undefined"==typeof t?!0:t,/[a-z]+\:\/\//.test(e)||(n="/"===r?p.getRootUrl()+e.replace(/^\/+/,""):"#"===r?p.getPageUrl().replace(/#.*/,"")+e:"?"===r?p.getPageUrl().replace(/[\?#].*/,"")+e:t?p.getBaseUrl()+e.replace(/^(\.\/)+/,""):p.getBasePageUrl()+e.replace(/^(\.\/)+/,"")),n.replace(/\#$/,"")},p.getShortUrl=function(e){var t=e,n=p.getBaseUrl(),r=p.getRootUrl();return p.emulated.pushState&&(t=t.replace(n,"")),t=t.replace(r,"/"),p.isTraditionalAnchor(t)&&(t="./"+t),t=t.replace(/^(\.\/)+/g,"./").replace(/\#$/,"")},p.getLocationHref=function(e){return e=e||r,e.URL===e.location.href?e.location.href:e.location.href===decodeURIComponent(e.URL)?e.URL:e.location.hash&&decodeURIComponent(e.location.href.replace(/^[^#]+/,""))===e.location.hash?e.location.href:-1==e.URL.indexOf("#")&&-1!=e.location.href.indexOf("#")?e.location.href:e.URL||e.location.href},p.store={},p.idToState=p.idToState||{},p.stateToId=p.stateToId||{},p.urlToId=p.urlToId||{},p.storedStates=p.storedStates||[],p.savedStates=p.savedStates||[],p.normalizeStore=function(){p.store.idToState=p.store.idToState||{},p.store.urlToId=p.store.urlToId||{},p.store.stateToId=p.store.stateToId||{}},p.getState=function(e,t){"undefined"==typeof e&&(e=!0),"undefined"==typeof t&&(t=!0);var n=p.getLastSavedState();return!n&&t&&(n=p.createStateObject()),e&&(n=p.cloneObject(n),n.url=n.cleanUrl||n.url),n},p.getIdByState=function(e){var t,n=p.extractId(e.url);if(!n)if(t=p.getStateString(e),"undefined"!=typeof p.stateToId[t])n=p.stateToId[t];else if("undefined"!=typeof p.store.stateToId[t])n=p.store.stateToId[t];else{for(;;)if(n=(new Date).getTime()+String(Math.random()).replace(/\D/g,""),"undefined"==typeof p.idToState[n]&&"undefined"==typeof p.store.idToState[n])break;p.stateToId[t]=n,p.idToState[n]=e}return n},p.normalizeState=function(e){var t,n;return e&&"object"==typeof e||(e={}),"undefined"!=typeof e.normalized?e:(e.data&&"object"==typeof e.data||(e.data={}),t={},t.normalized=!0,t.title=e.title||"",t.url=p.getFullUrl(e.url?e.url:p.getLocationHref()),t.hash=p.getShortUrl(t.url),t.data=p.cloneObject(e.data),t.id=p.getIdByState(t),t.cleanUrl=t.url.replace(/\??\&_suid.*/,""),t.url=t.cleanUrl,n=!p.isEmptyObject(t.data),(t.title||n)&&p.options.disableSuid!==!0&&(t.hash=p.getShortUrl(t.url).replace(/\??\&_suid.*/,""),/\?/.test(t.hash)||(t.hash+="?"),t.hash+="&_suid="+t.id),t.hashedUrl=p.getFullUrl(t.hash),(p.emulated.pushState||p.bugs.safariPoll)&&p.hasUrlDuplicate(t)&&(t.url=t.hashedUrl),t)},p.createStateObject=function(e,t,n){var r={data:e,title:t,url:n};return r=p.normalizeState(r)},p.getStateById=function(e){e=String(e);var n=p.idToState[e]||p.store.idToState[e]||t;return n},p.getStateString=function(e){var t,n,r;return t=p.normalizeState(e),n={data:t.data,title:e.title,url:e.url},r=c.stringify(n)},p.getStateId=function(e){var t,n;return t=p.normalizeState(e),n=t.id},p.getHashByState=function(e){var t,n;return t=p.normalizeState(e),n=t.hash},p.extractId=function(e){var t,n,r,a;return a=-1!=e.indexOf("#")?e.split("#")[0]:e,n=/(.*)\&_suid=([0-9]+)$/.exec(a),r=n?n[1]||e:e,t=n?String(n[2]||""):"",t||!1},p.isTraditionalAnchor=function(e){var t=!/[\/\?\.]/.test(e);return t},p.extractState=function(e,t){var n,r,a=null;return t=t||!1,n=p.extractId(e),n&&(a=p.getStateById(n)),a||(r=p.getFullUrl(e),n=p.getIdByUrl(r)||!1,n&&(a=p.getStateById(n)),a||!t||p.isTraditionalAnchor(e)||(a=p.createStateObject(null,null,r))),a},p.getIdByUrl=function(e){var n=p.urlToId[e]||p.store.urlToId[e]||t;return n},p.getLastSavedState=function(){return p.savedStates[p.savedStates.length-1]||t},p.getLastStoredState=function(){return p.storedStates[p.storedStates.length-1]||t},p.hasUrlDuplicate=function(e){var t,n=!1;return t=p.extractState(e.url),n=t&&t.id!==e.id},p.storeState=function(e){return p.urlToId[e.url]=e.id,p.storedStates.push(p.cloneObject(e)),e},p.isLastSavedState=function(e){var t,n,r,a=!1;return p.savedStates.length&&(t=e.id,n=p.getLastSavedState(),r=n.id,a=t===r),a},p.saveState=function(e){return p.isLastSavedState(e)?!1:(p.savedStates.push(p.cloneObject(e)),!0)},p.getStateByIndex=function(e){var t=null;return t="undefined"==typeof e?p.savedStates[p.savedStates.length-1]:0>e?p.savedStates[p.savedStates.length+e]:p.savedStates[e]},p.getCurrentIndex=function(){var e=null;return e=p.savedStates.length<1?0:p.savedStates.length-1},p.getHash=function(e){var t,n=p.getLocationHref(e);return t=p.getHashByUrl(n)},p.unescapeHash=function(e){var t=p.normalizeHash(e);return t=decodeURIComponent(t)},p.normalizeHash=function(e){var t=e.replace(/[^#]*#/,"").replace(/#.*/,"");return t},p.setHash=function(e,t){var n,a;return t!==!1&&p.busy()?(p.pushQueue({scope:p,callback:p.setHash,args:arguments,queue:t}),!1):(p.busy(!0),n=p.extractState(e,!0),n&&!p.emulated.pushState?p.pushState(n.data,n.title,n.url,!1):p.getHash()!==e&&(p.bugs.setHash?(a=p.getPageUrl(),p.pushState(null,null,a+"#"+e,!1)):r.location.hash=e),p)},p.escapeHash=function(t){var n=p.normalizeHash(t);return n=e.encodeURIComponent(n),p.bugs.hashEscape||(n=n.replace(/\%21/g,"!").replace(/\%26/g,"&").replace(/\%3D/g,"=").replace(/\%3F/g,"?")),n},p.getHashByUrl=function(e){var t=String(e).replace(/([^#]*)#?([^#]*)#?(.*)/,"$2");return t=p.unescapeHash(t)},p.setTitle=function(e){var t,n=e.title;n||(t=p.getStateByIndex(0),t&&t.url===e.url&&(n=t.title||p.options.initialTitle));try{r.getElementsByTagName("title")[0].innerHTML=n.replace("<","&lt;").replace(">","&gt;").replace(" & "," &amp; ")}catch(a){}return r.title=n,p},p.queues=[],p.busy=function(e){if("undefined"!=typeof e?p.busy.flag=e:"undefined"==typeof p.busy.flag&&(p.busy.flag=!1),!p.busy.flag){s(p.busy.timeout);var t=function(){var e,n,r;if(!p.busy.flag)for(e=p.queues.length-1;e>=0;--e)n=p.queues[e],0!==n.length&&(r=n.shift(),p.fireQueueItem(r),p.busy.timeout=i(t,p.options.busyDelay))};p.busy.timeout=i(t,p.options.busyDelay)}return p.busy.flag},p.busy.flag=!1,p.fireQueueItem=function(e){return e.callback.apply(e.scope||p,e.args||[])},p.pushQueue=function(e){return p.queues[e.queue||0]=p.queues[e.queue||0]||[],p.queues[e.queue||0].push(e),p},p.queue=function(e,t){return"function"==typeof e&&(e={callback:e}),"undefined"!=typeof t&&(e.queue=t),p.busy()?p.pushQueue(e):p.fireQueueItem(e),p},p.clearQueue=function(){return p.busy.flag=!1,p.queues=[],p},p.stateChanged=!1,p.doubleChecker=!1,p.doubleCheckComplete=function(){return p.stateChanged=!0,p.doubleCheckClear(),p},p.doubleCheckClear=function(){return p.doubleChecker&&(s(p.doubleChecker),p.doubleChecker=!1),p},p.doubleCheck=function(e){return p.stateChanged=!1,p.doubleCheckClear(),p.bugs.ieDoubleCheck&&(p.doubleChecker=i(function(){return p.doubleCheckClear(),p.stateChanged||e(),!0},p.options.doubleCheckInterval)),p},p.safariStatePoll=function(){var t,n=p.extractState(p.getLocationHref());if(!p.isLastSavedState(n))return t=n,t||(t=p.createStateObject()),p.Adapter.trigger(e,"popstate"),p},p.back=function(e){return e!==!1&&p.busy()?(p.pushQueue({scope:p,callback:p.back,args:arguments,queue:e}),!1):(p.busy(!0),p.doubleCheck(function(){p.back(!1)}),g.go(-1),!0)},p.forward=function(e){return e!==!1&&p.busy()?(p.pushQueue({scope:p,callback:p.forward,args:arguments,queue:e}),!1):(p.busy(!0),p.doubleCheck(function(){p.forward(!1)}),g.go(1),!0)},p.go=function(e,t){var n;if(e>0)for(n=1;e>=n;++n)p.forward(t);else{if(!(0>e))throw new Error("History.go: History.go requires a positive or negative integer passed.");for(n=-1;n>=e;--n)p.back(t)}return p},p.emulated.pushState){var f=function(){};p.pushState=p.pushState||f,p.replaceState=p.replaceState||f}else p.onPopState=function(t,n){var r,a,o=!1,i=!1;return p.doubleCheckComplete(),(r=p.getHash())?(a=p.extractState(r||p.getLocationHref(),!0),a?p.replaceState(a.data,a.title,a.url,!1):(p.Adapter.trigger(e,"anchorchange"),p.busy(!1)),p.expectedStateId=!1,!1):(o=p.Adapter.extractEventData("state",t,n)||!1,i=o?p.getStateById(o):p.expectedStateId?p.getStateById(p.expectedStateId):p.extractState(p.getLocationHref()),i||(i=p.createStateObject(null,null,p.getLocationHref())),p.expectedStateId=!1,p.isLastSavedState(i)?(p.busy(!1),!1):(p.storeState(i),p.saveState(i),p.setTitle(i),p.Adapter.trigger(e,"statechange"),p.busy(!1),!0))},p.Adapter.bind(e,"popstate",p.onPopState),p.pushState=function(t,n,r,a){if(p.getHashByUrl(r)&&p.emulated.pushState)throw new Error("History.js does not support states with fragement-identifiers (hashes/anchors).");if(a!==!1&&p.busy())return p.pushQueue({scope:p,callback:p.pushState,args:arguments,queue:a}),!1;p.busy(!0);var o=p.createStateObject(t,n,r);return p.isLastSavedState(o)?p.busy(!1):(p.storeState(o),p.expectedStateId=o.id,g.pushState(o.id,o.title,o.url),p.Adapter.trigger(e,"popstate")),!0},p.replaceState=function(t,n,r,a){if(p.getHashByUrl(r)&&p.emulated.pushState)throw new Error("History.js does not support states with fragement-identifiers (hashes/anchors).");if(a!==!1&&p.busy())return p.pushQueue({scope:p,callback:p.replaceState,args:arguments,queue:a}),!1;p.busy(!0);var o=p.createStateObject(t,n,r);return p.isLastSavedState(o)?p.busy(!1):(p.storeState(o),p.expectedStateId=o.id,g.replaceState(o.id,o.title,o.url),p.Adapter.trigger(e,"popstate")),!0};if(o){try{p.store=c.parse(o.getItem("History.store"))||{}}catch(h){p.store={}}p.normalizeStore()}else p.store={},p.normalizeStore();p.Adapter.bind(e,"unload",p.clearAllIntervals),p.saveState(p.storeState(p.extractState(p.getLocationHref(),!0))),o&&(p.onUnload=function(){var e,t,n;try{e=c.parse(o.getItem("History.store"))||{}}catch(r){e={}}e.idToState=e.idToState||{},e.urlToId=e.urlToId||{},e.stateToId=e.stateToId||{};for(t in p.idToState)p.idToState.hasOwnProperty(t)&&(e.idToState[t]=p.idToState[t]);for(t in p.urlToId)p.urlToId.hasOwnProperty(t)&&(e.urlToId[t]=p.urlToId[t]);for(t in p.stateToId)p.stateToId.hasOwnProperty(t)&&(e.stateToId[t]=p.stateToId[t]);p.store=e,p.normalizeStore(),n=c.stringify(e);try{o.setItem("History.store",n)}catch(a){if(a.code!==DOMException.QUOTA_EXCEEDED_ERR)throw a;o.length&&(o.removeItem("History.store"),o.setItem("History.store",n))}},p.intervalList.push(l(p.onUnload,p.options.storeInterval)),p.Adapter.bind(e,"beforeunload",p.onUnload),p.Adapter.bind(e,"unload",p.onUnload)),p.emulated.pushState||(p.bugs.safariPoll&&p.intervalList.push(l(p.safariStatePoll,p.options.safariPollInterval)),("Apple Computer, Inc."===a.vendor||"Mozilla"===(a.appCodeName||""))&&(p.Adapter.bind(e,"hashchange",function(){p.Adapter.trigger(e,"popstate")}),p.getHash()&&p.Adapter.onDomLoad(function(){p.Adapter.trigger(e,"hashchange")})))},p.options&&p.options.delayInit||p.init()}(window),function(e){e.fn.ajax_url=function(t,n){var r=this;return r.on("tap",function(a){var o=null;null!=t&&(o=t(a)),null==o||o===!0?(null!=n&&n(a),a.originalEvent.metaKey===!0||Site.history_state_supported&&(a.isDefaultPrevented()||(a.preventDefault(),Site.load_url(e(r).attr("href"),!0)))):a.preventDefault()}),r}}(jQuery),function(e,t){"use strict";var n,r,a,o="._tap",i="._tapActive",s="tap",l="clientX clientY screenX screenY pageX pageY".split(" "),u={count:0,event:0},c=function(e,n){var r=n.originalEvent,a=t.Event(r);a.type=e;for(var o=0,i=l.length;i>o;o++)a[l[o]]=n[l[o]];return a},d=function(e){if(e.isTrigger)return!1;var n=u.event,r=Math.abs(e.pageX-n.pageX),a=Math.abs(e.pageY-n.pageY),o=Math.max(r,a);return e.timeStamp-n.timeStamp<t.tap.TIME_DELTA&&o<t.tap.POSITION_DELTA&&(!n.touches||1===u.count)&&f.isTracking},p=function(e){if(!a)return!1;var n=Math.abs(e.pageX-a.pageX),r=Math.abs(e.pageY-a.pageY),o=Math.max(n,r);return Math.abs(e.timeStamp-a.timeStamp)<750&&o<t.tap.POSITION_DELTA},g=function(e){if(0===e.type.indexOf("touch")){e.touches=e.originalEvent.changedTouches;for(var t=e.touches[0],n=0,r=l.length;r>n;n++)e[l[n]]=t[l[n]]}e.timeStamp=Date.now?Date.now():+new Date},f={isEnabled:!1,isTracking:!1,enable:function(){f.isEnabled||(f.isEnabled=!0,n=t(e.body).on("touchstart"+o,f.onStart).on("mousedown"+o,f.onStart).on("click"+o,f.onClick))},disable:function(){f.isEnabled&&(f.isEnabled=!1,n.off(o))},onStart:function(e){e.isTrigger||(g(e),(!t.tap.LEFT_BUTTON_ONLY||e.touches||1===e.which)&&(e.touches&&(u.count=e.touches.length),f.isTracking||(e.touches||!p(e))&&(f.isTracking=!0,u.event=e,e.touches?(a=e,n.on("touchend"+o+i,f.onEnd).on("touchcancel"+o+i,f.onCancel)):n.on("mouseup"+o+i,f.onEnd))))},onEnd:function(e){var n;e.isTrigger||(g(e),d(e)&&(n=c(s,e),r=n,t(u.event.target).trigger(n)),f.onCancel(e))},onCancel:function(e){e&&"touchcancel"===e.type&&e.preventDefault(),f.isTracking=!1,n.off(i)},onClick:function(e){return!e.isTrigger&&r&&r.isDefaultPrevented()&&r.target===e.target&&r.pageX===e.pageX&&r.pageY===e.pageY&&e.timeStamp-r.timeStamp<750?(r=null,!1):void 0}};t(e).ready(f.enable),t.tap={POSITION_DELTA:10,TIME_DELTA:400,LEFT_BUTTON_ONLY:!0}}(document,jQuery),Page.prototype.new_url=function(){return"NOT_SET"},Page.prototype.get_title=function(){return null},Page.prototype.resize=function(){},Page.prototype.init=function(){},Page.prototype.remove=function(){},"undefined"==typeof console){var cons={};cons.log=cons.error=cons.info=cons.debug=cons.warn=cons.trace=cons.dir=cons.dirxml=cons.group=cons.groupEnd=cons.time=cons.timeEnd=cons.assert=cons.profile=function(){},SAFE.console=cons}else SAFE.console=console;SAFE.prototype.extend=function(e,t){function n(){}n.prototype=t.prototype,e.prototype=new n,e.prototype.constructor=e,e.superConstructor=t,e.superClass=t.prototype},SAFE.prototype.url_changed=function(){},SAFE.prototype.on_resize=function(){},SAFE.prototype.pre_load=function(){},SAFE.prototype.transition_page=function(){return!1},SAFE.prototype.parse_query_string=function(e){for(var t=e.split("&"),n={},r=0;r<t.length;r++)pair=t[r].split("="),n[decodeURIComponent(pair[0])]=decodeURIComponent(pair[1]);return n},SAFE.prototype.build_query_string=function(e){var t="",n=!1,r=[];for(var a in e)n=!0,r.push(encodeURIComponent(a)+"="+encodeURIComponent(e[a]));return n&&(t="?"+r.join("&")),t},SAFE.prototype.scroll_to_anchor=function(e){e&&$(window).scrollTop(e.offset().top)},SAFE.prototype.use_page_class=function(e){var t,n,r=this,t=e.class_name;if(r.current_details=e,"string"==typeof t){var a=window[t];if(void 0===a)if(null!==r.load_page_class){var o=t;if(r.load_page_class(o,function(n,a){var o=document.createElement("style");o.type="text/css",o.styleSheet?o.styleSheet.cssText=a:o.appendChild(document.createTextNode(a)),$("head")[0].appendChild(o),e.class_name=t,r.current_details===e&&r.use_page_class(e)}),null===r.loading_page)return;n=r.loading_page}else SAFE.console.error("The requested class ("+t+") was not found and dynamic class loading is not enabled"),n=null;else n=a}else n=t;if(null==n){if(null==r.no_page_found_class)return null!=r.current_page&&(r.current_page.remove(),r.current_page=null,r.previous_class=null),void SAFE.console.error("No 404 page set. Use Site.set_no_page_found_class(class_name) to set one.");n=r.no_page_found_class}if(n===r.previous_class){var i=r.current_page.new_url(e);if("NOT_SET"!=i)return void(e.anchor&&r.scroll_to_anchor($("a[name*='"+e.anchor+"']")))}var s=null;null!=r.current_page&&(r.current_page.remove(),s=r.current_page);var l=r.pre_load(n,e,s);if(void 0===l){delete e.class_name;var u=new n(e,s);r.current_page=u,r.previous_class=n,r.resize();var c=r.transition_page(r.current_page,s);c===!0||(r.element.empty(),r.element.append(r.current_page.element)),r.current_page.init(),r.resize(),e.anchor&&r.scroll_to_anchor($("a[name*='"+e.anchor+"']"))}else if("function"==typeof l);else{if(null===l)return e.class_name=null,void r.use_page_class(e);r.load_url(l,!0)}},SAFE.prototype.set_no_page_found_class=function(e){var t=this;t.no_page_found_class=e},SAFE.prototype.set_404=function(e){var t=this;t.no_page_found_class=e},SAFE.prototype.ajax_post=function(e){return e.cache=!1,e.type="post",e.contentType="application/json; charset=utf-8",e.data=JSON.stringify(e.data),e.dataType="json",$.ajax(e)},SAFE.prototype.ajax_get=function(e){return e.cache=!1,e.dataType="json",e.type="get",$.ajax(e)},SAFE.prototype.ajax_delete=function(e){return e.cache=!1,e.dataType="json",e.type="delete",$.ajax(e)},SAFE.prototype.resize=function(){var e=this,t=$(document).width()-e.scroll_bar_width(),n=$(document).height(),r=$(window).outerWidth(),a=$(window).outerHeight();e.resize_obj={scroll_bar_width:e.scroll_bar_width(),doc_width:t,doc_height:n,window_width:r,window_height:a},e.on_resize(e.resize_obj),null!=e.current_page&&e.current_page.resize(e.resize_obj)},SAFE.prototype.init=function(e){var t=this,n=window.location.pathname;null!=window.location.search&&(n+=window.location.search);var r=decodeURIComponent(n);return null==e||e==r||(r=e,t.history_state_supported)?(t.history_state_supported&&(History.replaceState(null,"",Site.origin+r),History.Adapter.bind(window,"statechange",function(){if(t.ignore_next_url)return void(t.ignore_next_url=!1);var e=History.getState();null!=e&&t.load_url(decodeURIComponent(e.url),!1)})),$(window).resize(function(){t.resize()}).resize(),null==r&&(r=""),void t.load_url(r,!1)):void(window.location=e)},SAFE.prototype.reload_page=function(){var e=this;e.use_page_class(e.current_class_and_details)},SAFE.prototype.replace_current_url=function(e,t){var n=this;t="undefined"!=typeof t?t:!0;var r=n.ignore_next_url;n.ignore_next_url=!0,History.replaceState(null,"",Site.origin+e),n.ignore_next_url=r,t&&n.url_changed(window.location.toString(),window.location.pathname,window.location.toString().substring(Site.origin.length),!1)},SAFE.prototype.add_url=function(e,t){var n=this;n.map[e]=t},SAFE.prototype.add_url_map=function(e,t){var n=this;for(var r in e){var t=e[r];n.add_url(r,t)}},SAFE.prototype.scroll_bar_width=function(){var e=this;if(-1!=e.scroll_bar_width_value)return e.scroll_bar_width_value;var t=$('<div style="width:50px;height:50px;overflow:hidden;position:absolute;top:-200px;left:-200px;"><div style="height:100px;"></div>');$("body").append(t);var n=$("div",t).innerWidth();t.css("overflow-y","scroll");var r=$("div",t).innerWidth();return t.remove(),e.scroll_bar_width_value=n-r,e.scroll_bar_width_value},SAFE.prototype.get_class_for_url=function(e){var t=this,n=t.get_class_and_details_for_url(e),r=window[n.class_name];return void 0===r&&(r=n.class_name),null!=n?r:null},SAFE.prototype.get_class_and_details_for_url=function(e){var t=this,n={},r=e.split("#"),a=r[1],o=r[0].split("?");o.length>1&&(n=t.parse_query_string(o[1]));var i=o[0];i.length>=t.origin.length&&i.substring(0,t.origin.length)==t.origin&&(i=i.substring(t.origin.length));var s=t.path;if(""!=s&&("/"!=s[0]&&(s="/"+s),"/"!=s[s.length-1]&&(s+="/")),s.length>0){if(s.length>i.length||i.substring(0,s.length)!=s)return SAFE.console.error("The requested url ("+e+") was not relative to the domain/origin and within the Site.path scope"),null;i=i.substring(s.length-1)}var l=i.split("/");""===l[l.length-1]&&l.pop(),""===l[0]&&l.shift();var u=null,c={},d=null;for(var p in t.map){var g={},f=p.split("/");""===f[f.length-1]&&f.pop();var h=0;if(""===f[0]&&(f.shift(),h++),!(f.length>l.length)){for(var _=!0,S=!1,y=0;y<f.length;y++){var v=f[y],b=l[y];if(":"===v[0]){var m=v.substring(1);g[m]=b}else{if("*"===v[0]){_=!0,S=!0,console.log(i,h,i.substring(h)),g["*"]=i.substring(h);break}if(v!==b){_=!1;break}}h+=b.length+1}S||l.length===f.length||(_=!1),_&&(u=t.map[p],c=g,d=p)}}return{class_name:u,query:n,url:i,url_pattern:d,url_with_query:e.substring(s.length-1),params:c,anchor:a}},SAFE.prototype.load_url=function(e,t){var n=this,r=Site.origin+e;if(n.history_state_supported)t&&(n.ignore_next_url=!0,History.pushState(null,"",r),n.previous_url=r);else{var a=encodeURI(r);if(window.location!=a)return void(window.location=a)}n.current_url=r,n.current_class_and_details=n.get_class_and_details_for_url(e),null==n.current_class_and_details.class_name&&SAFE.console.error("Page not found for url ("+n.current_class_and_details.url+"). The full url was ("+e+")"),n.use_page_class(n.current_class_and_details),n.url_changed(window.location.toString(),window.location.pathname,window.location.toString().substring(Site.origin.length),n.initial_url),n.initial_url=!1};var Site;new SAFE;
+/**
+ * History.js jQuery Adapter
+ * @author Benjamin Arthur Lupton <contact@balupton.com>
+ * @copyright 2010-2011 Benjamin Arthur Lupton <contact@balupton.com>
+ * @license New BSD License <http://creativecommons.org/licenses/BSD/>
+ */
+
+// Closure
+(function(window,undefined){
+	"use strict";
+
+	// Localise Globals
+	var
+		History = window.History = window.History||{},
+		jQuery = window.jQuery;
+
+	// Check Existence
+	if ( typeof History.Adapter !== 'undefined' ) {
+		throw new Error('History.js Adapter has already been loaded...');
+	}
+
+	// Add the Adapter
+	History.Adapter = {
+		/**
+		 * History.Adapter.bind(el,event,callback)
+		 * @param {Element|string} el
+		 * @param {string} event - custom and standard events
+		 * @param {function} callback
+		 * @return {void}
+		 */
+		bind: function(el,event,callback){
+			jQuery(el).bind(event,callback);
+		},
+
+		/**
+		 * History.Adapter.trigger(el,event)
+		 * @param {Element|string} el
+		 * @param {string} event - custom and standard events
+		 * @param {Object=} extra - a object of extra event data (optional)
+		 * @return {void}
+		 */
+		trigger: function(el,event,extra){
+			jQuery(el).trigger(event,extra);
+		},
+
+		/**
+		 * History.Adapter.extractEventData(key,event,extra)
+		 * @param {string} key - key for the event data to extract
+		 * @param {string} event - custom and standard events
+		 * @param {Object=} extra - a object of extra event data (optional)
+		 * @return {mixed}
+		 */
+		extractEventData: function(key,event,extra){
+			// jQuery Native then jQuery Custom
+			var result = (event && event.originalEvent && event.originalEvent[key]) || (extra && extra[key]) || undefined;
+
+			// Return
+			return result;
+		},
+
+		/**
+		 * History.Adapter.onDomLoad(callback)
+		 * @param {function} callback
+		 * @return {void}
+		 */
+		onDomLoad: function(callback) {
+			jQuery(callback);
+		}
+	};
+
+	// Try and Initialise History
+	if ( typeof History.init !== 'undefined' ) {
+		History.init();
+	}
+
+})(window);
+
+/**
+ * History.js Core
+ * @author Benjamin Arthur Lupton <contact@balupton.com>
+ * @copyright 2010-2011 Benjamin Arthur Lupton <contact@balupton.com>
+ * @license New BSD License <http://creativecommons.org/licenses/BSD/>
+ */
+
+(function(window,undefined){
+	"use strict";
+
+	// ========================================================================
+	// Initialise
+
+	// Localise Globals
+	var
+		console = window.console||undefined, // Prevent a JSLint complain
+		document = window.document, // Make sure we are using the correct document
+		navigator = window.navigator, // Make sure we are using the correct navigator
+		sessionStorage = window.sessionStorage||false, // sessionStorage
+		setTimeout = window.setTimeout,
+		clearTimeout = window.clearTimeout,
+		setInterval = window.setInterval,
+		clearInterval = window.clearInterval,
+		JSON = window.JSON,
+		alert = window.alert,
+		History = window.History = window.History||{}, // Public History Object
+		history = window.history; // Old History Object
+
+	try {
+		sessionStorage.setItem('TEST', '1');
+		sessionStorage.removeItem('TEST');
+	} catch(e) {
+		sessionStorage = false;
+	}
+
+	// MooTools Compatibility
+	JSON.stringify = JSON.stringify||JSON.encode;
+	JSON.parse = JSON.parse||JSON.decode;
+
+	// Check Existence
+	if ( typeof History.init !== 'undefined' ) {
+		throw new Error('History.js Core has already been loaded...');
+	}
+
+	// Initialise History
+	History.init = function(options){
+		// Check Load Status of Adapter
+		if ( typeof History.Adapter === 'undefined' ) {
+			return false;
+		}
+
+		// Check Load Status of Core
+		if ( typeof History.initCore !== 'undefined' ) {
+			History.initCore();
+		}
+
+		// Check Load Status of HTML4 Support
+		if ( typeof History.initHtml4 !== 'undefined' ) {
+			History.initHtml4();
+		}
+
+		// Return true
+		return true;
+	};
+
+
+	// ========================================================================
+	// Initialise Core
+
+	// Initialise Core
+	History.initCore = function(options){
+		// Initialise
+		if ( typeof History.initCore.initialized !== 'undefined' ) {
+			// Already Loaded
+			return false;
+		}
+		else {
+			History.initCore.initialized = true;
+		}
+
+
+		// ====================================================================
+		// Options
+
+		/**
+		 * History.options
+		 * Configurable options
+		 */
+		History.options = History.options||{};
+
+		/**
+		 * History.options.hashChangeInterval
+		 * How long should the interval be before hashchange checks
+		 */
+		History.options.hashChangeInterval = History.options.hashChangeInterval || 100;
+
+		/**
+		 * History.options.safariPollInterval
+		 * How long should the interval be before safari poll checks
+		 */
+		History.options.safariPollInterval = History.options.safariPollInterval || 500;
+
+		/**
+		 * History.options.doubleCheckInterval
+		 * How long should the interval be before we perform a double check
+		 */
+		History.options.doubleCheckInterval = History.options.doubleCheckInterval || 500;
+
+		/**
+		 * History.options.disableSuid
+		 * Force History not to append suid
+		 */
+		History.options.disableSuid = History.options.disableSuid || false;
+
+		/**
+		 * History.options.storeInterval
+		 * How long should we wait between store calls
+		 */
+		History.options.storeInterval = History.options.storeInterval || 1000;
+
+		/**
+		 * History.options.busyDelay
+		 * How long should we wait between busy events
+		 */
+		History.options.busyDelay = History.options.busyDelay || 250;
+
+		/**
+		 * History.options.debug
+		 * If true will enable debug messages to be logged
+		 */
+		History.options.debug = History.options.debug || false;
+
+		/**
+		 * History.options.initialTitle
+		 * What is the title of the initial state
+		 */
+		History.options.initialTitle = History.options.initialTitle || document.title;
+
+		/**
+		 * History.options.html4Mode
+		 * If true, will force HTMl4 mode (hashtags)
+		 */
+		History.options.html4Mode = History.options.html4Mode || false;
+
+		/**
+		 * History.options.delayInit
+		 * Want to override default options and call init manually.
+		 */
+		History.options.delayInit = History.options.delayInit || false;
+
+
+		// ====================================================================
+		// Interval record
+
+		/**
+		 * History.intervalList
+		 * List of intervals set, to be cleared when document is unloaded.
+		 */
+		History.intervalList = [];
+
+		/**
+		 * History.clearAllIntervals
+		 * Clears all setInterval instances.
+		 */
+		History.clearAllIntervals = function(){
+			var i, il = History.intervalList;
+			if (typeof il !== "undefined" && il !== null) {
+				for (i = 0; i < il.length; i++) {
+					clearInterval(il[i]);
+				}
+				History.intervalList = null;
+			}
+		};
+
+
+		// ====================================================================
+		// Debug
+
+		/**
+		 * History.debug(message,...)
+		 * Logs the passed arguments if debug enabled
+		 */
+		History.debug = function(){
+			if ( (History.options.debug||false) ) {
+				History.log.apply(History,arguments);
+			}
+		};
+
+		/**
+		 * History.log(message,...)
+		 * Logs the passed arguments
+		 */
+		History.log = function(){
+			// Prepare
+			var
+				consoleExists = !(typeof console === 'undefined' || typeof console.log === 'undefined' || typeof console.log.apply === 'undefined'),
+				textarea = document.getElementById('log'),
+				message,
+				i,n,
+				args,arg
+				;
+
+			// Write to Console
+			if ( consoleExists ) {
+				args = Array.prototype.slice.call(arguments);
+				message = args.shift();
+				if ( typeof console.debug !== 'undefined' ) {
+					console.debug.apply(console,[message,args]);
+				}
+				else {
+					console.log.apply(console,[message,args]);
+				}
+			}
+			else {
+				message = ("\n"+arguments[0]+"\n");
+			}
+
+			// Write to log
+			for ( i=1,n=arguments.length; i<n; ++i ) {
+				arg = arguments[i];
+				if ( typeof arg === 'object' && typeof JSON !== 'undefined' ) {
+					try {
+						arg = JSON.stringify(arg);
+					}
+					catch ( Exception ) {
+						// Recursive Object
+					}
+				}
+				message += "\n"+arg+"\n";
+			}
+
+			// Textarea
+			if ( textarea ) {
+				textarea.value += message+"\n-----\n";
+				textarea.scrollTop = textarea.scrollHeight - textarea.clientHeight;
+			}
+			// No Textarea, No Console
+			else if ( !consoleExists ) {
+				alert(message);
+			}
+
+			// Return true
+			return true;
+		};
+
+
+		// ====================================================================
+		// Emulated Status
+
+		/**
+		 * History.getInternetExplorerMajorVersion()
+		 * Get's the major version of Internet Explorer
+		 * @return {integer}
+		 * @license Public Domain
+		 * @author Benjamin Arthur Lupton <contact@balupton.com>
+		 * @author James Padolsey <https://gist.github.com/527683>
+		 */
+		History.getInternetExplorerMajorVersion = function(){
+			var result = History.getInternetExplorerMajorVersion.cached =
+					(typeof History.getInternetExplorerMajorVersion.cached !== 'undefined')
+				?	History.getInternetExplorerMajorVersion.cached
+				:	(function(){
+						var v = 3,
+								div = document.createElement('div'),
+								all = div.getElementsByTagName('i');
+						while ( (div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->') && all[0] ) {}
+						return (v > 4) ? v : false;
+					})()
+				;
+			return result;
+		};
+
+		/**
+		 * History.isInternetExplorer()
+		 * Are we using Internet Explorer?
+		 * @return {boolean}
+		 * @license Public Domain
+		 * @author Benjamin Arthur Lupton <contact@balupton.com>
+		 */
+		History.isInternetExplorer = function(){
+			var result =
+				History.isInternetExplorer.cached =
+				(typeof History.isInternetExplorer.cached !== 'undefined')
+					?	History.isInternetExplorer.cached
+					:	Boolean(History.getInternetExplorerMajorVersion())
+				;
+			return result;
+		};
+
+		/**
+		 * History.emulated
+		 * Which features require emulating?
+		 */
+
+		if (History.options.html4Mode) {
+			History.emulated = {
+				pushState : true,
+				hashChange: true
+			};
+		}
+
+		else {
+
+			History.emulated = {
+				pushState: !Boolean(
+					window.history && window.history.pushState && window.history.replaceState
+					&& !(
+						(/ Mobile\/([1-7][a-z]|(8([abcde]|f(1[0-8]))))/i).test(navigator.userAgent) /* disable for versions of iOS before version 4.3 (8F190) */
+						|| (/AppleWebKit\/5([0-2]|3[0-2])/i).test(navigator.userAgent) /* disable for the mercury iOS browser, or at least older versions of the webkit engine */
+					)
+				),
+				hashChange: Boolean(
+					!(('onhashchange' in window) || ('onhashchange' in document))
+					||
+					(History.isInternetExplorer() && History.getInternetExplorerMajorVersion() < 8)
+				)
+			};
+		}
+
+		/**
+		 * History.enabled
+		 * Is History enabled?
+		 */
+		History.enabled = !History.emulated.pushState;
+
+		/**
+		 * History.bugs
+		 * Which bugs are present
+		 */
+		History.bugs = {
+			/**
+			 * Safari 5 and Safari iOS 4 fail to return to the correct state once a hash is replaced by a `replaceState` call
+			 * https://bugs.webkit.org/show_bug.cgi?id=56249
+			 */
+			setHash: Boolean(!History.emulated.pushState && navigator.vendor === 'Apple Computer, Inc.' && /AppleWebKit\/5([0-2]|3[0-3])/.test(navigator.userAgent)),
+
+			/**
+			 * Safari 5 and Safari iOS 4 sometimes fail to apply the state change under busy conditions
+			 * https://bugs.webkit.org/show_bug.cgi?id=42940
+			 */
+			safariPoll: Boolean(!History.emulated.pushState && navigator.vendor === 'Apple Computer, Inc.' && /AppleWebKit\/5([0-2]|3[0-3])/.test(navigator.userAgent)),
+
+			/**
+			 * MSIE 6 and 7 sometimes do not apply a hash even it was told to (requiring a second call to the apply function)
+			 */
+			ieDoubleCheck: Boolean(History.isInternetExplorer() && History.getInternetExplorerMajorVersion() < 8),
+
+			/**
+			 * MSIE 6 requires the entire hash to be encoded for the hashes to trigger the onHashChange event
+			 */
+			hashEscape: Boolean(History.isInternetExplorer() && History.getInternetExplorerMajorVersion() < 7)
+		};
+
+		/**
+		 * History.isEmptyObject(obj)
+		 * Checks to see if the Object is Empty
+		 * @param {Object} obj
+		 * @return {boolean}
+		 */
+		History.isEmptyObject = function(obj) {
+			for ( var name in obj ) {
+				if ( obj.hasOwnProperty(name) ) {
+					return false;
+				}
+			}
+			return true;
+		};
+
+		/**
+		 * History.cloneObject(obj)
+		 * Clones a object and eliminate all references to the original contexts
+		 * @param {Object} obj
+		 * @return {Object}
+		 */
+		History.cloneObject = function(obj) {
+			var hash,newObj;
+			if ( obj ) {
+				hash = JSON.stringify(obj);
+				newObj = JSON.parse(hash);
+			}
+			else {
+				newObj = {};
+			}
+			return newObj;
+		};
+
+
+		// ====================================================================
+		// URL Helpers
+
+		/**
+		 * History.getRootUrl()
+		 * Turns "http://mysite.com/dir/page.html?asd" into "http://mysite.com"
+		 * @return {String} rootUrl
+		 */
+		History.getRootUrl = function(){
+			// Create
+			var rootUrl = document.location.protocol+'//'+(document.location.hostname||document.location.host);
+			if ( document.location.port||false ) {
+				rootUrl += ':'+document.location.port;
+			}
+			rootUrl += '/';
+
+			// Return
+			return rootUrl;
+		};
+
+		/**
+		 * History.getBaseHref()
+		 * Fetches the `href` attribute of the `<base href="...">` element if it exists
+		 * @return {String} baseHref
+		 */
+		History.getBaseHref = function(){
+			// Create
+			var
+				baseElements = document.getElementsByTagName('base'),
+				baseElement = null,
+				baseHref = '';
+
+			// Test for Base Element
+			if ( baseElements.length === 1 ) {
+				// Prepare for Base Element
+				baseElement = baseElements[0];
+				baseHref = baseElement.href.replace(/[^\/]+$/,'');
+			}
+
+			// Adjust trailing slash
+			baseHref = baseHref.replace(/\/+$/,'');
+			if ( baseHref ) baseHref += '/';
+
+			// Return
+			return baseHref;
+		};
+
+		/**
+		 * History.getBaseUrl()
+		 * Fetches the baseHref or basePageUrl or rootUrl (whichever one exists first)
+		 * @return {String} baseUrl
+		 */
+		History.getBaseUrl = function(){
+			// Create
+			var baseUrl = History.getBaseHref()||History.getBasePageUrl()||History.getRootUrl();
+
+			// Return
+			return baseUrl;
+		};
+
+		/**
+		 * History.getPageUrl()
+		 * Fetches the URL of the current page
+		 * @return {String} pageUrl
+		 */
+		History.getPageUrl = function(){
+			// Fetch
+			var
+				State = History.getState(false,false),
+				stateUrl = (State||{}).url||History.getLocationHref(),
+				pageUrl;
+
+			// Create
+			pageUrl = stateUrl.replace(/\/+$/,'').replace(/[^\/]+$/,function(part,index,string){
+				return (/\./).test(part) ? part : part+'/';
+			});
+
+			// Return
+			return pageUrl;
+		};
+
+		/**
+		 * History.getBasePageUrl()
+		 * Fetches the Url of the directory of the current page
+		 * @return {String} basePageUrl
+		 */
+		History.getBasePageUrl = function(){
+			// Create
+			var basePageUrl = (History.getLocationHref()).replace(/[#\?].*/,'').replace(/[^\/]+$/,function(part,index,string){
+				return (/[^\/]$/).test(part) ? '' : part;
+			}).replace(/\/+$/,'')+'/';
+
+			// Return
+			return basePageUrl;
+		};
+
+		/**
+		 * History.getFullUrl(url)
+		 * Ensures that we have an absolute URL and not a relative URL
+		 * @param {string} url
+		 * @param {Boolean} allowBaseHref
+		 * @return {string} fullUrl
+		 */
+		History.getFullUrl = function(url,allowBaseHref){
+			// Prepare
+			var fullUrl = url, firstChar = url.substring(0,1);
+			allowBaseHref = (typeof allowBaseHref === 'undefined') ? true : allowBaseHref;
+
+			// Check
+			if ( /[a-z]+\:\/\//.test(url) ) {
+				// Full URL
+			}
+			else if ( firstChar === '/' ) {
+				// Root URL
+				fullUrl = History.getRootUrl()+url.replace(/^\/+/,'');
+			}
+			else if ( firstChar === '#' ) {
+				// Anchor URL
+				fullUrl = History.getPageUrl().replace(/#.*/,'')+url;
+			}
+			else if ( firstChar === '?' ) {
+				// Query URL
+				fullUrl = History.getPageUrl().replace(/[\?#].*/,'')+url;
+			}
+			else {
+				// Relative URL
+				if ( allowBaseHref ) {
+					fullUrl = History.getBaseUrl()+url.replace(/^(\.\/)+/,'');
+				} else {
+					fullUrl = History.getBasePageUrl()+url.replace(/^(\.\/)+/,'');
+				}
+				// We have an if condition above as we do not want hashes
+				// which are relative to the baseHref in our URLs
+				// as if the baseHref changes, then all our bookmarks
+				// would now point to different locations
+				// whereas the basePageUrl will always stay the same
+			}
+
+			// Return
+			return fullUrl.replace(/\#$/,'');
+		};
+
+		/**
+		 * History.getShortUrl(url)
+		 * Ensures that we have a relative URL and not a absolute URL
+		 * @param {string} url
+		 * @return {string} url
+		 */
+		History.getShortUrl = function(url){
+			// Prepare
+			var shortUrl = url, baseUrl = History.getBaseUrl(), rootUrl = History.getRootUrl();
+
+			// Trim baseUrl
+			if ( History.emulated.pushState ) {
+				// We are in a if statement as when pushState is not emulated
+				// The actual url these short urls are relative to can change
+				// So within the same session, we the url may end up somewhere different
+				shortUrl = shortUrl.replace(baseUrl,'');
+			}
+
+			// Trim rootUrl
+			shortUrl = shortUrl.replace(rootUrl,'/');
+
+			// Ensure we can still detect it as a state
+			if ( History.isTraditionalAnchor(shortUrl) ) {
+				shortUrl = './'+shortUrl;
+			}
+
+			// Clean It
+			shortUrl = shortUrl.replace(/^(\.\/)+/g,'./').replace(/\#$/,'');
+
+			// Return
+			return shortUrl;
+		};
+
+		/**
+		 * History.getLocationHref(document)
+		 * Returns a normalized version of document.location.href
+		 * accounting for browser inconsistencies, etc.
+		 *
+		 * This URL will be URI-encoded and will include the hash
+		 *
+		 * @param {object} document
+		 * @return {string} url
+		 */
+		History.getLocationHref = function(doc) {
+			doc = doc || document;
+
+			// most of the time, this will be true
+			if (doc.URL === doc.location.href)
+				return doc.location.href;
+
+			// some versions of webkit URI-decode document.location.href
+			// but they leave document.URL in an encoded state
+			if (doc.location.href === decodeURIComponent(doc.URL))
+				return doc.URL;
+
+			// FF 3.6 only updates document.URL when a page is reloaded
+			// document.location.href is updated correctly
+			if (doc.location.hash && decodeURIComponent(doc.location.href.replace(/^[^#]+/, "")) === doc.location.hash)
+				return doc.location.href;
+
+			if (doc.URL.indexOf('#') == -1 && doc.location.href.indexOf('#') != -1)
+				return doc.location.href;
+			
+			return doc.URL || doc.location.href;
+		};
+
+
+		// ====================================================================
+		// State Storage
+
+		/**
+		 * History.store
+		 * The store for all session specific data
+		 */
+		History.store = {};
+
+		/**
+		 * History.idToState
+		 * 1-1: State ID to State Object
+		 */
+		History.idToState = History.idToState||{};
+
+		/**
+		 * History.stateToId
+		 * 1-1: State String to State ID
+		 */
+		History.stateToId = History.stateToId||{};
+
+		/**
+		 * History.urlToId
+		 * 1-1: State URL to State ID
+		 */
+		History.urlToId = History.urlToId||{};
+
+		/**
+		 * History.storedStates
+		 * Store the states in an array
+		 */
+		History.storedStates = History.storedStates||[];
+
+		/**
+		 * History.savedStates
+		 * Saved the states in an array
+		 */
+		History.savedStates = History.savedStates||[];
+
+		/**
+		 * History.noramlizeStore()
+		 * Noramlize the store by adding necessary values
+		 */
+		History.normalizeStore = function(){
+			History.store.idToState = History.store.idToState||{};
+			History.store.urlToId = History.store.urlToId||{};
+			History.store.stateToId = History.store.stateToId||{};
+		};
+
+		/**
+		 * History.getState()
+		 * Get an object containing the data, title and url of the current state
+		 * @param {Boolean} friendly
+		 * @param {Boolean} create
+		 * @return {Object} State
+		 */
+		History.getState = function(friendly,create){
+			// Prepare
+			if ( typeof friendly === 'undefined' ) { friendly = true; }
+			if ( typeof create === 'undefined' ) { create = true; }
+
+			// Fetch
+			var State = History.getLastSavedState();
+
+			// Create
+			if ( !State && create ) {
+				State = History.createStateObject();
+			}
+
+			// Adjust
+			if ( friendly ) {
+				State = History.cloneObject(State);
+				State.url = State.cleanUrl||State.url;
+			}
+
+			// Return
+			return State;
+		};
+
+		/**
+		 * History.getIdByState(State)
+		 * Gets a ID for a State
+		 * @param {State} newState
+		 * @return {String} id
+		 */
+		History.getIdByState = function(newState){
+
+			// Fetch ID
+			var id = History.extractId(newState.url),
+				str;
+
+			if ( !id ) {
+				// Find ID via State String
+				str = History.getStateString(newState);
+				if ( typeof History.stateToId[str] !== 'undefined' ) {
+					id = History.stateToId[str];
+				}
+				else if ( typeof History.store.stateToId[str] !== 'undefined' ) {
+					id = History.store.stateToId[str];
+				}
+				else {
+					// Generate a new ID
+					while ( true ) {
+						id = (new Date()).getTime() + String(Math.random()).replace(/\D/g,'');
+						if ( typeof History.idToState[id] === 'undefined' && typeof History.store.idToState[id] === 'undefined' ) {
+							break;
+						}
+					}
+
+					// Apply the new State to the ID
+					History.stateToId[str] = id;
+					History.idToState[id] = newState;
+				}
+			}
+
+			// Return ID
+			return id;
+		};
+
+		/**
+		 * History.normalizeState(State)
+		 * Expands a State Object
+		 * @param {object} State
+		 * @return {object}
+		 */
+		History.normalizeState = function(oldState){
+			// Variables
+			var newState, dataNotEmpty;
+
+			// Prepare
+			if ( !oldState || (typeof oldState !== 'object') ) {
+				oldState = {};
+			}
+
+			// Check
+			if ( typeof oldState.normalized !== 'undefined' ) {
+				return oldState;
+			}
+
+			// Adjust
+			if ( !oldState.data || (typeof oldState.data !== 'object') ) {
+				oldState.data = {};
+			}
+
+			// ----------------------------------------------------------------
+
+			// Create
+			newState = {};
+			newState.normalized = true;
+			newState.title = oldState.title||'';
+			newState.url = History.getFullUrl(oldState.url?oldState.url:(History.getLocationHref()));
+			newState.hash = History.getShortUrl(newState.url);
+			newState.data = History.cloneObject(oldState.data);
+
+			// Fetch ID
+			newState.id = History.getIdByState(newState);
+
+			// ----------------------------------------------------------------
+
+			// Clean the URL
+			newState.cleanUrl = newState.url.replace(/\??\&_suid.*/,'');
+			newState.url = newState.cleanUrl;
+
+			// Check to see if we have more than just a url
+			dataNotEmpty = !History.isEmptyObject(newState.data);
+
+			// Apply
+			if ( (newState.title || dataNotEmpty) && History.options.disableSuid !== true ) {
+				// Add ID to Hash
+				newState.hash = History.getShortUrl(newState.url).replace(/\??\&_suid.*/,'');
+				if ( !/\?/.test(newState.hash) ) {
+					newState.hash += '?';
+				}
+				newState.hash += '&_suid='+newState.id;
+			}
+
+			// Create the Hashed URL
+			newState.hashedUrl = History.getFullUrl(newState.hash);
+
+			// ----------------------------------------------------------------
+
+			// Update the URL if we have a duplicate
+			if ( (History.emulated.pushState || History.bugs.safariPoll) && History.hasUrlDuplicate(newState) ) {
+				newState.url = newState.hashedUrl;
+			}
+
+			// ----------------------------------------------------------------
+
+			// Return
+			return newState;
+		};
+
+		/**
+		 * History.createStateObject(data,title,url)
+		 * Creates a object based on the data, title and url state params
+		 * @param {object} data
+		 * @param {string} title
+		 * @param {string} url
+		 * @return {object}
+		 */
+		History.createStateObject = function(data,title,url){
+			// Hashify
+			var State = {
+				'data': data,
+				'title': title,
+				'url': url
+			};
+
+			// Expand the State
+			State = History.normalizeState(State);
+
+			// Return object
+			return State;
+		};
+
+		/**
+		 * History.getStateById(id)
+		 * Get a state by it's UID
+		 * @param {String} id
+		 */
+		History.getStateById = function(id){
+			// Prepare
+			id = String(id);
+
+			// Retrieve
+			var State = History.idToState[id] || History.store.idToState[id] || undefined;
+
+			// Return State
+			return State;
+		};
+
+		/**
+		 * Get a State's String
+		 * @param {State} passedState
+		 */
+		History.getStateString = function(passedState){
+			// Prepare
+			var State, cleanedState, str;
+
+			// Fetch
+			State = History.normalizeState(passedState);
+
+			// Clean
+			cleanedState = {
+				data: State.data,
+				title: passedState.title,
+				url: passedState.url
+			};
+
+			// Fetch
+			str = JSON.stringify(cleanedState);
+
+			// Return
+			return str;
+		};
+
+		/**
+		 * Get a State's ID
+		 * @param {State} passedState
+		 * @return {String} id
+		 */
+		History.getStateId = function(passedState){
+			// Prepare
+			var State, id;
+
+			// Fetch
+			State = History.normalizeState(passedState);
+
+			// Fetch
+			id = State.id;
+
+			// Return
+			return id;
+		};
+
+		/**
+		 * History.getHashByState(State)
+		 * Creates a Hash for the State Object
+		 * @param {State} passedState
+		 * @return {String} hash
+		 */
+		History.getHashByState = function(passedState){
+			// Prepare
+			var State, hash;
+
+			// Fetch
+			State = History.normalizeState(passedState);
+
+			// Hash
+			hash = State.hash;
+
+			// Return
+			return hash;
+		};
+
+		/**
+		 * History.extractId(url_or_hash)
+		 * Get a State ID by it's URL or Hash
+		 * @param {string} url_or_hash
+		 * @return {string} id
+		 */
+		History.extractId = function ( url_or_hash ) {
+			// Prepare
+			var id,parts,url, tmp;
+
+			// Extract
+			
+			// If the URL has a #, use the id from before the #
+			if (url_or_hash.indexOf('#') != -1)
+			{
+				tmp = url_or_hash.split("#")[0];
+			}
+			else
+			{
+				tmp = url_or_hash;
+			}
+			
+			parts = /(.*)\&_suid=([0-9]+)$/.exec(tmp);
+			url = parts ? (parts[1]||url_or_hash) : url_or_hash;
+			id = parts ? String(parts[2]||'') : '';
+
+			// Return
+			return id||false;
+		};
+
+		/**
+		 * History.isTraditionalAnchor
+		 * Checks to see if the url is a traditional anchor or not
+		 * @param {String} url_or_hash
+		 * @return {Boolean}
+		 */
+		History.isTraditionalAnchor = function(url_or_hash){
+			// Check
+			var isTraditional = !(/[\/\?\.]/.test(url_or_hash));
+
+			// Return
+			return isTraditional;
+		};
+
+		/**
+		 * History.extractState
+		 * Get a State by it's URL or Hash
+		 * @param {String} url_or_hash
+		 * @return {State|null}
+		 */
+		History.extractState = function(url_or_hash,create){
+			// Prepare
+			var State = null, id, url;
+			create = create||false;
+
+			// Fetch SUID
+			id = History.extractId(url_or_hash);
+			if ( id ) {
+				State = History.getStateById(id);
+			}
+
+			// Fetch SUID returned no State
+			if ( !State ) {
+				// Fetch URL
+				url = History.getFullUrl(url_or_hash);
+
+				// Check URL
+				id = History.getIdByUrl(url)||false;
+				if ( id ) {
+					State = History.getStateById(id);
+				}
+
+				// Create State
+				if ( !State && create && !History.isTraditionalAnchor(url_or_hash) ) {
+					State = History.createStateObject(null,null,url);
+				}
+			}
+
+			// Return
+			return State;
+		};
+
+		/**
+		 * History.getIdByUrl()
+		 * Get a State ID by a State URL
+		 */
+		History.getIdByUrl = function(url){
+			// Fetch
+			var id = History.urlToId[url] || History.store.urlToId[url] || undefined;
+
+			// Return
+			return id;
+		};
+
+		/**
+		 * History.getLastSavedState()
+		 * Get an object containing the data, title and url of the current state
+		 * @return {Object} State
+		 */
+		History.getLastSavedState = function(){
+			return History.savedStates[History.savedStates.length-1]||undefined;
+		};
+
+		/**
+		 * History.getLastStoredState()
+		 * Get an object containing the data, title and url of the current state
+		 * @return {Object} State
+		 */
+		History.getLastStoredState = function(){
+			return History.storedStates[History.storedStates.length-1]||undefined;
+		};
+
+		/**
+		 * History.hasUrlDuplicate
+		 * Checks if a Url will have a url conflict
+		 * @param {Object} newState
+		 * @return {Boolean} hasDuplicate
+		 */
+		History.hasUrlDuplicate = function(newState) {
+			// Prepare
+			var hasDuplicate = false,
+				oldState;
+
+			// Fetch
+			oldState = History.extractState(newState.url);
+
+			// Check
+			hasDuplicate = oldState && oldState.id !== newState.id;
+
+			// Return
+			return hasDuplicate;
+		};
+
+		/**
+		 * History.storeState
+		 * Store a State
+		 * @param {Object} newState
+		 * @return {Object} newState
+		 */
+		History.storeState = function(newState){
+			// Store the State
+			History.urlToId[newState.url] = newState.id;
+
+			// Push the State
+			History.storedStates.push(History.cloneObject(newState));
+
+			// Return newState
+			return newState;
+		};
+
+		/**
+		 * History.isLastSavedState(newState)
+		 * Tests to see if the state is the last state
+		 * @param {Object} newState
+		 * @return {boolean} isLast
+		 */
+		History.isLastSavedState = function(newState){
+			// Prepare
+			var isLast = false,
+				newId, oldState, oldId;
+
+			// Check
+			if ( History.savedStates.length ) {
+				newId = newState.id;
+				oldState = History.getLastSavedState();
+				oldId = oldState.id;
+
+				// Check
+				isLast = (newId === oldId);
+			}
+
+			// Return
+			return isLast;
+		};
+
+		/**
+		 * History.saveState
+		 * Push a State
+		 * @param {Object} newState
+		 * @return {boolean} changed
+		 */
+		History.saveState = function(newState){
+			// Check Hash
+			if ( History.isLastSavedState(newState) ) {
+				return false;
+			}
+
+			// Push the State
+			History.savedStates.push(History.cloneObject(newState));
+
+			// Return true
+			return true;
+		};
+
+		/**
+		 * History.getStateByIndex()
+		 * Gets a state by the index
+		 * @param {integer} index
+		 * @return {Object}
+		 */
+		History.getStateByIndex = function(index){
+			// Prepare
+			var State = null;
+
+			// Handle
+			if ( typeof index === 'undefined' ) {
+				// Get the last inserted
+				State = History.savedStates[History.savedStates.length-1];
+			}
+			else if ( index < 0 ) {
+				// Get from the end
+				State = History.savedStates[History.savedStates.length+index];
+			}
+			else {
+				// Get from the beginning
+				State = History.savedStates[index];
+			}
+
+			// Return State
+			return State;
+		};
+		
+		/**
+		 * History.getCurrentIndex()
+		 * Gets the current index
+		 * @return (integer)
+		*/
+		History.getCurrentIndex = function(){
+			// Prepare
+			var index = null;
+			
+			// No states saved
+			if(History.savedStates.length < 1) {
+				index = 0;
+			}
+			else {
+				index = History.savedStates.length-1;
+			}
+			return index;
+		};
+
+		// ====================================================================
+		// Hash Helpers
+
+		/**
+		 * History.getHash()
+		 * @param {Location=} location
+		 * Gets the current document hash
+		 * Note: unlike location.hash, this is guaranteed to return the escaped hash in all browsers
+		 * @return {string}
+		 */
+		History.getHash = function(doc){
+			var url = History.getLocationHref(doc),
+				hash;
+			hash = History.getHashByUrl(url);
+			return hash;
+		};
+
+		/**
+		 * History.unescapeHash()
+		 * normalize and Unescape a Hash
+		 * @param {String} hash
+		 * @return {string}
+		 */
+		History.unescapeHash = function(hash){
+			// Prepare
+			var result = History.normalizeHash(hash);
+
+			// Unescape hash
+			result = decodeURIComponent(result);
+
+			// Return result
+			return result;
+		};
+
+		/**
+		 * History.normalizeHash()
+		 * normalize a hash across browsers
+		 * @return {string}
+		 */
+		History.normalizeHash = function(hash){
+			// Prepare
+			var result = hash.replace(/[^#]*#/,'').replace(/#.*/, '');
+
+			// Return result
+			return result;
+		};
+
+		/**
+		 * History.setHash(hash)
+		 * Sets the document hash
+		 * @param {string} hash
+		 * @return {History}
+		 */
+		History.setHash = function(hash,queue){
+			// Prepare
+			var State, pageUrl;
+
+			// Handle Queueing
+			if ( queue !== false && History.busy() ) {
+				// Wait + Push to Queue
+				//History.debug('History.setHash: we must wait', arguments);
+				History.pushQueue({
+					scope: History,
+					callback: History.setHash,
+					args: arguments,
+					queue: queue
+				});
+				return false;
+			}
+
+			// Log
+			//History.debug('History.setHash: called',hash);
+
+			// Make Busy + Continue
+			History.busy(true);
+
+			// Check if hash is a state
+			State = History.extractState(hash,true);
+			if ( State && !History.emulated.pushState ) {
+				// Hash is a state so skip the setHash
+				//History.debug('History.setHash: Hash is a state so skipping the hash set with a direct pushState call',arguments);
+
+				// PushState
+				History.pushState(State.data,State.title,State.url,false);
+			}
+			else if ( History.getHash() !== hash ) {
+				// Hash is a proper hash, so apply it
+
+				// Handle browser bugs
+				if ( History.bugs.setHash ) {
+					// Fix Safari Bug https://bugs.webkit.org/show_bug.cgi?id=56249
+
+					// Fetch the base page
+					pageUrl = History.getPageUrl();
+
+					// Safari hash apply
+					History.pushState(null,null,pageUrl+'#'+hash,false);
+				}
+				else {
+					// Normal hash apply
+					document.location.hash = hash;
+				}
+			}
+
+			// Chain
+			return History;
+		};
+
+		/**
+		 * History.escape()
+		 * normalize and Escape a Hash
+		 * @return {string}
+		 */
+		History.escapeHash = function(hash){
+			// Prepare
+			var result = History.normalizeHash(hash);
+
+			// Escape hash
+			result = window.encodeURIComponent(result);
+
+			// IE6 Escape Bug
+			if ( !History.bugs.hashEscape ) {
+				// Restore common parts
+				result = result
+					.replace(/\%21/g,'!')
+					.replace(/\%26/g,'&')
+					.replace(/\%3D/g,'=')
+					.replace(/\%3F/g,'?');
+			}
+
+			// Return result
+			return result;
+		};
+
+		/**
+		 * History.getHashByUrl(url)
+		 * Extracts the Hash from a URL
+		 * @param {string} url
+		 * @return {string} url
+		 */
+		History.getHashByUrl = function(url){
+			// Extract the hash
+			var hash = String(url)
+				.replace(/([^#]*)#?([^#]*)#?(.*)/, '$2')
+				;
+
+			// Unescape hash
+			hash = History.unescapeHash(hash);
+
+			// Return hash
+			return hash;
+		};
+
+		/**
+		 * History.setTitle(title)
+		 * Applies the title to the document
+		 * @param {State} newState
+		 * @return {Boolean}
+		 */
+		History.setTitle = function(newState){
+			// Prepare
+			var title = newState.title,
+				firstState;
+
+			// Initial
+			if ( !title ) {
+				firstState = History.getStateByIndex(0);
+				if ( firstState && firstState.url === newState.url ) {
+					title = firstState.title||History.options.initialTitle;
+				}
+			}
+
+			// Apply
+			try {
+				document.getElementsByTagName('title')[0].innerHTML = title.replace('<','&lt;').replace('>','&gt;').replace(' & ',' &amp; ');
+			}
+			catch ( Exception ) { }
+			document.title = title;
+
+			// Chain
+			return History;
+		};
+
+
+		// ====================================================================
+		// Queueing
+
+		/**
+		 * History.queues
+		 * The list of queues to use
+		 * First In, First Out
+		 */
+		History.queues = [];
+
+		/**
+		 * History.busy(value)
+		 * @param {boolean} value [optional]
+		 * @return {boolean} busy
+		 */
+		History.busy = function(value){
+			// Apply
+			if ( typeof value !== 'undefined' ) {
+				//History.debug('History.busy: changing ['+(History.busy.flag||false)+'] to ['+(value||false)+']', History.queues.length);
+				History.busy.flag = value;
+			}
+			// Default
+			else if ( typeof History.busy.flag === 'undefined' ) {
+				History.busy.flag = false;
+			}
+
+			// Queue
+			if ( !History.busy.flag ) {
+				// Execute the next item in the queue
+				clearTimeout(History.busy.timeout);
+				var fireNext = function(){
+					var i, queue, item;
+					if ( History.busy.flag ) return;
+					for ( i=History.queues.length-1; i >= 0; --i ) {
+						queue = History.queues[i];
+						if ( queue.length === 0 ) continue;
+						item = queue.shift();
+						History.fireQueueItem(item);
+						History.busy.timeout = setTimeout(fireNext,History.options.busyDelay);
+					}
+				};
+				History.busy.timeout = setTimeout(fireNext,History.options.busyDelay);
+			}
+
+			// Return
+			return History.busy.flag;
+		};
+
+		/**
+		 * History.busy.flag
+		 */
+		History.busy.flag = false;
+
+		/**
+		 * History.fireQueueItem(item)
+		 * Fire a Queue Item
+		 * @param {Object} item
+		 * @return {Mixed} result
+		 */
+		History.fireQueueItem = function(item){
+			return item.callback.apply(item.scope||History,item.args||[]);
+		};
+
+		/**
+		 * History.pushQueue(callback,args)
+		 * Add an item to the queue
+		 * @param {Object} item [scope,callback,args,queue]
+		 */
+		History.pushQueue = function(item){
+			// Prepare the queue
+			History.queues[item.queue||0] = History.queues[item.queue||0]||[];
+
+			// Add to the queue
+			History.queues[item.queue||0].push(item);
+
+			// Chain
+			return History;
+		};
+
+		/**
+		 * History.queue (item,queue), (func,queue), (func), (item)
+		 * Either firs the item now if not busy, or adds it to the queue
+		 */
+		History.queue = function(item,queue){
+			// Prepare
+			if ( typeof item === 'function' ) {
+				item = {
+					callback: item
+				};
+			}
+			if ( typeof queue !== 'undefined' ) {
+				item.queue = queue;
+			}
+
+			// Handle
+			if ( History.busy() ) {
+				History.pushQueue(item);
+			} else {
+				History.fireQueueItem(item);
+			}
+
+			// Chain
+			return History;
+		};
+
+		/**
+		 * History.clearQueue()
+		 * Clears the Queue
+		 */
+		History.clearQueue = function(){
+			History.busy.flag = false;
+			History.queues = [];
+			return History;
+		};
+
+
+		// ====================================================================
+		// IE Bug Fix
+
+		/**
+		 * History.stateChanged
+		 * States whether or not the state has changed since the last double check was initialised
+		 */
+		History.stateChanged = false;
+
+		/**
+		 * History.doubleChecker
+		 * Contains the timeout used for the double checks
+		 */
+		History.doubleChecker = false;
+
+		/**
+		 * History.doubleCheckComplete()
+		 * Complete a double check
+		 * @return {History}
+		 */
+		History.doubleCheckComplete = function(){
+			// Update
+			History.stateChanged = true;
+
+			// Clear
+			History.doubleCheckClear();
+
+			// Chain
+			return History;
+		};
+
+		/**
+		 * History.doubleCheckClear()
+		 * Clear a double check
+		 * @return {History}
+		 */
+		History.doubleCheckClear = function(){
+			// Clear
+			if ( History.doubleChecker ) {
+				clearTimeout(History.doubleChecker);
+				History.doubleChecker = false;
+			}
+
+			// Chain
+			return History;
+		};
+
+		/**
+		 * History.doubleCheck()
+		 * Create a double check
+		 * @return {History}
+		 */
+		History.doubleCheck = function(tryAgain){
+			// Reset
+			History.stateChanged = false;
+			History.doubleCheckClear();
+
+			// Fix IE6,IE7 bug where calling history.back or history.forward does not actually change the hash (whereas doing it manually does)
+			// Fix Safari 5 bug where sometimes the state does not change: https://bugs.webkit.org/show_bug.cgi?id=42940
+			if ( History.bugs.ieDoubleCheck ) {
+				// Apply Check
+				History.doubleChecker = setTimeout(
+					function(){
+						History.doubleCheckClear();
+						if ( !History.stateChanged ) {
+							//History.debug('History.doubleCheck: State has not yet changed, trying again', arguments);
+							// Re-Attempt
+							tryAgain();
+						}
+						return true;
+					},
+					History.options.doubleCheckInterval
+				);
+			}
+
+			// Chain
+			return History;
+		};
+
+
+		// ====================================================================
+		// Safari Bug Fix
+
+		/**
+		 * History.safariStatePoll()
+		 * Poll the current state
+		 * @return {History}
+		 */
+		History.safariStatePoll = function(){
+			// Poll the URL
+
+			// Get the Last State which has the new URL
+			var
+				urlState = History.extractState(History.getLocationHref()),
+				newState;
+
+			// Check for a difference
+			if ( !History.isLastSavedState(urlState) ) {
+				newState = urlState;
+			}
+			else {
+				return;
+			}
+
+			// Check if we have a state with that url
+			// If not create it
+			if ( !newState ) {
+				//History.debug('History.safariStatePoll: new');
+				newState = History.createStateObject();
+			}
+
+			// Apply the New State
+			//History.debug('History.safariStatePoll: trigger');
+			History.Adapter.trigger(window,'popstate');
+
+			// Chain
+			return History;
+		};
+
+
+		// ====================================================================
+		// State Aliases
+
+		/**
+		 * History.back(queue)
+		 * Send the browser history back one item
+		 * @param {Integer} queue [optional]
+		 */
+		History.back = function(queue){
+			//History.debug('History.back: called', arguments);
+
+			// Handle Queueing
+			if ( queue !== false && History.busy() ) {
+				// Wait + Push to Queue
+				//History.debug('History.back: we must wait', arguments);
+				History.pushQueue({
+					scope: History,
+					callback: History.back,
+					args: arguments,
+					queue: queue
+				});
+				return false;
+			}
+
+			// Make Busy + Continue
+			History.busy(true);
+
+			// Fix certain browser bugs that prevent the state from changing
+			History.doubleCheck(function(){
+				History.back(false);
+			});
+
+			// Go back
+			history.go(-1);
+
+			// End back closure
+			return true;
+		};
+
+		/**
+		 * History.forward(queue)
+		 * Send the browser history forward one item
+		 * @param {Integer} queue [optional]
+		 */
+		History.forward = function(queue){
+			//History.debug('History.forward: called', arguments);
+
+			// Handle Queueing
+			if ( queue !== false && History.busy() ) {
+				// Wait + Push to Queue
+				//History.debug('History.forward: we must wait', arguments);
+				History.pushQueue({
+					scope: History,
+					callback: History.forward,
+					args: arguments,
+					queue: queue
+				});
+				return false;
+			}
+
+			// Make Busy + Continue
+			History.busy(true);
+
+			// Fix certain browser bugs that prevent the state from changing
+			History.doubleCheck(function(){
+				History.forward(false);
+			});
+
+			// Go forward
+			history.go(1);
+
+			// End forward closure
+			return true;
+		};
+
+		/**
+		 * History.go(index,queue)
+		 * Send the browser history back or forward index times
+		 * @param {Integer} queue [optional]
+		 */
+		History.go = function(index,queue){
+			//History.debug('History.go: called', arguments);
+
+			// Prepare
+			var i;
+
+			// Handle
+			if ( index > 0 ) {
+				// Forward
+				for ( i=1; i<=index; ++i ) {
+					History.forward(queue);
+				}
+			}
+			else if ( index < 0 ) {
+				// Backward
+				for ( i=-1; i>=index; --i ) {
+					History.back(queue);
+				}
+			}
+			else {
+				throw new Error('History.go: History.go requires a positive or negative integer passed.');
+			}
+
+			// Chain
+			return History;
+		};
+
+
+		// ====================================================================
+		// HTML5 State Support
+
+		// Non-Native pushState Implementation
+		if ( History.emulated.pushState ) {
+			/*
+			 * Provide Skeleton for HTML4 Browsers
+			 */
+
+			// Prepare
+			var emptyFunction = function(){};
+			History.pushState = History.pushState||emptyFunction;
+			History.replaceState = History.replaceState||emptyFunction;
+		} // History.emulated.pushState
+
+		// Native pushState Implementation
+		else {
+			/*
+			 * Use native HTML5 History API Implementation
+			 */
+
+			/**
+			 * History.onPopState(event,extra)
+			 * Refresh the Current State
+			 */
+			History.onPopState = function(event,extra){
+				// Prepare
+				var stateId = false, newState = false, currentHash, currentState;
+
+				// Reset the double check
+				History.doubleCheckComplete();
+
+				// Check for a Hash, and handle apporiatly
+				currentHash = History.getHash();
+				if ( currentHash ) {
+					// Expand Hash
+					currentState = History.extractState(currentHash||History.getLocationHref(),true);
+					if ( currentState ) {
+						// We were able to parse it, it must be a State!
+						// Let's forward to replaceState
+						//History.debug('History.onPopState: state anchor', currentHash, currentState);
+						History.replaceState(currentState.data, currentState.title, currentState.url, false);
+					}
+					else {
+						// Traditional Anchor
+						//History.debug('History.onPopState: traditional anchor', currentHash);
+						History.Adapter.trigger(window,'anchorchange');
+						History.busy(false);
+					}
+
+					// We don't care for hashes
+					History.expectedStateId = false;
+					return false;
+				}
+
+				// Ensure
+				stateId = History.Adapter.extractEventData('state',event,extra) || false;
+
+				// Fetch State
+				if ( stateId ) {
+					// Vanilla: Back/forward button was used
+					newState = History.getStateById(stateId);
+				}
+				else if ( History.expectedStateId ) {
+					// Vanilla: A new state was pushed, and popstate was called manually
+					newState = History.getStateById(History.expectedStateId);
+				}
+				else {
+					// Initial State
+					newState = History.extractState(History.getLocationHref());
+				}
+
+				// The State did not exist in our store
+				if ( !newState ) {
+					// Regenerate the State
+					newState = History.createStateObject(null,null,History.getLocationHref());
+				}
+
+				// Clean
+				History.expectedStateId = false;
+
+				// Check if we are the same state
+				if ( History.isLastSavedState(newState) ) {
+					// There has been no change (just the page's hash has finally propagated)
+					//History.debug('History.onPopState: no change', newState, History.savedStates);
+					History.busy(false);
+					return false;
+				}
+
+				// Store the State
+				History.storeState(newState);
+				History.saveState(newState);
+
+				// Force update of the title
+				History.setTitle(newState);
+
+				// Fire Our Event
+				History.Adapter.trigger(window,'statechange');
+				History.busy(false);
+
+				// Return true
+				return true;
+			};
+			History.Adapter.bind(window,'popstate',History.onPopState);
+
+			/**
+			 * History.pushState(data,title,url)
+			 * Add a new State to the history object, become it, and trigger onpopstate
+			 * We have to trigger for HTML4 compatibility
+			 * @param {object} data
+			 * @param {string} title
+			 * @param {string} url
+			 * @return {true}
+			 */
+			History.pushState = function(data,title,url,queue){
+				//History.debug('History.pushState: called', arguments);
+
+				// Check the State
+				if ( History.getHashByUrl(url) && History.emulated.pushState ) {
+					throw new Error('History.js does not support states with fragement-identifiers (hashes/anchors).');
+				}
+
+				// Handle Queueing
+				if ( queue !== false && History.busy() ) {
+					// Wait + Push to Queue
+					//History.debug('History.pushState: we must wait', arguments);
+					History.pushQueue({
+						scope: History,
+						callback: History.pushState,
+						args: arguments,
+						queue: queue
+					});
+					return false;
+				}
+
+				// Make Busy + Continue
+				History.busy(true);
+
+				// Create the newState
+				var newState = History.createStateObject(data,title,url);
+
+				// Check it
+				if ( History.isLastSavedState(newState) ) {
+					// Won't be a change
+					History.busy(false);
+				}
+				else {
+					// Store the newState
+					History.storeState(newState);
+					History.expectedStateId = newState.id;
+
+					// Push the newState
+					history.pushState(newState.id,newState.title,newState.url);
+
+					// Fire HTML5 Event
+					History.Adapter.trigger(window,'popstate');
+				}
+
+				// End pushState closure
+				return true;
+			};
+
+			/**
+			 * History.replaceState(data,title,url)
+			 * Replace the State and trigger onpopstate
+			 * We have to trigger for HTML4 compatibility
+			 * @param {object} data
+			 * @param {string} title
+			 * @param {string} url
+			 * @return {true}
+			 */
+			History.replaceState = function(data,title,url,queue){
+				//History.debug('History.replaceState: called', arguments);
+
+				// Check the State
+				if ( History.getHashByUrl(url) && History.emulated.pushState ) {
+					throw new Error('History.js does not support states with fragement-identifiers (hashes/anchors).');
+				}
+
+				// Handle Queueing
+				if ( queue !== false && History.busy() ) {
+					// Wait + Push to Queue
+					//History.debug('History.replaceState: we must wait', arguments);
+					History.pushQueue({
+						scope: History,
+						callback: History.replaceState,
+						args: arguments,
+						queue: queue
+					});
+					return false;
+				}
+
+				// Make Busy + Continue
+				History.busy(true);
+
+				// Create the newState
+				var newState = History.createStateObject(data,title,url);
+
+				// Check it
+				if ( History.isLastSavedState(newState) ) {
+					// Won't be a change
+					History.busy(false);
+				}
+				else {
+					// Store the newState
+					History.storeState(newState);
+					History.expectedStateId = newState.id;
+
+					// Push the newState
+					history.replaceState(newState.id,newState.title,newState.url);
+
+					// Fire HTML5 Event
+					History.Adapter.trigger(window,'popstate');
+				}
+
+				// End replaceState closure
+				return true;
+			};
+
+		} // !History.emulated.pushState
+
+
+		// ====================================================================
+		// Initialise
+
+		/**
+		 * Load the Store
+		 */
+		if ( sessionStorage ) {
+			// Fetch
+			try {
+				History.store = JSON.parse(sessionStorage.getItem('History.store'))||{};
+			}
+			catch ( err ) {
+				History.store = {};
+			}
+
+			// Normalize
+			History.normalizeStore();
+		}
+		else {
+			// Default Load
+			History.store = {};
+			History.normalizeStore();
+		}
+
+		/**
+		 * Clear Intervals on exit to prevent memory leaks
+		 */
+		History.Adapter.bind(window,"unload",History.clearAllIntervals);
+
+		/**
+		 * Create the initial State
+		 */
+		History.saveState(History.storeState(History.extractState(History.getLocationHref(),true)));
+
+		/**
+		 * Bind for Saving Store
+		 */
+		if ( sessionStorage ) {
+			// When the page is closed
+			History.onUnload = function(){
+				// Prepare
+				var	currentStore, item, currentStoreString;
+
+				// Fetch
+				try {
+					currentStore = JSON.parse(sessionStorage.getItem('History.store'))||{};
+				}
+				catch ( err ) {
+					currentStore = {};
+				}
+
+				// Ensure
+				currentStore.idToState = currentStore.idToState || {};
+				currentStore.urlToId = currentStore.urlToId || {};
+				currentStore.stateToId = currentStore.stateToId || {};
+
+				// Sync
+				for ( item in History.idToState ) {
+					if ( !History.idToState.hasOwnProperty(item) ) {
+						continue;
+					}
+					currentStore.idToState[item] = History.idToState[item];
+				}
+				for ( item in History.urlToId ) {
+					if ( !History.urlToId.hasOwnProperty(item) ) {
+						continue;
+					}
+					currentStore.urlToId[item] = History.urlToId[item];
+				}
+				for ( item in History.stateToId ) {
+					if ( !History.stateToId.hasOwnProperty(item) ) {
+						continue;
+					}
+					currentStore.stateToId[item] = History.stateToId[item];
+				}
+
+				// Update
+				History.store = currentStore;
+				History.normalizeStore();
+
+				// In Safari, going into Private Browsing mode causes the
+				// Session Storage object to still exist but if you try and use
+				// or set any property/function of it it throws the exception
+				// "QUOTA_EXCEEDED_ERR: DOM Exception 22: An attempt was made to
+				// add something to storage that exceeded the quota." infinitely
+				// every second.
+				currentStoreString = JSON.stringify(currentStore);
+				try {
+					// Store
+					sessionStorage.setItem('History.store', currentStoreString);
+				}
+				catch (e) {
+					if (e.code === DOMException.QUOTA_EXCEEDED_ERR) {
+						if (sessionStorage.length) {
+							// Workaround for a bug seen on iPads. Sometimes the quota exceeded error comes up and simply
+							// removing/resetting the storage can work.
+							sessionStorage.removeItem('History.store');
+							sessionStorage.setItem('History.store', currentStoreString);
+						} else {
+							// Otherwise, we're probably private browsing in Safari, so we'll ignore the exception.
+						}
+					} else {
+						throw e;
+					}
+				}
+			};
+
+			// For Internet Explorer
+			History.intervalList.push(setInterval(History.onUnload,History.options.storeInterval));
+
+			// For Other Browsers
+			History.Adapter.bind(window,'beforeunload',History.onUnload);
+			History.Adapter.bind(window,'unload',History.onUnload);
+
+			// Both are enabled for consistency
+		}
+
+		// Non-Native pushState Implementation
+		if ( !History.emulated.pushState ) {
+			// Be aware, the following is only for native pushState implementations
+			// If you are wanting to include something for all browsers
+			// Then include it above this if block
+
+			/**
+			 * Setup Safari Fix
+			 */
+			if ( History.bugs.safariPoll ) {
+				History.intervalList.push(setInterval(History.safariStatePoll, History.options.safariPollInterval));
+			}
+
+			/**
+			 * Ensure Cross Browser Compatibility
+			 */
+			if ( navigator.vendor === 'Apple Computer, Inc.' || (navigator.appCodeName||'') === 'Mozilla' ) {
+				/**
+				 * Fix Safari HashChange Issue
+				 */
+
+				// Setup Alias
+				History.Adapter.bind(window,'hashchange',function(){
+					History.Adapter.trigger(window,'popstate');
+				});
+
+				// Initialise Alias
+				if ( History.getHash() ) {
+					History.Adapter.onDomLoad(function(){
+						History.Adapter.trigger(window,'hashchange');
+					});
+				}
+			}
+
+		} // !History.emulated.pushState
+
+
+	}; // History.initCore
+
+	// Try to Initialise History
+	if (!History.options || !History.options.delayInit) {
+		History.init();
+	}
+
+})(window);
+
+(function($) {
+    $.fn.ajax_url = function(custom_trigger, on_trigger) {
+        var element = this;
+        element.on('tap',function(event) {
+            var custom_trigger_return = null;
+            if (custom_trigger != null) {
+                custom_trigger_return = custom_trigger(event);
+            }
+            if (custom_trigger_return == null || custom_trigger_return === true) {
+                //Navigate to the new page
+                if (on_trigger != null) {
+                    on_trigger(event);
+                }
+                if (event.originalEvent.metaKey === true) {
+                    //Being opened in another tab
+                } else {
+                    if (Site.history_state_supported) {
+                        if (!event.isDefaultPrevented()) {
+                            event.preventDefault();
+                            Site.load_url($(element).attr("href"), true);
+                        }
+                    }
+                }
+            } else { //custom_trigger_return==false
+                event.preventDefault();
+            }
+        });
+
+        return element;
+    };
+})(jQuery);
+/**
+ * @fileOverview
+ * Copyright (c) 2013 Aaron Gloege
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+ * OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * jQuery Tap Plugin
+ * Using the tap event, this plugin will properly simulate a click event
+ * in touch browsers using touch events, and on non-touch browsers,
+ * click will automatically be used instead.
+ *
+ * @author Aaron Gloege
+ * @version 1.1.0
+ */
+(function(document, $) {
+    'use strict';
+
+    /**
+     * Event namespace
+     *
+     * @type String
+     * @final
+     */
+    var HELPER_NAMESPACE = '._tap';
+
+    /**
+     * Event namespace
+     *
+     * @type String
+     * @final
+     */
+    var HELPER_ACTIVE_NAMESPACE = '._tapActive';
+
+    /**
+     * Event name
+     *
+     * @type String
+     * @final
+     */
+    var EVENT_NAME = 'tap';
+
+    /**
+     * Event variables to copy to touches
+     *
+     * @type String[]
+     * @final
+     */
+    var EVENT_VARIABLES = 'clientX clientY screenX screenY pageX pageY'.split(' ');
+
+    /**
+     * jQuery body object
+     *
+     * @type jQuery
+     */
+    var $BODY;
+
+    /**
+     * Last canceled tap event
+     *
+     * @type jQuery.Event
+     * @private
+     */
+    var _lastTap;
+
+    /**
+     * Last touchstart event
+     *
+     * @type jQuery.Event
+     * @private
+     */
+    var _lastTouch;
+
+    /**
+     * Object for tracking current touch
+     *
+     * @type Object
+     * @static
+     */
+    var TOUCH_VALUES = {
+
+        /**
+         * Number of touches currently active on touchstart
+         *
+         * @property count
+         * @type Number
+         */
+        count: 0,
+
+        /**
+         * touchstart/mousedown jQuery.Event object
+         *
+         * @property event
+         * @type jQuery.Event
+         */
+        event: 0
+
+    };
+
+    /**
+     * Create a new event from the original event
+     * Copy over EVENT_VARIABLES from the original jQuery.Event
+     *
+     * @param {String} type
+     * @param {jQuery.Event} e
+     * @return {jQuery.Event}
+     * @private
+     */
+    var _createEvent = function(type, e) {
+        var originalEvent = e.originalEvent;
+        var event = $.Event(originalEvent);
+
+        event.type = type;
+
+        var i = 0;
+        var length = EVENT_VARIABLES.length;
+
+        for (; i < length; i++) {
+            event[EVENT_VARIABLES[i]] = e[EVENT_VARIABLES[i]];
+        }
+
+        return event;
+    };
+
+    /**
+     * Determine if a valid tap event
+     *
+     * @param {jQuery.Event} e
+     * @return {Boolean}
+     * @private
+     */
+    var _isTap = function(e) {
+        if (e.isTrigger) {
+            return false;
+        }
+
+        var startEvent = TOUCH_VALUES.event;
+        var xDelta = Math.abs(e.pageX - startEvent.pageX);
+        var yDelta = Math.abs(e.pageY - startEvent.pageY);
+        var delta = Math.max(xDelta, yDelta);
+
+        return (
+            e.timeStamp - startEvent.timeStamp < $.tap.TIME_DELTA &&
+            delta < $.tap.POSITION_DELTA &&
+            (!startEvent.touches || TOUCH_VALUES.count === 1) &&
+            Tap.isTracking
+        );
+    };
+
+    /**
+     * Determine if mousedown event was emulated from the last touchstart event
+     *
+     * @function
+     * @param {jQuery.Event} e
+     * @returns {Boolean}
+     * @private
+     */
+    var _isEmulated = function(e) {
+        if (!_lastTouch) {
+            return false;
+        }
+
+        var xDelta = Math.abs(e.pageX - _lastTouch.pageX);
+        var yDelta = Math.abs(e.pageY - _lastTouch.pageY);
+        var delta = Math.max(xDelta, yDelta);
+
+        return (
+            Math.abs(e.timeStamp - _lastTouch.timeStamp) < 750 &&
+            delta < $.tap.POSITION_DELTA
+        );
+    };
+
+    /**
+     * Normalize touch events with data from first touch in the jQuery.Event
+     *
+     * This could be done using the `jQuery.fixHook` api, but to avoid conflicts
+     * with other libraries that might already have applied a fix hook, this
+     * approach is used instead.
+     *
+     * @param {jQuery.Event} event
+     * @private
+     */
+    var _normalizeEvent = function(event) {
+        if (event.type.indexOf('touch') === 0) {
+            event.touches = event.originalEvent.changedTouches;
+            var touch = event.touches[0];
+
+            var i = 0;
+            var length = EVENT_VARIABLES.length;
+
+            for (; i < length; i++) {
+                event[EVENT_VARIABLES[i]] = touch[EVENT_VARIABLES[i]];
+            }
+        }
+
+        // Normalize timestamp
+        event.timeStamp = Date.now ? Date.now() : +new Date();
+    };
+
+    /**
+     * Tap object that will track touch events and
+     * trigger the tap event when necessary
+     *
+     * @class Tap
+     * @static
+     */
+    var Tap = {
+
+        /**
+         * Flag to determine if touch events are currently enabled
+         *
+         * @property isEnabled
+         * @type Boolean
+         */
+        isEnabled: false,
+
+        /**
+         * Are we currently tracking a tap event?
+         *
+         * @property isTracking
+         * @type Boolean
+         */
+        isTracking: false,
+
+        /**
+         * Enable touch event listeners
+         *
+         * @method enable
+         */
+        enable: function() {
+            if (Tap.isEnabled) {
+                return;
+            }
+
+            Tap.isEnabled = true;
+
+            // Set body element
+            $BODY = $(document.body)
+                .on('touchstart' + HELPER_NAMESPACE, Tap.onStart)
+                .on('mousedown' + HELPER_NAMESPACE, Tap.onStart)
+                .on('click' + HELPER_NAMESPACE, Tap.onClick);
+        },
+
+        /**
+         * Disable touch event listeners
+         *
+         * @method disable
+         */
+        disable: function() {
+            if (!Tap.isEnabled) {
+                return;
+            }
+
+            Tap.isEnabled = false;
+
+            // unbind all events with namespace
+            $BODY.off(HELPER_NAMESPACE);
+        },
+
+        /**
+         * Store touch start values and target
+         *
+         * @method onTouchStart
+         * @param {jQuery.Event} e
+         */
+        onStart: function(e) {
+            if (e.isTrigger) {
+                return;
+            }
+
+            _normalizeEvent(e);
+
+            // Ignore non left mouse clicks
+            if ($.tap.LEFT_BUTTON_ONLY && !e.touches && e.which !== 1) {
+                return;
+            }
+
+            if (e.touches) {
+                TOUCH_VALUES.count = e.touches.length;
+            }
+
+            if (Tap.isTracking) {
+                return;
+            }
+
+            if (!e.touches && _isEmulated(e)) {
+                return;
+            }
+
+            Tap.isTracking = true;
+
+            TOUCH_VALUES.event = e;
+
+            if (e.touches) {
+                _lastTouch = e;
+                $BODY
+                    .on('touchend' + HELPER_NAMESPACE + HELPER_ACTIVE_NAMESPACE, Tap.onEnd)
+                    .on('touchcancel' + HELPER_NAMESPACE + HELPER_ACTIVE_NAMESPACE, Tap.onCancel);
+            } else {
+                $BODY.on('mouseup' + HELPER_NAMESPACE + HELPER_ACTIVE_NAMESPACE, Tap.onEnd);
+            }
+        },
+
+        /**
+         * If touch has not been canceled, create a
+         * tap event and trigger it on the target element
+         *
+         * @method onTouchEnd
+         * @param {jQuery.Event} e
+         */
+        onEnd: function(e) {
+            var event;
+
+            if (e.isTrigger) {
+                return;
+            }
+
+            _normalizeEvent(e);
+
+            if (_isTap(e)) {
+                event = _createEvent(EVENT_NAME, e);
+                _lastTap = event;
+                $(TOUCH_VALUES.event.target).trigger(event);
+            }
+
+            // Cancel active tap tracking
+            Tap.onCancel(e);
+        },
+
+        /**
+         * Cancel tap and remove event listeners for active tap tracking
+         *
+         * @method onTouchCancel
+         * @param {jQuery.Event} e
+         */
+        onCancel: function(e) {
+            if (e && e.type === 'touchcancel') {
+                e.preventDefault();
+            }
+
+            Tap.isTracking = false;
+
+            $BODY.off(HELPER_ACTIVE_NAMESPACE);
+        },
+
+        /**
+         * If tap was canceled, cancel click event
+         *
+         * @method onClick
+         * @param {jQuery.Event} e
+         * @return {void|Boolean}
+         */
+        onClick: function(e) {
+            if (
+                !e.isTrigger &&
+                _lastTap &&
+                _lastTap.isDefaultPrevented() &&
+                _lastTap.target === e.target &&
+                _lastTap.pageX === e.pageX &&
+                _lastTap.pageY === e.pageY &&
+                e.timeStamp - _lastTap.timeStamp < 750
+            ) {
+                _lastTap = null;
+                return false;
+            }
+        }
+
+    };
+
+    // Enable tab when document is ready
+    $(document).ready(Tap.enable);
+
+    // Configurable options
+    $.tap = {
+        POSITION_DELTA: 10, // Max distance between touchstart and touchend to be considered a tap
+        TIME_DELTA: 400, // Max duration between touchstart and touchend to be considered a tap
+        LEFT_BUTTON_ONLY: true // Only accept left mouse button actions
+    };
+
+}(document, jQuery));
+
+function Page() {
+    var page = this;
+    page.element = $("<div />");
+}
+
+Page.prototype.new_url = function() {
+    return "NOT_SET";
+}
+
+Page.prototype.get_title = function() {
+    return null;
+}
+
+Page.prototype.resize = function(resize_obj) {}
+
+Page.prototype.init = function() {}
+
+Page.prototype.remove = function() {}
+
+function SAFE() {
+    var sf = this;
+
+    Site = this;
+    sf.debug = false;
+    sf.initial_url = true;
+    sf.map = {};
+    sf.ignore_next_url = false;
+    sf.origin = window.location.protocol + "//" + window.location.hostname;
+    if (window.location.port != "") {
+        sf.origin += ":" + window.location.port;
+    }
+    sf.path = "/";
+    sf.previous_url = document.referrer;
+    sf.load_page_class = null;
+    sf.loading_page = null;
+    sf.scroll_bar_width_value = -1;
+
+    sf.element = $("<div />");
+
+    sf.is_touchscreen = ('ontouchstart' in document.documentElement);
+    sf.history_state_supported = !! (window.history && window.history.pushState);
+
+    sf.current_page = null;
+    sf.no_page_found_class = null;
+}
+
+if (typeof(console) === 'undefined') {
+    var cons = {}
+    cons.log = cons.error = cons.info = cons.debug = cons.warn = cons.trace = cons.dir = cons.dirxml = cons.group = cons.groupEnd = cons.time = cons.timeEnd = cons.assert = cons.profile = function() {};
+    SAFE.console = cons;
+} else {
+    SAFE.console = console;
+}
+
+//Used to subclass Javascript classes
+SAFE.prototype.extend = function(sub, sup) {
+    function emptyclass() {}
+    emptyclass.prototype = sup.prototype;
+    sub.prototype = new emptyclass();
+    sub.prototype.constructor = sub;
+    sub.superConstructor = sup;
+    sub.superClass = sup.prototype;
+}
+
+SAFE.prototype.url_changed = function(url) {
+    var sf = this;
+
+};
+
+SAFE.prototype.on_resize = function(resize_obj) {
+    var sf = this;
+    
+};
+
+SAFE.prototype.pre_load = function(class_name, parameters, url, wildcard_contents) {
+    var sf = this;
+
+    //Must return undefined (null shows 404)
+};
+
+SAFE.prototype.transition_page = function(new_page, old_page){
+    var sf = this;
+
+    return false;
+}
+
+SAFE.prototype.parse_query_string = function(query_string) {
+    var query_split = query_string.split('&');
+    var params = {};
+    for (var i = 0; i < query_split.length; i++) {
+        pair = query_split[i].split('=');
+        params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+    }
+
+    return params;
+}
+
+SAFE.prototype.build_query_string = function(params) {
+    var query_string = "";
+    var had_query_params = false;
+    var ret = [];
+    for (var d in params) {
+        had_query_params = true;
+        ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(params[d]));
+    }
+    if (had_query_params) {
+        query_string = "?" + ret.join("&");
+    }
+
+    return query_string;
+}
+
+SAFE.prototype.scroll_to_anchor = function(anchor){
+    var sf = this;
+
+    if(anchor){
+        $(window).scrollTop(anchor.offset().top);
+    }
+}
+
+SAFE.prototype.use_page_class = function(details){
+    var sf = this;
+
+    var class_name = details.class_name;
+
+    var class_name;
+    var class_obj;
+    sf.current_details = details;
+    if((typeof class_name)==='string'){
+        //This is the name of a class, rather than the class itself
+
+        var found_class = window[class_name];
+        if(found_class===undefined){
+            if(sf.load_page_class!==null){
+
+                var load_class = class_name;
+
+                sf.load_page_class(load_class,function(class_def, class_css){
+                    var css = document.createElement("style");
+                    css.type = "text/css";
+                    if (css.styleSheet){
+                        css.styleSheet.cssText = class_css;
+                    } else {
+                        css.appendChild(document.createTextNode(class_css));
+                    }
+                    $("head")[0].appendChild(css);
+
+                    //Re-add class_name because it will be removed
+                    details.class_name = class_name;
+                    if(sf.current_details===details){
+                        sf.use_page_class(details);
+                    }
+                });
+
+
+                if(sf.loading_page!==null){
+                    class_obj = sf.loading_page;
+                } else {
+                    return;
+                }
+
+            } else {
+                SAFE.console.error("The requested class ("+class_name+") was not found and dynamic class loading is not enabled");
+                class_obj = null;
+            }
+        } else {
+            class_obj = found_class;
+        }
+    } else {
+        class_obj = class_name;
+    }
+
+    if (class_obj == null) { //404
+        if (sf.no_page_found_class == null) {
+            if (sf.current_page != null) {
+                sf.current_page.remove();
+                sf.current_page = null;
+                sf.previous_class = null;
+            }
+            SAFE.console.error("No 404 page set. Use Site.set_no_page_found_class(class_name) to set one.");
+            return;
+        } else {
+            class_obj = sf.no_page_found_class;
+        }
+    }
+
+    if (class_obj === sf.previous_class) {
+        var new_url_response = sf.current_page.new_url(details);
+        if (new_url_response != "NOT_SET") {
+            if(details.anchor){
+                sf.scroll_to_anchor($("a[name*='"+details.anchor+"']"));
+            }
+            return;
+        }
+    }
+
+    var old_page = null;
+    if (sf.current_page != null) {
+        sf.current_page.remove();
+        old_page = sf.current_page;
+    }
+
+    var pre_load_response = sf.pre_load(class_obj, details, old_page);
+
+    if (pre_load_response !== undefined) {
+        if((typeof pre_load_response) === 'function'){
+            //Given a class
+        } else if(pre_load_response===null){
+            //Load the 404 page
+            details.class_name = null;
+            sf.use_page_class(details);
+            return;
+        } else {
+            //Load as URL
+            sf.load_url(pre_load_response, true);
+        }
+        return;
+    }
+
+
+    //Would create a circular structure if details were output via JSON.stringify
+    delete details.class_name;
+
+    var new_page = new class_obj(details, old_page);
+    sf.current_page = new_page;
+    sf.previous_class = class_obj;
+
+    //Call before page transition to give the opportunity to correctly size any page elements
+    sf.resize();
+
+    var transition_response = sf.transition_page(sf.current_page, old_page);
+
+    if (transition_response === true) {
+        //The callback handled the page switching
+    } else {
+        sf.element.empty();
+        sf.element.append(sf.current_page.element);
+    }
+    sf.current_page.init();
+
+    //Call the global resize function to correctly position everything
+    sf.resize();
+
+    if(details.anchor){
+        sf.scroll_to_anchor($("a[name*='"+details.anchor+"']"));
+    }
+}
+
+SAFE.prototype.set_no_page_found_class = function(class_name) {
+    var sf = this;
+    sf.no_page_found_class = class_name;
+}
+
+//Alias for set_no_page_found_class
+SAFE.prototype.set_404 = function(class_name) {
+    var sf = this;
+    sf.no_page_found_class = class_name;
+}
+
+SAFE.prototype.ajax_post = function(request) {
+    request.cache = false;
+    request.type = "post";
+    request.contentType = "application/json; charset=utf-8",
+    request.data = JSON.stringify(request.data);
+    request.dataType = "json";
+    return $.ajax(request);
+}
+
+SAFE.prototype.ajax_get = function(request) {
+    request.cache = false;
+    request.dataType = "json";
+    request.type = "get";
+    return $.ajax(request);
+}
+
+SAFE.prototype.ajax_delete = function(request) {
+    request.cache = false;
+    request.dataType = "json";
+    request.type = "delete";
+    return $.ajax(request);
+}
+
+SAFE.prototype.resize = function() {
+    var sf = this;
+
+    var doc_width = $(document).width() - sf.scroll_bar_width();
+    var doc_height = $(document).height();
+
+    var window_width = $(window).outerWidth();
+    var window_height = $(window).outerHeight();
+
+    sf.resize_obj = {
+        scroll_bar_width: sf.scroll_bar_width(),
+        doc_width: doc_width,
+        doc_height: doc_height,
+        window_width: window_width,
+        window_height: window_height
+    }
+
+    sf.on_resize(sf.resize_obj);
+
+    if (sf.current_page != null) {
+        sf.current_page.resize(sf.resize_obj);
+    }
+}
+
+SAFE.prototype.init = function(desired_url) {
+    var sf = this;
+
+    var path_name = window.location.pathname;
+    if (window.location.search != null) {
+        path_name += window.location.search;
+    }
+
+    var current_url = decodeURIComponent(path_name);
+    if (desired_url != null) {
+        if (desired_url != current_url) {
+            current_url = desired_url;
+            if (!sf.history_state_supported) {
+                window.location = desired_url;
+                return;
+            }
+        }
+    }
+
+    if (sf.history_state_supported) {
+
+        // History.replaceState(null, "", Site.origin + current_url);
+
+        History.Adapter.bind(window, 'statechange', function() {
+            if (sf.ignore_next_url) {
+                sf.ignore_next_url = false;
+                return;
+            }
+            var state = History.getState();
+            if (state != null) {
+                console.log("STATE CHANGE")
+                console.trace();
+                sf.load_url(decodeURIComponent(state.url), false);
+            }
+        });
+    }
+
+    $(window).resize(function() {
+        sf.resize();
+    }).resize();
+
+
+    if (current_url == null) {
+        current_url = "";
+    }
+    sf.load_url(current_url, false);
+}
+
+SAFE.prototype.reload_page = function() {
+    var sf = this;
+
+    sf.use_page_class(sf.current_class_and_details);
+}
+
+SAFE.prototype.replace_current_url = function(new_url, call_url_changed) {
+    /* Change the current url without loading any new page or providing a new url to the current page. This function is rarely useful and should be avoided in most circumstances. */
+    var sf = this;
+
+    call_url_changed = (typeof call_url_changed)!="undefined" ? call_url_changed: true;
+
+    var previous_ignore_value = sf.ignore_next_url;
+    sf.ignore_next_url = true;
+    History.replaceState(null, "", Site.origin + new_url);
+    sf.ignore_next_url = previous_ignore_value;
+
+    if(call_url_changed){
+        sf.url_changed(
+            window.location.toString(),
+            window.location.pathname,
+            window.location.toString().substring(Site.origin.length),
+            false
+        );
+    }
+}
+
+SAFE.prototype.add_url = function(url, class_name) {
+    var sf = this;
+
+    sf.map[url] = class_name;
+}
+
+SAFE.prototype.add_url_map = function(url_map, class_name) {
+    var sf = this;
+
+    for(var url in url_map){
+        var class_name = url_map[url];
+        sf.add_url(url, class_name);
+    }
+}
+
+SAFE.prototype.scroll_bar_width = function() {
+    var sf = this;
+
+    if (sf.scroll_bar_width_value != -1) {
+        return sf.scroll_bar_width_value;
+    }
+    var div = $('<div style="width:50px;height:50px;overflow:hidden;position:absolute;top:-200px;left:-200px;"><div style="height:100px;"></div>');
+    $('body').append(div);
+    var w1 = $('div', div).innerWidth();
+    div.css('overflow-y', 'scroll');
+    var w2 = $('div', div).innerWidth();
+    div.remove();
+    sf.scroll_bar_width_value = w1 - w2;
+
+    return sf.scroll_bar_width_value;
+}
+
+SAFE.prototype.get_class_for_url = function(url_with_query) {
+    var sf = this;
+
+    var class_and_details = sf.get_class_and_details_for_url(url_with_query);
+
+    var class_def = window[class_and_details.class_name];
+    if(class_def===undefined){
+        class_def = class_and_details.class_name;
+    }
+
+    if (class_and_details != null) {
+        return class_def;
+    }
+    return null;
+}
+
+SAFE.prototype.get_class_and_details_for_url = function(url_with_query) {
+    var sf = this;
+
+    var query_params = {};
+
+    //Gets "anchors"
+    var split_by_hash = url_with_query.split("#");
+    var anchor = split_by_hash[1];
+
+    var url_split = split_by_hash[0].split("?");
+    if (url_split.length > 1) {
+        query_params = sf.parse_query_string(url_split[1]);
+    }
+
+    var url = url_split[0];
+
+    if (url.length >= sf.origin.length) {
+        if (url.substring(0, sf.origin.length) == sf.origin) {
+            url = url.substring(sf.origin.length);
+        }
+    }
+
+    var effective_path = sf.path;
+    if (effective_path != "") {
+        if(effective_path[0]!="/"){
+            effective_path = "/"+effective_path;
+        }
+        if (effective_path[effective_path.length - 1] != '/') {
+            effective_path += "/";
+        }
+    }
+
+    if (effective_path.length > 0) {
+        if (
+            effective_path.length > url.length ||
+            url.substring(0, effective_path.length) != effective_path
+        ) {
+            SAFE.console.error("The requested url (" + url_with_query + ") was not relative to the domain/origin and within the Site.path scope");
+            return null;
+        }
+        url = url.substring(effective_path.length - 1);
+    }
+
+
+    var url_parts = url.split("/");
+    if(url_parts[url_parts.length-1]===""){
+        //Remove empty last
+        url_parts.pop();
+    }
+
+    if(url_parts[0]===""){
+        //Remove empty first
+        url_parts.shift();
+    }
+
+    //Defaults
+    var class_name = null;
+    var url_params = {};
+    var url_pattern = null;
+
+    //Loop through the available names to check for wildcard paths
+    for (var map_url in sf.map) {
+
+        var this_url_params = {};
+
+        var map_url_parts = map_url.split("/");
+        if(map_url_parts[map_url_parts.length-1]===""){
+            //Remove empty last
+            map_url_parts.pop();
+        }
+
+
+        var substring_start = 0;
+        if(map_url_parts[0]===""){
+            //Remove empty first
+            map_url_parts.shift();
+            substring_start++;
+        }
+
+        if(map_url_parts.length>url_parts.length){
+            continue;
+        }
+
+        var is_valid = true;
+        var had_wildcard = false;
+        for(var i = 0; i < map_url_parts.length; i++){
+            var map_part = map_url_parts[i];
+            var part = url_parts[i];
+            if(map_part[0]===":"){
+                var param_name = map_part.substring(1);
+                this_url_params[param_name] = part;
+            } else if(map_part[0]==="*"){
+                is_valid = true;
+                had_wildcard = true;
+                console.log(url, substring_start, url.substring(substring_start));
+                this_url_params["*"] = url.substring(substring_start);
+                break;
+            } else if(map_part!==part) {
+                is_valid = false;
+                break;
+            }
+            substring_start+=part.length+1;
+        }
+        if(!had_wildcard && url_parts.length!==map_url_parts.length){
+            is_valid = false;
+        }
+        if(!is_valid){
+            continue;
+        }
+
+        class_name = sf.map[map_url];
+        url_params = this_url_params;
+        url_pattern = map_url;
+    }
+
+    return {
+        'class_name': class_name,
+        'query': query_params,
+        'url': url,
+        'url_pattern': url_pattern,
+        'url_with_query': url_with_query.substring(effective_path.length-1),
+        'params': url_params,
+        'anchor': anchor
+    };
+}
+
+//url_with_query must be relative to domain (not origin)
+SAFE.prototype.load_url = function(url_with_query, push_state) {
+    var sf = this;
+
+    var full_url = Site.origin + url_with_query;
+
+    if (!sf.history_state_supported) {
+        var target = encodeURI(full_url);
+        if (window.location != target) {
+            window.location = target;
+            return;
+        }
+    } else {
+        if (push_state) {
+            sf.ignore_next_url = true;
+            History.pushState(null, "", full_url);
+            sf.previous_url = full_url;
+        }
+    }
+
+    sf.current_url = full_url;
+
+    sf.current_class_and_details = sf.get_class_and_details_for_url(url_with_query);
+
+    if (sf.current_class_and_details.class_name == null) {
+        SAFE.console.error("Page not found for url (" + sf.current_class_and_details.url + "). The full url was (" + url_with_query + ")");
+    }
+    sf.use_page_class(sf.current_class_and_details);
+
+    sf.url_changed(
+        window.location.toString(),
+        window.location.pathname,
+        window.location.toString().substring(Site.origin.length),
+        sf.initial_url
+    );
+
+    sf.initial_url = false;
+}
+
+var Site;
+new SAFE();
 var logger;
 if((typeof require) === 'function'){
     logger = require('tracer').console();
@@ -12681,28 +15827,25 @@ ObjectRuleField.prototype.init = function() {
 
     field.fields = {};
 
-    var fields_json = field.validator.get("fields", BasicVal.object(false));
+    var fields_json = field.validator.get("fields", BasicVal.array(false));
     if (fields_json != null) {
         var fields_validator = new FieldVal(null);
 
         //TODO prevent duplicate name keys
 
-        for (var name in fields_json) {
-            var field_json = fields_json[name];
-
-            if(!field_json.name){
-                field_json.name = name;
-            }
+        for (var i = 0; i < fields_json.length; i++) {
+            var field_json = fields_json[i];
 
             var field_creation = RuleField.create_field(field_json);
             var err = field_creation[0];
             var nested_field = field_creation[1];
 
             if(err!=null){
-                fields_validator.invalid(name,err);
+                fields_validator.invalid(i,err);
+                continue;
             }
 
-            field.fields[name] = nested_field;
+            field.fields[nested_field.name] = nested_field;
         }
 
         var fields_error = fields_validator.end();
@@ -12884,12 +16027,15 @@ if (typeof module != 'undefined') {
     module.exports = ValidationRule;
 }
 function extend(sub, sup) {
-    function emptyclass() {}
-    emptyclass.prototype = sup.prototype;
-    sub.prototype = new emptyclass();
-    sub.prototype.constructor = sub;
-    sub.superConstructor = sup;
-    sub.superClass = sup.prototype;
+	function emptyclass() {}
+	emptyclass.prototype = sup.prototype;
+	var empty_instance = new emptyclass();
+	for(var i in empty_instance){
+		sub.prototype[i] = empty_instance[i];
+	}
+	sub.prototype.constructor = sub;
+	sub.superConstructor = sup;
+	sub.superClass = sup.prototype;
 }
 
 if (typeof module != 'undefined') {
@@ -14352,43 +17498,45 @@ Field.prototype.layout = function(){
 }
 
 
-function Modal(titleText,zIndex){
+function Modal(props){
 	var modal = this;
 
-	if(zIndex==null){
-		zIndex = 2001;
+	console.log(props);
+
+	if(!props){
+		props = {};
 	}
+
+	modal.z_index = props.z_index || 2001;
 
 	modal.initial_position = false;
 
-	modal.closeCallback = function(){};
-	modal.okCallback = function(){};
-	modal.onFinishedLoading = function(){};
+	modal.close_callback = function(){};
+	modal.ok_callback = function(){};
+	modal.on_finished_loading = function(){};
 
-	if(titleText==undefined){
-		titleText = "";
-	}
+	modal.title_text = props.title || "";
 
 	modal.shadow = $("<div />")
-	.addClass("modalShadow")
+	.addClass("modal_shadow")
 	.appendTo("body")
-	.css("z-index",zIndex)
+	.css("z-index",modal.z_index)
 	.hide();
 
 	modal.element = $("<div />")
 	.addClass("modal")
-	.css("z-index",zIndex+1)
+	.css("z-index",modal.z_index+1)
 	.append(
-		modal.TopBar = $("<div />")
-		.addClass("modalTitle")
+		modal.title_holder = $("<div />")
+		.addClass("modal_title_holder")
 		.append(
 			modal.title = $("<div />")
-			.addClass("modalTitleText")
-			.text(titleText)
+			.addClass("modal_title_text")
+			.text(modal.title_text)
 		)
 	).append(
-		$("<button />")
-		.addClass("f8_button modalCloseButton no_top no_right no_bottom")
+		modal.close_button = $("<button />")
+		.addClass("mino_button modal_close_button")
 		.css("float","right")
 		.text("×")
 		.on('tap',function(){
@@ -14396,13 +17544,12 @@ function Modal(titleText,zIndex){
 		})
 	)
 	.append(
-		modal.view = $("<div />")
-		.addClass("modalContents")
+		modal.contents = $("<div />")
+		.addClass("modal_contents")
 	)
 	.append(
-		modal.bottomBar = $("<div />")
-		.addClass("modalBottomBar")
-		.addClass("interfacebox")
+		modal.bottom_bar = $("<div />")
+		.addClass("modal_bottom_bar")
 	)
 	.appendTo("body");
 
@@ -14416,9 +17563,9 @@ function Modal(titleText,zIndex){
 		if(e.keyCode==27){
 		 	modal.close();
 		} else if(e.keyCode==13){//Enter
-		 	modal.okCallback();
-			if(modal.okClosesModal){
-				modal.closeModal();
+		 	modal.ok_callback();
+			if(modal.ok_closes_modal){
+				modal.close_modal();
 			}
 		}
 	});
@@ -14426,7 +17573,7 @@ function Modal(titleText,zIndex){
 	modal.shadow.show();
 	modal.element.fadeIn(400, 
 		function(){
-			modal.onFinishedLoading();
+			modal.on_finished_loading();
 			modal.reposition();
 		}
 	);
@@ -14451,9 +17598,9 @@ Modal.prototype.close = function(){
 	modal.shadow.remove();
 
 	$(document).off('keyup.modal');
-	if(modal.callbackCalled==undefined){
-		modal.callbackCalled = true;
-		modal.closeCallback();
+	if(modal.callback_called==undefined){
+		modal.callback_called = true;
+		modal.close_callback();
 	}
 }
 function LoginBox(on_sign_in_url){
@@ -14538,7 +17685,7 @@ LoginBox.prototype.login_press = function(object) {
 
 extend(AuthPage, Page);
 
-function AuthPage(parameters, url, wildcard_contents) {
+function AuthPage(req) {
     var page = this;
 
     AuthPage.superConstructor.call(this);
@@ -14556,7 +17703,7 @@ function AuthPage(parameters, url, wildcard_contents) {
 }
 Site.add_url("/auth/", AuthPage);
 
-AuthPage.prototype.new_url = function(parameters, url, wildcard_contents) {
+AuthPage.prototype.new_url = function(req) {
     var page = this;
 
     //document.title = page.title + " - " + page_title_append;
@@ -14572,18 +17719,10 @@ AuthPage.prototype.init = function() {
     var page = this;
 
     page.login_box.reposition_box();
-
-    // body_contents_holder.set_transparent(true);
-    // header.hide();
-    // footer.hide();
 }
 
 AuthPage.prototype.remove = function() {
     var page = this;
-
-    // body_contents_holder.set_transparent(false);
-    // header.show();
-    // footer.show();
 }
 
 AuthPage.prototype.resize = function(resize_obj) {
@@ -14592,7 +17731,7 @@ AuthPage.prototype.resize = function(resize_obj) {
 }
 extend(HomePage, Page);
 
-function HomePage(parameters, url) {
+function HomePage(req) {
     var page = this;
 
     HomePage.superConstructor.call(this);
@@ -14632,37 +17771,39 @@ var button_type_child = 1;
 var button_type_item = 2;
 var button_type_type = 3;
 
-function PathButton(text,address,button_type,browser){
+function PathButton(text,address,browser){
 	var pb = this;
 
 	pb.text = text;
 	pb.address = address;
 	pb.browser = browser;
 
+	console.log(arguments);
+
 	pb.element = $("<div />").addClass("pathbutton")
 	.append(
 		$("<a />")
 		.ajax_url(function(){
-			if(browser==main_browser){
+			if(browser instanceof MainBrowser){
 				return true;
 			} else {
 				browser.loadurl(address);
 				return false;
 			}
 		})
-		.attr("href","/browser"+address)
+		.attr("href", Site.path+"browser/"+address)
 		.text(pb.text)
 	)
 		
-	if(button_type==button_type_first){
-		pb.element.addClass("toppathbutton");
-	} else if(button_type==button_type_child || button_type==button_type_item){
-		if(button_type==button_type_child){
-			pb.element.addClass("folder_button");
-		} else if(button_type==button_type_item){
-			pb.element.addClass("endpathbutton");
-		}
-	}
+	// if(button_type==button_type_first){
+	// 	pb.element.addClass("toppathbutton");
+	// } else if(button_type==button_type_child || button_type==button_type_item){
+	// 	if(button_type==button_type_child){
+	// 		pb.element.addClass("folder_button");
+	// 	} else if(button_type==button_type_item){
+	// 		pb.element.addClass("endpathbutton");
+	// 	}
+	// }
 }
 
 function AddressBar(browser){
@@ -14825,6 +17966,59 @@ AddressBar.prototype.resize = function(resize_obj){
 		width: resize_obj.window_width + "px"
 	})
 }
+function CreateFolderModal(parent_folder, callback){
+	var cfm = this;
+
+	cfm.parent_folder = parent_folder;
+	cfm.callback = callback;
+
+	var modal = new Modal({
+		title: "Create a Folder"
+	});
+
+	cfm.element = $("<div />").addClass("create_folder_modal").append(
+		modal.element
+	)
+	cfm.modal = modal;
+
+	cfm.form = new FVForm();
+	cfm.form.add_field("folder_name", new TextField("Folder Name"))
+
+	modal.contents.append(
+		cfm.form.element
+	)
+
+	modal.bottom_bar.append(
+		$("<button />").addClass("mino_button").text("Create").on('tap',function(event){
+			cfm.form.submit();
+		})
+	)
+
+	cfm.form.on_submit(function(object){
+		console.log(object);
+		cfm.create_folder(object);
+	})
+}
+
+CreateFolderModal.prototype.create_folder = function(object){
+	var cfm = this;
+
+	ajax_request({
+		"function" : "save",
+		"parameters" : {
+			"objects" : [
+				{
+					"name": object.folder_name,
+					"folder": true,
+					"path": cfm.parent_folder.toString()
+				}
+			]
+		}
+	},function(err, response){
+		console.log("err ",err);
+		console.log("response ",response);
+	})
+}
 function PaginationController(pc){
 	var pc = this;
 
@@ -14874,6 +18068,15 @@ function FolderIcon(data, view){
 
 	icon.element.addClass("folder_icon")
 }
+extend(ItemIcon, Icon);
+
+function ItemIcon(data, view){
+	var icon = this;
+
+	ItemIcon.superConstructor.call(this, data, view);
+
+	icon.element.addClass("item_icon")
+}
 
 function FolderView(path, data, browser){
 	var folder_view = this;
@@ -14897,20 +18100,46 @@ function FolderView(path, data, browser){
 		folder_view.pagination_controller.element
 	)
 
+	browser.view_container.empty().append(folder_view.element);
 
-	folder_view.toolbar_element = $("<div />").append(
-		
-	)
-
-	browser.view_container.empty();
-	browser.view_container.append(folder_view.element);
-
-	browser.toolbar.element.empty();
-	browser.toolbar.element.append(folder_view.toolbar_element);
+	browser.toolbar.element.empty().append(
+		folder_view.toolbar_element = $("<div />").append(
+			folder_view.create_folder_button = $("<button />").addClass("mino_button").text("Create Folder").on('tap',function(){
+				folder_view.create_folder();
+			})
+		,
+			folder_view.create_item_button = $("<button />").addClass("mino_button").text("Create Item").on('tap',function(){
+				folder_view.create_item();
+			})
+		)
+	);
 	
 	browser.address_bar.populate_path_buttons(folder_view.path);
 
 	folder_view.load({});
+}
+
+FolderView.prototype.init = function(){
+	var folder_view = this;
+}
+
+FolderView.prototype.create_folder = function(){
+	var folder_view = this;
+
+	var cfm = new CreateFolderModal(folder_view.path, function(err, res){
+		console.log(err, res);
+		alert("CREATED?")
+	})
+
+	folder_view.element.append(
+		cfm.element
+	)
+}
+
+FolderView.prototype.create_item = function(){
+	var folder_view = this;
+
+	folder_view.browser.load("/TestUser/test/","new_item");
 }
 
 FolderView.prototype.load = function(options){
@@ -14935,12 +18164,18 @@ FolderView.prototype.populate = function(options, data){
 	var objects = data.objects;
 
 	for(var i = 0; i < objects.length; i++){
-		var icon = new FolderIcon(objects[i],folder_view);
+		var object = objects[i];
+		var icon;
+		if(object.folder){
+			icon = new FolderIcon(object,folder_view);
+		} else {
+			icon = new ItemIcon(object, folder_view);
+		}
 		folder_view.contents.append(icon.element);
 	}
 }
 function ItemSection(name, value, item_view){
-	var section = this;
+	var section = this
 
 	section.name = name;
 	section.item_view = item_view;
@@ -14950,14 +18185,8 @@ function ItemSection(name, value, item_view){
 		section.container = $("<div />").addClass("container")
 	)
 
-    section.is_edit_mode = true;
-
-    // console.log(name);
-    // console.log(value);
-    // console.log(item_view.browser);
-
 	item_view.browser.type_cache.load(name, function(err, data){
-  //       console.log("ITEM SECTION");
+        // console.log("ITEM SECTION");
 		// console.log(err);
 		// console.log(data);
         section.populate_type(data);
@@ -14978,7 +18207,9 @@ ItemSection.prototype.val = function(argument){
 ItemSection.prototype.error = function(argument){
     var section = this;
 
-    return section.field.error(argument);
+    if(section.field){
+        return section.field.error(argument);
+    }
 }
 
 ItemSection.prototype.edit_mode = function(){
@@ -15021,24 +18252,15 @@ ItemSection.prototype.populate_type = function(type){
     section.vr = new ValidationRule();
 	console.log(section.vr.init(type));
 
-
-
 	section.field = section.vr.field.create_ui(section.item_view.form);
 
-    // console.log(section.vr.field);
-    // console.log(section.field);
+	section.title_div.text(type.display_name || type.name);
 
-	// section.container.append(
-	// 	section.field.element
-	// )
-
-	// section.title_div.text(type.display_name || type.name);
-
- //    if(section.is_edit_mode){
- //        section.edit_mode();
- //    } else {
- //        section.view_mode();
- //    }
+    if(section.is_edit_mode){
+        section.edit_mode();
+    } else {
+        section.view_mode();
+    }
 
 }
 
@@ -15061,8 +18283,10 @@ function is_object_key(key){
 	return false;
 }
 
-function ItemView(path, data, browser){
+function ItemView(path, data, browser, options){
 	var item_view = this;
+
+	item_view.options = options || {};
 
 	item_view.browser = browser;
 	item_view.path = path;
@@ -15092,15 +18316,15 @@ function ItemView(path, data, browser){
 	//Used so that ItemView can use FieldVal.FVForm's .error function
 	item_view.fields = item_view.sections;
 
+	console.log("data ",data);
+
 	for(var key in data){
+		console.log("key ",key);
 		if(!is_object_key(key)){
 			var section = new ItemSection(key, data[key], item_view);
 			item_view.form.add_field(key, section);
 		}
 	}
-
-	item_view.is_edit_mode = false;
-	item_view.view_mode();
 
 	item_view.toolbar_element = $("<div />").append(
 		item_view.edit_button = $("<button />").addClass("mino_button").text("Edit").on('tap',function(){
@@ -15111,6 +18335,14 @@ function ItemView(path, data, browser){
 		}).hide(),
 		item_view.cancel_button = $("<button />").addClass("mino_button").text("Cancel").on('tap',function(){
 			item_view.cancel();
+		}).hide(),
+		item_view.add_type_button = $("<button />").addClass("mino_button").text("Add Type").on('tap',function(){
+			var type_name = "person";
+			var section = new ItemSection(type_name, null, item_view);
+			item_view.form.add_field(type_name, section);
+			if(item_view.is_edit_mode){
+				section.edit_mode();
+			}
 		}).hide()
 	)
 
@@ -15123,26 +18355,54 @@ function ItemView(path, data, browser){
 	browser.toolbar.element.append(item_view.toolbar_element);
 	
 	browser.address_bar.populate_path_buttons(item_view.path);
+
+
+	if(item_view.options.create){
+		item_view.form.fields.path.val(item_view.path);
+		item_view.edit_mode();
+	} else {
+		item_view.view_mode();
+	}
+}
+
+ItemView.prototype.init = function(){
+	var item_view = this;
+
+	if(item_view.options.create){
+		item_view.form.fields.name.focus();
+	}
 }
 
 ItemView.prototype.edit = function(){
 	var item_view = this;
 
 	item_view.edit_mode();
-
-	item_view.edit_button.hide();
-	item_view.cancel_button.show();
-	item_view.save_button.show();
 }
 
 ItemView.prototype.edit_mode = function(){
 	var item_view = this;
+
+	item_view.is_edit_mode = true;
+
+	item_view.edit_button.hide();
+	item_view.cancel_button.show();
+	item_view.save_button.show();
+	item_view.add_type_button.show();
 
 	item_view.form.edit_mode();
 }
 
 ItemView.prototype.view_mode = function(){
 	var item_view = this;
+
+	item_view.is_edit_mode = false;
+	
+	item_view.cancel_button.hide();
+	item_view.save_button.hide();
+	item_view.add_type_button.hide();
+	item_view.edit_button.show();
+
+	item_view.error(null);
 
 	item_view.form.view_mode();
 }
@@ -15200,17 +18460,10 @@ ItemView.prototype.cancel = function(){
 	var item_view = this;
 
 	item_view.view_mode();
-
-	item_view.cancel_button.hide();
-	item_view.save_button.hide();
-	item_view.edit_button.show();
-
-	item_view.error(null);
 }
-function TypeField(name, value, parent){
+function TypeField(value, parent){
 	var rf = this;
 
-	rf.name = name;
 	rf.parent = parent;
 	rf.value = value;
 
@@ -15231,7 +18484,6 @@ function TypeField(name, value, parent){
 			["object", "Object"]
 		]
 	}).on_change(function(){
-		console.log("DID CHANGE");
 		rf.update_type_fields();
 	}));
 	rf.container.append(
@@ -15241,7 +18493,6 @@ function TypeField(name, value, parent){
 
     rf.is_edit_mode = true;
 
-    console.log(name);
     console.log(value);
 
     rf.update_title_name();
@@ -15271,14 +18522,16 @@ TypeField.prototype.update_type_fields = function(){
 	console.log("update_type_fields ",rf,type);
 
 	if(type==='text'){
-
+		rf.form.add_field("min_length", new TextField("Minimum Length", {type: "number"}));
+		rf.form.add_field("max_length", new TextField("Maximum Length", {type: "number"}));
 	} else if(type==='number'){
 
 	} else if(type==='object'){
-		for(var i in rf.value.fields){
+		console.log(rf.value);
+		for(var i = 0; i < rf.value.fields.length; i++){
 			var field_data = rf.value.fields[i];
 
-			var inner_field = new TypeField(i, field_data, rf);
+			var inner_field = new TypeField(field_data, rf);
 			rf.container.append(inner_field.element);
 		}
 	}
@@ -15329,7 +18582,7 @@ function TypeView(name, data, browser){
 
 	type_view.element = $("<div />").addClass("type_view");
 
-	type_view.type_field = new TypeField(name, type_view.type_data, type_view);
+	type_view.type_field = new TypeField(type_view.type_data, type_view);
 
 	type_view.element.append(
 		type_view.type_field.element
@@ -15399,6 +18652,10 @@ TypeView.prototype.error = function(error_data){
 	type_view.type_field.error(error_data);
 }
 
+TypeView.prototype.init = function(){
+	var type_view = this;
+}
+
 TypeView.prototype.save = function(){
 	var type_view = this;
 
@@ -15451,6 +18708,10 @@ function LoadingView(){
 
 }
 
+LoadingView.prototype.init = function(){
+	var loading_view = this;
+}
+
 function TypeCache(){
 	var rc = this;
 
@@ -15500,13 +18761,12 @@ TypeCache.prototype.load = function(name, callback) {
 };
 extend(MainBrowser, Browser);
 
-function MainBrowser(needNavigation){
+function MainBrowser(page){
 	var browser = this;
-	browser.needNavigation = needNavigation;
-	MainBrowser.superConstructor.call(this);
 
+	browser.need_nav = true;
 
-
+	MainBrowser.superConstructor.call(this, page);
 }
 
 MainBrowser.prototype.backwardPress = function(){
@@ -15571,8 +18831,10 @@ function Toolbar(browser){
 	tb.element = $("<div />").addClass("toolbar");
 }
 
-function Browser(){
+function Browser(parent){
 	var browser = this;
+
+	browser.parent = parent;
 
 	browser.history = {};
 	browser.historyIndex = -1;
@@ -15627,7 +18889,7 @@ Browser.prototype.forwardPress = function(){
 	}
 }
 
-Browser.prototype.load = function(address){
+Browser.prototype.load = function(address, action){
 	var browser = this;
 
 	console.log(address);
@@ -15667,12 +18929,24 @@ Browser.prototype.load = function(address){
 			var path = value;
 
 			if(path.is_folder){
-				console.log("FOLDER!");
-				browser.view = new FolderView(
-			    	path,
-			    	object,
-				    browser
-			    );
+				if(action==="new_item"){
+					console.log("NEW ITEM!");
+					browser.view = new ItemView(
+				    	path,
+				    	{},
+					    browser,
+					    {
+					    	create: true
+					    }
+				    );
+				} else {
+					console.log("FOLDER!");
+					browser.view = new FolderView(
+				    	path,
+				    	object,
+					    browser
+				    );
+				}
 			} else {
 				console.log("ITEM!");
 				browser.view = new ItemView(
@@ -15690,6 +18964,9 @@ Browser.prototype.load = function(address){
 		    );
 		}
 		browser.view_container.empty().append(browser.view.element);
+
+		//Appended to the DOM
+		browser.view.init();
 
 	})
 }
@@ -15765,6 +19042,8 @@ extend(BrowserPage, Page);
 function BrowserPage(req) {
     var page = this;
 
+    console.log(req);
+
     BrowserPage.superConstructor.call(this);
 
     page.browser = new MainBrowser();
@@ -15783,8 +19062,12 @@ Site.add_url("/browser/*", BrowserPage);
 BrowserPage.prototype.new_url = function(req){
     var page = this;
 
+    console.log(req);
+
     if(req.params['*']){
         page.browser.load(req.params['*']);
+    } else {
+        page.browser.load("/"+user.username+"/")
     }
 }
 
@@ -15809,7 +19092,7 @@ BrowserPage.prototype.resize = function(resize_obj) {
     page.browser.resize(resize_obj);
 }
 extend(NotFoundPage, Page);
-function NotFoundPage(parameters,url,wildcard_contents){
+function NotFoundPage(req){
 	var page = this;
 
 	NotFoundPage.superConstructor.call(this);

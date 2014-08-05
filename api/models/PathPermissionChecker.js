@@ -110,23 +110,19 @@ PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths,
 		return;
 	}
 
-	db.object_collection.find({
+	logger.log(ppc.handler.api);
+	ppc.handler.api.ds.object_collection.find({
 		"full_path" : {"$in" : keys}
-	},function(err,res){
-		logger.log(err);
-		
-		res.toArray(function(array_err, array){
-			logger.log(array_err);
-			logger.log(array);
+	}).toArray(function(array_err, array){
+		logger.log(array_err);
+		logger.log(array);
 
-			ppc.resolve_callbacks(callback_objects);
+		ppc.resolve_callbacks(callback_objects);
 
-			if(callback){
-				callback();
-			}
-		});
-
-	})
+		if(callback){
+			callback();
+		}
+	});
 }
 
 module.exports = PathPermissionChecker;

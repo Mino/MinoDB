@@ -1,3 +1,4 @@
+@import("CreateFolderModal/CreateFolderModal.js");
 @import("PaginationController/PaginationController.js");
 @import("Icon/Icon.js");
 
@@ -23,20 +24,46 @@ function FolderView(path, data, browser){
 		folder_view.pagination_controller.element
 	)
 
+	browser.view_container.empty().append(folder_view.element);
 
-	folder_view.toolbar_element = $("<div />").append(
-		
-	)
-
-	browser.view_container.empty();
-	browser.view_container.append(folder_view.element);
-
-	browser.toolbar.element.empty();
-	browser.toolbar.element.append(folder_view.toolbar_element);
+	browser.toolbar.element.empty().append(
+		folder_view.toolbar_element = $("<div />").append(
+			folder_view.create_folder_button = $("<button />").addClass("mino_button").text("Create Folder").on('tap',function(){
+				folder_view.create_folder();
+			})
+		,
+			folder_view.create_item_button = $("<button />").addClass("mino_button").text("Create Item").on('tap',function(){
+				folder_view.create_item();
+			})
+		)
+	);
 	
 	browser.address_bar.populate_path_buttons(folder_view.path);
 
 	folder_view.load({});
+}
+
+FolderView.prototype.init = function(){
+	var folder_view = this;
+}
+
+FolderView.prototype.create_folder = function(){
+	var folder_view = this;
+
+	var cfm = new CreateFolderModal(folder_view.path, function(err, res){
+		console.log(err, res);
+		alert("CREATED?")
+	})
+
+	folder_view.element.append(
+		cfm.element
+	)
+}
+
+FolderView.prototype.create_item = function(){
+	var folder_view = this;
+
+	folder_view.browser.load("/TestUser/test/","new_item");
 }
 
 FolderView.prototype.load = function(options){
@@ -61,7 +88,13 @@ FolderView.prototype.populate = function(options, data){
 	var objects = data.objects;
 
 	for(var i = 0; i < objects.length; i++){
-		var icon = new FolderIcon(objects[i],folder_view);
+		var object = objects[i];
+		var icon;
+		if(object.folder){
+			icon = new FolderIcon(object,folder_view);
+		} else {
+			icon = new ItemIcon(object, folder_view);
+		}
 		folder_view.contents.append(icon.element);
 	}
 }

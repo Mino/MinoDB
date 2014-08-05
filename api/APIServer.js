@@ -1,5 +1,8 @@
 var express = require('express');
-var connect = require('connect');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var morgan = require('morgan');
+var errorHandler = require('errorhandler');
 var http = require('http');
 var path = require('path');
 
@@ -17,11 +20,10 @@ function APIServer(minodb){
 
 	as.express_server = express();
 
-    as.express_server.use(connect.compress());
-    as.express_server.use(express.methodOverride());
-    as.express_server.use(express.bodyParser());
-    as.express_server.use(express.logger('dev'));
-    as.express_server.use(express.errorHandler());
+    as.express_server.use(cookieParser());
+    as.express_server.use(bodyParser());
+    as.express_server.use(morgan())
+    as.express_server.use(errorHandler({ dumpExceptions: true, showStack: true }));
 
     as.express_server.post('/', process_api_request, function(req, res) {
 

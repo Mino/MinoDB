@@ -1,0 +1,6 @@
+.item_icon{
+	
+	>.holder{
+		background-color: green;
+	}
+}

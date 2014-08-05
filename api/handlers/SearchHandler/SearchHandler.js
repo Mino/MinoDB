@@ -47,7 +47,9 @@ SearchHandler.prototype.do_search = function(callback){
     var db = sh.api.ds;
 
     db.object_collection.find({
-
+        "path": {
+            "$in": sh.paths
+        }
     },{
 
     }).toArray(function(search_err, search_res){

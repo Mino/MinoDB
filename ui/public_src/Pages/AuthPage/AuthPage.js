@@ -2,7 +2,7 @@
 
 extend(AuthPage, Page);
 
-function AuthPage(parameters, url, wildcard_contents) {
+function AuthPage(req) {
     var page = this;
 
     AuthPage.superConstructor.call(this);
@@ -20,7 +20,7 @@ function AuthPage(parameters, url, wildcard_contents) {
 }
 Site.add_url("/auth/", AuthPage);
 
-AuthPage.prototype.new_url = function(parameters, url, wildcard_contents) {
+AuthPage.prototype.new_url = function(req) {
     var page = this;
 
     //document.title = page.title + " - " + page_title_append;
@@ -36,18 +36,10 @@ AuthPage.prototype.init = function() {
     var page = this;
 
     page.login_box.reposition_box();
-
-    // body_contents_holder.set_transparent(true);
-    // header.hide();
-    // footer.hide();
 }
 
 AuthPage.prototype.remove = function() {
     var page = this;
-
-    // body_contents_holder.set_transparent(false);
-    // header.show();
-    // footer.show();
 }
 
 AuthPage.prototype.resize = function(resize_obj) {

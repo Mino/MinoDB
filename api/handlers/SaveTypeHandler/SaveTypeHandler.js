@@ -2,8 +2,9 @@ var errors = require('../../../errors')
 var Validator = require('fieldval');
 var bval = require('fieldval-basicval');
 var Path = require('../../../common_classes/Path')
-var ValidationRule = require('fieldval-rules');
 var logger = require('tracer').console();
+
+var Type = require('./Type');
 
 function SaveTypeHandler(api, user, parameters, callback){
     var sh = this;
@@ -14,11 +15,9 @@ function SaveTypeHandler(api, user, parameters, callback){
 
     sh.validator = new Validator(parameters);
 
-    var type = sh.validator.get("type", bval.object(true));
-    if(type){
-
-        sh.type = new ValidationRule();
-        var type_error = sh.type.init(type);
+    var type_data = sh.validator.get("type", bval.object(true));
+    if(type_data){
+        var type_error = Type.validate(type_data);
         if(type_error){
             sh.validator.invalid("type",type_error);
         }
@@ -30,33 +29,30 @@ function SaveTypeHandler(api, user, parameters, callback){
         return;
     }
 
-    var db = api.ds;
+    Type.get(type_data.name, api, function(get_err, existing_type){
 
-    var name = type.name;
+        logger.log(get_err, existing_type);
 
-    logger.log(type);
-    logger.log("name ",name);
-
-    db.type_collection.update(
-        {
-            name: name
-        },
-        type,
-        {
-            upsert: true
-        },
-        function(err, response){
-            logger.log(err);
-            logger.log(response);
+        if(existing_type){
+            sh.type = existing_type
+        } else {
+            sh.type = new Type({
+                name: type_data.name
+            })
         }
-    );
 
-
-
-    callback(null,{
-        success: true
+        sh.type.init(type_data);
+        
+        sh.type.save(api, function(save_err, save_res){
+            
+            logger.log(save_err, save_res);
+            
+            callback(null,{
+                success: true
+            })
+            return;
+        })
     })
-    return;
 }
 
 module.exports = SaveTypeHandler;

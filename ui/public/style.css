@@ -138,15 +138,15 @@ textarea {
   width: 200%;
   overflow-x: hidden;
 }
-.modalShadow {
+.modal_shadow {
   position: fixed;
   overflow: hidden;
   top: 0px;
   left: 0px;
   padding: 3px;
   background-color: black;
-  opacity: 0.5;
-  filter: alpha(opacity = 50);
+  opacity: 0.2;
+  filter: alpha(opacity = 20);
   width: 100%;
   height: 100%;
   z-index: 2001;
@@ -162,31 +162,29 @@ textarea {
   z-index: 2002;
   opacity: 1.0;
   filter: alpha(opacity = 100);
-  background-color: #00A3E6;
+  background-color: #D2CECE;
 }
-.modal .modalTitle {
+.modal .modal_title_holder {
   width: 100%;
   height: 40px;
   z-index: 2;
-  background-color: #00A3E6;
-  border-bottom: 1px solid #00A3E6;
 }
-.modal .modalTitle .modalTabs {
+.modal .modal_title_holder .modal_tabs {
   height: 35px;
   margin-top: 5px;
   left: 50%;
 }
-.modal .modalTitle .modalTitleText {
-  text-align: left;
-  width: 250px;
-  padding-left: 10px;
+.modal .modal_title_holder .modal_title_text {
+  box-sizing: border-box;
+  text-align: center;
+  width: 100%;
   height: 40px;
   color: black;
   font-size: 17px;
   font-weight: bold;
   line-height: 40px;
 }
-.modal .modalCloseButton {
+.modal .modal_close_button {
   position: absolute;
   top: 0px;
   right: 0px;
@@ -197,75 +195,35 @@ textarea {
   background-color: #FFFFFF;
   color: black;
 }
-.modal .modalCloseButton:active {
+.modal .modal_close_button:active {
   background-color: black;
   color: white;
 }
-.modal .modalContents {
+.modal .modal_contents {
   width: 100%;
   display: block;
   overflow-x: hidden;
   top: 41px;
   bottom: 40px;
-  background-color: #00A3E6;
 }
-.modal .modalContents .modalContents {
-  top: 0px;
-  bottom: 0px;
-}
-.modal .modalBottomBar {
+.modal .modal_bottom_bar {
   bottom: 0px;
   width: 100%;
   height: 40px;
-  background-color: #00A3E6;
 }
-.modal .modalBottomBar .navbutton {
-  text-align: left;
-  float: left;
-  height: 40px;
-}
-.modal .modalBottomBar .singleButton {
+.modal .modal_bottom_bar .single_button {
   width: 100%;
   height: 100%;
 }
-.modal .modalBottomBar .leftButton {
+.modal .modal_bottom_bar .left_button {
   width: 50%;
   height: 100%;
   float: left;
 }
-.modal .modalBottomBar .rightButton {
+.modal .modal_bottom_bar .right_button {
   width: 50%;
   height: 100%;
   float: left;
-}
-.modal .halfWidthModalInput {
-  position: absolute;
-  width: 50%;
-  margin-left: -5px;
-  height: 20px;
-  margin-bottom: 5px;
-}
-.modal .dialogSaving {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 300px;
-  height: 100px;
-  background-color: blue;
-  background-color: rgba(0, 0, 0, 0.75);
-  color: white;
-  font-weight: bold;
-  line-height: 90px;
-  text-align: center;
-}
-.modal .dialogError {
-  width: 280px;
-  margin-left: 5px;
-  margin-right: 5px;
-  margin-top: 5px;
-  color: red;
-  font-weight: bold;
-  line-height: 16px;
 }
 .modal .modalCloseDiv {
   position: absolute;
@@ -279,10 +237,7 @@ textarea {
   left: 10px;
   height: 35px;
 }
-.modal .modalTabButton {
-  float: left;
-}
-.modal .modalLoading {
+.modal .modal_loading {
   background-image: url("images/dark-loader.gif");
   background-position: center;
   background-repeat: no-repeat;
@@ -499,6 +454,9 @@ textarea {
   line-height: 30px;
   text-align: center;
 }
+.browser_page .browser .view_container .folder_view .create_folder_modal .field_container .field_title {
+  display: none;
+}
 .browser_page .browser .view_container .folder_view .contents {
   margin-left: -5px;
   margin-right: -5px;
@@ -548,6 +506,9 @@ textarea {
 .browser_page .browser .view_container .folder_view .contents .folder_icon > .holder {
   background-color: orange;
 }
+.browser_page .browser .view_container .folder_view .contents .item_icon > .holder {
+  background-color: green;
+}
 .browser_page .browser .view_container .item_view .item_section {
   border: 1px solid #808080;
   background-color: white;
@@ -562,18 +523,18 @@ textarea {
 .browser_page .browser .view_container .item_view .item_section .container {
   padding: 5px;
 }
-.browser_page .browser .view_container .rule_view .rule_field {
+.browser_page .browser .view_container .type_view .type_field {
   border: 1px solid #808080;
   background-color: white;
   margin-bottom: 10px;
 }
-.browser_page .browser .view_container .rule_view .rule_field .title {
+.browser_page .browser .view_container .type_view .type_field .title {
   background-color: #ffa500;
   font-weight: bold;
   color: white;
   padding: 5px;
 }
-.browser_page .browser .view_container .rule_view .rule_field .container {
+.browser_page .browser .view_container .type_view .type_field .container {
   padding: 5px;
 }
 .browser_page .browser .toolbar {

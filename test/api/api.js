@@ -102,18 +102,19 @@ describe('MinoDB API', function() {
                         name: "person",
                         display_name: "Person",
                         type: "object",
-                        fields:{
-                            "first_name" : {
+                        fields:[
+                            {
+                                name: "first_name",
                                 display_name: "First Name",
                                 type: "text",
                                 min_length: 10
-                            },
-                            "last_name" : {
+                            },{
+                                name: "last_name",
                                 display_name: "Last Name",
                                 type: "text",
                                 max_length: 3
-                            },
-                            "office_number" : {
+                            },{
+                                name: "office_number",
                                 display_name: "Office Number",
                                 type: "number",
                                 description: "Please enter your office number",
@@ -121,7 +122,7 @@ describe('MinoDB API', function() {
                                 maximum: 30,
                                 integer: true
                             }
-                        }
+                        ]
                     }
                 }
             }, function(error, response) {

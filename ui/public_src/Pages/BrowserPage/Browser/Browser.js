@@ -5,8 +5,10 @@
 @import("MainBrowser/MainBrowser.js");
 @import("Toolbar/Toolbar.js");
 
-function Browser(){
+function Browser(parent){
 	var browser = this;
+
+	browser.parent = parent;
 
 	browser.history = {};
 	browser.historyIndex = -1;
@@ -61,7 +63,7 @@ Browser.prototype.forwardPress = function(){
 	}
 }
 
-Browser.prototype.load = function(address){
+Browser.prototype.load = function(address, action){
 	var browser = this;
 
 	console.log(address);
@@ -101,12 +103,24 @@ Browser.prototype.load = function(address){
 			var path = value;
 
 			if(path.is_folder){
-				console.log("FOLDER!");
-				browser.view = new FolderView(
-			    	path,
-			    	object,
-				    browser
-			    );
+				if(action==="new_item"){
+					console.log("NEW ITEM!");
+					browser.view = new ItemView(
+				    	path,
+				    	{},
+					    browser,
+					    {
+					    	create: true
+					    }
+				    );
+				} else {
+					console.log("FOLDER!");
+					browser.view = new FolderView(
+				    	path,
+				    	object,
+					    browser
+				    );
+				}
 			} else {
 				console.log("ITEM!");
 				browser.view = new ItemView(
@@ -124,6 +138,9 @@ Browser.prototype.load = function(address){
 		    );
 		}
 		browser.view_container.empty().append(browser.view.element);
+
+		//Appended to the DOM
+		browser.view.init();
 
 	})
 }

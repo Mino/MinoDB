@@ -4,11 +4,6 @@ var logger = require('tracer').console();
 
 var DataStore = require('./datastore');
 
-var GetHandler = require('./handlers/GetHandler/GetHandler.js');
-var SaveHandler = require('./handlers/SaveHandler/SaveHandler.js');
-var SearchHandler = require('./handlers/SearchHandler/SearchHandler.js');
-var SaveTypeHandler = require('./handlers/SaveTypeHandler/SaveTypeHandler.js');
-
 function API(minodb, db_address){
 	var api = this;
 
@@ -21,6 +16,13 @@ function API(minodb, db_address){
     api.connect(function(){
         logger.log("API CONNECTED");
     })
+
+    api.handlers = {
+        "get": require('./handlers/GetHandler/GetHandler.js'),
+        "save": require('./handlers/SaveHandler/SaveHandler.js'),
+        "search": require('./handlers/SearchHandler/SearchHandler.js'),
+        "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler.js')
+    }
 }
 
 API.prototype.connect = function(callback){
@@ -28,6 +30,18 @@ API.prototype.connect = function(callback){
 
     api.ds.connect(function(err){
         if(err) throw err;
+
+        // var User = require('./models/User');
+        // User.get("testuser", api, function(get_err, get_user){
+        //     logger.log(get_err, get_user);
+        // })
+        // User.create({
+        //     username: "testuser",
+        //     email: "test@minocloud.com",
+        //     password: "my_password"
+        // }, api, function(user_err, user_res){
+        //     logger.log(user_err, user_res);
+        // })
 
         callback();
     })
@@ -38,19 +52,10 @@ API.prototype.call = function(user, request, callback){
 
     var api_val = new FieldVal(request);
 
-    var function_name = api_val.get("function", bval.string(true), bval.one_of(["get","save","save_type","search"]));
+    var function_name = api_val.get("function", bval.string(true), bval.one_of(api.handlers));
     var parameters = api_val.get("parameters", bval.object(true));
 
-    var handler = null;
-    if (function_name === "get") {
-        handler = GetHandler;
-    } else if (function_name === "save") {
-        handler = SaveHandler;
-    } else if (function_name === "save_type") {
-        handler = SaveTypeHandler;
-    } else if (function_name === "search") {
-        handler = SearchHandler;
-    }
+    var handler = api.handlers[function_name];
 
     var error = api_val.end();
     if(error){

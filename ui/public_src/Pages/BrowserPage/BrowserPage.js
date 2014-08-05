@@ -5,6 +5,8 @@ extend(BrowserPage, Page);
 function BrowserPage(req) {
     var page = this;
 
+    console.log(req);
+
     BrowserPage.superConstructor.call(this);
 
     page.browser = new MainBrowser();
@@ -23,8 +25,12 @@ Site.add_url("/browser/*", BrowserPage);
 BrowserPage.prototype.new_url = function(req){
     var page = this;
 
+    console.log(req);
+
     if(req.params['*']){
         page.browser.load(req.params['*']);
+    } else {
+        page.browser.load("/"+user.username+"/")
     }
 }
 

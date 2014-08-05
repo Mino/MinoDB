@@ -1,6 +1,6 @@
 extend(HomePage, Page);
 
-function HomePage(parameters, url) {
+function HomePage(req) {
     var page = this;
 
     HomePage.superConstructor.call(this);

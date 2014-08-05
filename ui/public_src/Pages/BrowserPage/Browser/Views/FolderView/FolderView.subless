@@ -2,6 +2,8 @@
 	
 	@import "PaginationController/PaginationController.subless";
 
+	@import "CreateFolderModal/CreateFolderModal.subless";
+
 	.contents{
 
 		margin-left: -5px;

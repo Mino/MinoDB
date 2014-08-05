@@ -1,5 +1,5 @@
 function ItemSection(name, value, item_view){
-	var section = this;
+	var section = this
 
 	section.name = name;
 	section.item_view = item_view;
@@ -9,14 +9,8 @@ function ItemSection(name, value, item_view){
 		section.container = $("<div />").addClass("container")
 	)
 
-    section.is_edit_mode = true;
-
-    // console.log(name);
-    // console.log(value);
-    // console.log(item_view.browser);
-
 	item_view.browser.type_cache.load(name, function(err, data){
-  //       console.log("ITEM SECTION");
+        // console.log("ITEM SECTION");
 		// console.log(err);
 		// console.log(data);
         section.populate_type(data);
@@ -37,7 +31,9 @@ ItemSection.prototype.val = function(argument){
 ItemSection.prototype.error = function(argument){
     var section = this;
 
-    return section.field.error(argument);
+    if(section.field){
+        return section.field.error(argument);
+    }
 }
 
 ItemSection.prototype.edit_mode = function(){
@@ -80,23 +76,14 @@ ItemSection.prototype.populate_type = function(type){
     section.vr = new ValidationRule();
 	console.log(section.vr.init(type));
 
-
-
 	section.field = section.vr.field.create_ui(section.item_view.form);
 
-    // console.log(section.vr.field);
-    // console.log(section.field);
+	section.title_div.text(type.display_name || type.name);
 
-	// section.container.append(
-	// 	section.field.element
-	// )
-
-	// section.title_div.text(type.display_name || type.name);
-
- //    if(section.is_edit_mode){
- //        section.edit_mode();
- //    } else {
- //        section.view_mode();
- //    }
+    if(section.is_edit_mode){
+        section.edit_mode();
+    } else {
+        section.view_mode();
+    }
 
 }

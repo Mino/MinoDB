@@ -14,3 +14,4 @@ function Icon(data, view){
 }
 
 @import("FolderIcon/FolderIcon.js");
+@import("ItemIcon/ItemIcon.js");

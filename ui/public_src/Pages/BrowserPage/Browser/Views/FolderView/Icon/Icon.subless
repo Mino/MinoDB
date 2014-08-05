@@ -46,3 +46,4 @@
 }
 
 @import "FolderIcon/FolderIcon.subless";
+@import "ItemIcon/ItemIcon.subless";

@@ -1,0 +1,7 @@
+.create_folder_modal{
+	.field_container{
+		.field_title{
+			display: none;
+		}
+	}	
+}

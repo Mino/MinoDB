@@ -22,6 +22,8 @@ function MinoDB(config){
     mdb.api = new API(mdb, mdb.config.db_address);
 }
 
+MinoDB.FieldValRules = require('fieldval-rules');
+
 MinoDB.prototype.ui_server = function(){
     var mdb = this;
     return mdb._ui_server.express_server;

@@ -30,23 +30,23 @@ DataStore.prototype.connect = function(callback) {
 	    ds.users_collection = mongo.collection('users');
 
 	    ds.object_collection.ensureIndex( { full_path: 1 }, { unique: true }, function(err,res){
-	    	logger.log(err);
-	    	logger.log(res);
+	    	logger.log(err, res);
 	    })
 
 	    ds.object_collection.ensureIndex( { path: 1 }, function(err,res){
-	    	logger.log(err);
-	    	logger.log(res);
+	    	logger.log(err, res);
 	    })
 
 	    ds.object_collection.ensureIndex( { name: 1 }, function(err,res){
-	    	logger.log(err);
-	    	logger.log(res);
+	    	logger.log(err, res);
 	    })
 
 	    ds.type_collection.ensureIndex( { name: 1 }, { unique: true }, function(err,res){
-	    	logger.log(err);
-	    	logger.log(res);
+	    	logger.log(err, res);
+	    })
+
+	    ds.users_collection.ensureIndex( { username: 1 }, { unique: true }, function(err, res){
+	    	logger.log(err, res);
 	    })
 
 	    try {

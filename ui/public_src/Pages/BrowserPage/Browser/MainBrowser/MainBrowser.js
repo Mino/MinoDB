@@ -1,12 +1,11 @@
 extend(MainBrowser, Browser);
 
-function MainBrowser(needNavigation){
+function MainBrowser(page){
 	var browser = this;
-	browser.needNavigation = needNavigation;
-	MainBrowser.superConstructor.call(this);
 
+	browser.need_nav = true;
 
-
+	MainBrowser.superConstructor.call(this, page);
 }
 
 MainBrowser.prototype.backwardPress = function(){

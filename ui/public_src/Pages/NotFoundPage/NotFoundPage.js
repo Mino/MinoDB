@@ -1,5 +1,5 @@
 extend(NotFoundPage, Page);
-function NotFoundPage(parameters,url,wildcard_contents){
+function NotFoundPage(req){
 	var page = this;
 
 	NotFoundPage.superConstructor.call(this);
