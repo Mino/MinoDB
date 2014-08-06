@@ -9,12 +9,25 @@ function Type(item) {
     type.item = item;
 
     type.name = item.name;
+
+    type.rule = item['mino_type'];
 }
+
+Type.rule = new ValidationRule();
+Type.rule_definition = {
+    name: "mino_type",
+    display_name: "Type",
+    type: "object",
+    any: true
+}
+Type.rule.init(Type.rule_definition)
 
 Type.prototype.init = function(type_data){
     var type = this;
 
-    type.item.type = type_data;
+    type.item['mino_type'] = type_data;
+
+    type.rule = type_data;
 }
 
 Type.validate = function(data, creation){
@@ -39,7 +52,7 @@ Type.prototype.save = function(api, callback){
     type.item.path = "/Mino/types/";
 
     new api.handlers.save(api, {
-        "typename": "Mino"
+        "username": "Mino"
     }, {
         "objects": [
             type.item
@@ -53,7 +66,7 @@ Type.prototype.save = function(api, callback){
 
 Type.get = function(typename, api, callback){
     new api.handlers.get(api, {
-        "typename": "Mino"
+        "username": "Mino"
     }, {
         "addresses": [
             "/Mino/types/"+typename

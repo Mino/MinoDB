@@ -16,16 +16,32 @@ function ItemSection(name, value, item_view){
         section.populate_type(data);
         section.populate(value);
 	})
+
+    section.init_called = false;
+}
+
+ItemSection.prototype.init = function(){
+    var section = this;
+
+    if(section.field){
+        section.field.init();
+    }
+
+    section.init_called = true;
+}
+
+ItemSection.prototype.remove = function(){
+    var section = this;
+
+    if(section.field){
+        section.field.remove();
+    }
 }
 
 ItemSection.prototype.val = function(argument){
     var section = this;
 
-    if(arguments.length===0){
-        return section.field.val();
-    } else {
-        return section.field.val(argument);
-    }
+    return section.vr.field.val(argument);
 }
 
 ItemSection.prototype.error = function(argument){
@@ -59,10 +75,7 @@ ItemSection.prototype.view_mode = function(){
 ItemSection.prototype.populate = function(data){
     var section = this;
 
-    if(section.field){
-        console.log(section.field)
-        section.field.val(data);
-    }
+    section.val(data);
 }
 
 ItemSection.prototype.populate_type = function(type){
@@ -70,13 +83,14 @@ ItemSection.prototype.populate_type = function(type){
 
 	section.type = type;
 
-    // console.trace();
-    // console.log(type);
-
     section.vr = new ValidationRule();
 	console.log(section.vr.init(type));
 
 	section.field = section.vr.field.create_ui(section.item_view.form);
+
+    if(section.init_called){
+        section.field.init();
+    }
 
 	section.title_div.text(type.display_name || type.name);
 

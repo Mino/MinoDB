@@ -4,7 +4,7 @@ var bval = require('fieldval-basicval');
 var Path = require('../../../common_classes/Path')
 var logger = require('tracer').console();
 
-var Type = require('./Type');
+var Type = require('../../models/Type');
 
 function SaveTypeHandler(api, user, parameters, callback){
     var sh = this;

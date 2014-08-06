@@ -6,7 +6,6 @@ function isEmptyObject(object){
 }
 
 function ajax_request(params, callback){
-    console.trace();
     var id = Math.random();
     console.log("ajax_request",id, params);
 	$.ajax({

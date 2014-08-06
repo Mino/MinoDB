@@ -20,6 +20,16 @@ function User(data) {
     user.password = data.password;
 }
 
+User.rule = new ValidationRule();
+User.rule.init({
+    name: "mino.user",
+    display_name: "User",
+    type: "object",
+    fields: [
+
+    ]
+});
+
 User.validate = function(data, creation){
     var validator = new FieldVal(data);
 
@@ -53,28 +63,25 @@ User.prototype.create_save_data = function(callback){
 User.prototype.save = function(api, callback){
     var user = this;
 
-    // user.create_save_data(function(err, to_save){
-    //     logger.log(err, to_save);
-    //     api.ds.users_collection.insert(to_save, function(insert_err, insert_res){
-    //         logger.log(insert_err, insert_res);
-    //         callback(insert_err, insert_res);
-    //     })
-    // });
+    user.create_save_data(function(err, to_save){
 
-    new api.handlers.save(api, {
-        "username": "Mino"
-    }, {
-        "objects": [
-            {
-                "name": user.username,
-                "path": "/Mino/users/"
-            }
-        ]
-    }, function(save_err, save_res){
-        logger.log(save_err, save_res);
+        new api.handlers.save(api, {
+            "username": "Mino"
+        }, {
+            "objects": [
+                {  
+                    
+                    "name": user.username,
+                    "path": "/Mino/users/",
+                    "mino.user": to_save
+                }
+            ]
+        }, function(save_err, save_res){
+            logger.log(save_err, save_res);
 
-        // callback(null, new User(get_res));
-    })
+            // callback(null, new User(get_res));
+        })
+    });
 }
 
 User.prototype.is_system_user = function(toCheck) {

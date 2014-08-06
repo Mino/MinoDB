@@ -16,10 +16,11 @@ function SaveHandler(api, user, parameters, callback){
     sh.callback = callback;
 
     sh.save_objects = [];
-    sh.types_to_retrieve = {};
+    sh.types_to_items = {};
+    sh.types_to_retrieve = [];
     
     sh.permissions_checked = false;
-    sh.waiting_for_types = 0;
+    sh.types_retrived = false;
 
     sh.path_permission_checker = new PathPermissionChecker(sh);
 
@@ -53,11 +54,11 @@ function SaveHandler(api, user, parameters, callback){
 SaveHandler.prototype.request_type = function(type_name, save_object){
     var sh = this;
 
-    var existing = sh.types_to_retrieve[type_name];
+    var existing = sh.types_to_items[type_name];
     if(existing===undefined){
-        sh.waiting_for_types++;
         existing = [];
-        sh.types_to_retrieve[type_name] = existing;
+        sh.types_to_items[type_name] = existing;
+        sh.types_to_retrieve.push(type_name);
     }
     existing.push(save_object);
 }
@@ -65,7 +66,9 @@ SaveHandler.prototype.request_type = function(type_name, save_object){
 SaveHandler.prototype.check_ready_to_save = function(){
     var sh = this;
 
-    if(sh.waiting_for_types===0 && sh.permissions_checked){
+    console.trace();
+
+    if(sh.permissions_checked && sh.types_retrived){
         logger.log("FINISHED GETTING RULES AND PERMISSIONS");
 
         logger.log(sh.objects_validator);
@@ -114,51 +117,55 @@ SaveHandler.prototype.check_ready_to_save = function(){
 SaveHandler.prototype.retrieve_types = function(){
     var sh = this;
 
-    logger.log(sh.types_to_retrieve);
+    logger.log(sh.types_to_items);
 
-    for(var i in sh.types_to_retrieve){
-        sh.get_type(i);
+    var type_addresses = [];
+    for(var i = 0; i < sh.types_to_retrieve.length; i++){
+        type_addresses.push("/Mino/types/"+sh.types_to_retrieve[i]);
     }
-}
 
-SaveHandler.prototype.get_type = function(name){
-    var sh = this;
+    new sh.api.handlers.get(sh.api, {
+        "username": "Mino"
+    }, {
+        "addresses": type_addresses
+    }, function(get_err, get_res){
+        logger.log(get_err, get_res);
 
-    var db = sh.api.ds;
+        if(get_err){
+            throw new Error("Unexpected error");
+        }
 
+        for(var i = 0; i < sh.types_to_retrieve.length; i++){
+            var type_name = sh.types_to_retrieve[i];
+            var res = get_res.objects[i];
 
-    var save_objects = sh.types_to_retrieve[name];
+            var save_objects = sh.types_to_items[type_name];
 
-    logger.log("type_collection.findOne() ",name);
-    db.type_collection.findOne({
-        name: name
-    },function(err, res){
-        sh.waiting_for_types--;
-        logger.log(err);
-        logger.log(res);
-        if(res){
-            logger.log(res);
-            delete res._id;
-            for(var i = 0; i < save_objects.length; i++){
-                var save_object = save_objects[i];
+            if(res){
+                logger.log(res);
                 var validation_type = new ValidationRule();
-                var type_init = validation_type.init(res);
+                var type_init = validation_type.init(res['mino_type']);
                 logger.log(validation_type);
                 logger.log(type_init);
-                save_object.got_type(name, null, validation_type);
+                for(var k = 0; k < save_objects.length; k++){
+                    var save_object = save_objects[k];
+                    save_object.got_type(type_name, null, validation_type);
+                }
+            } else {
+                // for(var i = 0; i < save_objects.length; i++){
+                //     var save_object = save_objects[i];
+                //     var error = save_object.validator.end();
+                //     logger.log(error);
+                //     if(error!=null){
+                //         sh.objects_validator.invalid(save_object.index, error);
+                //     }
+                // }
             }
-        } else {
-            // for(var i = 0; i < save_objects.length; i++){
-            //     var save_object = save_objects[i];
-            //     var error = save_object.validator.end();
-            //     logger.log(error);
-            //     if(error!=null){
-            //         sh.objects_validator.invalid(save_object.index, error);
-            //     }
-            // }
         }
+        
+        sh.types_retrived = true;
         sh.check_ready_to_save();
-    })
+    });
 }
 
 SaveHandler.prototype.do_saving = function(callback){
@@ -179,27 +186,22 @@ SaveHandler.prototype.do_saving = function(callback){
     for(var i = 0; i < sh.total; i++){
         var save_object = sh.save_objects[i];
         
-        save_object.do_saving();
+        save_object.do_saving(function(save_object,error,save_details){
+            logger.log(error);
+            if(error){
+                sh.result_object_array[save_object.index] = error;
+                sh.objects_validator.invalid(""+save_object.index,error);
+            } else {
+                sh.result_object_array[save_object.index] = save_details;
+            }
+
+            sh.completed++;
+            logger.log(sh.completed + " : " +sh.total);
+            if(sh.completed===sh.total){
+                sh.finished_saving();
+            }
+        });
     }    
-}
-
-SaveHandler.prototype.finished_saving_object = function(save_object,error,save_details){
-    var sh = this;
-
-    logger.log(error);
-    if(error){
-        sh.result_object_array[save_object.index] = error;
-        sh.objects_validator.invalid(""+save_object.index,error);
-    } else {
-        sh.result_object_array[save_object.index] = save_details;
-    }
-
-    sh.completed++;
-    logger.log(sh.completed + " : " +sh.total);
-    if(sh.completed===sh.total){
-        sh.finished_saving();
-    }
-
 }
 
 module.exports = SaveHandler;

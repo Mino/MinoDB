@@ -81,6 +81,12 @@ TypeView.prototype.error = function(error_data){
 
 TypeView.prototype.init = function(){
 	var type_view = this;
+	type_view.type_field.init();
+}
+
+TypeView.prototype.remove = function(){
+	var type_view = this;
+	type_view.type_field.remove();
 }
 
 TypeView.prototype.save = function(){

@@ -5,9 +5,10 @@ var Validator = require('fieldval');
 var bval = require('fieldval-basicval');
 var validators = require('../../validators');
 
-function SaveObject(json, handler, index){
+function SaveObject(json, handler, index, options){
 	var so = this;
 
+	so.options = options || {};
 	so.json = json;
 	so.handler = handler;
 	so.index = index;
@@ -23,7 +24,7 @@ function SaveObject(json, handler, index){
 	so.id = so.validator.get("_id", bval.string(false)); //,bval.minimum(1));
 	so.is_new = so.id===undefined;
 
-	so.folder = so.validator.get("folder", bval.boolean(false));
+	so.folder = so.validator.get("folder", bval.boolean(false)) || false;
 	so.version = so.validator.get("version", bval.integer(false));
 	if(so.folder===null){
 		so.folder = false;
@@ -40,21 +41,24 @@ function SaveObject(json, handler, index){
 		} else {
 			var permission_called = false;
 			logger.log(so.path);
-			handler.path_permission_checker.check_permissions_for_path(so.path,function(status){
-				if(status===Constants.WRITE_PERMISSION){
-					//Can write to the specified path
-				} else if(status===Constants.READ_PERMISSION){
-					so.validator.invalid("path",{
-						error: -1,
-						error_message: "NOT ALLOWED TO WRITE NEW PATH"
-					})
-				} else if(status===Constants.NO_PERMISSION){
-					so.validator.invalid("path",{
-						error: -1,
-						error_message: "NO ACCESS TO PATH"
-					})
-				}
-			});
+
+			if(!so.options.bypass_checks){
+				handler.path_permission_checker.check_permissions_for_path(so.path,function(status){
+					if(status===Constants.WRITE_PERMISSION){
+						//Can write to the specified path
+					} else if(status===Constants.READ_PERMISSION){
+						so.validator.invalid("path",{
+							error: -1,
+							error_message: "NOT ALLOWED TO WRITE NEW PATH"
+						})
+					} else if(status===Constants.NO_PERMISSION){
+						so.validator.invalid("path",{
+							error: -1,
+							error_message: "NO ACCESS TO PATH"
+						})
+					}
+				});
+			}
 		}
 	}
 	so.name = so.validator.get("name", bval.string(true), bval.not_empty(true));
@@ -67,7 +71,9 @@ function SaveObject(json, handler, index){
 	for(var i = 0; i < unrecognized.length; i++){
 		var key = unrecognized[i];
 		so.type_keys[key] = so.json[key];
-		so.handler.request_type(key, so);
+		if(!so.options.bypass_checks){
+			so.handler.request_type(key, so);
+		}
 	}
 }
 
@@ -95,8 +101,6 @@ SaveObject.prototype.got_type = function(name, error, type){
 	logger.log(type);
 	logger.log("type.name: ",name);
 
-	logger.log(so.validator);
-
 	so.validator.recognized(name);
 
 	var value = so.json[name];
@@ -109,7 +113,7 @@ SaveObject.prototype.got_type = function(name, error, type){
 	}
 }
 
-SaveObject.prototype.do_saving = function(){
+SaveObject.prototype.do_saving = function(on_save_callback){
 	var so = this;
 
 	var db = so.handler.api.ds;
@@ -122,6 +126,7 @@ SaveObject.prototype.do_saving = function(){
 
 		db.object_collection.insert(so.saving_json,function(err,response){
 			logger.log("INSERTED");
+			logger.log(err, response);
 
 			if(err){
     			logger.log(err);
@@ -129,9 +134,9 @@ SaveObject.prototype.do_saving = function(){
     				error: -1,
     				error_message: "FULL PATH ALREADY EXISTS"
     			})
-		       	so.handler.finished_saving_object(so,so.validator.end(),null);
+		       	on_save_callback(so,so.validator.end(),null);
     		} else {
-    			so.handler.finished_saving_object(so,null,{
+    			on_save_callback(so,null,{
     				_id : so.id,
     				version: so.version
     			})
@@ -158,7 +163,7 @@ SaveObject.prototype.do_saving = function(){
 		    				error: -1,
 		    				error_message: "ID DOES NOT EXIST"
 		    			})
-		    			so.handler.finished_saving_object(so,so.validator.end());
+		    			on_save_callback(so,so.validator.end());
 		    			return;
 		    		}
 
@@ -198,9 +203,9 @@ SaveObject.prototype.do_saving = function(){
 					    				error: -1,
 					    				error_message: "FULL PATH ALREADY EXISTS OR VERSION ERROR"
 					    			})
-					    			so.handler.finished_saving_object(so,so.validator.end());
+					    			on_save_callback(so,so.validator.end());
 					    		} else {
-					    			so.handler.finished_saving_object(so,null,{
+					    			on_save_callback(so,null,{
 					    				_id: so.id,
 					    				version: so.version
 					    			});
@@ -221,7 +226,7 @@ SaveObject.prototype.do_saving = function(){
 									error: -1,
 									error_message: "NOT ALLOWED TO WRITE OLD PATH"
 								});
-								so.handler.finished_saving_object(so, null, so.validator.end())
+								on_save_callback(so, null, so.validator.end())
 							} else {
 								have_permission();
 						    }

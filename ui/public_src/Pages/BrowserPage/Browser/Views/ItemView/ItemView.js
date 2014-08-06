@@ -58,7 +58,7 @@ function ItemView(path, data, browser, options){
 		console.log("key ",key);
 		if(!is_object_key(key)){
 			var section = new ItemSection(key, data[key], item_view);
-			item_view.form.add_field(key, section);
+			item_view.sections[key] = section;
 		}
 	}
 
@@ -104,9 +104,16 @@ function ItemView(path, data, browser, options){
 ItemView.prototype.init = function(){
 	var item_view = this;
 
+	item_view.form.init();
+
 	if(item_view.options.create){
 		item_view.form.fields.name.focus();
 	}
+}
+
+ItemView.prototype.remove = function(){
+	var item_view = this;
+	item_view.form.remove();
 }
 
 ItemView.prototype.edit = function(){
@@ -153,8 +160,6 @@ ItemView.prototype.val = function(){
 
 ItemView.prototype.error = function(error_data){
 	var item_view = this;
-
-	console.log("error_data ",error_data);
 
 	item_view.form.error(error_data);
 }

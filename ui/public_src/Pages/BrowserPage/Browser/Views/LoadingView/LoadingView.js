@@ -8,3 +8,7 @@ function LoadingView(){
 LoadingView.prototype.init = function(){
 	var loading_view = this;
 }
+
+LoadingView.prototype.remove = function(){
+	var loading_view = this;
+}

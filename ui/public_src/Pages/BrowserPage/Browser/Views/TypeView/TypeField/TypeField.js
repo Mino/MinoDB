@@ -39,8 +39,23 @@ function TypeField(value, parent){
 
     console.log(value);
 
+    rf.base_fields = {};
+    for(var name in rf.form.fields){
+    	rf.base_fields[name] = true;
+    }
+
     rf.update_title_name();
     rf.update_type_fields();
+}
+
+TypeField.prototype.init = function(){
+	var rf = this;
+	rf.form.init();
+}
+
+TypeField.prototype.remove = function(){
+	var rf = this;
+	rf.form.remove();
 }
 
 TypeField.prototype.update_title_name = function(){
@@ -62,6 +77,12 @@ TypeField.prototype.update_type_fields = function(){
 	var rf = this;
 
 	var type = rf.form.fields.type.val();
+
+	for(var name in rf.form.fields){
+		if(!rf.base_fields[name]){
+			rf.form.fields[name].remove();
+		}
+	}
 
 	console.log("update_type_fields ",rf, type);
 

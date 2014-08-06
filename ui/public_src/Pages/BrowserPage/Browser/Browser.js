@@ -80,6 +80,10 @@ Browser.prototype.load = function(address, action){
 		return;
 	}
 
+	if(browser.view){
+		browser.view.remove();
+	}
+
 	browser.view = new LoadingView();
 	browser.view_container.empty().append(browser.view.element);
 
@@ -94,6 +98,8 @@ Browser.prototype.load = function(address, action){
 
 	ajax_request(request,function(err, response){
 		console.log(err);
+
+		browser.view.remove();//Will be the LoadingView
 
 		var object = response.objects[0];
 		console.log(object);
@@ -137,6 +143,7 @@ Browser.prototype.load = function(address, action){
 			    browser
 		    );
 		}
+
 		browser.view_container.empty().append(browser.view.element);
 
 		//Appended to the DOM

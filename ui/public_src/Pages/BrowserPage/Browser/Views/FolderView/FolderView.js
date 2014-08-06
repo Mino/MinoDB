@@ -47,6 +47,10 @@ FolderView.prototype.init = function(){
 	var folder_view = this;
 }
 
+FolderView.prototype.remove = function(){
+	var folder_view = this;
+}
+
 FolderView.prototype.create_folder = function(){
 	var folder_view = this;
 
