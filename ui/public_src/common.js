@@ -5,8 +5,9 @@ function isEmptyObject(object){
 	return true;
 }
 
+var ajax_request_id = 0;
 function ajax_request(params, callback){
-    var id = Math.random();
+    var id = ajax_request_id++;
     console.log("ajax_request",id, params);
 	$.ajax({
         type: "POST",
@@ -23,4 +24,5 @@ function ajax_request(params, callback){
         	callback(err)
         }
     })
+    return id;
 }

@@ -74,7 +74,7 @@ function AddressBar(browser){
 				//Holding Cmd or Ctrl
 				return true;
 			}
-			address_bar.browser.load_address("/"+username+"/");
+			address_bar.browser.load("/"+user.username+"/");
 		})
 	);
 }
@@ -97,25 +97,10 @@ AddressBar.prototype.populate_path_buttons = function(path){
 
 		address_bar.path_buttons.append(pathbutton.element);
 	}
+
+	address_bar.set_address(path.toString());
 }
 
-AddressBar.prototype.edit_address = function(){
-	var address_bar = this;
-
-	address_bar.path_buttons.hide();
-	address_bar.text_input_holder.show();
-	address_bar.cancel_button.show();	
-	address_bar.nav_buttons.hide();
-
-	if(isTouchscreen){
-		var adr = address_bar.text_input.val();
-		address_bar.text_input.val("");
-		address_bar.text_input.val(adr);
-		
-	} else {
-		address_bar.text_input.focus().select();
-	}
-}
 
 AddressBar.prototype.go = function(){
 	var address_bar = this;
@@ -144,13 +129,13 @@ AddressBar.prototype.edit_address = function(){
 	address_bar.cancel_button.show();	
 	address_bar.nav_buttons.hide();	
 		
-	// if(isTouchscreen){
-	// 	var adr = address_bar.text_input.val();
-	// 	address_bar.text_input.val("");
-	// 	address_bar.text_input.val(adr);
-	// } else {
-		address_bar.text_input.focus().select();
-	// }
+	address_bar.text_input.focus().select();
+}
+
+AddressBar.prototype.set_address = function(set_val){
+	var address_bar = this;
+
+	address_bar.text_input.val(set_val);
 }
 
 AddressBar.prototype.resize = function(resize_obj){

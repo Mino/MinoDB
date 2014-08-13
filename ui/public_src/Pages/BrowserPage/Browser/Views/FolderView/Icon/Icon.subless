@@ -20,6 +20,7 @@
 		top: 85px;
 		left: 0px;
 		width: 90px;
+		color: black;
 		line-height: 15px;
 		text-align: center;
 		overflow:hidden;
@@ -42,6 +43,10 @@
 		    -moz-hyphens:auto;
 		    border: 1px solid #999;
 		}
+	}
+
+	&.selected{
+		background-color: @selected_background_color;
 	}
 }
 

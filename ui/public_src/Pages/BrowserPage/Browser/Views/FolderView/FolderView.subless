@@ -4,6 +4,8 @@
 
 	@import "CreateFolderModal/CreateFolderModal.subless";
 
+	@import "DeleteModal/DeleteModal.subless";
+
 	.contents{
 
 		margin-left: -5px;
@@ -12,6 +14,14 @@
 		margin-bottom: 20px;
 
 		@import "Icon/Icon.subless";
+
+		.empty_folder{
+			text-align: center;
+			vertical-align: middle;
+			.bold;
+			padding-top: 50px;
+			padding-bottom: 50px;
+		}
 	}
 
 }

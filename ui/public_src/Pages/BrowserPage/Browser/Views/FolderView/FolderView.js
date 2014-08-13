@@ -1,4 +1,5 @@
 @import("CreateFolderModal/CreateFolderModal.js");
+@import("DeleteModal/DeleteModal.js");
 @import("PaginationController/PaginationController.js");
 @import("Icon/Icon.js");
 
@@ -9,14 +10,11 @@ function FolderView(path, data, browser){
 	folder_view.path = path;
 	folder_view.item_data = data;
 
-	for(var i = 0; i<path.length; i++){
-        var path_button = new PathButton(path.object_names[i], path.sub_paths[i], 0, null);
-        browser.address_bar.path_buttons.append(
-            path_button.element
-        )
-    }
-
     folder_view.pagination_controller = new PaginationController(folder_view);
+    folder_view.pagination_controller.hide();
+
+    folder_view.select_mode = false;
+    folder_view.selected = [];
 
 	folder_view.element = $("<div />").addClass("folder_view").append(
 		folder_view.contents = $("<div />").addClass("contents")
@@ -28,6 +26,18 @@ function FolderView(path, data, browser){
 
 	browser.toolbar.element.empty().append(
 		folder_view.toolbar_element = $("<div />").append(
+			folder_view.select_button = $("<button />").addClass("mino_button").text("Select").on('tap',function(){
+				folder_view.select_button_press();
+			})
+		,
+			folder_view.cancel_button = $("<button />").addClass("mino_button").text("Cancel").on('tap',function(){
+				folder_view.cancel_button_press();
+			}).hide()
+		,
+			folder_view.delete_button = $("<button />").addClass("mino_button").text("Delete").on('tap',function(){
+				folder_view.delete_button_press();
+			}).hide()
+		,
 			folder_view.create_folder_button = $("<button />").addClass("mino_button").text("Create Folder").on('tap',function(){
 				folder_view.create_folder();
 			})
@@ -51,12 +61,41 @@ FolderView.prototype.remove = function(){
 	var folder_view = this;
 }
 
-FolderView.prototype.create_folder = function(){
+FolderView.prototype.add_selected = function(icon){
+	var folder_view = this;
+	folder_view.selected.push(icon);
+}
+
+FolderView.prototype.remove_selected = function(icon){
 	var folder_view = this;
 
-	var cfm = new CreateFolderModal(folder_view.path, function(err, res){
+	for(var i = 0; i < folder_view.selected.length; i++){
+		if(folder_view.selected[i] === icon){
+			console.log(i);
+			folder_view.selected.splice(i, 1);
+			return;
+		}
+	}
+	console.log(folder_view.selected);
+}
+
+FolderView.prototype.select_button_press = function(){
+	var folder_view = this;
+
+	folder_view.select_mode = true;
+
+	folder_view.create_folder_button.hide();
+	folder_view.create_item_button.hide();
+	folder_view.select_button.hide();
+	folder_view.cancel_button.show();
+	folder_view.delete_button.show();
+}
+
+FolderView.prototype.delete_button_press = function(){
+	var folder_view = this;
+
+	var cfm = new DeleteModal(folder_view.selected, function(err, res){
 		console.log(err, res);
-		alert("CREATED?")
 	})
 
 	folder_view.element.append(
@@ -64,10 +103,46 @@ FolderView.prototype.create_folder = function(){
 	)
 }
 
+FolderView.prototype.cancel_button_press = function(){
+	var folder_view = this;
+
+	folder_view.select_mode = false;
+
+	folder_view.create_folder_button.show();
+	folder_view.create_item_button.show();
+	folder_view.select_button.show();
+	folder_view.cancel_button.hide();
+	folder_view.delete_button.hide();
+
+	for(var i = 0; i < folder_view.selected.length; i++){
+		var icon = folder_view.selected[i];
+		icon.deselect(false);
+	}
+
+	folder_view.selected = [];
+}
+
+FolderView.prototype.create_folder = function(){
+	var folder_view = this;
+
+	var cfm = new CreateFolderModal(folder_view.path, function(err, res){
+		console.log(err, res);
+		if(res && res.full_path){
+			folder_view.browser.load(res.full_path);
+		}
+	})
+
+	folder_view.element.append(
+		cfm.element
+	)
+
+	cfm.init();
+}
+
 FolderView.prototype.create_item = function(){
 	var folder_view = this;
 
-	folder_view.browser.load("/TestUser/test/","new_item");
+	folder_view.browser.load(folder_view.path.toString(),"new_item");
 }
 
 FolderView.prototype.load = function(options){
@@ -90,6 +165,12 @@ FolderView.prototype.populate = function(options, data){
 	var folder_view = this;
 
 	var objects = data.objects;
+
+	if(objects.length===0){
+		folder_view.contents.append(
+			$("<div />").addClass("empty_folder").text("Empty folder")
+		)
+	}
 
 	for(var i = 0; i < objects.length; i++){
 		var object = objects[i];

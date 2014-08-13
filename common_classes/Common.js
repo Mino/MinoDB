@@ -37,7 +37,7 @@ Common.get_resource_type = function(this_address){
             if (isNaN(numeric_value)){
                 return ["type",this_address];
             } else if(is_integer && numeric_value > 1) {
-                return ["id",numeric_value];
+                return ["id",""+numeric_value];
             }
         } else if (index_of_slash == 0) {
             //First char is slash - must be pat
@@ -66,7 +66,7 @@ Common.get_resource_type = function(this_address){
 
         var is_integer = this_address % 1 === 0;
         if (is_integer && this_address > 0) {
-            return ["id",this_address];
+            return ["id",""+this_address];
         }
 
     }
@@ -74,19 +74,6 @@ Common.get_resource_type = function(this_address){
     return [null,null];
 }
 
-
-var isValidEmailAddress = function(emailAddress) {
-    return EmailValidator.getInstance().isValid(emailAddress);
-}
-
-Common.hasPrefix = function(test, prefix) {
-    if (test.length >= prefix.length) {
-        if (test.substring(0, prefix.length).equals(prefix)) {
-            return true;
-        }
-    }
-    return false;
-}
 
 Common.isValidPassword = function(pass) {
     if (pass.length < 8) {
@@ -96,156 +83,6 @@ Common.isValidPassword = function(pass) {
         return false;
     }
     return true;
-}
-
-//Returns true if the string is valid for use as an object name when saving
-Common.isValidSavingObjectName = function(string) {
-    if (string.getBytes().length > 100 || string.isEmpty()) {
-        return false;
-    }
-    for (var i = 0; i < string.length; i++) {
-        var thisChar = string.charCodeAt(i);
-        if (!Common.isValidCharacterForObjectName(thisChar, false)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-//Returns true if the string is valid for use as an object name when looking up (Not containing invalid characters)
-Common.isValidObjectName = function(string) {
-    if (string.isEmpty()) {
-        return false;
-    }
-    for (var i = 0; i < string.length; i++) {
-        var thisChar = string.charCodeAt(i);
-        if (!Common.isValidCharacterForObjectName(thisChar, true)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-
-//Returns 1 if the string conforms to the DateTime format (YYYY-MM-DD HH:MM:SS) and is valid e.g. 11th May 1992 at 7:32:48pm is 1992-05-11 19:32:48
-//0 for valid format, but invalid date
-//-1 for invalid format
-Common.isValidDateTime = function(string) {
-    if (string.length != 19) {
-        return -1;
-    }
-
-    if (string.charCodeAt(4) != '-' || string.charCodeAt(7) != '-' || string.charCodeAt(10) != ' ' || string.charCodeAt(13) != ':' || string.charCodeAt(16) != ':') {
-        return -1;
-    }
-
-    for (var i = 0; i < 10; i++) {
-        if (i != 4 && i != 7 && i != 10 && i != 13 && i != 16) {
-            var thisChar = string.charCodeAt(i);
-            if (thisChar < 48 || thisChar > 57) {
-                return -1;
-            }
-        }
-    }
-
-    var year = Integer.parseInt(string.substring(0, 4));
-    var month = Integer.parseInt(string.substring(5, 7));
-    var day = Integer.parseInt(string.substring(8, 10));
-    var hour = Integer.parseInt(string.substring(11, 13));
-    var minute = Integer.parseInt(string.substring(14, 16));
-    var second = Integer.parseInt(string.substring(17, 19));
-
-    if (month > 12) {
-        return 0;
-    }
-
-    if (month == 2) {
-        if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
-            if (day > 29) {
-                return 0;
-            }
-        } else {
-            if (day > 28) {
-                return 0;
-            }
-        }
-    }
-
-    if (month == 4 || month == 6 || month == 9 || month == 11) {
-        if (day > 30) {
-            return 0;
-        }
-    } else {
-        if (day > 31) {
-            return 0;
-        }
-    }
-
-    if (hour > 23) {
-        return 0;
-    }
-    if (minute > 59) {
-        return 0;
-    }
-    if (second > 59) {
-        return 0;
-    }
-
-    return 1;
-}
-
-//Returns 1 if the string conforms to the Date format (YYYY-MM-DD) and is valid e.g. 11th May 1992 is 1992-05-11
-//0 for valid format, but invalid date
-//-1 for invalid format
-Common.isValidDate = function(string) {
-    if (string.length != 10) {
-        return -1;
-    }
-
-    if (string.charCodeAt(4) != '-' || string.charCodeAt(7) != '-') {
-        return -1;
-    }
-
-    for (var i = 0; i < 10; i++) {
-        if (i != 4 && i != 7) {
-            var thisChar = string.charCodeAt(i);
-            if (thisChar < 48 || thisChar > 57) {
-                return -1;
-            }
-        }
-    }
-
-    var year = Integer.parseInt(string.substring(0, 4));
-    var month = Integer.parseInt(string.substring(5, 7));
-    var day = Integer.parseInt(string.substring(8, 10));
-
-    if (month > 12) {
-        return 0;
-    }
-
-    if (month == 2) {
-        if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
-            if (day > 29) {
-                return 0;
-            }
-        } else {
-            if (day > 28) {
-                return 0;
-            }
-        }
-    }
-
-    if (month == 4 || month == 6 || month == 9 || month == 11) {
-        if (day > 30) {
-            return 0;
-        }
-    } else {
-        if (day > 31) {
-            return 0;
-        }
-    }
-
-    return 1;
 }
 
 //Returns true if the string is a valid username (Less than 15 characters, more than 1 and not containing the reserved space replacements (ascii 30 or 31), whitespace, dot or /.)

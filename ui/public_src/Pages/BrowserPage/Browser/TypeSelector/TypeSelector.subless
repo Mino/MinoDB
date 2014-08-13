@@ -1,0 +1,48 @@
+.type_selector{
+	background-color: @popout_background;
+	width: 300px;
+	height: 200px;
+	position: absolute;
+	top: -200px;
+	left: -150px;
+	border: 1px solid @popout_border;
+
+	>.title{
+		.bold;
+		background-color: @popout_title;
+		color: white;
+		padding: 5px;
+	}
+
+	>.fieldval_ui_form{
+		>.field_container{
+			padding: 0px;
+			>.field_title{
+				display: none;
+			}
+			>.field{
+				margin: 0px;
+				>.error_message{
+					position: absolute;
+				}
+			}
+		}
+	}
+
+	.results{
+		height: 142px;
+		overflow-y: scroll;
+		.result{
+			background-color: white;
+			line-height: 15px;
+			border-bottom: 1px solid #BBB;
+			padding: 5px;
+			cursor: pointer;
+
+			&:active{
+				background-color: blue;
+				color: white;
+			}
+		}
+	}
+}

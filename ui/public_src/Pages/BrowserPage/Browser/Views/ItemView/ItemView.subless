@@ -1,4 +1,3 @@
 .item_view{	
-
 	@import "ItemSection/ItemSection.subless";	
 }

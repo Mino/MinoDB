@@ -207,7 +207,7 @@ var errors = {
 		error: 57,
 		error_message: "Invalid search parameter."
 	},
-	SOME_ERROR: {	
+	INVALID_OBJECT_NAME: {	
 		error: 59,
 		error_message: "Invalid format for an object name."
 	},

@@ -2,16 +2,19 @@
 	border: 1px solid @item_section_border;
 	background-color: white;
 
+	padding-top: 0px;
 	margin-bottom: 10px;
 
-	.title{
+	>.field_title{
 		background-color: @item_section_title;
 		.bold;
 		color: white;
 		padding: 5px;
+		width: 100%;
+		box-sizing: border-box;
 	}
 
-	.container{
+	>.field{
 		padding: 5px;
 	}
 }

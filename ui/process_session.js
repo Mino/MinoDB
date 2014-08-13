@@ -5,8 +5,7 @@ module.exports = function(require_session) {
 
     return function(req, res, next) {
         req.user = {
-            username: "TestUser",
-            password: "ab4babaFA"
+            username: "TestUser"
         };
 
         next();

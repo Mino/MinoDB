@@ -25,7 +25,15 @@ function PathPermissionChecker(handler){
 PathPermissionChecker.prototype.check_permissions_for_path = function(path, callback){
 	var ppc = this;
 
-	var paths,callback_objects;
+	var username_for_permission = path.username_for_permission(ppc.handler.user.username);
+	logger.log("username_for_permission ",username_for_permission, ppc.handler.user.username);
+	if(username_for_permission===ppc.handler.user.username){
+		logger.log("IS SAME USER");
+		callback(Constants.WRITE_PERMISSION);
+		return;
+	}
+
+	var paths,callback_objects;	
 
 	if(ppc.immediate_mode){
 		paths = {};
@@ -97,7 +105,6 @@ PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths,
 	if(callback_objects==null){
 		callback_objects = ppc.callback_objects;
 	}
-
 
 	var keys = Object.keys(paths);
 	logger.log(keys);

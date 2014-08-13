@@ -1,0 +1,7 @@
+.delete_modal{
+	.field_container{
+		.field_title{
+			display: none;
+		}
+	}	
+}

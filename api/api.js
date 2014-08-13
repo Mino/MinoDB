@@ -24,7 +24,8 @@ function API(minodb, db_address){
         "get": require('./handlers/GetHandler/GetHandler.js'),
         "save": require('./handlers/SaveHandler/SaveHandler.js'),
         "search": require('./handlers/SearchHandler/SearchHandler.js'),
-        "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler.js')
+        "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler.js'),
+        "delete": require('./handlers/DeleteHandler/DeleteHandler.js')
     }
 }
 
@@ -46,42 +47,53 @@ API.prototype.connect = function(callback){
         //     logger.log(user_err, user_res);
         // })
 
-        new api.handlers.save(api, {
-            "username": "Mino"
+        new api.handlers.delete(api, {
+            "username": "TestUser"
         }, {
-            "objects": [
-                {
-                    "name": "types",
-                    "path": "/Mino/",
-                    "folder": true
-                },
-                {
-                    "name": "users",
-                    "path": "/Mino/",
-                    "folder": true
-                }
+            "addresses": [
+                // "795"
+                "/TestUser/test/My Blank Item"
             ]
         }, function(save_err, save_res){
             logger.log(JSON.stringify(save_err,null,4), save_res);
         })
 
-        //Save the "mino_type" type definition without checks
-        var so = new SaveObject({
-            "name": "mino_type",
-            "path": "/Mino/types/",
-            "mino_type": Type.rule_definition
-        },{//Mocking the SaveHandler
-            api: api,
-            user: {
-                username: "Mino"
-            }
-        },0,{
-            bypass_checks: true
-        })
+        // new api.handlers.save(api, {
+        //     "username": "Mino"
+        // }, {
+        //     "objects": [
+        //         {
+        //             "name": "types",
+        //             "path": "/Mino/",
+        //             "folder": true
+        //         },
+        //         {
+        //             "name": "users",
+        //             "path": "/Mino/",
+        //             "folder": true
+        //         }
+        //     ]
+        // }, function(save_err, save_res){
+        //     logger.log(JSON.stringify(save_err,null,4), save_res);
+        // })
 
-        so.do_saving(function(save_object, error, save_details){
-            logger.log(save_object, error, save_details);
-        })
+        // //Save the "mino_type" type definition without checks
+        // var so = new SaveObject({
+        //     "name": "mino_type",
+        //     "path": "/Mino/types/",
+        //     "mino_type": Type.rule_definition
+        // },{//Mocking the SaveHandler
+        //     api: api,
+        //     user: {
+        //         username: "Mino"
+        //     }
+        // },0,{
+        //     bypass_checks: true
+        // })
+
+        // so.do_saving(function(save_object, error, save_details){
+        //     logger.log(save_object, error, save_details);
+        // })
 
         callback();
     })

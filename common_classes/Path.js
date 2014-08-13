@@ -64,7 +64,7 @@ Path.prototype.init = function(path_string, allow_tilde) {
     var name_start_index = 1;
     while (current_index < total) {
         path_char = path.path_string.charAt(current_position);
-        if (path_char.charCodeAt(0) == 47) {
+        if (path_char.charCodeAt(0) === 47) {
             path.sub_paths.push(path.path_string.substring(0, current_position + 1));
             path.object_names.push(path.path_string.substring(name_start_index, current_position));
             current_index++;
@@ -82,12 +82,22 @@ Path.prototype.init = function(path_string, allow_tilde) {
     return null;
 }
 
+Path.object_name_check = function(value, allowed_tilde){
+    console.log("OBJECT_NAME_CHECK ",value);
+    for(var i = 0; i < value.length; i++){
+        var character = value[i];
+
+        if(!Path.is_valid_character_for_object_name(character, allowed_tilde)){
+            return errors.INVALID_OBJECT_NAME;
+        }
+    }
+}
 
 Path.is_valid_character_for_object_name = function(path_char, allowed_tilde) {
 
     var path_char_code = path_char.charCodeAt(0);
 
-    if (path_char_code == 10 /*LINE BREAK*/ || path_char_code == 30 || path_char_code == 31 || path_char_code == '/' || (!allowed_tilde && path_char_code == 126 /*tilde*/ )) {
+    if (path_char_code == 10 /*LINE BREAK*/ || path_char_code == 30 || path_char_code == 31 || path_char == '/' || (!allowed_tilde && path_char_code == 126 /*tilde*/ )) {
         return false;
     }
     return true;

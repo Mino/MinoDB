@@ -17,8 +17,8 @@
 
 @import("fieldval_themes/mino_theme.js");
 
-@import("CommonElements/CommonElements.js");
-@import("Pages/Pages.js");
+@import("common_elements/common_elements.js");
+@import("pages/pages.js");
 
 var page_title_append = "MinoDB";
 var body_contents_holder;

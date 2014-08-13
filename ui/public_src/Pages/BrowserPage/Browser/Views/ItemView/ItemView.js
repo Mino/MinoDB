@@ -1,6 +1,5 @@
 @import("ItemSection/ItemSection.js");
 
-
 var object_keys = [
 	"_id",
 	"name",
@@ -28,19 +27,20 @@ function ItemView(path, data, browser, options){
 	item_view.path = path;
 	item_view.item_data = data;
 
-	for(var i = 0; i<path.length; i++){
-        var path_button = new PathButton(path.object_names[i], path.sub_paths[i], 0, null);
-        browser.address_bar.path_buttons.append(
-            path_button.element
-        )
-    }
+	browser.address_bar.populate_path_buttons(item_view.path);
 
 	item_view.element = $("<div />").addClass("item_view");
 
 	item_view.form = new FVForm();
 	item_view.form.add_field("_id", new TextField("ID"));
 	item_view.form.add_field("name", new TextField("Name"));
+	item_view.form.fields.name.on_change(function(){
+		item_view.update_full_path();
+	})
 	item_view.form.add_field("path", new TextField("Path"));
+	item_view.form.fields.path.on_change(function(){
+		item_view.update_full_path();
+	})
 	item_view.form.add_field("full_path", new TextField("Full Path"));
 	item_view.element.append(
 		item_view.form.element
@@ -62,6 +62,16 @@ function ItemView(path, data, browser, options){
 		}
 	}
 
+	item_view.toolbar_type_selector = new TypeSelector(function(type_name){
+		if(item_view.sections[type_name]){
+			//Already exists
+			return;
+		}
+		var section = new ItemSection(type_name, null, item_view);
+		item_view.sections[type_name] = section;
+		section.edit_mode();
+	})
+
 	item_view.toolbar_element = $("<div />").append(
 		item_view.edit_button = $("<button />").addClass("mino_button").text("Edit").on('tap',function(){
 			item_view.edit();
@@ -73,13 +83,9 @@ function ItemView(path, data, browser, options){
 			item_view.cancel();
 		}).hide(),
 		item_view.add_type_button = $("<button />").addClass("mino_button").text("Add Type").on('tap',function(){
-			var type_name = "person";
-			var section = new ItemSection(type_name, null, item_view);
-			item_view.form.add_field(type_name, section);
-			if(item_view.is_edit_mode){
-				section.edit_mode();
-			}
-		}).hide()
+			item_view.toolbar_type_selector.toggle();
+		}).hide(),
+		item_view.toolbar_type_selector.element.hide()
 	)
 
 	item_view.edit_button.show();
@@ -89,8 +95,6 @@ function ItemView(path, data, browser, options){
 
 	browser.toolbar.element.empty();
 	browser.toolbar.element.append(item_view.toolbar_element);
-	
-	browser.address_bar.populate_path_buttons(item_view.path);
 
 
 	if(item_view.options.create){
@@ -99,6 +103,26 @@ function ItemView(path, data, browser, options){
 	} else {
 		item_view.view_mode();
 	}
+}
+
+ItemView.prototype.update_full_path = function(){
+	var item_view = this;
+
+	item_view.form.fields.full_path.val(
+		item_view.form.fields.path.val()+
+		item_view.form.fields.name.val()
+	)
+}
+
+ItemView.prototype.remove_section = function(name){
+	var item_view = this;
+
+	var section = item_view.sections[name];
+	item_view.form.remove_field(name);
+	if(section){
+		delete item_view.sections[name];
+	}
+	console.log(item_view.form.fields);
 }
 
 ItemView.prototype.init = function(){
@@ -133,6 +157,14 @@ ItemView.prototype.edit_mode = function(){
 	item_view.add_type_button.show();
 
 	item_view.form.edit_mode();
+
+	for(var i in item_view.sections){
+		var section = item_view.sections[i];
+		section.edit_mode();
+	}
+
+	//Disable any fields that should always be disabled
+	item_view.form.fields.full_path.view_mode();
 }
 
 ItemView.prototype.view_mode = function(){
@@ -148,6 +180,11 @@ ItemView.prototype.view_mode = function(){
 	item_view.error(null);
 
 	item_view.form.view_mode();
+
+	for(var i in item_view.sections){
+		var section = item_view.sections[i];
+		section.view_mode();
+	}
 }
 
 ItemView.prototype.val = function(){
@@ -167,6 +204,8 @@ ItemView.prototype.error = function(error_data){
 ItemView.prototype.save = function(){
 	var item_view = this;
 
+	console.log(item_view.form.fields);
+
 	var value = item_view.val();
 
 	console.log(value);
@@ -185,7 +224,14 @@ ItemView.prototype.save = function(){
 		if(response.error!==undefined){
 			item_view.error(response.invalid.parameters.invalid.objects.invalid[0]);
 		} else {
-			alert("Success?");
+
+			if(item_view.options.create){
+				item_view.options.create = false;
+			}
+
+			item_view.item_data = value;
+			item_view.item_data.id = response.objects[0].id;
+			item_view.view_mode();
 		}
 	})
 
@@ -199,6 +245,10 @@ ItemView.prototype.save = function(){
 
 ItemView.prototype.cancel = function(){
 	var item_view = this;
+
+	if(item_view.options.create){
+		item_view.browser.load(item_view.path.toString());
+	}
 
 	item_view.view_mode();
 }

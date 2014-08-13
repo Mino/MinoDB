@@ -30,9 +30,9 @@ BrowserPage.prototype.new_url = function(req){
     console.log(req);
 
     if(req.params['*']){
-        page.browser.load(req.params['*']);
+        page.browser.load(req.params['*'], req.anchor);
     } else {
-        page.browser.load("/"+user.username+"/")
+        page.browser.load("/"+user.username+"/", req.anchor)
     }
 }
 

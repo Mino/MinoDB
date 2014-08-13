@@ -35,33 +35,29 @@ function SaveObject(json, handler, index, options){
 	
 	so.path = so.validator.get("path", bval.string(true), validators.path);
 	if(so.path!=null){
-		var username_for_permission = so.path.username_for_permission(handler.user.username);
-		if(username_for_permission===handler.user.username){
-			so.granted_new_path = true;
-		} else {
-			var permission_called = false;
-			logger.log(so.path);
+		var permission_called = false;
+		logger.log(so.path);
 
-			if(!so.options.bypass_checks){
-				handler.path_permission_checker.check_permissions_for_path(so.path,function(status){
-					if(status===Constants.WRITE_PERMISSION){
-						//Can write to the specified path
-					} else if(status===Constants.READ_PERMISSION){
-						so.validator.invalid("path",{
-							error: -1,
-							error_message: "NOT ALLOWED TO WRITE NEW PATH"
-						})
-					} else if(status===Constants.NO_PERMISSION){
-						so.validator.invalid("path",{
-							error: -1,
-							error_message: "NO ACCESS TO PATH"
-						})
-					}
-				});
-			}
+		if(!so.options.bypass_checks){
+			handler.path_permission_checker.check_permissions_for_path(so.path,function(status){
+				if(status===Constants.WRITE_PERMISSION){
+					//Can write to the specified path
+					so.granted_new_path = true;
+				} else if(status===Constants.READ_PERMISSION){
+					so.validator.invalid("path",{
+						error: -1,
+						error_message: "NOT ALLOWED TO WRITE NEW PATH"
+					})
+				} else if(status===Constants.NO_PERMISSION){
+					so.validator.invalid("path",{
+						error: -1,
+						error_message: "NO ACCESS TO PATH"
+					})
+				}
+			});
 		}
 	}
-	so.name = so.validator.get("name", bval.string(true), bval.not_empty(true));
+	so.name = so.validator.get("name", bval.string(true), bval.not_empty(true), Path.object_name_check);
 	if(so.name!=null && so.path!=null){
 		so.full_path = so.path.path_for_child_with_name(so.name,so.folder);
 	}
@@ -138,7 +134,9 @@ SaveObject.prototype.do_saving = function(on_save_callback){
     		} else {
     			on_save_callback(so,null,{
     				_id : so.id,
-    				version: so.version
+    				version: so.version,
+    				name: so.name,
+    				full_path: so.full_path.toString()
     			})
     		}
 		})
@@ -207,6 +205,8 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 					    		} else {
 					    			on_save_callback(so,null,{
 					    				_id: so.id,
+					    				name: so.name,
+					    				full_path: so.full_path.toString(),
 					    				version: so.version
 					    			});
 					    		}

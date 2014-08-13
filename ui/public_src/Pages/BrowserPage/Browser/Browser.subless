@@ -13,10 +13,5 @@
 	}
 
 	@import "Toolbar/Toolbar.subless";
-
-	.resultSetPadding{
-		height: 0px;
-		width: 100%;
-		float: left;
-	}
+	@import "TypeSelector/TypeSelector.subless";
 }

@@ -4,11 +4,6 @@ function ItemSection(name, value, item_view){
 	section.name = name;
 	section.item_view = item_view;
 
-	section.element = $("<div />").addClass("item_section").append(
-		section.title_div = $("<div />").addClass("title").text(name),
-		section.container = $("<div />").addClass("container")
-	)
-
 	item_view.browser.type_cache.load(name, function(err, data){
         // console.log("ITEM SECTION");
 		// console.log(err);
@@ -59,6 +54,7 @@ ItemSection.prototype.edit_mode = function(){
 
     if(section.field){
         section.field.edit_mode();
+        section.remove_button.show();
     }
 }
 
@@ -69,6 +65,7 @@ ItemSection.prototype.view_mode = function(){
 
     if(section.field){
         section.field.view_mode();
+        section.remove_button.hide();
     }
 }
 
@@ -76,6 +73,13 @@ ItemSection.prototype.populate = function(data){
     var section = this;
 
     section.val(data);
+}
+
+ItemSection.prototype.remove_press = function(){
+    var section = this;
+
+    section.item_view.remove_section(section.name);
+    section.item_view.form.remove_field(name);
 }
 
 ItemSection.prototype.populate_type = function(type){
@@ -88,11 +92,18 @@ ItemSection.prototype.populate_type = function(type){
 
 	section.field = section.vr.field.create_ui(section.item_view.form);
 
+    section.field.container.addClass("item_section");
+
+    section.field.title.append(
+        section.remove_button = $("<button />").addClass("mino_button").text("Remove").on('tap',function(event){
+            event.preventDefault();
+            section.remove_press();
+        }).hide()
+    )
+
     if(section.init_called){
         section.field.init();
     }
-
-	section.title_div.text(type.display_name || type.name);
 
     if(section.is_edit_mode){
         section.edit_mode();

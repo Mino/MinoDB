@@ -23,3 +23,13 @@ function PaginationController(pc){
 		)
 	)
 }
+
+PaginationController.prototype.hide = function(){
+	var pc = this;
+	pc.element.hide();
+}
+
+PaginationController.prototype.show = function(){
+	var pc = this;
+	pc.element.show();
+}

@@ -96,6 +96,9 @@
   font-size: 14px;
   width: 40%;
 }
+.fieldval_ui_form .field_container {
+  padding-top: 0px;
+}
 body {
   margin: 0px;
   background-color: #f0f0f0;
@@ -390,6 +393,7 @@ textarea {
   position: absolute;
   top: 0px;
   left: 0px;
+  z-index: 20;
 }
 .browser_page .browser .address_bar .text_input_holder .text_input {
   width: 100%;
@@ -457,6 +461,9 @@ textarea {
 .browser_page .browser .view_container .folder_view .create_folder_modal .field_container .field_title {
   display: none;
 }
+.browser_page .browser .view_container .folder_view .delete_modal .field_container .field_title {
+  display: none;
+}
 .browser_page .browser .view_container .folder_view .contents {
   margin-left: -5px;
   margin-right: -5px;
@@ -483,6 +490,7 @@ textarea {
   top: 85px;
   left: 0px;
   width: 90px;
+  color: black;
   line-height: 15px;
   text-align: center;
   overflow: hidden;
@@ -503,24 +511,37 @@ textarea {
   -moz-hyphens: auto;
   border: 1px solid #999;
 }
+.browser_page .browser .view_container .folder_view .contents .icon.selected {
+  background-color: #6391bd;
+}
 .browser_page .browser .view_container .folder_view .contents .folder_icon > .holder {
   background-color: orange;
 }
 .browser_page .browser .view_container .folder_view .contents .item_icon > .holder {
   background-color: green;
 }
+.browser_page .browser .view_container .folder_view .contents .empty_folder {
+  text-align: center;
+  vertical-align: middle;
+  font-weight: bold;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
 .browser_page .browser .view_container .item_view .item_section {
   border: 1px solid #808080;
   background-color: white;
+  padding-top: 0px;
   margin-bottom: 10px;
 }
-.browser_page .browser .view_container .item_view .item_section .title {
+.browser_page .browser .view_container .item_view .item_section > .field_title {
   background-color: #66aa99;
   font-weight: bold;
   color: white;
   padding: 5px;
+  width: 100%;
+  box-sizing: border-box;
 }
-.browser_page .browser .view_container .item_view .item_section .container {
+.browser_page .browser .view_container .item_view .item_section > .field {
   padding: 5px;
 }
 .browser_page .browser .view_container .type_view .type_field {
@@ -553,10 +574,47 @@ textarea {
 .browser_page .browser .toolbar button {
   margin-right: 5px;
 }
-.browser_page .browser .resultSetPadding {
-  height: 0px;
-  width: 100%;
-  float: left;
+.browser_page .browser .type_selector {
+  background-color: #eeeeee;
+  width: 300px;
+  height: 200px;
+  position: absolute;
+  top: -200px;
+  left: -150px;
+  border: 1px solid #000000;
+}
+.browser_page .browser .type_selector > .title {
+  font-weight: bold;
+  background-color: #66aa99;
+  color: white;
+  padding: 5px;
+}
+.browser_page .browser .type_selector > .fieldval_ui_form > .field_container {
+  padding: 0px;
+}
+.browser_page .browser .type_selector > .fieldval_ui_form > .field_container > .field_title {
+  display: none;
+}
+.browser_page .browser .type_selector > .fieldval_ui_form > .field_container > .field {
+  margin: 0px;
+}
+.browser_page .browser .type_selector > .fieldval_ui_form > .field_container > .field > .error_message {
+  position: absolute;
+}
+.browser_page .browser .type_selector .results {
+  height: 142px;
+  overflow-y: scroll;
+}
+.browser_page .browser .type_selector .results .result {
+  background-color: white;
+  line-height: 15px;
+  border-bottom: 1px solid #BBB;
+  padding: 5px;
+  cursor: pointer;
+}
+.browser_page .browser .type_selector .results .result:active {
+  background-color: blue;
+  color: white;
 }
 .auth_page {
   background-color: red;
