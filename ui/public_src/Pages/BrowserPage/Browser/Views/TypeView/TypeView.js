@@ -38,7 +38,7 @@ function TypeView(name, data, browser){
 	browser.toolbar.element.empty();
 	browser.toolbar.element.append(type_view.toolbar_element);
 	
-	// browser.address_bar.populate_path_buttons(type_view.path);
+	browser.address_bar.populate_path_buttons(type_view.name);
 }
 
 TypeView.prototype.edit = function(){

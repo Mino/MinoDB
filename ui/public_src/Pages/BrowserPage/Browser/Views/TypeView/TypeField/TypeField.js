@@ -89,6 +89,8 @@ TypeField.prototype.update_type_fields = function(){
 	if(type==='text'){
 		rf.form.add_field("min_length", new TextField("Minimum Length", {type: "number"}));
 		rf.form.add_field("max_length", new TextField("Maximum Length", {type: "number"}));
+		rf.form.fields.min_length.val(rf.value.min_length);
+		rf.form.fields.max_length.val(rf.value.max_length);
 	} else if(type==='number'){
 
 	} else if(type==='object'){
