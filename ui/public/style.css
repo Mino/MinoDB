@@ -1,59 +1,73 @@
 /*Removed minoColor2*/
-.fieldval_ui_form {
+.fv_form {
   width: auto;
   display: block;
   position: relative;
 }
-.fieldval_ui_form > .error_message {
+.fv_form > .fv_error_message {
   background-color: #AA0000;
   color: white;
   font-size: 14px;
   display: inline-block;
   padding: 5px;
 }
-.fieldval_ui_form .field_container {
-  padding-top: 10px;
-  padding-bottom: 10px;
+.fv_form.rows .fv_field_container > .fv_field_title {
+  width: 20%;
+}
+.fv_form.rows .fv_field_container > .fv_field {
+  width: 80%;
+  display: inline-block;
+}
+.fv_form .fv_field_container {
+  position: relative;
+  padding-top: 5px;
+  padding-bottom: 5px;
   box-sizing: border-box;
 }
-.fieldval_ui_form .field_container.field_error > .field_title {
+.fv_form .fv_field_container.fv_field_error > .fv_field_title {
   color: #AA0000;
 }
-.fieldval_ui_form .field_container.field_error > .field > .input_holder > input {
+.fv_form .fv_field_container.fv_field_error > .fv_field > .fv_input_holder > input {
   border: 1px solid #AA0000;
 }
-.fieldval_ui_form .field_container.field_error > .field > .input_holder > textarea {
+.fv_form .fv_field_container.fv_field_error > .fv_field > .fv_input_holder > textarea {
   border: 1px solid #AA0000;
 }
-.fieldval_ui_form .field_container > .field_title {
+.fv_form .fv_field_container > .fv_field_title {
   font-size: 16px;
   display: inline-block;
   padding-right: 5px;
+  box-sizing: border-box;
 }
-.fieldval_ui_form .field_container > .field {
+.fv_form .fv_field_container > .fv_field_description {
+  font-size: 12px;
+}
+.fv_form .fv_field_container > .fv_field {
   margin-top: 5px;
+  box-sizing: border-box;
 }
-.fieldval_ui_form .field_container > .field > .error_message {
+.fv_form .fv_field_container > .fv_field > .fv_error_message {
   background-color: #AA0000;
   color: white;
   font-size: 14px;
   display: inline-block;
   padding: 5px;
 }
-.fieldval_ui_form .field_container > .field > .input_holder {
+.fv_form .fv_field_container > .fv_field > .fv_input_holder {
   box-sizing: border-box;
 }
-.fieldval_ui_form .field_container > .field > .input_holder > input {
+.fv_form .fv_field_container > .fv_field > .fv_input_holder > input {
   border-radius: 0px;
   -webkit-border-radius: 0px;
   padding-left: 5px;
+  padding-right: 5px;
   box-sizing: border-box;
   margin: 0px;
   height: 30px;
   line-height: 30px;
   border: 1px solid #999;
 }
-.fieldval_ui_form .field_container > .field > .input_holder > textarea {
+.fv_form .fv_field_container > .fv_field > .fv_input_holder > textarea {
   border-radius: 0px;
   -webkit-border-radius: 0px;
   margin: 0px;
@@ -62,39 +76,77 @@
   box-sizing: border-box;
   border: 1px solid #999;
 }
-.display_field > .input_holder > div {
+.fv_display_field > .fv_input_holder > div {
   font-size: 14px;
 }
-.text_field > .input_holder > textarea.text_input {
+.fv_text_field > .fv_input_holder > textarea.fv_text_input {
   width: 100%;
   font-size: 14px;
 }
-.text_field > .input_holder > input.text_input {
+.fv_text_field > .fv_input_holder > input.fv_text_input {
   width: 100%;
   font-size: 14px;
 }
-.text_field.view_mode > .input_holder > input.text_input {
+.fv_text_field.fv_view_mode > .fv_input_holder > input.fv_text_input {
   border: 1px solid #EEE;
 }
-.text_field.view_mode > .input_holder > textarea.text_input {
+.fv_text_field.fv_view_mode > .fv_input_holder > textarea.fv_text_input {
   border: 1px solid #EEE;
 }
-.date_field > .input_holder > .date_input {
+.fv_date_field > .fv_input_holder > .fv_date_input {
+  font-size: 14px;
   display: inline-block;
 }
-.date_field > .input_holder > .date_input.day_input {
-  font-size: 14px;
-  width: 26%;
-  margin-right: 4%;
+.fv_date_field > .fv_input_holder > .fv_date_separator {
+  display: inline-block;
+  width: 15px;
+  text-align: center;
+  font-weight: bold;
 }
-.date_field > .input_holder > .date_input.month_input {
-  font-size: 14px;
-  width: 26%;
-  margin-right: 4%;
+.fv_object_field > .fv_input_holder {
+  padding-left: 10px;
 }
-.date_field > .input_holder > .date_input.year_input {
-  font-size: 14px;
-  width: 40%;
+.fv_array_field > .fv_input_holder > .fv_nested_fields {
+  padding-left: 10px;
+  padding-bottom: 5px;
+}
+.fv_array_field > .fv_input_holder > .fv_nested_fields > .fv_field_container {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+.fv_array_field > .fv_input_holder > .fv_nested_fields > .fv_field_container > .fv_field_title {
+  display: none;
+}
+.fv_array_field > .fv_input_holder > .fv_nested_fields > .fv_field_container > .fv_field.fv_nested {
+  padding-left: 35px;
+}
+.fv_array_field > .fv_input_holder > .fv_nested_fields > .fv_field_container > .fv_field > .fv_field_remove_button {
+  -webkit-appearance: none;
+  cursor: pointer;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-color: #777;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border: none;
+}
+.fv_array_field > .fv_input_holder > .fv_nested_fields > .fv_field_container > .fv_field > .fv_field_remove_button:active {
+  background-color: #AAA;
+  color: black;
+}
+.fv_array_field > .fv_input_holder > .fv_add_field_button {
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-color: green;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border: none;
+}
+.fv_array_field > .fv_input_holder > .fv_add_field_button:active {
+  background-color: #0F0;
 }
 .fieldval_ui_form .field_container {
   padding-top: 0px;
@@ -458,10 +510,10 @@ textarea {
   line-height: 30px;
   text-align: center;
 }
-.browser_page .browser .view_container .folder_view .create_folder_modal .field_container .field_title {
+.browser_page .browser .view_container .folder_view .create_folder_modal .fv_field_container .fv_field_title {
   display: none;
 }
-.browser_page .browser .view_container .folder_view .delete_modal .field_container .field_title {
+.browser_page .browser .view_container .folder_view .delete_modal .fv_field_container .fv_field_title {
   display: none;
 }
 .browser_page .browser .view_container .folder_view .contents {
@@ -533,7 +585,7 @@ textarea {
   padding-top: 0px;
   margin-bottom: 10px;
 }
-.browser_page .browser .view_container .item_view .item_section > .field_title {
+.browser_page .browser .view_container .item_view .item_section > .fv_field_title {
   background-color: #66aa99;
   font-weight: bold;
   color: white;
@@ -541,7 +593,10 @@ textarea {
   width: 100%;
   box-sizing: border-box;
 }
-.browser_page .browser .view_container .item_view .item_section > .field {
+.browser_page .browser .view_container .item_view .item_section > .fv_field {
+  width: 100%;
+}
+.browser_page .browser .view_container .item_view .item_section > .fv_field {
   padding: 5px;
 }
 .browser_page .browser .view_container .type_view .type_field {
@@ -554,8 +609,10 @@ textarea {
   font-weight: bold;
   color: white;
   padding: 5px;
+  line-height: 16px;
+  min-height: 16px;
 }
-.browser_page .browser .view_container .type_view .type_field .container {
+.browser_page .browser .view_container .type_view .type_field .contents {
   padding: 5px;
 }
 .browser_page .browser .toolbar {
@@ -589,16 +646,16 @@ textarea {
   color: white;
   padding: 5px;
 }
-.browser_page .browser .type_selector > .fieldval_ui_form > .field_container {
+.browser_page .browser .type_selector > .fv_form > .fv_field_container {
   padding: 0px;
 }
-.browser_page .browser .type_selector > .fieldval_ui_form > .field_container > .field_title {
+.browser_page .browser .type_selector > .fv_form > .fv_field_container > .fv_field_title {
   display: none;
 }
-.browser_page .browser .type_selector > .fieldval_ui_form > .field_container > .field {
+.browser_page .browser .type_selector > .fv_form > .fv_field_container > .fv_field {
   margin: 0px;
 }
-.browser_page .browser .type_selector > .fieldval_ui_form > .field_container > .field > .error_message {
+.browser_page .browser .type_selector > .fv_form > .fv_field_container > .fv_field > .fv_error_message {
   position: absolute;
 }
 .browser_page .browser .type_selector .results {

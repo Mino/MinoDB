@@ -67,15 +67,17 @@ function AddressBar(browser){
 			browser.forwardPress();
 		})
 		,
-		address_bar.home_button = $("<button />")
-		.addClass("mino_button").text("Home")
-		.on('tap',function(e){
-			if(e.metaKey){
-				//Holding Cmd or Ctrl
-				return true;
-			}
-			address_bar.browser.load("/"+user.username+"/");
-		})
+		address_bar.home_button = $("<a />")
+		.attr({
+			"href": Site.path+"browser//"+user.username+"/"
+		}).ajax_url(function(event){
+			if(!address_bar.browser instanceof MainBrowser){
+				address_bar.browser.load(address);
+				event.preventDefault();
+			}	
+		}).append(
+			$("<button />").addClass("mino_button").text("Home")
+		)
 	);
 }
 
@@ -84,18 +86,29 @@ AddressBar.prototype.populate_path_buttons = function(path){
 
 	address_bar.path_buttons.empty();
 
-	for(var i = 0; i<path.length; i++){
-		
-		var button_text = path.object_names[i];
-		var button_address = path.sub_paths[i];
-
+	if(typeof path === 'string'){
 		var pathbutton = new PathButton(
-			button_text,
-			button_address,
+			path,
+			path,
 			address_bar.browser
 		);
 
 		address_bar.path_buttons.append(pathbutton.element);
+	} else {
+
+		for(var i = 0; i<path.length; i++){
+			
+			var button_text = path.object_names[i];
+			var button_address = path.sub_paths[i];
+
+			var pathbutton = new PathButton(
+				button_text,
+				button_address,
+				address_bar.browser
+			);
+
+			address_bar.path_buttons.append(pathbutton.element);
+		}
 	}
 
 	address_bar.set_address(path.toString());
@@ -104,9 +117,14 @@ AddressBar.prototype.populate_path_buttons = function(path){
 
 AddressBar.prototype.go = function(){
 	var address_bar = this;
-	address_bar.browser.load(
-		address_bar.text_input.val()
-	);
+
+	var address = address_bar.text_input.val();
+
+	if(address_bar.browser instanceof MainBrowser){
+		Site.load_url(Site.path+"browser/"+address, true);
+	} else {
+		address_bar.browser.load(address);
+	}
 	address_bar.text_input.blur();
 	address_bar.cancel_address();
 }

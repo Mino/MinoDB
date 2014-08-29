@@ -26,6 +26,9 @@ function ItemView(path, data, browser, options){
 	item_view.browser = browser;
 	item_view.path = path;
 	item_view.item_data = data;
+	item_view.base_data = JSON.parse(JSON.stringify(item_view.item_data));
+
+	item_view.sections = {};
 
 	browser.address_bar.populate_path_buttons(item_view.path);
 
@@ -43,24 +46,10 @@ function ItemView(path, data, browser, options){
 	})
 	item_view.form.add_field("full_path", new TextField("Full Path"));
 	item_view.element.append(
-		item_view.form.element
+		item_view.form.element.addClass("rows")
 	)
-	item_view.form.val(data);
 
-	item_view.sections = {};
-
-	//Used so that ItemView can use FieldVal.FVForm's .error function
-	item_view.fields = item_view.sections;
-
-	console.log("data ",data);
-
-	for(var key in data){
-		console.log("key ",key);
-		if(!is_object_key(key)){
-			var section = new ItemSection(key, data[key], item_view);
-			item_view.sections[key] = section;
-		}
-	}
+	item_view.populate(data);
 
 	item_view.toolbar_type_selector = new TypeSelector(function(type_name){
 		if(item_view.sections[type_name]){
@@ -102,6 +91,26 @@ function ItemView(path, data, browser, options){
 		item_view.edit_mode();
 	} else {
 		item_view.view_mode();
+	}
+}
+
+ItemView.prototype.populate = function(data){
+	var item_view = this;
+
+	item_view.form.val(data);
+
+	for(var i in item_view.sections){
+		item_view.remove_section(i);
+	}
+
+	console.log("data ",data);
+
+	for(var key in data){
+		console.log("key ",key);
+		if(!is_object_key(key)){
+			var section = new ItemSection(key, data[key], item_view);
+			item_view.sections[key] = section;
+		}
 	}
 }
 
@@ -231,6 +240,9 @@ ItemView.prototype.save = function(){
 
 			item_view.item_data = value;
 			item_view.item_data.id = response.objects[0].id;
+
+			item_view.base_data = JSON.parse(JSON.stringify(item_view.item_data));
+
 			item_view.view_mode();
 		}
 	})
@@ -249,6 +261,8 @@ ItemView.prototype.cancel = function(){
 	if(item_view.options.create){
 		item_view.browser.load(item_view.path.toString());
 	}
+
+	item_view.populate(item_view.base_data);
 
 	item_view.view_mode();
 }

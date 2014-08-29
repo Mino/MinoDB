@@ -12,10 +12,11 @@ function TypeView(name, data, browser){
 	type_view.type_field = new TypeField(type_view.type_data, type_view);
 
 	type_view.element.append(
-		type_view.type_field.element
+		type_view.type_field.container
 	)
 
 	type_view.is_edit_mode = false;
+
 	type_view.view_mode();
 
 	type_view.toolbar_element = $("<div />").append(
@@ -32,13 +33,10 @@ function TypeView(name, data, browser){
 
 	type_view.edit_button.show();
 
-	browser.view_container.empty();
-	browser.view_container.append(type_view.element);
-
 	browser.toolbar.element.empty();
 	browser.toolbar.element.append(type_view.toolbar_element);
 	
-	// browser.address_bar.populate_path_buttons(type_view.path);
+	browser.address_bar.populate_path_buttons(type_view.name);
 }
 
 TypeView.prototype.edit = function(){

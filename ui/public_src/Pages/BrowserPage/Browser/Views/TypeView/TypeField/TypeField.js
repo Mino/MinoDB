@@ -2,11 +2,11 @@ function TypeField(value, parent){
 	var rf = this;
 
 	rf.parent = parent;
-	rf.value = value;
+	rf.value = value || {};
 
-	rf.element = $("<div />").addClass("type_field").append(
+	rf.container = $("<div />").addClass("type_field").append(
 		rf.title_div = $("<div />").addClass("title"),
-		rf.container = $("<div />").addClass("container")
+		rf.contents = $("<div />").addClass("contents")
 	)
 
 	var field_type_choices = [];
@@ -23,14 +23,18 @@ function TypeField(value, parent){
 	}
 
 	rf.form = new FVForm();
-	rf.form.add_field("name", new TextField("Name"));
-	rf.form.add_field("display_name", new TextField("Display Name"));
+	rf.form.add_field("name", new TextField("Name").on_change(function(){
+		rf.update_title_name();
+	}));
+	rf.form.add_field("display_name", new TextField("Display Name").on_change(function(){
+		rf.update_title_name();
+	}));
 	rf.form.add_field("type", new ChoiceField("Type", {
 		choices: field_type_choices
 	}).on_change(function(){
 		rf.update_type_fields();
 	}));
-	rf.container.append(
+	rf.contents.append(
 		rf.form.element
 	)
 	rf.form.val(value);
@@ -67,7 +71,7 @@ TypeField.prototype.update_title_name = function(){
 	if(display_name_val){
 		title_name = "("+display_name_val+") "+name_val;
 	} else {
-		title_name = name_val;
+		title_name = name_val || "";
 	}
 
 	rf.title_div.text(title_name);
@@ -89,17 +93,37 @@ TypeField.prototype.update_type_fields = function(){
 	if(type==='text'){
 		rf.form.add_field("min_length", new TextField("Minimum Length", {type: "number"}));
 		rf.form.add_field("max_length", new TextField("Maximum Length", {type: "number"}));
+		rf.form.fields.min_length.val(rf.value.min_length);
+		rf.form.fields.max_length.val(rf.value.max_length);
 	} else if(type==='number'){
 
 	} else if(type==='object'){
 		console.log(rf.value);
-		for(var i = 0; i < rf.value.fields.length; i++){
-			var field_data = rf.value.fields[i];
 
-			var inner_field = new TypeField(field_data, rf);
-			rf.container.append(inner_field.element);
+		var fields_field = new ArrayField("Fields");
+		fields_field.new_field = function(index){
+			var inner_field = new TypeField(null, rf);
+			fields_field.add_field(null, inner_field);
+		}
+
+		rf.form.add_field("fields", fields_field);
+
+		var inner_fields = rf.value.fields;
+		if(inner_fields){
+			for(var i = 0; i < rf.value.fields.length; i++){
+				var field_data = rf.value.fields[i];
+
+				var inner_field = new TypeField(field_data, rf);
+				fields_field.add_field(null, inner_field);
+			}
 		}
 	}
+}
+
+TypeField.prototype.in_array = function(remove_callback){
+	var rf = this;
+
+
 }
 
 TypeField.prototype.val = function(argument){

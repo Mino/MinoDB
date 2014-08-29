@@ -1,6 +1,6 @@
 .delete_modal{
-	.field_container{
-		.field_title{
+	.fv_field_container{
+		.fv_field_title{
 			display: none;
 		}
 	}	

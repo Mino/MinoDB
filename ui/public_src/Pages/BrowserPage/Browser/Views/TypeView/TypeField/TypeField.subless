@@ -9,9 +9,11 @@
 		.bold;
 		color: white;
 		padding: 5px;
+		line-height: 16px;
+		min-height: 16px;
 	}
 
-	.container{
+	.contents{
 		padding: 5px;
 	}
 }
