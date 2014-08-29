@@ -2,10 +2,10 @@ var FieldVal = require('fieldval');
 var bval = require('fieldval-basicval');
 
 var logger = require('tracer').console();
-var Common = require('../Common');
-var errors = require('../errors')
+var Common = require('../../common_classes/Common');
+var errors = require('../../errors')
 var validators = require('../validators')
-var Path = require('./Path');
+var Path = require('../../common_classes/Path');
 
 function Permission() {
     var permission = this;

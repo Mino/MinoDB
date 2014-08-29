@@ -391,7 +391,7 @@ var errors = {
 		error: 116,
 		error_message: "This Object has been moved."
 	},
-	SOME_ERROR: {	
+	CHILD_FROM_ITEM_PATH: {	
 		error: 117,
 		error_message: "Item paths cannot create child paths."
 	},

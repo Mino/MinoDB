@@ -145,7 +145,7 @@ Path.prototype.path_for_child_with_name = function(child_name, child_is_folder) 
     var path = this;
 
     if (!path.is_folder) {
-        return FieldVal.Error(117)
+        return errors.CHILD_FROM_ITEM_PATH;
     }
     var child_path = new Path();
     child_path.length = path.length + 1;

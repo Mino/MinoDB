@@ -1,7 +1,7 @@
 var logger = require('tracer').console();
 var assert = require("assert");
 
-var Path = require('../../api/models/Path')
+var Path = require('../../common_classes/Path')
 
 describe('Path', function() {
 
