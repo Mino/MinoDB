@@ -46,8 +46,11 @@ function ItemView(path, data, browser, options){
 	})
 	item_view.form.add_field("full_path", new TextField("Full Path"));
 	item_view.element.append(
-		item_view.form.element.addClass("rows")
+		item_view.form.element
 	)
+	item_view.form.on_submit(function(form_val){
+		item_view.save();
+	})
 
 	item_view.populate(data);
 
@@ -84,7 +87,6 @@ function ItemView(path, data, browser, options){
 
 	browser.toolbar.element.empty();
 	browser.toolbar.element.append(item_view.toolbar_element);
-
 
 	if(item_view.options.create){
 		item_view.form.fields.path.val(item_view.path);
@@ -219,7 +221,7 @@ ItemView.prototype.save = function(){
 
 	console.log(value);
 
-	ajax_request({
+	api_request({
 		"function" : "save",
 		"parameters" : {
 			"objects" : [
@@ -265,4 +267,10 @@ ItemView.prototype.cancel = function(){
 	item_view.populate(item_view.base_data);
 
 	item_view.view_mode();
+}
+
+ItemView.prototype.resize = function(resize_obj){
+	var item_view = this;
+
+	item_view.form.element.toggleClass("rows", resize_obj.window_width>700)
 }

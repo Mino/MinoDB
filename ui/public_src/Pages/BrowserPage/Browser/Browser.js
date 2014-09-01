@@ -39,6 +39,10 @@ Browser.prototype.resize = function(resize_obj){
 	var browser = this;
 
 	browser.address_bar.resize(resize_obj);
+
+	if(browser.view){
+		browser.view.resize(resize_obj);
+	}
 }
 
 Browser.prototype.isLoading = function(){
@@ -97,7 +101,7 @@ Browser.prototype.load = function(address, action){
 		}
 	};
 
-	ajax_request(request,function(err, response){
+	api_request(request,function(err, response){
 		console.log(err);
 
 		browser.view.remove();//Will be the LoadingView
@@ -149,6 +153,7 @@ Browser.prototype.load = function(address, action){
 
 		//Appended to the DOM
 		browser.view.init();
+		browser.view.resize(Site.resize_obj);
 
 	})
 }

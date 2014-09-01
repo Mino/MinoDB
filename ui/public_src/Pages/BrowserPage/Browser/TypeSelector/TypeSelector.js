@@ -45,7 +45,7 @@ TypeSelector.prototype.show = function(){
 TypeSelector.prototype.do_search = function(query){
 	var ts = this;
 
-	ts.current_request = ajax_request({
+	ts.current_request = api_request({
 		"function": "search",
 		"parameters": {
 			"paths": ["/Mino/types/"]

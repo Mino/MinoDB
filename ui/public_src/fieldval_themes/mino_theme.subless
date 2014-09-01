@@ -1,7 +1,13 @@
 @import "../../../bower_components/fieldval-ui/themes/minimal.less";
 
-.fieldval_ui_form{
-	.field_container{
+.fv_form{
+	.fv_field_container{
 		padding-top: 0px;
+		padding-bottom: 0px;
+
+		>.fv_field{
+			margin-top: 0px;
+			margin-bottom: 5px;
+		}
 	}
 }

@@ -94,7 +94,7 @@ TypeView.prototype.save = function(){
 
 	console.log(value);
 
-	ajax_request({
+	api_request({
 		"function" : "save_type",
 		"parameters" : {
 			"type" : value
@@ -128,4 +128,9 @@ TypeView.prototype.cancel = function(){
 	type_view.edit_button.show();
 
 	type_view.error(null);
+}
+
+TypeView.prototype.resize = function(resize_obj){
+	var type_view = this;
+
 }

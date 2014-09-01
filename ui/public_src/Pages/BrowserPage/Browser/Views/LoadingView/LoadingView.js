@@ -12,3 +12,8 @@ LoadingView.prototype.init = function(){
 LoadingView.prototype.remove = function(){
 	var loading_view = this;
 }
+
+LoadingView.prototype.resize = function(resize_obj){
+	var loading_view = this;
+
+}

@@ -4,24 +4,7 @@ exports.add_routes = function(ui_server) {
 
 	var express_server = ui_server.express_server;
 
-    express_server.post('/ajax/', function(req, res){
-
-    	var api = ui_server.minodb.api;
-
-        logger.log(req.body);
-
-    	api.call({
-    		username: "TestUser"
-    	}, req.body ,function(api_err, api_res){
-    		logger.log(api_err);
-    		logger.log(api_res);
-            if(api_err){
-                res.json(api_err);
-                return;
-            }
-            res.json(api_res);
-            return;
-    	})
-    })
+    express_server.post('/ajax/api', require('./endpoints/api')(ui_server))
+    express_server.post('/ajax/login', require('./endpoints/login')(ui_server))
 
 }

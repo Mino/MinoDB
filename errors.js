@@ -183,7 +183,7 @@ var errors = {
 		error: 51,
 		error_message: "This type is required by __Required By__."
 	},
-	SOME_ERROR: {	
+	NOT_EMAIL_OR_USERNAME: {	
 		error: 52,
 		error_message: "Invalid email or username."
 	},
@@ -275,7 +275,7 @@ var errors = {
 		error: 75,
 		error_message: "You cannot grant privileges to this folder."
 	},
-	SOME_ERROR: {	
+	USER_DOES_NOT_EXIST: {	
 		error: 76,
 		error_message: "User does not exist."
 	},

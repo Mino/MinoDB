@@ -13736,6 +13736,11 @@ var Site;
 new SAFE();
 "use strict";
 
+var logger;
+if((typeof require) === 'function'){
+    logger = require('tracer').console();
+}
+
 /* istanbul ignore if */
 if (!Array.isArray) {
     Array.isArray = function (value) {
@@ -13869,6 +13874,9 @@ FieldVal.use_checks = function (value, checks, existing_validator, field_name, e
             value = new_value;
         });
         if (check_response !== null && check_response !== undefined) {
+            if (stop_on_error) {
+                stop = true;
+            }
             if (check_response === FieldVal.REQUIRED_ERROR) {
                 if (field_name) {
                     if (existing_validator) {
@@ -13897,26 +13905,17 @@ FieldVal.use_checks = function (value, checks, existing_validator, field_name, e
                     }
                 } else {
                     validator.error(check_response);
+                    return validator.end();
                 }
             }
             had_error = true;
-            if (stop_on_error) {
-                stop = true;
-            }
         }
     };
 
     if(checks){
-        var i, this_check;
-        for (i = 0; i < checks.length; i++) {
-            this_check = checks[i];
-            use_check(this_check);
-            if (return_missing) {
-                return FieldVal.REQUIRED_ERROR;
-            }
-            if (stop) {
-                break;
-            }
+        use_check(checks);
+        if (return_missing) {
+            return FieldVal.REQUIRED_ERROR;
         }
     }
 
@@ -14294,8 +14293,26 @@ var BasicVal = {
                 error_message: "Not equal to " + match + ".",
 
             }  
-        }
+        },
         //114 in DateVal
+        no_valid_option: function(){//Should be overriden in most cases
+            return {
+                error: 115,
+                error_message: "None of the options were valid.",
+            }  
+        },
+        contains_whitespace: function(){
+            return {
+                error: 116,
+                error_message: "Contains whitespace."
+            }
+        },
+        must_start_with_letter: function(){
+            return {
+                error: 117,
+                error_message: "Must start with a letter."
+            }  
+        }
     },
     equal_to: function(match, flags){
         var check = function(value) {
@@ -14405,6 +14422,20 @@ var BasicVal = {
         var check = function(value) {
             if (value.length > max_len) {
                 return FieldVal.create_error(BasicVal.errors.too_long, flags, max_len);
+            }
+        }
+        if(flags){
+            flags.check = check;
+            return flags
+        }
+        return {
+            check: check
+        }
+    },
+    no_whitespace: function(flags) {
+        var check = function(value) {
+            if (/\s/.test(value)){
+                return FieldVal.create_error(BasicVal.errors.contains_whitespace, flags, max_len);
             }
         }
         if(flags){
@@ -14529,6 +14560,25 @@ var BasicVal = {
             check: check
         }
     },
+    start_with_letter: function(flags) {
+        var check = function(value) {
+            if (value.length > 0) {
+                var char_code = value.charCodeAt(0);
+                if( !((char_code >= 65 && char_code <= 90) || (char_code >= 97 && char_code <= 122))){
+                    return FieldVal.create_error(BasicVal.errors.must_start_with_letter, flags);
+                }
+            } else {
+                return FieldVal.create_error(BasicVal.errors.must_start_with_letter, flags);
+            }
+        }
+        if(flags){
+            flags.check = check;
+            return flags
+        }
+        return {
+            check: check
+        }
+    },
     suffix: function(suffix, flags) {
         var check = function(value) {
             if (value.length >= suffix.length) {
@@ -14562,6 +14612,38 @@ var BasicVal = {
             if(error!=null){
                 return error;
             }
+        }
+        if(flags){
+            flags.check = check;
+            return flags
+        }
+        return {
+            check: check
+        }
+    },
+    multiple: function(options, flags){
+
+        options = options || [];
+        if(options.length===0){
+            console.error("BasicVal.multiple called without options.");
+        }
+
+        var check = function(value, emit){
+            for(var i = 0; i < options.length; i++){
+                var option = options[i];
+
+                var emitted_value;
+                var option_error = FieldVal.use_checks(value, option, null, null, function(emitted){
+                    emitted_value = emitted;
+                })
+                if(!option_error){
+                    if(emitted_value!==undefined){
+                        emit(emitted_value);
+                    }
+                    return null;
+                }
+            }
+            return FieldVal.create_error(BasicVal.errors.no_valid_option, flags);
         }
         if(flags){
             flags.check = check;
@@ -14626,6 +14708,7 @@ function FVForm(fields){
 	).on("submit",function(event){
         event.preventDefault();
         form.submit();
+        return false;
 	});
 
 	form.fields = fields || {};
@@ -16903,7 +16986,7 @@ var errors = {
 		error: 51,
 		error_message: "This type is required by __Required By__."
 	},
-	SOME_ERROR: {	
+	NOT_EMAIL_OR_USERNAME: {	
 		error: 52,
 		error_message: "Invalid email or username."
 	},
@@ -16995,7 +17078,7 @@ var errors = {
 		error: 75,
 		error_message: "You cannot grant privileges to this folder."
 	},
-	SOME_ERROR: {	
+	USER_DOES_NOT_EXIST: {	
 		error: 76,
 		error_message: "User does not exist."
 	},
@@ -17346,12 +17429,12 @@ function isEmptyObject(object){
 }
 
 var ajax_request_id = 0;
-function ajax_request(params, callback){
+function ajax_request(endpoint, params, callback){
     var id = ajax_request_id++;
     console.log("ajax_request",id, params);
-	$.ajax({
+    $.ajax({
         type: "POST",
-        url: ui_path+"ajax/",
+        url: ui_path+"ajax/"+endpoint,
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         data: JSON.stringify(params),
@@ -17360,11 +17443,15 @@ function ajax_request(params, callback){
             callback(null, response);
         },
         error: function(err, response) {
-        	console.log(err);
-        	callback(err)
+            console.log(err);
+            callback(err)
         }
     })
     return id;
+}
+
+function api_request(params, callback){
+    return ajax_request("api", params, callback);
 }
 
 var constant_count = 0;
@@ -18136,11 +18223,10 @@ function LoginBox(on_sign_in_url){
     lb.modal = new Modal();
     lb.modal.element.addClass("login_box_modal")
 
-    lb.form = new Form();
-    lb.form.add_field("username_or_email",new TextField("Username or Email*"));
-    lb.form.add_field("password",new PasswordField("Password*"));
-
-    lb.form.on_submit(function(object){
+    lb.form = new FVForm()
+    .add_field("username_or_email",new TextField("Username or Email*"))
+    .add_field("password",new PasswordField("Password*"))
+    .on_submit(function(object){
         lb.login_press(object);
     })
 
@@ -18148,7 +18234,7 @@ function LoginBox(on_sign_in_url){
         $("<button />").addClass("mino_button").text("Login")
     );
 
-    lb.modal.view.append(
+    lb.modal.contents.append(
         lb.form.element,
         lb.loading_overlay = $("<div />").addClass("loading_overlay").hide()
     )
@@ -18217,12 +18303,21 @@ function AuthPage(req) {
 
     page.title = null;
 
-    page.login_box = new LoginBox();
+    page.form = new FVForm()
+    .add_field("username_or_email",new TextField("Username or Email*"))
+    .add_field("password",new PasswordField("Password*"))
+    .on_submit(function(object){
+        page.login_press(object);
+    })
+    page.form.element.append(
+        $("<button />").addClass("mino_button").text("Login")
+    );
 
     page.element
-        .addClass("auth_page")
-        .append(
-            page.login_box.element
+    .addClass("auth_page")
+    .append(
+        page.form.element,
+        page.loading_overlay = $("<div />").addClass("loading_overlay").hide()
     )
 
 }
@@ -18231,8 +18326,39 @@ Site.add_url("/auth/", AuthPage);
 AuthPage.prototype.new_url = function(req) {
     var page = this;
 
-    //document.title = page.title + " - " + page_title_append;
 }
+
+AuthPage.prototype.login_press = function(object) {
+    var page = this;
+
+    page.form.disable();
+    page.form.clear_errors();
+
+    page.loading_overlay.show();
+
+    ajax_request("login",object,function(err, response){
+        if(err){
+            page.loading_overlay.hide();
+            page.form.enable();
+        } else {
+            page.loading_overlay.hide();
+            page.form.enable();
+            if (response.success == true) {
+                user = response.user;
+                header.check_login();
+                if(page.on_sign_in_url){
+                    Site.load_url(page.on_sign_in_url, true);
+                } else if(Site.current_page instanceof HomePage){
+                    Site.load_url("/my_applications/",true);
+                } else {
+                    Site.reload_page();
+                }
+            } else {
+                page.form.error(response);
+            }
+        }
+    })
+};
 
 AuthPage.prototype.get_title = function() {
     var page = this;
@@ -18243,7 +18369,6 @@ AuthPage.prototype.get_title = function() {
 AuthPage.prototype.init = function() {
     var page = this;
 
-    page.login_box.reposition_box();
 }
 
 AuthPage.prototype.remove = function() {
@@ -18537,7 +18662,7 @@ CreateFolderModal.prototype.init = function(){
 CreateFolderModal.prototype.create_folder = function(form_value){
 	var cfm = this;
 
-	ajax_request({
+	api_request({
 		"function" : "save",
 		"parameters" : {
 			"objects" : [
@@ -18623,7 +18748,7 @@ function DeleteModal(icon_list, callback){
 DeleteModal.prototype.perform_delete = function(){
 	var dm = this;
 
-	ajax_request({
+	api_request({
 		"function" : "delete",
 		"parameters" : {
 			"addresses" : dm.list
@@ -18907,7 +19032,7 @@ FolderView.prototype.load = function(options){
 		}
 	};
 
-	ajax_request(request,function(err, response){
+	api_request(request,function(err, response){
 		console.log(err, response);
 		folder_view.populate(options, response);
 	});
@@ -18934,6 +19059,11 @@ FolderView.prototype.populate = function(options, data){
 		}
 		folder_view.contents.append(icon.element);
 	}
+}
+
+FolderView.prototype.resize = function(resize_obj){
+	var folder_view = this;
+
 }
 function ItemSection(name, value, item_view){
 	var section = this
@@ -19096,8 +19226,11 @@ function ItemView(path, data, browser, options){
 	})
 	item_view.form.add_field("full_path", new TextField("Full Path"));
 	item_view.element.append(
-		item_view.form.element.addClass("rows")
+		item_view.form.element
 	)
+	item_view.form.on_submit(function(form_val){
+		item_view.save();
+	})
 
 	item_view.populate(data);
 
@@ -19134,7 +19267,6 @@ function ItemView(path, data, browser, options){
 
 	browser.toolbar.element.empty();
 	browser.toolbar.element.append(item_view.toolbar_element);
-
 
 	if(item_view.options.create){
 		item_view.form.fields.path.val(item_view.path);
@@ -19269,7 +19401,7 @@ ItemView.prototype.save = function(){
 
 	console.log(value);
 
-	ajax_request({
+	api_request({
 		"function" : "save",
 		"parameters" : {
 			"objects" : [
@@ -19315,6 +19447,12 @@ ItemView.prototype.cancel = function(){
 	item_view.populate(item_view.base_data);
 
 	item_view.view_mode();
+}
+
+ItemView.prototype.resize = function(resize_obj){
+	var item_view = this;
+
+	item_view.form.element.toggleClass("rows", resize_obj.window_width>700)
 }
 function TypeField(value, parent){
 	var rf = this;
@@ -19574,7 +19712,7 @@ TypeView.prototype.save = function(){
 
 	console.log(value);
 
-	ajax_request({
+	api_request({
 		"function" : "save_type",
 		"parameters" : {
 			"type" : value
@@ -19610,6 +19748,11 @@ TypeView.prototype.cancel = function(){
 	type_view.error(null);
 }
 
+TypeView.prototype.resize = function(resize_obj){
+	var type_view = this;
+
+}
+
 function LoadingView(){
 	var loading_view = this;
 
@@ -19623,6 +19766,11 @@ LoadingView.prototype.init = function(){
 
 LoadingView.prototype.remove = function(){
 	var loading_view = this;
+}
+
+LoadingView.prototype.resize = function(resize_obj){
+	var loading_view = this;
+
 }
 
 function TypeCache(){
@@ -19656,7 +19804,7 @@ TypeCache.prototype.load = function(name, callback) {
 		}
 	};
 
-	ajax_request(request,function(err, response){
+	api_request(request,function(err, response){
 		console.log(err);
 
 		var type = response.objects[0];
@@ -19790,7 +19938,7 @@ TypeSelector.prototype.show = function(){
 TypeSelector.prototype.do_search = function(query){
 	var ts = this;
 
-	ts.current_request = ajax_request({
+	ts.current_request = api_request({
 		"function": "search",
 		"parameters": {
 			"paths": ["/Mino/types/"]
@@ -19856,6 +20004,10 @@ Browser.prototype.resize = function(resize_obj){
 	var browser = this;
 
 	browser.address_bar.resize(resize_obj);
+
+	if(browser.view){
+		browser.view.resize(resize_obj);
+	}
 }
 
 Browser.prototype.isLoading = function(){
@@ -19914,7 +20066,7 @@ Browser.prototype.load = function(address, action){
 		}
 	};
 
-	ajax_request(request,function(err, response){
+	api_request(request,function(err, response){
 		console.log(err);
 
 		browser.view.remove();//Will be the LoadingView
@@ -19966,6 +20118,7 @@ Browser.prototype.load = function(address, action){
 
 		//Appended to the DOM
 		browser.view.init();
+		browser.view.resize(Site.resize_obj);
 
 	})
 }

@@ -6,11 +6,10 @@ function LoginBox(on_sign_in_url){
     lb.modal = new Modal();
     lb.modal.element.addClass("login_box_modal")
 
-    lb.form = new Form();
-    lb.form.add_field("username_or_email",new TextField("Username or Email*"));
-    lb.form.add_field("password",new PasswordField("Password*"));
-
-    lb.form.on_submit(function(object){
+    lb.form = new FVForm()
+    .add_field("username_or_email",new TextField("Username or Email*"))
+    .add_field("password",new PasswordField("Password*"))
+    .on_submit(function(object){
         lb.login_press(object);
     })
 
@@ -18,7 +17,7 @@ function LoginBox(on_sign_in_url){
         $("<button />").addClass("mino_button").text("Login")
     );
 
-    lb.modal.view.append(
+    lb.modal.contents.append(
         lb.form.element,
         lb.loading_overlay = $("<div />").addClass("loading_overlay").hide()
     )

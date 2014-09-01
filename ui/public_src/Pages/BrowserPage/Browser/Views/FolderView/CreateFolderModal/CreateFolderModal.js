@@ -41,7 +41,7 @@ CreateFolderModal.prototype.init = function(){
 CreateFolderModal.prototype.create_folder = function(form_value){
 	var cfm = this;
 
-	ajax_request({
+	api_request({
 		"function" : "save",
 		"parameters" : {
 			"objects" : [

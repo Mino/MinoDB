@@ -46,7 +46,7 @@ function DeleteModal(icon_list, callback){
 DeleteModal.prototype.perform_delete = function(){
 	var dm = this;
 
-	ajax_request({
+	api_request({
 		"function" : "delete",
 		"parameters" : {
 			"addresses" : dm.list

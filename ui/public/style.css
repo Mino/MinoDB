@@ -148,8 +148,13 @@
 .fv_array_field > .fv_input_holder > .fv_add_field_button:active {
   background-color: #0F0;
 }
-.fieldval_ui_form .field_container {
+.fv_form .fv_field_container {
   padding-top: 0px;
+  padding-bottom: 0px;
+}
+.fv_form .fv_field_container > .fv_field {
+  margin-top: 0px;
+  margin-bottom: 5px;
 }
 body {
   margin: 0px;
@@ -300,16 +305,13 @@ textarea {
   top: 50px;
   bottom: 0px;
 }
-.modal.login_box_modal .field_container {
+.modal.login_box_modal .fv_field_container {
   margin-left: 20px;
   width: 260px;
 }
-.modal.login_box_modal .field_container > .field_title {
+.modal.login_box_modal .fv_field_container > .fv_field_title {
   color: black;
   font-weight: bold;
-}
-.modal.login_box_modal .field_container > .field > .input_holder > input {
-  border: 1px solid #0583B9;
 }
 .modal.login_box_modal button {
   margin-left: 20px;
@@ -596,8 +598,12 @@ textarea {
 .browser_page .browser .view_container .item_view .item_section > .fv_field {
   width: 100%;
 }
-.browser_page .browser .view_container .item_view .item_section > .fv_field {
+.browser_page .browser .view_container .item_view .item_section > .fv_object_field {
   padding: 5px;
+  margin-top: 0px;
+}
+.browser_page .browser .view_container .item_view .item_section > .fv_object_field > .fv_input_holder {
+  padding-left: 5px;
 }
 .browser_page .browser .view_container .type_view .type_field {
   border: 1px solid #808080;
@@ -672,66 +678,6 @@ textarea {
 .browser_page .browser .type_selector .results .result:active {
   background-color: blue;
   color: white;
-}
-.auth_page {
-  background-color: red;
-}
-.auth_page .terms_label {
-  width: 260px;
-  text-align: center;
-  line-height: 20px;
-  font-weight: bold;
-  padding-top: 5px;
-  padding-bottom: 7px;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -o-user-select: none;
-  user-select: none;
-}
-.auth_page .auth_field_error {
-  background-color: #c72a22;
-  color: white;
-  font-weight: bold;
-  text-align: center;
-  width: 252px;
-  line-height: 15px;
-  padding: 5px;
-}
-.auth_page a.terms_link {
-  color: #3fc9ff;
-  font-weight: bold;
-  text-decoration: none;
-}
-.auth_page .user_message_area {
-  background-color: #13b716;
-  color: white;
-  font-weight: bold;
-  text-align: center;
-  width: 252px;
-  line-height: 15px;
-  padding: 5px;
-}
-.auth_page .auth_mode_option_area {
-  height: 20px;
-  width: 300px;
-  padding-bottom: 5px;
-  line-height: 20px;
-  margin-left: 6px;
-}
-.auth_page .auth_mode_option_area input {
-  margin-right: 5px;
-}
-.auth_page .auth_mode_option_area span {
-  margin-right: 10px;
-  cursor: pointer;
-  font-weight: bold;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -o-user-select: none;
-  user-select: none;
 }
 .docs_page .menu_expand_button {
   position: absolute;

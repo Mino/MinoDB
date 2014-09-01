@@ -155,7 +155,7 @@ FolderView.prototype.load = function(options){
 		}
 	};
 
-	ajax_request(request,function(err, response){
+	api_request(request,function(err, response){
 		console.log(err, response);
 		folder_view.populate(options, response);
 	});
@@ -182,4 +182,9 @@ FolderView.prototype.populate = function(options, data){
 		}
 		folder_view.contents.append(icon.element);
 	}
+}
+
+FolderView.prototype.resize = function(resize_obj){
+	var folder_view = this;
+
 }

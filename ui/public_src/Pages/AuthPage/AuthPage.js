@@ -9,12 +9,21 @@ function AuthPage(req) {
 
     page.title = null;
 
-    page.login_box = new LoginBox();
+    page.form = new FVForm()
+    .add_field("username_or_email",new TextField("Username or Email*"))
+    .add_field("password",new PasswordField("Password*"))
+    .on_submit(function(object){
+        page.login_press(object);
+    })
+    page.form.element.append(
+        $("<button />").addClass("mino_button").text("Login")
+    );
 
     page.element
-        .addClass("auth_page")
-        .append(
-            page.login_box.element
+    .addClass("auth_page")
+    .append(
+        page.form.element,
+        page.loading_overlay = $("<div />").addClass("loading_overlay").hide()
     )
 
 }
@@ -23,8 +32,39 @@ Site.add_url("/auth/", AuthPage);
 AuthPage.prototype.new_url = function(req) {
     var page = this;
 
-    //document.title = page.title + " - " + page_title_append;
 }
+
+AuthPage.prototype.login_press = function(object) {
+    var page = this;
+
+    page.form.disable();
+    page.form.clear_errors();
+
+    page.loading_overlay.show();
+
+    ajax_request("login",object,function(err, response){
+        if(err){
+            page.loading_overlay.hide();
+            page.form.enable();
+        } else {
+            page.loading_overlay.hide();
+            page.form.enable();
+            if (response.success == true) {
+                user = response.user;
+                header.check_login();
+                if(page.on_sign_in_url){
+                    Site.load_url(page.on_sign_in_url, true);
+                } else if(Site.current_page instanceof HomePage){
+                    Site.load_url("/my_applications/",true);
+                } else {
+                    Site.reload_page();
+                }
+            } else {
+                page.form.error(response);
+            }
+        }
+    })
+};
 
 AuthPage.prototype.get_title = function() {
     var page = this;
@@ -35,7 +75,6 @@ AuthPage.prototype.get_title = function() {
 AuthPage.prototype.init = function() {
     var page = this;
 
-    page.login_box.reposition_box();
 }
 
 AuthPage.prototype.remove = function() {

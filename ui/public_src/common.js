@@ -6,12 +6,12 @@ function isEmptyObject(object){
 }
 
 var ajax_request_id = 0;
-function ajax_request(params, callback){
+function ajax_request(endpoint, params, callback){
     var id = ajax_request_id++;
     console.log("ajax_request",id, params);
-	$.ajax({
+    $.ajax({
         type: "POST",
-        url: ui_path+"ajax/",
+        url: ui_path+"ajax/"+endpoint,
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         data: JSON.stringify(params),
@@ -20,9 +20,13 @@ function ajax_request(params, callback){
             callback(null, response);
         },
         error: function(err, response) {
-        	console.log(err);
-        	callback(err)
+            console.log(err);
+            callback(err)
         }
     })
     return id;
+}
+
+function api_request(params, callback){
+    return ajax_request("api", params, callback);
 }

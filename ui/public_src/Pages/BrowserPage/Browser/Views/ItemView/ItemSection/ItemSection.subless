@@ -18,7 +18,12 @@
 		width: 100%;
 	}
 
-	>.fv_field{
+	>.fv_object_field{
 		padding: 5px;
+		margin-top: 0px;
+
+		>.fv_input_holder{
+			padding-left: 5px;
+		}
 	}
 }

@@ -29,7 +29,7 @@ TypeCache.prototype.load = function(name, callback) {
 		}
 	};
 
-	ajax_request(request,function(err, response){
+	api_request(request,function(err, response){
 		console.log(err);
 
 		var type = response.objects[0];

@@ -30,10 +30,18 @@ User.rule.init({
     ]
 });
 
+User.username_validator = [
+    bval.string(true),
+    bval.min_length(3),
+    bval.max_length(20),
+    bval.no_whitespace(),
+    bval.start_with_letter()
+]
+
 User.validate = function(data, creation){
     var validator = new FieldVal(data);
 
-    validator.get("username", bval.string(true), bval.min_length(3));
+    validator.get("username", User.username_validator);
     validator.get("email", bval.string(true), bval.email());
 
     if(creation){
@@ -103,7 +111,14 @@ User.get = function(username, api, callback){
     }, function(get_err, get_res){
         logger.log(get_err, get_res);
 
-        // callback(null, new User(get_res));
+        if(get_err){
+            callback(get_err);
+            return;
+        }
+        if(get_res && get_res[0]){
+            return callback(null, new User(get_res));
+        }
+        callback(null, null);
     })
 }
 
