@@ -1,5 +1,5 @@
 var FieldVal = require('fieldval');
-var bval = require('fieldval-basicval');
+var BasicVal = require('fieldval-basicval');
 var Path = require('../../../common_classes/Path')
 var Common = require('../../../common_classes/Common')
 var logger = require('tracer').console();
@@ -31,7 +31,7 @@ function GetHandler(api, user, parameters, callback) {
     // callback(val_error);
     // return;
 
-    var addresses = validator.get("addresses", bval.array(true), bval.each(function(this_address, index){
+    var addresses = validator.get("addresses", BasicVal.array(true), BasicVal.each(function(this_address, index){
 
         logger.log("TESTING: ", this_address);
 

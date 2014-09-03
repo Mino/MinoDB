@@ -7,6 +7,16 @@ function DataStore(config){
 	ds.config = config;
 
 	ds.connected = false;
+	ds.connecting = false;
+	ds.connect_callbacks = [];
+}
+
+DataStore.prototype.call_connect_callbacks = function(){
+	var ds = this;
+
+	for(var i = 0; i < ds.connect_callbacks.length; i++){
+		ds.connect_callbacks[i]();
+	}
 }
 
 DataStore.prototype.connect = function(callback) {
@@ -17,12 +27,16 @@ DataStore.prototype.connect = function(callback) {
 		return;
 	}
 
+	if(ds.connecting){
+		ds.connect_callbacks.push(callback);
+		return;
+	}
+
 	MongoClient.connect(ds.config.address, function(err, mongo) {
 	    if (err){
 	    	logger.log(err);
 	    	throw err;
 	    }
-	    ds.connected = true;
 
 	    ds.object_collection = mongo.collection('objects');
 	    ds.config_collection = mongo.collection('config');
@@ -83,6 +97,9 @@ DataStore.prototype.connect = function(callback) {
 			logger.log(e);
 		}
 
+		
+	    ds.connected = true;
+	    ds.call_connect_callbacks();
 
 	    // mongo.runCommand({shardCollection:"minods.objects", key: { full_path: 1 }}, function(err,res){
 	    // 	logger.log(err);

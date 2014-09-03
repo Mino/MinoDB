@@ -7,7 +7,7 @@ var http = require('http');
 var path = require('path');
 
 var Validator = require('fieldval');
-var bval = require('fieldval-basicval');
+var BasicVal = require('fieldval-basicval');
 var logger = require('tracer').console();
 var api = require('./api');
 var crypt = require("../utils/crypt");

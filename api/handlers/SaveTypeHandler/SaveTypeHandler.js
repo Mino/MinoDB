@@ -1,6 +1,6 @@
 var errors = require('../../../errors')
 var Validator = require('fieldval');
-var bval = require('fieldval-basicval');
+var BasicVal = require('fieldval-basicval');
 var Path = require('../../../common_classes/Path')
 var logger = require('tracer').console();
 
@@ -15,7 +15,7 @@ function SaveTypeHandler(api, user, parameters, callback){
 
     sh.validator = new Validator(parameters);
 
-    var type_data = sh.validator.get("type", bval.object(true));
+    var type_data = sh.validator.get("type", BasicVal.object(true));
     if(type_data){
         var type_error = Type.validate(type_data);
         if(type_error){

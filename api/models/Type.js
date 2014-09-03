@@ -1,6 +1,6 @@
 var logger = require('tracer').console();
 var FieldVal = require('fieldval');
-var bval = require('fieldval-basicval');
+var BasicVal = require('fieldval-basicval');
 var ValidationRule = require('fieldval-rules');
 
 function Type(item) {
@@ -31,8 +31,6 @@ Type.prototype.init = function(type_data){
 }
 
 Type.validate = function(data, creation){
-    var validator = new FieldVal(data);
-
     var rule = new ValidationRule();
     var type_error = rule.init(data);
 

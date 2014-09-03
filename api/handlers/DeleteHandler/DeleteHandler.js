@@ -1,6 +1,6 @@
 var errors = require('../../../errors')
 var Validator = require('fieldval');
-var bval = require('fieldval-basicval');
+var BasicVal = require('fieldval-basicval');
 var Path = require('../../../common_classes/Path')
 var ValidationRule = require('fieldval-rules');
 var PathPermissionChecker = require('../../Models/PathPermissionChecker');
@@ -25,7 +25,7 @@ function DeleteHandler(api, user, parameters, callback){
 
     dh.objects_validator = new Validator(null);//No object to validate
 
-    var objects = dh.validator.get("addresses", bval.array(true), bval.each(function(address, index){
+    var objects = dh.validator.get("addresses", BasicVal.array(true), BasicVal.each(function(address, index){
         dh.delete_objects.push(new DeleteObject(address, dh,index));
     }));
 

@@ -2,7 +2,7 @@ var Constants = require('../../../common_classes/Constants');
 var Path = require('../../../common_classes/Path');
 var logger = require('tracer').console();
 var Validator = require('fieldval');
-var bval = require('fieldval-basicval');
+var BasicVal = require('fieldval-basicval');
 var validators = require('../../validators');
 
 function SaveObject(json, handler, index, options){
@@ -21,19 +21,19 @@ function SaveObject(json, handler, index, options){
 
 	so.granted_new_path = false;
 
-	so.id = so.validator.get("_id", bval.string(false)); //,bval.minimum(1));
+	so.id = so.validator.get("_id", BasicVal.string(false)); //,BasicVal.minimum(1));
 	so.is_new = so.id===undefined;
 
-	so.folder = so.validator.get("folder", bval.boolean(false)) || false;
-	so.version = so.validator.get("version", bval.integer(false));
+	so.folder = so.validator.get("folder", BasicVal.boolean(false)) || false;
+	so.version = so.validator.get("version", BasicVal.integer(false));
 	if(so.folder===null){
 		so.folder = false;
 	}
 
 	//full_path might be present, but it should be ignored
-	so.validator.get("full_path",bval.string(false), validators.path);
+	so.validator.get("full_path",BasicVal.string(false), validators.path);
 	
-	so.path = so.validator.get("path", bval.string(true), validators.path);
+	so.path = so.validator.get("path", BasicVal.string(true), validators.path);
 	if(so.path!=null){
 		var permission_called = false;
 		logger.log(so.path);
@@ -57,7 +57,7 @@ function SaveObject(json, handler, index, options){
 			});
 		}
 	}
-	so.name = so.validator.get("name", bval.string(true), bval.not_empty(true), Path.object_name_check);
+	so.name = so.validator.get("name", BasicVal.string(true), BasicVal.not_empty(true), Path.object_name_check);
 	if(so.name!=null && so.path!=null){
 		so.full_path = so.path.path_for_child_with_name(so.name,so.folder);
 	}

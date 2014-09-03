@@ -1,6 +1,6 @@
 var errors = require('../../../errors')
 var Validator = require('fieldval');
-var bval = require('fieldval-basicval');
+var BasicVal = require('fieldval-basicval');
 var Path = require('../../../common_classes/Path')
 var ValidationRule = require('fieldval-rules');
 var PathPermissionChecker = require('../../Models/PathPermissionChecker');
@@ -28,8 +28,8 @@ function SaveHandler(api, user, parameters, callback){
 
     sh.objects_validator = new Validator(null);//No object to validate
 
-    var objects = sh.validator.get("objects", bval.array(true), bval.each(function(object, index){
-        var error = bval.object(true).check(object); if(error) return error;
+    var objects = sh.validator.get("objects", BasicVal.array(true), BasicVal.each(function(object, index){
+        var error = BasicVal.object(true).check(object); if(error) return error;
         logger.log(object);
         logger.log(index);
 

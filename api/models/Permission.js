@@ -1,5 +1,5 @@
 var FieldVal = require('fieldval');
-var bval = require('fieldval-basicval');
+var BasicVal = require('fieldval-basicval');
 
 var logger = require('tracer').console();
 var Common = require('../../common_classes/Common');
@@ -18,7 +18,7 @@ Permission.prototype.init = function(json, handler, saving_folder_list, saving_i
 
     var validator = new FieldVal(json);
 
-    permission.granted_to = validator.get("granted_to", bval.string(true));
+    permission.granted_to = validator.get("granted_to", BasicVal.string(true));
     if (permission.granted_to != null) {
         if (!Common.is_valid_username(permission.granted_to)) {
             validator.invalid("granted_to", Validator.Error(53));
@@ -29,7 +29,7 @@ Permission.prototype.init = function(json, handler, saving_folder_list, saving_i
         }
     }
 
-    permission.path = validator.get("path", bval.string(true), validators.path);
+    permission.path = validator.get("path", BasicVal.string(true), validators.path);
     if (permission.path != null) {
         permission.folder_name = permission.path.object_names[permission.path.length - 1];
         if (permission.path.username_for_permission(permission.granted_to, true)===handler.username && permission.path.length > 1) {
@@ -39,7 +39,7 @@ Permission.prototype.init = function(json, handler, saving_folder_list, saving_i
         }
     }
 
-    permission.grant_write = validator.get("grant_write", bval.boolean(true));
+    permission.grant_write = validator.get("grant_write", BasicVal.boolean(true));
     if (permission.grant_write != null) {
         if (permission.granted_to != null) {
             if (permission.granted_to === ("Public") && permission.grant_write) {

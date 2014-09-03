@@ -1,9 +1,6 @@
-var Validator = require('fieldval');
-var bval = require('fieldval-basicval');
 var logger = require('tracer').console();
-
-var SaveObject = require('./handlers/SaveHandler/SaveObject');
-var Type = require('./models/Type');
+var Validator = require('fieldval');
+var BasicVal = require('fieldval-basicval');
 
 var DataStore = require('./datastore');
 
@@ -47,55 +44,20 @@ API.prototype.connect = function(callback){
         //     logger.log(user_err, user_res);
         // })
 
-        new api.handlers.delete(api, {
-            "username": "TestUser"
-        }, {
-            "addresses": [
-                // "795"
-                "/TestUser/test/My Blank Item"
-            ]
-        }, function(save_err, save_res){
-            logger.log(JSON.stringify(save_err,null,4), save_res);
-        })
-
-        // new api.handlers.save(api, {
-        //     "username": "Mino"
+        // new api.handlers.delete(api, {
+        //     "username": "TestUser"
         // }, {
-        //     "objects": [
-        //         {
-        //             "name": "types",
-        //             "path": "/Mino/",
-        //             "folder": true
-        //         },
-        //         {
-        //             "name": "users",
-        //             "path": "/Mino/",
-        //             "folder": true
-        //         }
+        //     "addresses": [
+        //         // "795"
+        //         "/TestUser/test/My Blank Item"
         //     ]
         // }, function(save_err, save_res){
         //     logger.log(JSON.stringify(save_err,null,4), save_res);
         // })
 
-        // //Save the "mino_type" type definition without checks
-        // var so = new SaveObject({
-        //     "name": "mino_type",
-        //     "path": "/Mino/types/",
-        //     "mino_type": Type.rule_definition
-        // },{//Mocking the SaveHandler
-        //     api: api,
-        //     user: {
-        //         username: "Mino"
-        //     }
-        // },0,{
-        //     bypass_checks: true
-        // })
-
-        // so.do_saving(function(save_object, error, save_details){
-        //     logger.log(save_object, error, save_details);
-        // })
-
-        callback();
+        require('./initial_setup')(api, function(){
+            callback();
+        })
     })
 }
 
@@ -104,8 +66,8 @@ API.prototype.call = function(user, request, callback){
 
     var api_val = new FieldVal(request);
 
-    var function_name = api_val.get("function", bval.string(true), bval.one_of(api.handlers));
-    var parameters = api_val.get("parameters", bval.object(true));
+    var function_name = api_val.get("function", BasicVal.string(true), BasicVal.one_of(api.handlers));
+    var parameters = api_val.get("parameters", BasicVal.object(true));
 
     var handler = api.handlers[function_name];
 

@@ -1,6 +1,6 @@
 var logger = require('tracer').console();
 var FieldVal = require('fieldval');
-var bval = require('fieldval-basicval');
+var BasicVal = require('fieldval-basicval');
 
 var security = require('../security');
 
@@ -25,30 +25,35 @@ User.rule.init({
     name: "mino.user",
     display_name: "User",
     type: "object",
-    fields: [
-
-    ]
+    fields: [{
+        name: "username",
+        display_name: "Username",
+        type: "string",
+        min_length: 3,
+        max_length: 20
+    },{
+        name: "email",
+        display_name: "Email",
+        type: "email"
+    },{
+        name: "password",
+        display_name: "Password",
+        type: "string",
+        min_length: 8
+    }]
 });
 
 User.username_validator = [
-    bval.string(true),
-    bval.min_length(3),
-    bval.max_length(20),
-    bval.no_whitespace(),
-    bval.start_with_letter()
+    BasicVal.no_whitespace(),
+    BasicVal.start_with_letter()
 ]
 
 User.validate = function(data, creation){
-    var validator = new FieldVal(data);
+    var user_error = User.rule.validate(data);
 
     validator.get("username", User.username_validator);
-    validator.get("email", bval.string(true), bval.email());
 
-    if(creation){
-        validator.get("password", bval.string(true), bval.min_length(8));
-    }
-
-    return validator.end();
+    return user_error;
 }
 
 User.prototype.create_save_data = function(callback){

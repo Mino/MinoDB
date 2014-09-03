@@ -3,7 +3,7 @@ var Common = require('../../../common_classes/Common')
 var Path = require('../../../common_classes/Path');
 var logger = require('tracer').console();
 var Validator = require('fieldval');
-var bval = require('fieldval-basicval');
+var BasicVal = require('fieldval-basicval');
 var validators = require('../../validators');
 
 function DeleteObject(address, handler, index, options){
@@ -99,7 +99,6 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
 
 	    		db.object_collection.remove(
 			    	update_conditions,
-			    	del_obj.deleting_json,
 			    	function(err,response){
 			    		logger.log("DELETED");
 
