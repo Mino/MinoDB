@@ -19,7 +19,7 @@
     "fieldval-rules" : "FieldVal/fieldval-rules-js"
   },
   "devDependencies": {
-    "gulp-imports" : "git+ssh://git@github.com/MarcusLongmuir/gulp-imports.git",
+    "gulp-imports" : "MarcusLongmuir/gulp-imports",
     "gulp-nodemon" : "*",
     "gulp-util": "^2.2.14",
     "gulp": "^3.6.1",
