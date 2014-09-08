@@ -14,9 +14,9 @@
     "errorhandler": "*",
     "mongodb" : "*",
     "minosdk" : "*",
-    "fieldval" : "*",
-    "fieldval-basicval" : "*",
-    "fieldval-rules" : "*"
+    "fieldval" : "FieldVal/fieldval-js",
+    "fieldval-basicval" : "FieldVal/fieldval-basicval-js",
+    "fieldval-rules" : "FieldVal/fieldval-rules-js"
   },
   "devDependencies": {
     "gulp-imports" : "git+ssh://git@github.com/MarcusLongmuir/gulp-imports.git",
