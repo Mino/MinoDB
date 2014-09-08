@@ -14,10 +14,11 @@
     "errorhandler": "*",
     "mongodb" : "*",
     "minosdk" : "*",
+    "tracer": "*",
     "fieldval" : "FieldVal/fieldval-js#develop_test+coverage",
     "fieldval-basicval" : "FieldVal/fieldval-basicval-js#develop",
     "fieldval-rules" : "FieldVal/fieldval-rules-js#develop_array",
-    "tracer": "*"
+    "extend": "MarcusLongmuir/extend"
   },
   "devDependencies": {
     "gulp-imports" : "MarcusLongmuir/gulp-imports",

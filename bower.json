@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "dependencies": {
     "jquery": "1.11.1",
-    "fieldval": "*",
-    "fieldval-basicval": "*",
-    "fieldval-ui": "*",
-    "fieldval-rules": "*",
+    "fieldval" : "FieldVal/fieldval-js#develop_test+coverage",
+    "fieldval-basicval" : "FieldVal/fieldval-basicval-js#develop",
+    "fieldval-rules" : "FieldVal/fieldval-rules-js#develop_array",
+    "fieldval-ui": "FieldVal/fieldval-ui#develop",
     "jquery-autosize": "*"
   },
   "private": true
