@@ -1,7 +1,6 @@
 var logger = require('tracer').console();
 
 var express = require('express');
-var connect = require('connect');
 var http = require('http');
 var path = require('path');
 
