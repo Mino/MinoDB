@@ -15,9 +15,9 @@
     "mongodb" : "*",
     "minosdk" : "git+https://bestan:09915eb57c27b7417bc43e2735ab93890c76e4c9@github.com/MarcusLongmuir/MinoSDK.git",
     "tracer": "*",
-    "fieldval" : "FieldVal/fieldval-js#develop_test+coverage",
+    "fieldval" : "FieldVal/fieldval-js#develop",
     "fieldval-basicval" : "FieldVal/fieldval-basicval-js#develop",
-    "fieldval-rules" : "FieldVal/fieldval-rules-js#develop_array",
+    "fieldval-rules" : "FieldVal/fieldval-rules-js#develop",
     "extend": "MarcusLongmuir/extend"
   },
   "devDependencies": {
