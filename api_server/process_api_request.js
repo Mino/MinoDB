@@ -1,6 +1,7 @@
 var logger = require('tracer').console();
 var api = require('../core/API');
-var crypt = require("../../MinoSDK/lib/crypt");
+var MinoSDK = require("minosdk");
+var crypt = MinoSDK.crypt;
 
 module.exports = function(req, res, next) {
     var username = req.body.username;
