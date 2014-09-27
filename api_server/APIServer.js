@@ -9,7 +9,7 @@ var path = require('path');
 var Validator = require('fieldval');
 var BasicVal = require('fieldval-basicval');
 var logger = require('tracer').console();
-var api = require('../core/api');
+var api = require('../core/API');
 var crypt = require("../utils/crypt");
 var process_api_request = require('./process_api_request');
 
