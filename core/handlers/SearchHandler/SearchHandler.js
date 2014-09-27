@@ -1,7 +1,7 @@
 var errors = require('../../../errors')
 var Validator = require('fieldval');
 var BasicVal = require('fieldval-basicval');
-var PathPermissionChecker = require('../../Models/PathPermissionChecker');
+var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var logger = require('tracer').console();
 
 function SearchHandler(api, user, parameters, callback){
