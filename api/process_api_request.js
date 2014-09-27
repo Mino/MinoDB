@@ -1,5 +1,5 @@
 var logger = require('tracer').console();
-var api = require('./api');
+var api = require('./API');
 var MinoSDK = require("minosdk");
 var crypt = MinoSDK.crypt;
 
