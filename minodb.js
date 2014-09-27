@@ -5,9 +5,9 @@ var http = require('http');
 var path = require('path');
 
 var settings = require('./settings');
-var API = require('./api/API');
-var APIServer = require('./api/APIServer');
-var UIServer = require('./ui/UIServer');
+var API = require('./core/API');
+var APIServer = require('./api_server/APIServer');
+var UIServer = require('./ui_server/UIServer');
 
 var class_to_string = require('./class_to_string');
 
@@ -20,10 +20,33 @@ function MinoDB(config){
 
     mdb.custom_fields = [];
 
-    mdb._api_server = new APIServer(mdb);
-    mdb._ui_server = new UIServer(mdb);
-
     mdb.api = new API(mdb, mdb.config.db_address);
+
+    mdb.express_server = express();
+    mdb.express_server.disable('etag');//Prevents 304s
+
+    mdb.add_plugin(new APIServer({
+
+    }));
+    mdb.add_plugin(new UIServer({
+
+    }));
+
+    mdb.express_server.get('/*', function(req,res){
+        res.send(400, 'MINO!');
+    })
+}
+
+MinoDB.prototype.add_plugin = function(plugin){
+    var mdb = this;
+
+    plugin.init(mdb);
+}
+
+MinoDB.prototype.server = function(){
+    var mdb = this;
+
+    return mdb.express_server;
 }
 
 MinoDB.ValidationRule = require('fieldval-rules');

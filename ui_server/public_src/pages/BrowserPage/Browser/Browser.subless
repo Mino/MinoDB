@@ -1,0 +1,18 @@
+@import "MainBrowser/MainBrowser.subless";
+
+.browser{
+	
+	@import "AddressBar/AddressBar.subless";
+	@import "Icon/Icon.subless";
+
+	.view_container{
+		padding: 12px;
+
+		@import "Views/Views.subless";
+
+		padding-bottom: 50px;
+	}
+
+	@import "Toolbar/Toolbar.subless";
+	@import "TypeSelector/TypeSelector.subless";
+}
