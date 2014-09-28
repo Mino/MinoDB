@@ -1,12 +1,12 @@
 function TypeField(value, parent){
-	var rf = this;
+	var tf = this;
 
-	rf.parent = parent;
-	rf.value = value || {};
+	tf.parent = parent;
+	tf.value = value || {};
 
-	rf.container = $("<div />").addClass("type_field").append(
-		rf.title_div = $("<div />").addClass("title"),
-		rf.contents = $("<div />").addClass("contents")
+	tf.container = $("<div />").addClass("type_field").append(
+		tf.title_div = $("<div />").addClass("title"),
+		tf.contents = $("<div />").addClass("contents")
 	)
 
 	var field_type_choices = [];
@@ -22,98 +22,95 @@ function TypeField(value, parent){
 		}
 	}
 
-	rf.form = new FVForm();
-	rf.form.add_field("name", new TextField("Name").on_change(function(){
-		rf.update_title_name();
+	tf.form = new FVForm();
+	tf.form.add_field("name", new TextField("Name").on_change(function(){
+		tf.update_title_name();
 	}));
-	rf.form.add_field("display_name", new TextField("Display Name").on_change(function(){
-		rf.update_title_name();
+	tf.form.add_field("display_name", new TextField("Display Name").on_change(function(){
+		tf.update_title_name();
 	}));
-	rf.form.add_field("type", new ChoiceField("Type", {
+	tf.form.add_field("type", new ChoiceField("Type", {
 		choices: field_type_choices
 	}).on_change(function(){
-		rf.update_type_fields();
+		tf.update_type_fields();
 	}));
-	rf.contents.append(
-		rf.form.element
+	tf.contents.append(
+		tf.form.element
 	)
-	rf.form.val(value);
+	tf.form.val(value);
 
-    rf.is_edit_mode = true;
+    tf.is_edit_mode = true;
 
     console.log(value);
 
-    rf.base_fields = {};
-    for(var name in rf.form.fields){
-    	rf.base_fields[name] = true;
+    tf.base_fields = {};
+    for(var name in tf.form.fields){
+    	tf.base_fields[name] = true;
     }
 
-    rf.update_title_name();
-    rf.update_type_fields();
+    tf.update_title_name();
+    tf.update_type_fields();
 }
 
 TypeField.prototype.init = function(){
-	var rf = this;
-	rf.form.init();
+	var tf = this;
+	tf.form.init();
 }
 
 TypeField.prototype.remove = function(){
-	var rf = this;
-	rf.form.remove();
+	var tf = this;
+	tf.form.remove();
 }
 
 TypeField.prototype.update_title_name = function(){
-	var rf = this;
+	var tf = this;
 
 	var title_name;
-	var display_name_val = rf.form.fields.display_name.val();
-	var name_val = rf.form.fields.name.val();
+	var display_name_val = tf.form.fields.display_name.val();
+	var name_val = tf.form.fields.name.val();
 	if(display_name_val){
 		title_name = "("+display_name_val+") "+name_val;
 	} else {
 		title_name = name_val || "";
 	}
 
-	rf.title_div.text(title_name);
+	tf.title_div.text(title_name);
 }
 
 TypeField.prototype.update_type_fields = function(){
-	var rf = this;
+	var tf = this;
 
-	var type = rf.form.fields.type.val();
+	var type = tf.form.fields.type.val();
 
-	for(var name in rf.form.fields){
-		if(!rf.base_fields[name]){
-			rf.form.fields[name].remove();
+	for(var name in tf.form.fields){
+		if(!tf.base_fields[name]){
+			tf.form.fields[name].remove();
 		}
 	}
 
-	console.log("update_type_fields ",rf, type);
-
 	if(type==='text'){
-		rf.form.add_field("min_length", new TextField("Minimum Length", {type: "number"}));
-		rf.form.add_field("max_length", new TextField("Maximum Length", {type: "number"}));
-		rf.form.fields.min_length.val(rf.value.min_length);
-		rf.form.fields.max_length.val(rf.value.max_length);
+		tf.form.add_field("min_length", new TextField("Minimum Length", {type: "number"}));
+		tf.form.add_field("max_length", new TextField("Maximum Length", {type: "number"}));
+		tf.form.fields.min_length.val(tf.value.min_length);
+		tf.form.fields.max_length.val(tf.value.max_length);
 	} else if(type==='number'){
 
 	} else if(type==='object'){
-		console.log(rf.value);
 
 		var fields_field = new ArrayField("Fields");
 		fields_field.new_field = function(index){
-			var inner_field = new TypeField(null, rf);
+			var inner_field = new TypeField(null, tf);
 			fields_field.add_field(null, inner_field);
 		}
 
-		rf.form.add_field("fields", fields_field);
+		tf.form.add_field("fields", fields_field);
 
-		var inner_fields = rf.value.fields;
+		var inner_fields = tf.value.fields;
 		if(inner_fields){
-			for(var i = 0; i < rf.value.fields.length; i++){
-				var field_data = rf.value.fields[i];
+			for(var i = 0; i < tf.value.fields.length; i++){
+				var field_data = tf.value.fields[i];
 
-				var inner_field = new TypeField(field_data, rf);
+				var inner_field = new TypeField(field_data, tf);
 				fields_field.add_field(null, inner_field);
 			}
 		}
@@ -121,43 +118,43 @@ TypeField.prototype.update_type_fields = function(){
 }
 
 TypeField.prototype.in_array = function(remove_callback){
-	var rf = this;
+	var tf = this;
 
 
 }
 
 TypeField.prototype.val = function(argument){
-    var rf = this;
+    var tf = this;
 
     if(arguments.length===0){
-        return rf.form.val();
+        return tf.form.val();
     } else {
-        return rf.form.val(argument);
+        return tf.form.val(argument);
     }
 }
 
 TypeField.prototype.error = function(argument){
-    var rf = this;
+    var tf = this;
 
-    return rf.form.error(argument);
+    return tf.form.error(argument);
 }
 
 TypeField.prototype.edit_mode = function(){
-    var rf = this;
+    var tf = this;
     
-    rf.is_edit_mode = true;
+    tf.is_edit_mode = true;
 
-    if(rf.form){
-        rf.form.edit_mode();
+    if(tf.form){
+        tf.form.edit_mode();
     }
 }
 
 TypeField.prototype.view_mode = function(){
-    var rf = this;
+    var tf = this;
  
-    rf.is_edit_mode = false;
+    tf.is_edit_mode = false;
 
-    if(rf.form){
-        rf.form.view_mode();
+    if(tf.form){
+        tf.form.view_mode();
     }
 }

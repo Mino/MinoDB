@@ -128,7 +128,7 @@ FolderView.prototype.create_folder = function(){
 	var cfm = new CreateFolderModal(folder_view.path, function(err, res){
 		console.log(err, res);
 		if(res && res.full_path){
-			folder_view.browser.load(res.full_path);
+			folder_view.browser.load_address(encode_path(res.full_path));
 		}
 	})
 
@@ -168,7 +168,10 @@ FolderView.prototype.populate = function(options, data){
 
 	if(objects.length===0){
 		folder_view.contents.append(
-			$("<div />").addClass("empty_folder").text("Empty folder")
+			$("<div />").addClass("empty_folder").append(
+				$("<div />").addClass("fa_icon fa fa-warning"),
+				$("<div />").text("Empty folder. Create some items...")
+			)
 		)
 	}
 

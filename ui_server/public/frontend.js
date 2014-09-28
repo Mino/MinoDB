@@ -13773,49 +13773,59 @@ var FieldVal = (function(){
         //Top level errors - added using .error() 
         fv.errors = [];
 
-        if(existing_error){
-            var key_error;
-            if(existing_error.error===FieldVal.ONE_OR_MORE_ERRORS){
-                //The existing_error is a key error
-                key_error = existing_error;
-            } else if(existing_error.error===FieldVal.MULTIPLE_ERRORS){
-                for(var i = 0; i < existing_error.errors.length; i++){
-                    var inner_error = existing_error.errors[i];
+        if(existing_error!==undefined){
+            //Provided a (potentially null) existing error
 
-                    if(inner_error.error===0){
-                        key_error = inner_error;
-                        //Don't add the key_error to fv.errors (continue)
-                        continue;
+            if(existing_error){
+                var key_error;
+                if(existing_error.error===FieldVal.ONE_OR_MORE_ERRORS){
+                    //The existing_error is a key error
+                    key_error = existing_error;
+                } else if(existing_error.error===FieldVal.MULTIPLE_ERRORS){
+                    for(var i = 0; i < existing_error.errors.length; i++){
+                        var inner_error = existing_error.errors[i];
+
+                        if(inner_error.error===0){
+                            key_error = inner_error;
+                            //Don't add the key_error to fv.errors (continue)
+                            continue;
+                        }
+                        //Add other errors to fv.errors
+                        fv.errors.push(inner_error);
                     }
-                    //Add other errors to fv.errors
-                    fv.errors.push(inner_error);
+                } else {
+                    //Only have non-key error
+                    fv.errors.push(existing_error);
+                }
+
+                if(key_error){
+                    for(var j in validating){
+                        if(validating.hasOwnProperty(j)) {
+                            fv.recognized_keys[j] = true;
+                        }
+                    }
+                    if(key_error.missing){
+                        fv.missing_keys = key_error.missing;
+                    }
+                    if(key_error.unrecognized){
+                        fv.unrecognized_keys = key_error.unrecognized;
+                        for(var k in fv.unrecognized_keys){
+                            if(fv.unrecognized_keys.hasOwnProperty(k)) {
+                                delete fv.recognized_keys[k];
+                            }
+                        }
+                    }
+                    if(key_error.invalid){
+                        fv.invalid_keys = key_error.invalid;
+                    }
+
                 }
             } else {
-                //Only have non-key error
-                fv.errors.push(existing_error);
-            }
-
-            if(key_error){
                 for(var j in validating){
                     if(validating.hasOwnProperty(j)) {
                         fv.recognized_keys[j] = true;
                     }
                 }
-                if(key_error.missing){
-                    fv.missing_keys = key_error.missing;
-                }
-                if(key_error.unrecognized){
-                    fv.unrecognized_keys = key_error.unrecognized;
-                    for(var k in fv.unrecognized_keys){
-                        if(fv.unrecognized_keys.hasOwnProperty(k)) {
-                            delete fv.recognized_keys[k];
-                        }
-                    }
-                }
-                if(key_error.invalid){
-                    fv.invalid_keys = key_error.invalid;
-                }
-
             }
         }
     }
@@ -14150,7 +14160,7 @@ var FieldVal = (function(){
             };
         }
 
-        return undefined;
+        return null;
     };
 
     FieldVal.prototype.end = function (callback) {
@@ -14427,7 +14437,7 @@ var FieldVal = (function(){
                 return;
             }
 
-            finish(undefined);
+            finish(null);
             shared_options.validator.async_call_ended();
             return;
         });
@@ -14804,7 +14814,7 @@ var BasicVal = (function(){
         no_whitespace: function(flags) {
             var check = function(value) {
                 if (/\s/.test(value)){
-                    return FieldVal.create_error(BasicVal.errors.contains_whitespace, flags, max_len);
+                    return FieldVal.create_error(BasicVal.errors.contains_whitespace, flags);
                 }
             };
             if(flags){
@@ -14996,66 +15006,61 @@ var BasicVal = (function(){
             };
         },
         each: function(on_each, flags) {
-            var check = function(array, emit, callback) {
-                
+            var check = function(array, stop) {
+                var validator = new FieldVal(null);
+                for (var i = 0; i < array.length; i++) {
+                    var value = array[i];
 
-                var i = 0;
-                var end = function(end_value){
-                    logger.log("end ",end_value);
 
-                    if(callback){
-                        callback(end_value);
-                    } else {
-                        to_return = end_value;
+                    var res = on_each(value,i);
+                    if (res != null) {
+                        validator.invalid("" + i, res);
                     }
                 }
+                var error = validator.end();
+                if(error!=null){
+                    return error;
+                }
+            }
+            if(flags){
+                flags.check = check;
+                return flags;
+            }
+            return {
+                check: check
+            };
+        },
+        each_async: function(on_each, flags) {
+            var check = function(array, emit, callback) {
+                
+                var validator = new FieldVal(null);
+                var i = 0;
                 var do_possible = function(){
                     logger.log("do_possible ",i);
                     i++;
                     logger.log(i, array.length);
                     if(i>array.length){
-                        end();
+                        callback(validator.end());
                         return;
                     }
                     var value = array[i-1];
 
-                    FieldVal.use_checks(value, option, {
-                        field_name: null,
-                        validator: null,
+                    FieldVal.use_checks(value, [function(value, emit){
+                        on_each(value,i,emit,callback);
+                    }], {
+                        field_name: ""+i,
+                        validator: validator,
                         emit: function(emitted_value){
                             array[i-1] = emitted_value;
                         }
                     }, function(response){
                         logger.log("response ",response);
-                        if(response===undefined){
-                            logger.log("success");
-                            end(undefined);//Success
-                        } else {
-                            do_possible();
+                        if (response !== undefined) {
+                            validator.invalid("" + i, response);
                         }
+                        do_possible();
                     });
                     logger.log("end of do_possible");
-                }
-
-
-
-
-
-                var validator = new FieldVal(null);
-                for (var i = 0; i < array.length; i++) {
-                    var value = array[i];
-
-                    var res = on_each(value,i,emit,callback);
-                    if (res !== undefined) {
-                        validator.invalid("" + i, res);
-                    }
-                }
-
-
-
-                var error = validator.end();
-                if(error!==undefined){
-                    return error;
                 }
             };
             if(flags){
@@ -15071,6 +15076,38 @@ var BasicVal = (function(){
             possibles = possibles || [];
             if(possibles.length===0){
                 console.error("BasicVal.multiple called without possibles.");
+            }
+            
+            var check = function(value, emit){
+                for(var i = 0; i < possibles.length; i++){
+                    var option = possibles[i];
+            
+                    var emitted_value;
+                    var option_error = FieldVal.use_checks(value, option, null, null, function(emitted){
+                        emitted_value = emitted;
+                    })
+                    if(!option_error){
+                        if(emitted_value!==undefined){
+                            emit(emitted_value);
+                        }
+                        return null;
+                    }
+                }
+                return FieldVal.create_error(BasicVal.errors.no_valid_option, flags);
+            }
+            if(flags){
+                flags.check = check;
+                return flags
+            }
+            return {
+                check: check
+            }
+        },
+        multiple_async: function(possibles, flags){
+
+            possibles = possibles || [];
+            if(possibles.length===0){
+                console.error("BasicVal.multiple_async called without possibles.");
                 return;
             }
 
@@ -15081,21 +15118,12 @@ var BasicVal = (function(){
                     emitted_value = emitted;
                 };
                 var i = 0;
-                var end = function(end_value){
-                    logger.log("end ",end_value);
-
-                    if(callback){
-                        callback(end_value);
-                    } else {
-                        to_return = end_value;
-                    }
-                }
                 var do_possible = function(){
                     logger.log("do_possible ",i);
                     i++;
                     logger.log(i, possibles.length);
                     if(i>possibles.length){
-                        end(FieldVal.create_error(BasicVal.errors.no_valid_option, flags));
+                        callback(FieldVal.create_error(BasicVal.errors.no_valid_option, flags));
                         return;
                     }
                     var option = possibles[i-1];
@@ -15108,12 +15136,11 @@ var BasicVal = (function(){
                         logger.log("response ",response);
                         if(response===undefined){
                             logger.log("success");
-                            end(undefined);//Success
+                            callback(undefined);//Success
                         } else {
                             do_possible();
                         }
                     });
-                    logger.log("end of do_possible");
                 }
                 do_possible();
                 logger.log("RETURNING ",to_return);
@@ -16497,7 +16524,6 @@ RuleField.create_field = function(json, options) {
         var field_class = field_type_data.class;
         field = new field_class(json, validator)
     } else {
-        //Create a generic field to create the correct errors for the "RuleField" fields
         return [validator.end(), null];
     }
 
@@ -17146,6 +17172,7 @@ ValidationRule.prototype.init = function(json, options) {
 
     //Keep the created field
     vr.field = field_res[1];
+    return null;
 }
 
 ValidationRule.prototype.create_form = function(){
@@ -19114,7 +19141,8 @@ function FolderIcon(data, view){
 
 	FolderIcon.superConstructor.call(this, data, view);
 
-	icon.element.addClass("folder_icon")
+	icon.element.addClass("folder_icon");
+	icon.holder.addClass("fa fa-folder");
 }
 extend(ItemIcon, Icon);
 
@@ -19123,7 +19151,8 @@ function ItemIcon(data, view){
 
 	ItemIcon.superConstructor.call(this, data, view);
 
-	icon.element.addClass("item_icon")
+	icon.element.addClass("item_icon");
+	icon.holder.addClass("fa fa-file");
 }
 extend(TypeIcon, Icon);
 
@@ -19133,6 +19162,7 @@ function TypeIcon(data, view){
 	TypeIcon.superConstructor.call(this, data, view);
 
 	icon.element.addClass("type_icon")
+	icon.holder.addClass("fa fa-check");
 }
 
 TypeIcon.prototype.get_address = function(){
@@ -19453,7 +19483,7 @@ FolderView.prototype.create_folder = function(){
 	var cfm = new CreateFolderModal(folder_view.path, function(err, res){
 		console.log(err, res);
 		if(res && res.full_path){
-			folder_view.browser.load(res.full_path);
+			folder_view.browser.load_address(encode_path(res.full_path));
 		}
 	})
 
@@ -19493,7 +19523,10 @@ FolderView.prototype.populate = function(options, data){
 
 	if(objects.length===0){
 		folder_view.contents.append(
-			$("<div />").addClass("empty_folder").text("Empty folder")
+			$("<div />").addClass("empty_folder").append(
+				$("<div />").addClass("fa_icon fa fa-warning"),
+				$("<div />").text("Empty folder. Create some items...")
+			)
 		)
 	}
 
@@ -19910,14 +19943,14 @@ ItemView.prototype.resize = function(resize_obj){
 	item_view.form.element.toggleClass("rows", resize_obj.window_width>700)
 }
 function TypeField(value, parent){
-	var rf = this;
+	var tf = this;
 
-	rf.parent = parent;
-	rf.value = value || {};
+	tf.parent = parent;
+	tf.value = value || {};
 
-	rf.container = $("<div />").addClass("type_field").append(
-		rf.title_div = $("<div />").addClass("title"),
-		rf.contents = $("<div />").addClass("contents")
+	tf.container = $("<div />").addClass("type_field").append(
+		tf.title_div = $("<div />").addClass("title"),
+		tf.contents = $("<div />").addClass("contents")
 	)
 
 	var field_type_choices = [];
@@ -19933,98 +19966,95 @@ function TypeField(value, parent){
 		}
 	}
 
-	rf.form = new FVForm();
-	rf.form.add_field("name", new TextField("Name").on_change(function(){
-		rf.update_title_name();
+	tf.form = new FVForm();
+	tf.form.add_field("name", new TextField("Name").on_change(function(){
+		tf.update_title_name();
 	}));
-	rf.form.add_field("display_name", new TextField("Display Name").on_change(function(){
-		rf.update_title_name();
+	tf.form.add_field("display_name", new TextField("Display Name").on_change(function(){
+		tf.update_title_name();
 	}));
-	rf.form.add_field("type", new ChoiceField("Type", {
+	tf.form.add_field("type", new ChoiceField("Type", {
 		choices: field_type_choices
 	}).on_change(function(){
-		rf.update_type_fields();
+		tf.update_type_fields();
 	}));
-	rf.contents.append(
-		rf.form.element
+	tf.contents.append(
+		tf.form.element
 	)
-	rf.form.val(value);
+	tf.form.val(value);
 
-    rf.is_edit_mode = true;
+    tf.is_edit_mode = true;
 
     console.log(value);
 
-    rf.base_fields = {};
-    for(var name in rf.form.fields){
-    	rf.base_fields[name] = true;
+    tf.base_fields = {};
+    for(var name in tf.form.fields){
+    	tf.base_fields[name] = true;
     }
 
-    rf.update_title_name();
-    rf.update_type_fields();
+    tf.update_title_name();
+    tf.update_type_fields();
 }
 
 TypeField.prototype.init = function(){
-	var rf = this;
-	rf.form.init();
+	var tf = this;
+	tf.form.init();
 }
 
 TypeField.prototype.remove = function(){
-	var rf = this;
-	rf.form.remove();
+	var tf = this;
+	tf.form.remove();
 }
 
 TypeField.prototype.update_title_name = function(){
-	var rf = this;
+	var tf = this;
 
 	var title_name;
-	var display_name_val = rf.form.fields.display_name.val();
-	var name_val = rf.form.fields.name.val();
+	var display_name_val = tf.form.fields.display_name.val();
+	var name_val = tf.form.fields.name.val();
 	if(display_name_val){
 		title_name = "("+display_name_val+") "+name_val;
 	} else {
 		title_name = name_val || "";
 	}
 
-	rf.title_div.text(title_name);
+	tf.title_div.text(title_name);
 }
 
 TypeField.prototype.update_type_fields = function(){
-	var rf = this;
+	var tf = this;
 
-	var type = rf.form.fields.type.val();
+	var type = tf.form.fields.type.val();
 
-	for(var name in rf.form.fields){
-		if(!rf.base_fields[name]){
-			rf.form.fields[name].remove();
+	for(var name in tf.form.fields){
+		if(!tf.base_fields[name]){
+			tf.form.fields[name].remove();
 		}
 	}
 
-	console.log("update_type_fields ",rf, type);
-
 	if(type==='text'){
-		rf.form.add_field("min_length", new TextField("Minimum Length", {type: "number"}));
-		rf.form.add_field("max_length", new TextField("Maximum Length", {type: "number"}));
-		rf.form.fields.min_length.val(rf.value.min_length);
-		rf.form.fields.max_length.val(rf.value.max_length);
+		tf.form.add_field("min_length", new TextField("Minimum Length", {type: "number"}));
+		tf.form.add_field("max_length", new TextField("Maximum Length", {type: "number"}));
+		tf.form.fields.min_length.val(tf.value.min_length);
+		tf.form.fields.max_length.val(tf.value.max_length);
 	} else if(type==='number'){
 
 	} else if(type==='object'){
-		console.log(rf.value);
 
 		var fields_field = new ArrayField("Fields");
 		fields_field.new_field = function(index){
-			var inner_field = new TypeField(null, rf);
+			var inner_field = new TypeField(null, tf);
 			fields_field.add_field(null, inner_field);
 		}
 
-		rf.form.add_field("fields", fields_field);
+		tf.form.add_field("fields", fields_field);
 
-		var inner_fields = rf.value.fields;
+		var inner_fields = tf.value.fields;
 		if(inner_fields){
-			for(var i = 0; i < rf.value.fields.length; i++){
-				var field_data = rf.value.fields[i];
+			for(var i = 0; i < tf.value.fields.length; i++){
+				var field_data = tf.value.fields[i];
 
-				var inner_field = new TypeField(field_data, rf);
+				var inner_field = new TypeField(field_data, tf);
 				fields_field.add_field(null, inner_field);
 			}
 		}
@@ -20032,44 +20062,44 @@ TypeField.prototype.update_type_fields = function(){
 }
 
 TypeField.prototype.in_array = function(remove_callback){
-	var rf = this;
+	var tf = this;
 
 
 }
 
 TypeField.prototype.val = function(argument){
-    var rf = this;
+    var tf = this;
 
     if(arguments.length===0){
-        return rf.form.val();
+        return tf.form.val();
     } else {
-        return rf.form.val(argument);
+        return tf.form.val(argument);
     }
 }
 
 TypeField.prototype.error = function(argument){
-    var rf = this;
+    var tf = this;
 
-    return rf.form.error(argument);
+    return tf.form.error(argument);
 }
 
 TypeField.prototype.edit_mode = function(){
-    var rf = this;
+    var tf = this;
     
-    rf.is_edit_mode = true;
+    tf.is_edit_mode = true;
 
-    if(rf.form){
-        rf.form.edit_mode();
+    if(tf.form){
+        tf.form.edit_mode();
     }
 }
 
 TypeField.prototype.view_mode = function(){
-    var rf = this;
+    var tf = this;
  
-    rf.is_edit_mode = false;
+    tf.is_edit_mode = false;
 
-    if(rf.form){
-        rf.form.view_mode();
+    if(tf.form){
+        tf.form.view_mode();
     }
 }
 
@@ -20201,6 +20231,9 @@ TypeView.prototype.save = function(){
 		if(response.error!==undefined){
 			type_view.error(response.invalid.parameters.invalid.type);
 		} else {
+			if(type_view.options.create){
+				type_view.options.create = false;
+			}
 			type_view.name = value.name;
 			type_view.populate(value);
 		}

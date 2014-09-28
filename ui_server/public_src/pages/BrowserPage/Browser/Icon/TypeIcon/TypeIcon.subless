@@ -1,6 +1,6 @@
 .type_icon{
 	
 	>.holder{
-		background-color: purple;
+		font-size: 60px;
 	}
 }

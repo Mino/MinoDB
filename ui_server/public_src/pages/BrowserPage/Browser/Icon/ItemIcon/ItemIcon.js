@@ -5,5 +5,6 @@ function ItemIcon(data, view){
 
 	ItemIcon.superConstructor.call(this, data, view);
 
-	icon.element.addClass("item_icon")
+	icon.element.addClass("item_icon");
+	icon.holder.addClass("fa fa-file");
 }

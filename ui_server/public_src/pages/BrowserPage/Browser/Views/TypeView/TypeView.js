@@ -128,6 +128,9 @@ TypeView.prototype.save = function(){
 		if(response.error!==undefined){
 			type_view.error(response.invalid.parameters.invalid.type);
 		} else {
+			if(type_view.options.create){
+				type_view.options.create = false;
+			}
 			type_view.name = value.name;
 			type_view.populate(value);
 		}

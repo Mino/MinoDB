@@ -6,6 +6,7 @@ function TypeIcon(data, view){
 	TypeIcon.superConstructor.call(this, data, view);
 
 	icon.element.addClass("type_icon")
+	icon.holder.addClass("fa fa-check");
 }
 
 TypeIcon.prototype.get_address = function(){

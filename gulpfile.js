@@ -19,7 +19,10 @@ var onError = function (err) {
 
 //LESS compilation
 gulp.task('public_less', function(){
-    gulp.src('ui_server/public_src/style/style.less')
+    gulp.src('ui_server/bower_components/font-awesome/fonts/*')
+    .pipe(gulp.dest('ui_server/public/fonts/'));
+
+    return gulp.src('ui_server/public_src/style/style.less')
     .pipe(plumber(onError))
     .pipe(less())
     .pipe(concat('style.css'))
@@ -80,5 +83,6 @@ gulp.task('default', function(){
 })
 
 gulp.task('dev', function(){
+    gulp.start('default');
     gulp.start('watch');
 })

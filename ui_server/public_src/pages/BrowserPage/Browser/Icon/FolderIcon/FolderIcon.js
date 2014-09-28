@@ -5,5 +5,6 @@ function FolderIcon(data, view){
 
 	FolderIcon.superConstructor.call(this, data, view);
 
-	icon.element.addClass("folder_icon")
+	icon.element.addClass("folder_icon");
+	icon.holder.addClass("fa fa-folder");
 }

@@ -39,7 +39,11 @@ Type.validate = function(data, creation){
         }
     );
 
-    return type_error;
+    //Perform an extra check on the name
+    var validator = new FieldVal(data, type_error);
+    validator.get("name", BasicVal.string(true), BasicVal.start_with_letter(), BasicVal.no_whitespace());
+
+    return validator.end();
 }
 
 Type.prototype.create_save_data = function(callback){

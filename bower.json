@@ -7,7 +7,8 @@
     "fieldval-basicval" : "FieldVal/fieldval-basicval-js#develop",
     "fieldval-rules" : "FieldVal/fieldval-rules-js#develop_array",
     "fieldval-ui": "FieldVal/fieldval-ui#develop",
-    "jquery-autosize": "*"
+    "jquery-autosize": "*",
+    "font-awesome": "*"
   },
   "private": true
 }

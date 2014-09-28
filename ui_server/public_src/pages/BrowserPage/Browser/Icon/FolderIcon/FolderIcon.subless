@@ -1,6 +1,7 @@
 .folder_icon{
 	
 	>.holder{
-		background-color: orange;
+		font-size: 75px;
+		color: @mino_button_color;
 	}
 }

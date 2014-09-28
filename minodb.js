@@ -63,14 +63,4 @@ MinoDB.prototype.add_field_type = function(field_data){
     mdb.custom_fields.push(field_data);
 }
 
-MinoDB.prototype.ui_server = function(){
-    var mdb = this;
-    return mdb._ui_server.express_server;
-}
-
-MinoDB.prototype.api_server = function(){
-    var mdb = this;
-    return mdb._api_server.express_server;
-}
-
 module.exports = MinoDB;
