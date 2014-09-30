@@ -71,7 +71,7 @@ function Modal(props){
 	});
 
 	modal.shadow.show();
-	modal.element.fadeIn(400, 
+	modal.element.fadeIn(150, 
 		function(){
 			modal.on_finished_loading();
 			modal.reposition();
@@ -86,7 +86,7 @@ Modal.prototype.reposition = function(){
 	};
 
 	if(modal.initial_position){
-		modal.element.animate(props,500);
+		modal.element.stop(false,false).animate(props,200);
 	} else {
 		modal.element.css(props);
 		modal.initial_position = true;

@@ -41,7 +41,7 @@ LoginBox.prototype.login_press = function(object) {
 
     $.ajax({
         type: "POST",
-        url: "/ajax/login",
+        url: Site.path + "ajax/login",
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         data: JSON.stringify(object),
@@ -56,9 +56,9 @@ LoginBox.prototype.login_press = function(object) {
                 }
                 header.check_login();
                 if(lb.on_sign_in_url){
-                    Site.load_url(lb.on_sign_in_url, true);
+                    Site.load_url(Site.path + lb.on_sign_in_url, true);
                 } else if(Site.current_page instanceof HomePage){
-                    Site.load_url("/my_applications/",true);
+                    Site.load_url(Site.path + "my_applications/",true);
                 } else {
                     Site.reload_page();
                 }
@@ -71,7 +71,6 @@ LoginBox.prototype.login_press = function(object) {
         error: function(err, response) {
             lb.loading_overlay.hide();
             lb.form.enable();
-            error_modal();
         }
     })
 };

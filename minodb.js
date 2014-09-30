@@ -5,7 +5,7 @@ var http = require('http');
 var path = require('path');
 
 var settings = require('./settings');
-var API = require('./core/API');
+var Core = require('./core/Core');
 var APIServer = require('./api_server/APIServer');
 var UIServer = require('./ui_server/UIServer');
 
@@ -20,7 +20,7 @@ function MinoDB(config){
 
     mdb.custom_fields = [];
 
-    mdb.api = new API(mdb, mdb.config.db_address);
+    mdb.api = new Core(mdb, mdb.config.db_address);
 
     mdb.express_server = express();
     mdb.express_server.disable('etag');//Prevents 304s

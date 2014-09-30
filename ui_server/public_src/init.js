@@ -22,8 +22,6 @@
 
 var page_title_append = "MinoDB";
 var body_contents_holder;
-// var header;
-// var footer;
 
 $(document).ready(function() {
 

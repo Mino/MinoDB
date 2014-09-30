@@ -20,9 +20,38 @@ function User(data) {
     user.password = data.password;
 }
 
+User.rule_definition = {
+    name: "mino_user",
+    display_name: "User",
+    type: "object",
+    fields: [{
+        name: "username",
+        display_name: "Username",
+        type: "string",
+        min_length: 3,
+        max_length: 20
+    },{
+        name: "email",
+        display_name: "Email",
+        type: "email"
+    },{
+        name: "salted_password",
+        display_name: "Salted Password",
+        type: "string",
+        min_length: 8
+    },{
+        name: "password_salt",
+        display_name: "Password Salt",
+        type: "string",
+        min_length: 8
+    }]
+};
 User.rule = new ValidationRule();
-User.rule.init({
-    name: "mino.user",
+User.rule.init(User.rule_definition);
+
+
+User.sign_in_rule_definition = {
+    name: "mino_user",
     display_name: "User",
     type: "object",
     fields: [{
@@ -38,10 +67,11 @@ User.rule.init({
     },{
         name: "password",
         display_name: "Password",
-        type: "string",
-        min_length: 8
+        type: "string"
     }]
-});
+};
+User.sign_in_rule = new ValidationRule();
+User.sign_in_rule.init(User.sign_in_rule_definition);
 
 User.username_validator = [
     BasicVal.no_whitespace(),
@@ -49,11 +79,13 @@ User.username_validator = [
 ]
 
 User.validate = function(data, creation){
-    var user_error = User.rule.validate(data);
+    var user_error = User.sign_in_rule.validate(data);
+    logger.log(user_error);
 
+    var validator = new FieldVal(data, user_error);
     validator.get("username", User.username_validator);
 
-    return user_error;
+    return validator.end();
 }
 
 User.prototype.create_save_data = function(callback){
@@ -86,7 +118,7 @@ User.prototype.save = function(api, callback){
                     
                     "name": user.username,
                     "path": "/Mino/users/",
-                    "mino.user": to_save
+                    "mino_user": to_save
                 }
             ]
         }, function(save_err, save_res){
@@ -107,6 +139,7 @@ User.prototype.is_system_user = function(toCheck) {
 }
 
 User.get = function(username, api, callback){
+    logger.log("username ",username);
     new api.handlers.get(api, {
         "username": "Mino"
     }, {

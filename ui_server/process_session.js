@@ -1,5 +1,4 @@
 var logger = require('tracer').console();
-var api = require('../core/API');
 
 module.exports = function(require_session) {
 
@@ -9,6 +8,5 @@ module.exports = function(require_session) {
         };
 
         next();
-        
     }
 }

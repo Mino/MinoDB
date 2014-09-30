@@ -56,13 +56,13 @@ function AddressBar(browser){
 	address_bar.nav_buttons
 	.append(
 		address_bar.backButton = $("<button />")
-		.addClass("mino_button").html("&#9668;")
+		.addClass("mino_button back_button fa fa-caret-left")
 		.on('tap',function() {
 			browser.backwardPress();
 		})
 		,
 		address_bar.forward_button = $("<button />")
-		.addClass("mino_button").html("&#9658;")
+		.addClass("mino_button forward_button fa fa-caret-right")
 		.on('tap',function() {
 			browser.forwardPress();
 		})

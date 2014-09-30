@@ -14814,7 +14814,7 @@ var BasicVal = (function(){
         no_whitespace: function(flags) {
             var check = function(value) {
                 if (/\s/.test(value)){
-                    return FieldVal.create_error(BasicVal.errors.contains_whitespace, flags);
+                    return FieldVal.create_error(BasicVal.errors.contains_whitespace, flags, max_len);
                 }
             };
             if(flags){
@@ -18636,7 +18636,7 @@ function Modal(props){
 	});
 
 	modal.shadow.show();
-	modal.element.fadeIn(400, 
+	modal.element.fadeIn(150, 
 		function(){
 			modal.on_finished_loading();
 			modal.reposition();
@@ -18651,7 +18651,7 @@ Modal.prototype.reposition = function(){
 	};
 
 	if(modal.initial_position){
-		modal.element.animate(props,500);
+		modal.element.stop(false,false).animate(props,200);
 	} else {
 		modal.element.css(props);
 		modal.initial_position = true;
@@ -18711,7 +18711,7 @@ LoginBox.prototype.login_press = function(object) {
 
     $.ajax({
         type: "POST",
-        url: "/ajax/login",
+        url: Site.path + "ajax/login",
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         data: JSON.stringify(object),
@@ -18726,9 +18726,9 @@ LoginBox.prototype.login_press = function(object) {
                 }
                 header.check_login();
                 if(lb.on_sign_in_url){
-                    Site.load_url(lb.on_sign_in_url, true);
+                    Site.load_url(Site.path + lb.on_sign_in_url, true);
                 } else if(Site.current_page instanceof HomePage){
-                    Site.load_url("/my_applications/",true);
+                    Site.load_url(Site.path + "my_applications/",true);
                 } else {
                     Site.reload_page();
                 }
@@ -18741,7 +18741,6 @@ LoginBox.prototype.login_press = function(object) {
         error: function(err, response) {
             lb.loading_overlay.hide();
             lb.form.enable();
-            error_modal();
         }
     })
 };
@@ -18955,13 +18954,13 @@ function AddressBar(browser){
 	address_bar.nav_buttons
 	.append(
 		address_bar.backButton = $("<button />")
-		.addClass("mino_button").html("&#9668;")
+		.addClass("mino_button back_button fa fa-caret-left")
 		.on('tap',function() {
 			browser.backwardPress();
 		})
 		,
 		address_bar.forward_button = $("<button />")
-		.addClass("mino_button").html("&#9658;")
+		.addClass("mino_button forward_button fa fa-caret-right")
 		.on('tap',function() {
 			browser.forwardPress();
 		})
@@ -20883,8 +20882,6 @@ NotFoundPage.prototype.resize = function(resize_obj){
 
 var page_title_append = "MinoDB";
 var body_contents_holder;
-// var header;
-// var footer;
 
 $(document).ready(function() {
 

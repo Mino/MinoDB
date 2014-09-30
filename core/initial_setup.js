@@ -1,5 +1,6 @@
 var logger = require('tracer').console();
 var SaveObject = require('./handlers/SaveHandler/SaveObject');
+var User = require('./models/User');
 var Type = require('./models/Type');
 
 module.exports = function(api, callback){
@@ -39,7 +40,14 @@ module.exports = function(api, callback){
 	    so.do_saving(function(save_object, error, save_details){
 	        logger.log(save_object, error, save_details);
 
-	        callback();
+            api.handlers.save_type(api, {
+                "username": "Mino"
+            }, {
+                type: User.rule_definition
+            }, function(user_type_err, user_type_res){
+                logger.log(user_type_err, user_type_res);
+                callback();
+            })
 	    })
     })
 }

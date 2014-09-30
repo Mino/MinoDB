@@ -9,11 +9,21 @@
 	left:0px;
 	overflow-x: hidden;
 
+	button{
+		vertical-align: top;
+	}
+
 	.nav_buttons{
 		display: inline-block;
 
 		button{
 			margin-right: 5px;
+		}
+
+		.back_button, .forward_button{
+			padding-left: 10px;
+			padding-right: 10px;
+			font-size: 20px;
 		}
 	}
 
