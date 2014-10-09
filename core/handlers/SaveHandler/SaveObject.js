@@ -33,7 +33,7 @@ function SaveObject(json, handler, index, options){
 	//full_path might be present, but it should be ignored
 	so.validator.get("full_path",BasicVal.string(false), validators.path);
 	
-	so.path = so.validator.get("path", BasicVal.string(true), validators.path);
+	so.path = so.validator.get("path", BasicVal.string(true), validators.folder_path);
 	if(so.path!=null){
 		var permission_called = false;
 		logger.log(so.path);

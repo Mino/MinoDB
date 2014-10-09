@@ -3,9 +3,9 @@ var errors = {
 		error: 6,
 		error_message: "Unavailable function requested."
 	},
-	SOME_ERROR: {	
+	INVALID_FOLDER_PATH_FORMAT: {	
 		error: 7,
-		error_message: "Invalid format for comma-separated IDs."
+		error_message: "Invalid folder path."
 	},
 	INVALID_PATH_FORMAT: {
 		error: 8,
