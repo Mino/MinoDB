@@ -109,12 +109,18 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
 			    			throw new Error("UNEXPECTED!");
 			    		} else {
 
-			    			if(old_path.is_folder){
-			    				db.object_collection.remove({
+			    			logger.log(del_obj.path);
+
+			    			if(del_obj.path.is_folder){
+			    				var delete_folder_conditions = {
 			    					"path": {
-			    						"$regex": "^"+old_path.toString()
+			    						"$regex": "^"+del_obj.path.toString()
 			    					}
-			    				}, function(folder_err, folder_res){
+			    				};
+
+			    				logger.log(delete_folder_conditions);
+
+			    				db.object_collection.remove(delete_folder_conditions, function(folder_err, folder_res){
 			    					logger.log(folder_err, folder_res);
 					    			on_delete_callback(del_obj,null,{
 					    				deleted: true
