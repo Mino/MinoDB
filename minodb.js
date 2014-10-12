@@ -4,6 +4,8 @@ var express = require('express');
 var http = require('http');
 var path = require('path');
 
+var PluginManager = require('./PluginManager');
+
 var settings = require('./settings');
 var Core = require('./core/Core');
 var APIServer = require('./api_server/APIServer');
@@ -18,6 +20,8 @@ function MinoDB(config){
 
     mdb.config = config;
 
+    mdb.plugin_manager = new PluginManager(mdb);
+
     mdb.custom_fields = [];
 
     mdb.api = new Core(mdb, mdb.config.db_address);
@@ -28,18 +32,25 @@ function MinoDB(config){
     mdb.add_plugin(new APIServer({
 
     }));
-    mdb.add_plugin(new UIServer({
 
-    }));
+    var ui_server = new UIServer({});
+    mdb.add_plugin(ui_server);
+
+    ui_server.start_plugin_config_server();
 
     mdb.express_server.get('/*', function(req,res){
-        res.send(400, 'MINO!');
+        res.send(404, 'MINO 404');
     })
 }
 
 MinoDB.prototype.add_plugin = function(plugin){
     var mdb = this;
 
+    var plugin_error = mdb.plugin_manager.add_plugin(plugin);
+
+    if(plugin_error){
+        throw new Error(JSON.stringify(plugin_error,null,4));
+    }
     plugin.init(mdb);
 }
 

@@ -13143,21 +13143,17 @@ Page.prototype.new_url = function() {
     return "NOT_SET";
 }
 
-Page.prototype.get_title = function() {
-    return null;
-}
-
 Page.prototype.resize = function(resize_obj) {}
 
 Page.prototype.init = function() {}
 
 Page.prototype.remove = function() {}
-
-function SAFE() {
+function SAFEClass() {
     var sf = this;
 
-    Site = this;
-    sf.debug = false;
+    SAFE = this;
+    Site = this;//Legacy alias
+
     sf.initial_url = true;
     sf.urls = [];
     sf.ignore_next_url = false;
@@ -13183,13 +13179,13 @@ function SAFE() {
 if (typeof(console) === 'undefined') {
     var cons = {}
     cons.log = cons.error = cons.info = cons.debug = cons.warn = cons.trace = cons.dir = cons.dirxml = cons.group = cons.groupEnd = cons.time = cons.timeEnd = cons.assert = cons.profile = function() {};
-    SAFE.console = cons;
+    SAFEClass.console = cons;
 } else {
-    SAFE.console = console;
+    SAFEClass.console = console;
 }
 
 //Used to subclass Javascript classes
-SAFE.prototype.extend = function(sub, sup) {
+SAFEClass.prototype.extend = function(sub, sup) {
     function emptyclass() {}
     emptyclass.prototype = sup.prototype;
     sub.prototype = new emptyclass();
@@ -13198,29 +13194,29 @@ SAFE.prototype.extend = function(sub, sup) {
     sub.superClass = sup.prototype;
 }
 
-SAFE.prototype.url_changed = function(url) {
+SAFEClass.prototype.url_changed = function(url) {
     var sf = this;
 
 };
 
-SAFE.prototype.on_resize = function(resize_obj) {
+SAFEClass.prototype.on_resize = function(resize_obj) {
     var sf = this;
     
 };
 
-SAFE.prototype.pre_load = function(class_name, parameters, url, wildcard_contents) {
+SAFEClass.prototype.pre_load = function(class_name, parameters, url, wildcard_contents) {
     var sf = this;
 
     //Must return undefined (null shows 404)
 };
 
-SAFE.prototype.transition_page = function(new_page, old_page){
+SAFEClass.prototype.transition_page = function(new_page, old_page){
     var sf = this;
 
     return false;
 }
 
-SAFE.prototype.parse_query_string = function(query_string) {
+SAFEClass.prototype.parse_query_string = function(query_string) {
     var query_split = query_string.split('&');
     var params = {};
     for (var i = 0; i < query_split.length; i++) {
@@ -13231,7 +13227,7 @@ SAFE.prototype.parse_query_string = function(query_string) {
     return params;
 }
 
-SAFE.prototype.build_query_string = function(params) {
+SAFEClass.prototype.build_query_string = function(params) {
     var query_string = "";
     var had_query_params = false;
     var ret = [];
@@ -13246,7 +13242,7 @@ SAFE.prototype.build_query_string = function(params) {
     return query_string;
 }
 
-SAFE.prototype.scroll_to_anchor = function(anchor){
+SAFEClass.prototype.scroll_to_anchor = function(anchor){
     var sf = this;
 
     if(anchor[0]!==undefined){
@@ -13254,7 +13250,7 @@ SAFE.prototype.scroll_to_anchor = function(anchor){
     }
 }
 
-SAFE.prototype.use_page_class = function(details){
+SAFEClass.prototype.use_page_class = function(details){
     var sf = this;
 
     var class_name = details.class_name;
@@ -13296,7 +13292,7 @@ SAFE.prototype.use_page_class = function(details){
                 }
 
             } else {
-                SAFE.console.error("The requested class ("+class_name+") was not found and dynamic class loading is not enabled");
+                SAFEClass.console.error("The requested class ("+class_name+") was not found and dynamic class loading is not enabled");
                 class_obj = null;
             }
         } else {
@@ -13313,7 +13309,7 @@ SAFE.prototype.use_page_class = function(details){
                 sf.current_page = null;
                 sf.previous_class = null;
             }
-            SAFE.console.error("No 404 page set. Use Site.set_no_page_found_class(class_name) to set one.");
+            SAFEClass.console.error("No 404 page set. Use Site.set_no_page_found_class(class_name) to set one.");
             return;
         } else {
             class_obj = sf.no_page_found_class;
@@ -13383,18 +13379,18 @@ SAFE.prototype.use_page_class = function(details){
     }
 }
 
-SAFE.prototype.set_no_page_found_class = function(class_name) {
+SAFEClass.prototype.set_no_page_found_class = function(class_name) {
     var sf = this;
     sf.no_page_found_class = class_name;
 }
 
 //Alias for set_no_page_found_class
-SAFE.prototype.set_404 = function(class_name) {
+SAFEClass.prototype.set_404 = function(class_name) {
     var sf = this;
     sf.no_page_found_class = class_name;
 }
 
-SAFE.prototype.ajax_post = function(request) {
+SAFEClass.prototype.ajax_post = function(request) {
     request.cache = false;
     request.type = "post";
     request.contentType = "application/json; charset=utf-8",
@@ -13403,21 +13399,21 @@ SAFE.prototype.ajax_post = function(request) {
     return $.ajax(request);
 }
 
-SAFE.prototype.ajax_get = function(request) {
+SAFEClass.prototype.ajax_get = function(request) {
     request.cache = false;
     request.dataType = "json";
     request.type = "get";
     return $.ajax(request);
 }
 
-SAFE.prototype.ajax_delete = function(request) {
+SAFEClass.prototype.ajax_delete = function(request) {
     request.cache = false;
     request.dataType = "json";
     request.type = "delete";
     return $.ajax(request);
 }
 
-SAFE.prototype.resize = function() {
+SAFEClass.prototype.resize = function() {
     var sf = this;
 
     var doc_width = $(document).width() - sf.scroll_bar_width();
@@ -13441,7 +13437,7 @@ SAFE.prototype.resize = function() {
     }
 }
 
-SAFE.prototype.init = function(desired_url) {
+SAFEClass.prototype.init = function(desired_url) {
     var sf = this;
 
     var path_name = window.location.pathname;
@@ -13488,13 +13484,13 @@ SAFE.prototype.init = function(desired_url) {
     sf.load_url(current_url, false);
 }
 
-SAFE.prototype.reload_page = function() {
+SAFEClass.prototype.reload_page = function() {
     var sf = this;
 
     sf.use_page_class(sf.current_class_and_details);
 }
 
-SAFE.prototype.replace_current_url = function(new_url, call_url_changed) {
+SAFEClass.prototype.replace_current_url = function(new_url, call_url_changed) {
     /* Change the current url without loading any new page or providing a new url to the current page. This function is rarely useful and should be avoided in most circumstances. */
     var sf = this;
 
@@ -13515,13 +13511,13 @@ SAFE.prototype.replace_current_url = function(new_url, call_url_changed) {
     }
 }
 
-SAFE.prototype.add_url = function(url, class_name) {
+SAFEClass.prototype.add_url = function(url, class_name) {
     var sf = this;
 
     sf.urls.push([url,class_name]);
 }
 
-SAFE.prototype.add_url_map = function(url_map, class_name) {
+SAFEClass.prototype.add_url_map = function(url_map, class_name) {
     var sf = this;
 
     for(var url in url_map){
@@ -13530,7 +13526,7 @@ SAFE.prototype.add_url_map = function(url_map, class_name) {
     }
 }
 
-SAFE.prototype.scroll_bar_width = function() {
+SAFEClass.prototype.scroll_bar_width = function() {
     var sf = this;
 
     if (sf.scroll_bar_width_value != -1) {
@@ -13547,7 +13543,7 @@ SAFE.prototype.scroll_bar_width = function() {
     return sf.scroll_bar_width_value;
 }
 
-SAFE.prototype.get_class_for_url = function(url_with_query) {
+SAFEClass.prototype.get_class_for_url = function(url_with_query) {
     var sf = this;
 
     var class_and_details = sf.get_class_and_details_for_url(url_with_query);
@@ -13563,7 +13559,7 @@ SAFE.prototype.get_class_for_url = function(url_with_query) {
     return null;
 }
 
-SAFE.prototype.get_class_and_details_for_url = function(url_with_query) {
+SAFEClass.prototype.get_class_and_details_for_url = function(url_with_query) {
     var sf = this;
 
     var query_params = {};
@@ -13600,7 +13596,7 @@ SAFE.prototype.get_class_and_details_for_url = function(url_with_query) {
             effective_path.length > url.length ||
             url.substring(0, effective_path.length) != effective_path
         ) {
-            SAFE.console.error("The requested url (" + url_with_query + ") was not relative to the domain/origin and within the Site.path scope");
+            SAFEClass.console.error("The requested url (" + url_with_query + ") was not relative to the domain/origin and within the Site.path scope");
             return null;
         }
         url = url.substring(effective_path.length - 1);
@@ -13695,7 +13691,7 @@ SAFE.prototype.get_class_and_details_for_url = function(url_with_query) {
 }
 
 //url_with_query must be relative to domain (not origin)
-SAFE.prototype.load_url = function(url_with_query, push_state) {
+SAFEClass.prototype.load_url = function(url_with_query, push_state) {
     var sf = this;
 
     var full_url = Site.origin + url_with_query;
@@ -13719,7 +13715,7 @@ SAFE.prototype.load_url = function(url_with_query, push_state) {
     sf.current_class_and_details = sf.get_class_and_details_for_url(url_with_query);
 
     if (sf.current_class_and_details.class_name == null) {
-        SAFE.console.error("Page not found for url (" + sf.current_class_and_details.url + "). The full url was (" + url_with_query + ")");
+        SAFEClass.console.error("Page not found for url (" + sf.current_class_and_details.url + "). The full url was (" + url_with_query + ")");
     }
     sf.use_page_class(sf.current_class_and_details);
 
@@ -13734,7 +13730,8 @@ SAFE.prototype.load_url = function(url_with_query, push_state) {
 }
 
 var Site;
-new SAFE();
+var SAFE;
+new SAFEClass();
 var FieldVal = (function(){
     "use strict";
 
@@ -15013,7 +15010,9 @@ var BasicVal = (function(){
 
 
                     var res = on_each(value,i);
-                    if (res != null) {
+                    if (res === FieldVal.REQUIRED_ERROR){
+                        validator.missing("" + i);
+                    } else if (res != null) {
                         validator.invalid("" + i, res);
                     }
                 }
@@ -15453,7 +15452,7 @@ function Field(name, options) {
 
     field.on_change_callbacks = [];
 
-    field.container = $("<div />").addClass("fv_field_container");
+    field.container = $("<div />").addClass("fv_field_container").data("field",field);
     field.element = $("<div />").addClass("fv_field");
     field.title = $("<div />").addClass("fv_field_title").text(field.name)
     if(field.options.description){
@@ -15470,8 +15469,12 @@ Field.prototype.in_array = function(remove_callback){
 
     field.is_in_array = true;
 
-    field.element.addClass("fv_nested")
+    field.container.addClass("fv_nested")
     .append(
+        $("<div />")
+        .addClass("fv_field_move_button")
+        .text("HN")
+    ,
         $("<button />")
         .addClass("fv_field_remove_button")
         .text("X").on(FVForm.button_event,function(event){
@@ -15646,12 +15649,29 @@ function TextField(name, options) {
         field.input = $("<input type='"+field.input_type+"' />")
     }
     
+    field.enter_callbacks = [];
+
     field.input.addClass("fv_text_input")
     .attr("placeholder", name)
+    .on("keydown",function(e){
+        if(e.keyCode===13){
+            for(var i = 0; i < field.enter_callbacks.length; i++){
+                field.enter_callbacks[i](e);
+            }
+        }
+    })
     .on("keyup",function(){
         field.did_change()
     })
     .appendTo(field.input_holder);
+}
+
+TextField.prototype.on_enter = function(callback){
+    var field = this;
+
+    field.enter_callbacks.push(callback);
+    
+    return field;
 }
 
 TextField.prototype.view_mode = function(){
@@ -15898,7 +15918,7 @@ ChoiceField.prototype.val = function(set_val) {
         }
         return field.choice_values[index];
     } else {
-        if(set_val!=null){
+        if(set_val!==undefined){
             field.select.val(set_val);
         } else {
             if(field.allow_empty){
@@ -16142,6 +16162,11 @@ BooleanField.prototype.val = function(set_val) {
     if (arguments.length===0) {
         return field.input.is(":checked")
     } else {
+        if(set_val==="true"){
+            set_val = true;
+        } else if(set_val==="false"){
+            set_val = false;
+        }
        	field.input.prop('checked', set_val);
         return field;
     }
@@ -16258,8 +16283,495 @@ ObjectField.prototype.val = function(set_val) {
         return field;
     }
 }
-fieldval_ui_extend(ArrayField, Field);
+/*!
+ * Nestable jQuery Plugin - Copyright (c) 2012 David Bushell - http://dbushell.com/
+ * Dual-licensed under the BSD or MIT licenses
+ */
+;(function($, window, document, undefined)
+{
+    var hasTouch = 'ontouchstart' in document;
 
+    /**
+     * Detect CSS pointer-events property
+     * events are normally disabled on the dragging element to avoid conflicts
+     * https://github.com/ausi/Feature-detection-technique-for-pointer-events/blob/master/modernizr-pointerevents.js
+     */
+    var hasPointerEvents = (function()
+    {
+        var el    = document.createElement('div'),
+            docEl = document.documentElement;
+        if (!('pointerEvents' in el.style)) {
+            return false;
+        }
+        el.style.pointerEvents = 'auto';
+        el.style.pointerEvents = 'x';
+        docEl.appendChild(el);
+        var supports = window.getComputedStyle && window.getComputedStyle(el, '').pointerEvents === 'auto';
+        docEl.removeChild(el);
+        return !!supports;
+    })();
+
+    var defaults = {
+            listNodeName    : 'ol',
+            itemNodeName    : 'li',
+            rootClass       : 'dd',
+            listClass       : 'dd-list',
+            itemClass       : 'dd-item',
+            dragClass       : 'dd-dragel',
+            handleClass     : 'dd-handle',
+            collapsedClass  : 'dd-collapsed',
+            placeClass      : 'dd-placeholder',
+            noDragClass     : 'dd-nodrag',
+            emptyClass      : 'dd-empty',
+            expandBtnHTML   : '<button data-action="expand" type="button">Expand</button>',
+            collapseBtnHTML : '<button data-action="collapse" type="button">Collapse</button>',
+            group           : 0,
+            maxDepth        : 5,
+            threshold       : 20
+        };
+
+    function Plugin(element, options)
+    {
+        this.w  = $(document);
+        this.el = $(element);
+        this.options = $.extend({}, defaults, options);
+        this.init();
+    }
+
+    Plugin.prototype = {
+
+        init: function()
+        {
+            var list = this;
+
+            list.reset();
+
+            list.el.data('nestable-group', this.options.group);
+
+            list.placeEl = $('<div class="' + list.options.placeClass + '"/>');
+
+            $.each(this.el.find(list.options.itemNodeName), function(k, el) {
+                list.setParent($(el));
+            });
+
+            list.el.on('click', 'button', function(e) {
+                if (list.dragEl) {
+                    return;
+                }
+                var target = $(e.currentTarget),
+                    action = target.data('action'),
+                    item   = target.parent(list.options.itemNodeName);
+                if (action === 'collapse') {
+                    list.collapseItem(item);
+                }
+                if (action === 'expand') {
+                    list.expandItem(item);
+                }
+            });
+
+            var onStartEvent = function(e)
+            {
+                var handle = $(e.target);
+                if (!handle.hasClass(list.options.handleClass)) {
+                    if (handle.closest('.' + list.options.noDragClass).length) {
+                        return;
+                    }
+                    handle = handle.closest('.' + list.options.handleClass);
+                }
+
+                if (!handle.length || list.dragEl) {
+                    return;
+                }
+
+                list.isTouch = /^touch/.test(e.type);
+                if (list.isTouch && e.touches.length !== 1) {
+                    return;
+                }
+
+                e.preventDefault();
+                list.dragStart(e.touches ? e.touches[0] : e);
+            };
+
+            var onMoveEvent = function(e)
+            {
+                if (list.dragEl) {
+                    e.preventDefault();
+                    list.dragMove(e.touches ? e.touches[0] : e);
+                }
+            };
+
+            var onEndEvent = function(e)
+            {
+                if (list.dragEl) {
+                    e.preventDefault();
+                    list.dragStop(e.touches ? e.touches[0] : e);
+                }
+            };
+
+            if (hasTouch) {
+                list.el[0].addEventListener('touchstart', onStartEvent, false);
+                window.addEventListener('touchmove', onMoveEvent, false);
+                window.addEventListener('touchend', onEndEvent, false);
+                window.addEventListener('touchcancel', onEndEvent, false);
+            }
+
+            list.el.on('mousedown', onStartEvent);
+            list.w.on('mousemove', onMoveEvent);
+            list.w.on('mouseup', onEndEvent);
+
+        },
+
+        serialize: function()
+        {
+            var data,
+                depth = 0,
+                list  = this;
+                step  = function(level, depth)
+                {
+                    var array = [ ],
+                        items = level.children(list.options.itemNodeName);
+                    items.each(function()
+                    {
+                        var li   = $(this),
+                            item = $.extend({}, li.data()),
+                            sub  = li.children(list.options.listNodeName);
+                        if (sub.length) {
+                            item.children = step(sub, depth + 1);
+                        }
+                        array.push(item);
+                    });
+                    return array;
+                };
+            data = step(list.el.find(list.options.listNodeName).first(), depth);
+            return data;
+        },
+
+        serialise: function()
+        {
+            return this.serialize();
+        },
+
+        reset: function()
+        {
+            this.mouse = {
+                offsetX   : 0,
+                offsetY   : 0,
+                startX    : 0,
+                startY    : 0,
+                lastX     : 0,
+                lastY     : 0,
+                nowX      : 0,
+                nowY      : 0,
+                distX     : 0,
+                distY     : 0,
+                dirAx     : 0,
+                dirX      : 0,
+                dirY      : 0,
+                lastDirX  : 0,
+                lastDirY  : 0,
+                distAxX   : 0,
+                distAxY   : 0
+            };
+            this.isTouch    = false;
+            this.moving     = false;
+            this.dragEl     = null;
+            this.dragRootEl = null;
+            this.dragDepth  = 0;
+            this.hasNewRoot = false;
+            this.pointEl    = null;
+        },
+
+        expandItem: function(li)
+        {
+            li.removeClass(this.options.collapsedClass);
+            li.children('[data-action="expand"]').hide();
+            li.children('[data-action="collapse"]').show();
+            li.children(this.options.listNodeName).show();
+        },
+
+        collapseItem: function(li)
+        {
+            var lists = li.children(this.options.listNodeName);
+            if (lists.length) {
+                li.addClass(this.options.collapsedClass);
+                li.children('[data-action="collapse"]').hide();
+                li.children('[data-action="expand"]').show();
+                li.children(this.options.listNodeName).hide();
+            }
+        },
+
+        expandAll: function()
+        {
+            var list = this;
+            list.el.find(list.options.itemNodeName).each(function() {
+                list.expandItem($(this));
+            });
+        },
+
+        collapseAll: function()
+        {
+            var list = this;
+            list.el.find(list.options.itemNodeName).each(function() {
+                list.collapseItem($(this));
+            });
+        },
+
+        setParent: function(li)
+        {
+            if (li.children(this.options.listNodeName).length) {
+                li.prepend($(this.options.expandBtnHTML));
+                li.prepend($(this.options.collapseBtnHTML));
+            }
+            li.children('[data-action="expand"]').hide();
+        },
+
+        unsetParent: function(li)
+        {
+            li.removeClass(this.options.collapsedClass);
+            li.children('[data-action]').remove();
+            li.children(this.options.listNodeName).remove();
+        },
+
+        dragStart: function(e)
+        {
+            var mouse    = this.mouse,
+                target   = $(e.target),
+                dragItem = target.closest(this.options.itemNodeName);
+
+            this.placeEl.css('height', dragItem.height());
+
+            mouse.offsetX = e.offsetX !== undefined ? e.offsetX : e.pageX - target.offset().left;
+            mouse.offsetY = e.offsetY !== undefined ? e.offsetY : e.pageY - target.offset().top;
+            mouse.startX = mouse.lastX = e.pageX;
+            mouse.startY = mouse.lastY = e.pageY;
+
+            this.dragRootEl = this.el;
+
+            this.el_offset = this.el.offset();
+
+            this.dragEl = $(document.createElement(this.options.listNodeName)).addClass(this.options.listClass + ' ' + this.options.dragClass);
+            this.dragEl.css('width', dragItem.width());
+
+            dragItem.after(this.placeEl);
+            dragItem[0].parentNode.removeChild(dragItem[0]);
+            dragItem.appendTo(this.dragEl);
+
+            $(this.el).append(this.dragEl);
+            this.dragEl.css({
+                'left' : e.pageX - mouse.offsetX - this.el_offset.left,
+                'top'  : e.pageY - mouse.offsetY - this.el_offset.top
+            });
+            // total depth of dragging item
+            var i, depth,
+                items = this.dragEl.find(this.options.itemNodeName);
+            for (i = 0; i < items.length; i++) {
+                depth = $(items[i]).parents(this.options.listNodeName).length;
+                if (depth > this.dragDepth) {
+                    this.dragDepth = depth;
+                }
+            }
+        },
+
+        dragStop: function(e)
+        {
+            var el = this.dragEl.children(this.options.itemNodeName).first();
+            el[0].parentNode.removeChild(el[0]);
+            this.placeEl.replaceWith(el);
+
+            this.dragEl.remove();
+            this.el.trigger('change');
+            if (this.hasNewRoot) {
+                this.dragRootEl.trigger('change');
+            }
+            this.reset();
+        },
+
+        dragMove: function(e)
+        {
+            var list, parent, prev, next, depth,
+                opt   = this.options,
+                mouse = this.mouse;
+
+            this.dragEl.css({
+                'left' : e.pageX - mouse.offsetX - this.el_offset.left,
+                'top'  : e.pageY - mouse.offsetY - this.el_offset.top
+            });
+
+            // mouse position last events
+            mouse.lastX = mouse.nowX;
+            mouse.lastY = mouse.nowY;
+            // mouse position this events
+            mouse.nowX  = e.pageX;
+            mouse.nowY  = e.pageY;
+            // distance mouse moved between events
+            mouse.distX = mouse.nowX - mouse.lastX;
+            mouse.distY = mouse.nowY - mouse.lastY;
+            // direction mouse was moving
+            mouse.lastDirX = mouse.dirX;
+            mouse.lastDirY = mouse.dirY;
+            // direction mouse is now moving (on both axis)
+            mouse.dirX = mouse.distX === 0 ? 0 : mouse.distX > 0 ? 1 : -1;
+            mouse.dirY = mouse.distY === 0 ? 0 : mouse.distY > 0 ? 1 : -1;
+            // axis mouse is now moving on
+            var newAx   = Math.abs(mouse.distX) > Math.abs(mouse.distY) ? 1 : 0;
+
+            // do nothing on first move
+            if (!mouse.moving) {
+                mouse.dirAx  = newAx;
+                mouse.moving = true;
+                return;
+            }
+
+            // calc distance moved on this axis (and direction)
+            if (mouse.dirAx !== newAx) {
+                mouse.distAxX = 0;
+                mouse.distAxY = 0;
+            } else {
+                mouse.distAxX += Math.abs(mouse.distX);
+                if (mouse.dirX !== 0 && mouse.dirX !== mouse.lastDirX) {
+                    mouse.distAxX = 0;
+                }
+                mouse.distAxY += Math.abs(mouse.distY);
+                if (mouse.dirY !== 0 && mouse.dirY !== mouse.lastDirY) {
+                    mouse.distAxY = 0;
+                }
+            }
+            mouse.dirAx = newAx;
+
+            /**
+             * move horizontal
+             */
+            if (mouse.dirAx && mouse.distAxX >= opt.threshold) {
+                // reset move distance on x-axis for new phase
+                mouse.distAxX = 0;
+                prev = this.placeEl.prev(opt.itemNodeName);
+                // increase horizontal level if previous sibling exists and is not collapsed
+                if (mouse.distX > 0 && prev.length && !prev.hasClass(opt.collapsedClass)) {
+                    // cannot increase level when item above is collapsed
+                    list = prev.find(opt.listNodeName).last();
+                    // check if depth limit has reached
+                    depth = this.placeEl.parents(opt.listNodeName).length;
+                    if (depth + this.dragDepth <= opt.maxDepth) {
+                        // create new sub-level if one doesn't exist
+                        if (!list.length) {
+                            list = $('<' + opt.listNodeName + '/>').addClass(opt.listClass);
+                            list.append(this.placeEl);
+                            prev.append(list);
+                            this.setParent(prev);
+                        } else {
+                            // else append to next level up
+                            list = prev.children(opt.listNodeName).last();
+                            list.append(this.placeEl);
+                        }
+                    }
+                }
+                // decrease horizontal level
+                if (mouse.distX < 0) {
+                    // we can't decrease a level if an item preceeds the current one
+                    next = this.placeEl.next(opt.itemNodeName);
+                    if (!next.length) {
+                        parent = this.placeEl.parent();
+                        this.placeEl.closest(opt.itemNodeName).after(this.placeEl);
+                        if (!parent.children().length) {
+                            this.unsetParent(parent.parent());
+                        }
+                    }
+                }
+            }
+
+            var isEmpty = false;
+
+            // find list item under cursor
+            if (!hasPointerEvents) {
+                this.dragEl[0].style.visibility = 'hidden';
+            }
+            this.pointEl = $(document.elementFromPoint(e.pageX - document.body.scrollLeft, e.pageY - (window.pageYOffset || document.documentElement.scrollTop)));
+            if (!hasPointerEvents) {
+                this.dragEl[0].style.visibility = 'visible';
+            }
+            if (this.pointEl.hasClass(opt.handleClass)) {
+                this.pointEl = this.pointEl.closest("."+opt.itemClass);
+            }
+            if (this.pointEl.hasClass(opt.emptyClass)) {
+                isEmpty = true;
+            }
+            else if (!this.pointEl.length || !this.pointEl.hasClass(opt.itemClass)) {
+                return;
+            }
+
+            // find parent list of item under cursor
+            var pointElRoot = this.pointEl.closest('.' + opt.rootClass),
+                isNewRoot   = this.dragRootEl.data('nestable-id') !== pointElRoot.data('nestable-id');
+
+            /**
+             * move vertical
+             */
+            if (!mouse.dirAx || isNewRoot || isEmpty) {
+                // check if groups match if dragging over new root
+                if (isNewRoot && opt.group !== pointElRoot.data('nestable-group')) {
+                    return;
+                }
+                // check depth limit
+                depth = this.dragDepth - 1 + this.pointEl.parents(opt.listNodeName).length;
+                if (depth > opt.maxDepth) {
+                    return;
+                }
+                var before = e.pageY < (this.pointEl.offset().top + this.pointEl.height() / 2);
+                    parent = this.placeEl.parent();
+                // if empty create new list to replace empty placeholder
+                if (isEmpty) {
+                    list = $(document.createElement(opt.listNodeName)).addClass(opt.listClass);
+                    list.append(this.placeEl);
+                    this.pointEl.replaceWith(list);
+                }
+                else if (before) {
+                    this.pointEl.before(this.placeEl);
+                }
+                else {
+                    this.pointEl.after(this.placeEl);
+                }
+                if (!parent.children().length) {
+                    this.unsetParent(parent.parent());
+                }
+                if (!this.dragRootEl.find(opt.itemNodeName).length) {
+                    this.dragRootEl.append('<div class="' + opt.emptyClass + '"/>');
+                }
+                // parent root list has changed
+                if (isNewRoot) {
+                    this.dragRootEl = pointElRoot;
+                    this.hasNewRoot = this.el[0] !== this.dragRootEl[0];
+                }
+            }
+        }
+
+    };
+
+    $.fn.nestable = function(params)
+    {
+        var lists  = this,
+            retval = this;
+
+        lists.each(function()
+        {
+            var plugin = $(this).data("nestable");
+
+            if (!plugin) {
+                $(this).data("nestable", new Plugin(this, params));
+                $(this).data("nestable-id", new Date().getTime());
+            } else {
+                if (typeof params === 'string' && typeof plugin[params] === 'function') {
+                    retval = plugin[params]();
+                }
+            }
+        });
+
+        return retval || lists;
+    };
+
+})(window.jQuery || window.Zepto, window, document);
+
+
+fieldval_ui_extend(ArrayField, Field);
 function ArrayField(name, options) {
     var field = this;
 
@@ -16275,7 +16787,33 @@ function ArrayField(name, options) {
         field.create_add_field_button()
     )
 
-    console.log(field.input_holder);
+    field.input_holder.nestable({
+        rootClass: 'fv_input_holder',
+        itemClass: 'fv_field_container',
+        handleClass: 'fv_field_move_button',
+        itemNodeName: 'div.fv_field_container',
+        listNodeName: 'div.fv_nested_fields',
+        collapseBtnHTML: '',
+        expandBtnHTML: '',
+        maxDepth: 1
+    }).on('change', function(e){
+        console.log("CHANGE CALLED ",e);
+        field.reorder();
+    });
+}
+
+ArrayField.prototype.reorder = function(){
+    var field = this;
+
+    console.log("ArrayField.reorder", field.fields_element);
+    field.fields = [];
+
+    var children = field.fields_element.children();
+    for(var i = 0; i < children.length; i++){
+        var child = $(children[i]);
+        var child_field = child.data("field");
+        field.fields.push(child_field);
+    }
 }
 
 ArrayField.prototype.create_add_field_button = function(){
@@ -16293,7 +16831,7 @@ ArrayField.prototype.create_add_field_button = function(){
 
 ArrayField.prototype.new_field = function(index){
     var field = this;
-    console.error("ArrayField.new_field must be overriden to create fields");
+    throw new Error("ArrayField.new_field must be overriden to create fields");
 }
 
 ArrayField.prototype.add_field = function(name, inner_field){
@@ -16303,7 +16841,11 @@ ArrayField.prototype.add_field = function(name, inner_field){
         field.remove_field(inner_field);
     });
     inner_field.container.appendTo(field.fields_element);
+    console.log("pushing inner_field ",inner_field);
     field.fields.push(inner_field);
+    console.log(field.fields);
+
+    field.input_holder.nestable('init');
 }
 
 ArrayField.prototype.remove_field = function(inner_field){
@@ -16426,8 +16968,11 @@ ArrayField.prototype.error = function(error) {
 ArrayField.prototype.val = function(set_val) {
     var field = this;
 
+    console.log("ArrayField.val ",set_val);
+
     if (arguments.length===0) {
     	var compiled = [];
+        console.log(field.fields);
     	for(var i=0; i<field.fields.length; i++){
     		var inner_field = field.fields[i];
             var value = inner_field.val();
@@ -17255,9 +17800,9 @@ var errors = {
 		error: 6,
 		error_message: "Unavailable function requested."
 	},
-	SOME_ERROR: {	
+	INVALID_FOLDER_PATH_FORMAT: {	
 		error: 7,
-		error_message: "Invalid format for comma-separated IDs."
+		error_message: "Invalid folder path."
 	},
 	INVALID_PATH_FORMAT: {
 		error: 8,
@@ -17267,9 +17812,9 @@ var errors = {
 		error: 9,
 		error_message: "One or both of the POST values 'username' and 'request' are not present or are empty."
 	},
-	SOME_ERROR: {	
+	PLUGIN_WITH_SAME_NAME: {	
 		error: 10,
-		error_message: "The request could not be decrypted. Incorrect username/key combination or incorrect encryption method used."
+		error_message: "A plugin with this name is already present."
 	},
 	SOME_ERROR: {	
 		error: 11,
@@ -19775,9 +20320,14 @@ ItemView.prototype.populate = function(data){
 ItemView.prototype.update_full_path = function(){
 	var item_view = this;
 
+	var name = item_view.form.fields.name.val();
+	if(name===null){
+		name = "";
+	}
+
 	item_view.form.fields.full_path.val(
 		item_view.form.fields.path.val()+
-		item_view.form.fields.name.val()
+		name
 	)
 }
 
@@ -19941,15 +20491,20 @@ ItemView.prototype.resize = function(resize_obj){
 
 	item_view.form.element.toggleClass("rows", resize_obj.window_width>700)
 }
+fieldval_ui_extend(TypeField, Field);
+
 function TypeField(value, parent){
 	var tf = this;
 
 	tf.parent = parent;
 	tf.value = value || {};
 
-	tf.container = $("<div />").addClass("type_field").append(
-		tf.title_div = $("<div />").addClass("title"),
-		tf.contents = $("<div />").addClass("contents")
+	TypeField.superConstructor.call(this, "name_prop", {});
+
+	tf.contents = tf.input_holder.addClass("contents")
+
+	tf.container.addClass("type_field").prepend(
+		tf.title_div = $("<div />").addClass("title")
 	)
 
 	var field_type_choices = [];
@@ -19984,8 +20539,6 @@ function TypeField(value, parent){
 
     tf.is_edit_mode = true;
 
-    console.log(value);
-
     tf.base_fields = {};
     for(var name in tf.form.fields){
     	tf.base_fields[name] = true;
@@ -20003,6 +20556,7 @@ TypeField.prototype.init = function(){
 TypeField.prototype.remove = function(){
 	var tf = this;
 	tf.form.remove();
+	Field.prototype.remove.call(this);
 }
 
 TypeField.prototype.update_title_name = function(){
@@ -20058,12 +20612,6 @@ TypeField.prototype.update_type_fields = function(){
 			}
 		}
 	}
-}
-
-TypeField.prototype.in_array = function(remove_callback){
-	var tf = this;
-
-
 }
 
 TypeField.prototype.val = function(argument){
@@ -20842,6 +21390,157 @@ BrowserPage.prototype.resize = function(resize_obj) {
     var page = this;
 
     page.browser.resize(resize_obj);
+}
+function SideMenu(page) {
+    var menu = this;
+
+    menu.page = page;
+
+    menu.menu_items = {};
+
+    menu.element = $("<div />").addClass("side_menu").append(
+    	menu.menu_list = $("<div />").addClass("menu_list").append(
+
+    	)
+    ,
+        menu.loading_overlay = $("<div />").addClass("loading_overlay").hide()
+    ).bind('mousewheel DOMMouseScroll', function(e) {
+	    var scrollTo = null;
+
+	    if (e.type == 'mousewheel') {
+	        scrollTo = (e.originalEvent.wheelDelta * -0.5);
+	    }
+	    else if (e.type == 'DOMMouseScroll') {
+	        scrollTo =40 * e.originalEvent.detail;
+	    }
+
+	    if (scrollTo) {
+	        e.preventDefault();
+	        $(this).scrollTop(scrollTo + $(this).scrollTop());
+	    }
+	})
+}
+
+SideMenu.prototype.init = function(){
+	var menu = this;
+}
+
+SideMenu.prototype.select_item = function(name){
+	var menu = this;
+
+	for(var i in menu.menu_items){
+		if(menu.menu_items.hasOwnProperty(i)){
+			if(i===name){
+				menu.menu_items[i].addClass("active");
+			} else {
+				menu.menu_items[i].removeClass("active");
+			}
+		}
+	}
+
+}
+
+SideMenu.prototype.add_item = function(name, display_name){
+	var menu = this;
+
+	var menu_item = $("<a />",{href:Site.path+"admin/plugins/"+name})
+	.ajax_url()
+	.addClass("menu_item")
+	.append(
+		$("<div />").text(display_name)
+	)
+
+	menu.menu_items[name] = menu_item;
+    menu.menu_list.append(menu_item);
+}
+
+SideMenu.prototype.remove = function(){
+	var menu = this;
+
+
+}
+
+extend(AdminPage, Page);
+function AdminPage(req) {
+    var page = this;
+
+    console.log(req);
+
+    AdminPage.superConstructor.call(this);
+
+    page.side_menu = new SideMenu(page);
+
+    page.element.addClass("admin_page").append(
+        page.logo = $("<a />",{href:Site.path+"admin/"})
+        .ajax_url()
+        .addClass("logo")
+        .text("MinoDB")
+    ,
+        page.side_menu.element
+    ,
+        page.content_pane = $("<div/>").addClass("content_pane").append(
+            page.main_menu = $("<div />").addClass("main_menu").text("Main Menu")
+        )
+    )
+
+    for(var i = 0; i < plugins.length; i++){
+        var plugin_info = plugins[i];
+
+        page.side_menu.add_item(
+            plugin_info.name,
+            plugin_info.display_name || plugin_info.name
+        );
+    }
+
+    page.new_url(req);
+}
+Site.add_url("/admin/", AdminPage);
+Site.add_url("/admin/plugins/", AdminPage);
+Site.add_url("/admin/plugins/:plugin_name", AdminPage);
+
+AdminPage.prototype.iframe_load_url = function(url){
+    var page = this;
+
+    if(page.iframe!==undefined){
+        page.iframe.remove();
+    }
+    page.iframe = $("<iframe />",{src: url}).appendTo(page.content_pane);
+}
+
+AdminPage.prototype.new_url = function(req){
+    var page = this;
+
+    if(req.params.plugin_name!==undefined){
+        page.iframe_load_url(ui_path+"plugins/"+req.params.plugin_name);
+        page.side_menu.select_item(req.params.plugin_name);
+        page.main_menu.hide();
+    } else {
+        if(page.iframe!==undefined){
+            page.iframe.hide();
+        }
+        page.main_menu.show();
+        page.side_menu.select_item(null);
+    }
+}
+
+AdminPage.prototype.get_title = function() {
+    var page = this;
+    return null;
+}
+
+AdminPage.prototype.init = function() {
+    var page = this;
+
+}
+
+AdminPage.prototype.remove = function() {
+    var page = this;
+
+}
+
+AdminPage.prototype.resize = function(resize_obj) {
+    var page = this;
+
 }
 extend(NotFoundPage, Page);
 function NotFoundPage(req){

@@ -15,9 +15,9 @@ var errors = {
 		error: 9,
 		error_message: "One or both of the POST values 'username' and 'request' are not present or are empty."
 	},
-	SOME_ERROR: {	
+	PLUGIN_WITH_SAME_NAME: {	
 		error: 10,
-		error_message: "The request could not be decrypted. Incorrect username/key combination or incorrect encryption method used."
+		error_message: "A plugin with this name is already present."
 	},
 	SOME_ERROR: {	
 		error: 11,

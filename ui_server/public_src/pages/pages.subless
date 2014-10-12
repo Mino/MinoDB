@@ -1,20 +1,5 @@
-.body_text{
-	padding-top: 10px;
-	padding-left: 20px;
-	padding-right: 20px;
-	position: relative;
-
-	.body_headline{
-		text-align: center;
-		font-size: 25px;
-		margin-top: 45px;
-		margin-bottom: 20px;
-		letter-spacing: -1px;
-	}
-}
-
 @import "HomePage/HomePage.subless";
 @import "BrowserPage/BrowserPage.subless";
+@import "AdminPage/AdminPage.subless";
 @import "AuthPage/AuthPage.subless";
-@import "DocsPage/DocsPage.subless";
 @import "NotFoundPage/NotFoundPage.subless";

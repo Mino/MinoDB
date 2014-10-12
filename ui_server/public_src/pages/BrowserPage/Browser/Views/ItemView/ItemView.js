@@ -114,9 +114,14 @@ ItemView.prototype.populate = function(data){
 ItemView.prototype.update_full_path = function(){
 	var item_view = this;
 
+	var name = item_view.form.fields.name.val();
+	if(name===null){
+		name = "";
+	}
+
 	item_view.form.fields.full_path.val(
 		item_view.form.fields.path.val()+
-		item_view.form.fields.name.val()
+		name
 	)
 }
 

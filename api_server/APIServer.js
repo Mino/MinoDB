@@ -12,10 +12,12 @@ var logger = require('tracer').console();
 var crypt = require("../utils/crypt");
 var process_api_request = require('./process_api_request');
 
-function APIServer(minodb){
+function APIServer(options){
 	var as = this;
 
 	as.express_server = express();
+
+    as.path = options.path || '/api/';
 
     as.express_server.use(cookieParser());
     as.express_server.use(bodyParser());
@@ -43,13 +45,33 @@ function APIServer(minodb){
     as.express_server.get('/*', function(req,res){
         res.send(400, 'All API requests must be POST');
     })
+
+    as.config_server = express();
+    as.config_server.get('*', function(req, res){
+        res.send("API CONFIG")
+    })
+}
+
+APIServer.prototype.get_config_server = function(){
+    var as = this;
+
+    return as.config_server;
+}
+
+APIServer.prototype.info = function(){
+    var as = this;
+
+    return {
+        name: "api",
+        display_name: "API"
+    };
 }
 
 APIServer.prototype.init = function(minodb){
     var as = this;
 
     as.minodb = minodb;
-    minodb.server().use('/mino/', as.express_server);
+    minodb.server().use(as.path, as.express_server);
 }
 
 module.exports = APIServer;

@@ -1,12 +1,17 @@
+fieldval_ui_extend(TypeField, Field);
+
 function TypeField(value, parent){
 	var tf = this;
 
 	tf.parent = parent;
 	tf.value = value || {};
 
-	tf.container = $("<div />").addClass("type_field").append(
-		tf.title_div = $("<div />").addClass("title"),
-		tf.contents = $("<div />").addClass("contents")
+	TypeField.superConstructor.call(this, "name_prop", {});
+
+	tf.contents = tf.input_holder.addClass("contents")
+
+	tf.container.addClass("type_field").prepend(
+		tf.title_div = $("<div />").addClass("title")
 	)
 
 	var field_type_choices = [];
@@ -41,8 +46,6 @@ function TypeField(value, parent){
 
     tf.is_edit_mode = true;
 
-    console.log(value);
-
     tf.base_fields = {};
     for(var name in tf.form.fields){
     	tf.base_fields[name] = true;
@@ -60,6 +63,7 @@ TypeField.prototype.init = function(){
 TypeField.prototype.remove = function(){
 	var tf = this;
 	tf.form.remove();
+	Field.prototype.remove.call(this);
 }
 
 TypeField.prototype.update_title_name = function(){
@@ -115,12 +119,6 @@ TypeField.prototype.update_type_fields = function(){
 			}
 		}
 	}
-}
-
-TypeField.prototype.in_array = function(remove_callback){
-	var tf = this;
-
-
 }
 
 TypeField.prototype.val = function(argument){

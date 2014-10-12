@@ -1,0 +1,40 @@
+.side_menu{
+
+	&:after{
+		clear: both;
+	}
+
+	&:before, &:after {
+	    content: " ";
+	    display: table;
+	}
+
+	overflow-y: auto;
+	width: 199px;
+	position: fixed;
+	top: 50px;
+	left: 0px;
+	bottom: 0px;
+
+	border-right: 1px solid gray;
+
+	.menu_list{
+		padding-bottom: 50px;
+		box-sizing: border-box;
+
+		.menu_item{
+			display: block;
+			font-size: 15px;
+			padding: 5px;
+			border-bottom: 1px solid gray;
+			color: black;
+			background-color: orange;
+			.bold;
+
+			&.active{
+				color: white;
+				background-color: purple;
+			}
+		}
+	}
+}

@@ -1,3 +1,3 @@
 .type_view{	
-	@import "TypeField/TypeField.subless";	
+	@import "TypeField/TypeField.subless";
 }
