@@ -3,61 +3,70 @@
   display: block;
   position: relative;
 }
-.fv_form.rows .fv_field_container > .fv_field_title {
+.fv_form.rows .fv_field > .fv_field_title {
   width: 20%;
   vertical-align: top;
 }
-.fv_form.rows .fv_field_container > .fv_field {
+.fv_form.rows .fv_field > .fv_input_holder {
   width: 80%;
   display: inline-block;
 }
-.fv_field_container {
+.fv_form.rows .fv_field > .fv_error_message {
+  margin-left: 20%;
+}
+.fv_field {
   position: relative;
   padding-top: 5px;
   padding-bottom: 5px;
   box-sizing: border-box;
 }
-.fv_field_container.fv_field_error > .fv_field_title {
+.fv_field.fv_field_error > .fv_field_title {
   color: #AA0000;
 }
-.fv_field_container.fv_field_error > .fv_field > .fv_input_holder > input {
+.fv_field.fv_field_error > .fv_input_holder > input {
   border: 1px solid #AA0000;
 }
-.fv_field_container.fv_field_error > .fv_field > .fv_input_holder > textarea {
+.fv_field.fv_field_error > .fv_input_holder > textarea {
   border: 1px solid #AA0000;
 }
-.fv_field_container > .fv_field_title {
+.fv_field > .fv_field_title {
   font-size: 16px;
   display: inline-block;
   padding-right: 5px;
   box-sizing: border-box;
 }
-.fv_field_container > .fv_field_description {
+.fv_field > .fv_field_description {
   font-size: 12px;
 }
-.fv_field_container.fv_nested {
+.fv_field.fv_nested {
   padding-top: 0px;
-  padding-bottom: 0px;
+  padding-bottom: 5px;
+  min-height: 35px;
 }
-.fv_field_container.fv_nested > .fv_field_title {
+.fv_field.fv_nested > .fv_field_title {
   display: none;
 }
-.fv_field_container.fv_nested > .fv_field {
+.fv_field.fv_nested > .fv_input_holder {
   padding-right: 35px;
   padding-left: 35px;
 }
-.fv_field_container.fv_nested > .fv_field_move_button {
+.fv_field.fv_nested > .fv_error_message {
+  margin-left: 35px;
+}
+.fv_field.fv_nested > .fv_field_move_handle {
   cursor: pointer;
   position: absolute;
   top: 0px;
   left: 0px;
-  background-color: #777;
+  background-color: #AAA;
   color: white;
   width: 30px;
+  text-align: center;
   height: 30px;
+  line-height: 30px;
   border: none;
 }
-.fv_field_container.fv_nested > .fv_field_remove_button {
+.fv_field.fv_nested > .fv_field_remove_button {
   -webkit-appearance: none;
   cursor: pointer;
   position: absolute;
@@ -65,11 +74,14 @@
   right: 0px;
   background-color: #777;
   color: white;
+  font-size: 30px;
+  line-height: 30px;
+  text-align: center;
   width: 30px;
   height: 30px;
   border: none;
 }
-.fv_field_container.fv_nested > .fv_field_remove_button:active {
+.fv_field.fv_nested > .fv_field_remove_button:active {
   background-color: #AAA;
   color: black;
 }
@@ -93,7 +105,7 @@
 .dd-placeholder,
 .dd-empty {
   border: 1px dashed #bbb;
-  min-height: 100px;
+  min-width: 100px;
   background-color: #e5e5e5;
   background-size: 60px 60px;
   background-position: 0 0, 30px 30px;
@@ -103,14 +115,10 @@
   pointer-events: none;
   z-index: 9999;
 }
-.fv_field {
-  margin-top: 5px;
+.fv_input_holder {
   box-sizing: border-box;
 }
-.fv_field > .fv_input_holder {
-  box-sizing: border-box;
-}
-.fv_field > .fv_input_holder > input {
+.fv_input_holder > input {
   border-radius: 0px;
   -webkit-border-radius: 0px;
   padding-left: 5px;
@@ -121,7 +129,7 @@
   line-height: 30px;
   border: 1px solid #999;
 }
-.fv_field > .fv_input_holder > textarea {
+.fv_input_holder > textarea {
   border-radius: 0px;
   -webkit-border-radius: 0px;
   margin: 0px;
@@ -2334,22 +2342,30 @@ textarea {
   width: 100%;
   box-sizing: border-box;
 }
-.browser_page .browser .view_container .item_view .item_section > .fv_field {
+.browser_page .browser .view_container .item_view .item_section > .fv_input_holder {
+  width: 100%;
+  padding-right: 10px;
+}
+.browser_page .browser .view_container .item_view .item_section > .fv_input_holder > .fv_field {
   width: 100%;
 }
-.browser_page .browser .view_container .item_view .item_section > .fv_object_field {
+.browser_page .browser .view_container .item_view .item_section > .fv_input_holder > .fv_object_field {
   padding: 5px;
   margin-top: 0px;
 }
-.browser_page .browser .view_container .item_view .item_section > .fv_object_field > .fv_input_holder {
+.browser_page .browser .view_container .item_view .item_section > .fv_input_holder > .fv_object_field > .fv_input_holder {
   padding-left: 5px;
+  padding-right: 5px;
 }
 .browser_page .browser .view_container .type_view .type_field {
   border: 1px solid #800080;
   background-color: white;
   margin-bottom: 10px;
 }
-.browser_page .browser .view_container .type_view .type_field .title {
+.browser_page .browser .view_container .type_view .type_field > .fv_field_title {
+  display: none;
+}
+.browser_page .browser .view_container .type_view .type_field > .title {
   background-color: #800080;
   font-weight: bold;
   color: white;
@@ -2359,6 +2375,10 @@ textarea {
 }
 .browser_page .browser .view_container .type_view .type_field .contents {
   padding: 5px;
+}
+.browser_page .browser .view_container .type_view .type_field.fv_edit_mode.fv_nested > .title {
+  padding-left: 35px;
+  padding-right: 35px;
 }
 .browser_page .browser .view_container .loading_view .indicator {
   position: absolute;
@@ -2440,9 +2460,11 @@ textarea {
   text-align: center;
   line-height: 30px;
   font-size: 20px;
-  background-color: green;
-  color: white;
+  background-color: white;
+  color: #2f78b2;
   font-weight: bold;
+  border-right: 1px solid gray;
+  border-bottom: 1px solid gray;
 }
 .admin_page .side_menu {
   overflow-y: auto;
@@ -2471,12 +2493,12 @@ textarea {
   padding: 5px;
   border-bottom: 1px solid gray;
   color: black;
-  background-color: orange;
+  background-color: white;
   font-weight: bold;
 }
 .admin_page .side_menu .menu_list .menu_item.active {
   color: white;
-  background-color: purple;
+  background-color: #2f78b2;
 }
 .admin_page .content_pane {
   position: absolute;

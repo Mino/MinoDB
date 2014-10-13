@@ -38,7 +38,7 @@ TypeView.prototype.populate = function(data){
 
 	type_view.type_field = new TypeField(type_view.type_data, type_view);
 	type_view.element.empty().append(
-		type_view.type_field.container
+		type_view.type_field.element
 	)
 
 	if(type_view.options.create){

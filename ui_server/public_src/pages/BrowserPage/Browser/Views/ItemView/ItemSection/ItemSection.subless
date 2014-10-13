@@ -14,16 +14,22 @@
 		box-sizing: border-box;
 	}
 
-	>.fv_field{
+	>.fv_input_holder{
 		width: 100%;
-	}
+		padding-right: 10px;
 
-	>.fv_object_field{
-		padding: 5px;
-		margin-top: 0px;
+		>.fv_field{
+			width: 100%;
+		}
 
-		>.fv_input_holder{
-			padding-left: 5px;
+		>.fv_object_field{
+			padding: 5px;
+			margin-top: 0px;
+
+			>.fv_input_holder{
+				padding-left: 5px;
+				padding-right: 5px;
+			}
 		}
 	}
 }

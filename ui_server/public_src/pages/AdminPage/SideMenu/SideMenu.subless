@@ -28,12 +28,12 @@
 			padding: 5px;
 			border-bottom: 1px solid gray;
 			color: black;
-			background-color: orange;
+			background-color: white;
 			.bold;
 
 			&.active{
 				color: white;
-				background-color: purple;
+				background-color: @minoColor1;
 			}
 		}
 	}

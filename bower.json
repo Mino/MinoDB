@@ -8,6 +8,7 @@
     "fieldval-rules" : "FieldVal/fieldval-rules-js#develop_array",
     "fieldval-ui": "FieldVal/fieldval-ui#develop",
     "jquery-autosize": "*",
+    "jeresig/jquery.hotkeys": "*",
     "font-awesome": "*"
   },
   "private": true
