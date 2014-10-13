@@ -12,9 +12,11 @@
 		text-align: center;
 		line-height: 30px;
 		font-size: 20px;
-		background-color: green;
-		color: white;
+		background-color: white;
+		color: @minoColor1;
 		.bold;
+		border-right: 1px solid gray;
+		border-bottom: 1px solid gray;
 	}
 
 	@import "SideMenu/SideMenu.subless";

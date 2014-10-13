@@ -4,8 +4,6 @@ extend(AdminPage, Page);
 function AdminPage(req) {
     var page = this;
 
-    console.log(req);
-
     AdminPage.superConstructor.call(this);
 
     page.side_menu = new SideMenu(page);

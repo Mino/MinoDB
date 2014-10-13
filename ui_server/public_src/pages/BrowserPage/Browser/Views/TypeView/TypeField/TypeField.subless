@@ -4,7 +4,11 @@
 
 	margin-bottom: 10px;
 
-	.title{
+	>.fv_field_title{
+		display: none;
+	}
+
+	>.title{
 		background-color: @type_field_title;
 		.bold;
 		color: white;
@@ -15,5 +19,14 @@
 
 	.contents{
 		padding: 5px;
+	}
+
+	&.fv_edit_mode{
+		&.fv_nested{
+			>.title{
+				padding-left: 35px;
+				padding-right: 35px;
+			}
+		}		
 	}
 }

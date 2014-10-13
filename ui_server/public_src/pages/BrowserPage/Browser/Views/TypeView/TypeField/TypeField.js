@@ -6,11 +6,10 @@ function TypeField(value, parent){
 	tf.parent = parent;
 	tf.value = value || {};
 
-	TypeField.superConstructor.call(this, "name_prop", {});
-
+	TypeField.superConstructor.call(this, "", {});
 	tf.contents = tf.input_holder.addClass("contents")
 
-	tf.container.addClass("type_field").prepend(
+	tf.element.addClass("type_field").prepend(
 		tf.title_div = $("<div />").addClass("title")
 	)
 
@@ -145,6 +144,8 @@ TypeField.prototype.edit_mode = function(){
     if(tf.form){
         tf.form.edit_mode();
     }
+
+    Field.prototype.edit_mode.call(this);
 }
 
 TypeField.prototype.view_mode = function(){
@@ -155,4 +156,6 @@ TypeField.prototype.view_mode = function(){
     if(tf.form){
         tf.form.view_mode();
     }
+
+    Field.prototype.view_mode.call(this);
 }

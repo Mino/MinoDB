@@ -93,7 +93,7 @@ ItemSection.prototype.populate_type = function(type){
 
 	section.field = section.vr.field.create_ui(section.item_view.form);
 
-    section.field.container.addClass("item_section");
+    section.field.element.addClass("item_section");
 
     section.field.title.append(
         section.remove_button = $("<button />").addClass("mino_button").text("Remove").on('tap',function(event){
