@@ -1,6 +1,7 @@
 .type_field{
 	border: 1px solid @type_field_border;
 	background-color: white;
+	padding-top: 0px;
 
 	margin-bottom: 10px;
 

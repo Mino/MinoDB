@@ -10308,10 +10308,9 @@ return jQuery;
 }));
 
 /*!
-	Autosize v1.18.9 - 2014-05-27
-	Automatically adjust textarea height based on user input.
-	(c) 2014 Jack Moore - http://www.jacklmoore.com/autosize
-	license: http://www.opensource.org/licenses/mit-license.php
+	Autosize 1.18.13
+	license: MIT
+	http://www.jacklmoore.com/autosize
 */
 (function ($) {
 	var
@@ -10336,7 +10335,8 @@ return jQuery;
 		'letterSpacing',
 		'textTransform',
 		'wordSpacing',
-		'textIndent'
+		'textIndent',
+		'whiteSpace'
 	],
 
 	// to keep track which textarea is being mirrored when adjust() is called.
@@ -10478,11 +10478,12 @@ return jQuery;
 					// If the textarea is empty, copy the placeholder text into 
 					// the mirror control and use that for sizing so that we 
 					// don't end up with placeholder getting trimmed.
-					mirror.value = ($ta.attr("placeholder") || '') + options.append;
+					mirror.value = ($ta.attr("placeholder") || '');
 				} else {
-					mirror.value = ta.value + options.append;
+					mirror.value = ta.value;
 				}
 
+				mirror.value += options.append || '';
 				mirror.style.overflowY = ta.style.overflowY;
 				original = parseInt(ta.style.height,10);
 
@@ -10511,6 +10512,7 @@ return jQuery;
 					if (callback) {
 						options.callback.call(ta,ta);
 					}
+					$ta.trigger('autosize.resized');
 				}
 			}
 
@@ -10578,7 +10580,7 @@ return jQuery;
 			adjust();
 		});
 	};
-}(window.jQuery || window.$)); // jQuery or jQuery-like library, such as Zepto
+}(jQuery || $)); // jQuery or jQuery-like library, such as Zepto
 
 /**
  * History.js jQuery Adapter
@@ -13694,6 +13696,10 @@ SAFEClass.prototype.get_class_and_details_for_url = function(url_with_query) {
 SAFEClass.prototype.load_url = function(url_with_query, push_state) {
     var sf = this;
 
+    if(typeof push_state === 'undefined'){
+        push_state = true;
+    }
+
     var full_url = Site.origin + url_with_query;
 
     if (!sf.history_state_supported) {
@@ -13962,8 +13968,11 @@ var FieldVal = (function(){
     FieldVal.prototype.get_async = function (field_name, checks, done){
         var fv = this;
 
-        var value = fv.validating[field_name];
+        if(!Array.isArray(checks)){
+            throw new Error(".get_async second argument must be an array of checks");
+        }
 
+        var value = fv.validating[field_name];
         fv.recognized_keys[field_name] = true;
 
         var use_checks_res = FieldVal.use_checks(value, checks, {
@@ -13973,7 +13982,9 @@ var FieldVal = (function(){
                 value = new_value;
             }
         },function(check_result){
-            done(value);
+            if(done!==undefined){
+                done(value);
+            }
         });
 
         return (use_checks_res === FieldVal.ASYNC) ? FieldVal.ASYNC : undefined;
@@ -15398,7 +15409,7 @@ FVForm.prototype.val = function(set_val){
         var output = {};
 		for(var i in form.fields){
 			var field = form.fields[i];
-			if(field.show_on_form_flag!==false){
+			if(field.output_flag!==false){
 				var value = field.val();
 				if(value!=null){
 					output[i] = value;
@@ -15422,7 +15433,7 @@ function Field(name, options) {
     field.name = name;
     field.options = options || {};
 
-    field.show_on_form_flag = true;
+    field.output_flag = true;
     field.is_in_array = false;
 
     field.on_change_callbacks = [];
@@ -15522,15 +15533,9 @@ Field.prototype.on_change = function(callback){
     return field;
 }
 
-Field.prototype.hide_on_form = function(){
+Field.prototype.output = function(do_output){
     var field = this;
-    field.show_on_form_flag = false;
-    return field;
-}
-
-Field.prototype.show_on_form = function(){
-    var field = this;
-    field.show_on_form_flag = true;
+    field.output_flag = do_output;
     return field;
 }
 
@@ -15643,6 +15648,8 @@ function TextField(name, options) {
     
     field.enter_callbacks = [];
 
+    field.previous_value = {};//Object to ensure invalid initial comparison
+    
     field.input.addClass("fv_text_input")
     .attr("placeholder", name)
     .on("keydown",function(e){
@@ -15652,10 +15659,22 @@ function TextField(name, options) {
             }
         }
     })
-    .on("keyup",function(){
-        field.did_change()
+    .on("keyup paste cut",function(){
+        setTimeout(function(){
+            field.check_changed();
+        },0);
     })
     .appendTo(field.input_holder);
+}
+
+TextField.prototype.check_changed = function(){
+    var field = this;
+
+    var this_value = field.val();
+    if(this_value!==field.previous_value){
+        field.previous_value = this_value;
+        field.did_change()
+    }
 }
 
 TextField.prototype.on_enter = function(callback){
@@ -15847,7 +15866,7 @@ function ChoiceField(name, options) {
     field.choice_values = [];
 
     if(field.allow_empty){
-        field.empty_option = $("<option />").attr({
+        field.empty_option = $("<option />").prop({
             "value": null
         }).text(field.options.empty_message || "")
 
@@ -15868,7 +15887,7 @@ function ChoiceField(name, options) {
         field.choice_values.push(choice_value);
 
         var option = $("<option />")
-        .attr("value",choice_value)
+        .prop("value",choice_value)
         .text(choice_text)
 
         field.select.append(option);
@@ -15877,14 +15896,26 @@ function ChoiceField(name, options) {
 
 ChoiceField.prototype.disable = function() {
     var field = this;
-    field.select.attr("disabled", "disabled");
+    field.select.prop("disabled", "disabled");
     return field;
 }
 
 ChoiceField.prototype.enable = function() {
     var field = this;
-    field.select.attr("disabled", null);
+    field.select.prop("disabled", null);
     return field;
+}
+
+ChoiceField.prototype.view_mode = function(){
+    var field = this;
+    field.disable();
+    Field.prototype.view_mode.call(this);
+}
+
+ChoiceField.prototype.edit_mode = function(){
+    var field = this;
+    field.enable();
+    Field.prototype.edit_mode.call(this);
 }
 
 ChoiceField.prototype.focus = function() {
@@ -16007,7 +16038,7 @@ DateField.prototype.change_name = function(name) {
 
 DateField.prototype.disable = function() {
     var field = this;
-    for(var i = 0; i < field.inputs; i++){
+    for(var i = 0; i < field.inputs.length; i++){
         var input = field.inputs[i];
         if(input){
             input.attr("disabled", "disabled");
@@ -16018,7 +16049,7 @@ DateField.prototype.disable = function() {
 
 DateField.prototype.enable = function() {
     var field = this;
-    for(var i = 0; i < field.inputs; i++){
+    for(var i = 0; i < field.inputs.length; i++){
         var input = field.inputs[i];
         if(input){
             input.attr("disabled", null);
@@ -16040,7 +16071,7 @@ DateField.prototype.focus = function() {
 
 DateField.prototype.blur = function() {
     var field = this;
-    for(var i = 0; i < field.inputs; i++){
+    for(var i = 0; i < field.inputs.length; i++){
         var input = field.inputs[i];
         if(input){
             input.blur();

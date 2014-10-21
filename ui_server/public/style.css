@@ -2360,6 +2360,7 @@ textarea {
 .browser_page .browser .view_container .type_view .type_field {
   border: 1px solid #800080;
   background-color: white;
+  padding-top: 0px;
   margin-bottom: 10px;
 }
 .browser_page .browser .view_container .type_view .type_field > .fv_field_title {
