@@ -1,11 +1,11 @@
-@import("../bower_components/jquery/dist/jquery.js");
-@import("../bower_components/jquery-autosize/jquery.autosize.js");
-@import("../bower_components/safe/safe.js");
-@import("../bower_components/fieldval/fieldval.js");
-@import("../bower_components/fieldval-basicval/fieldval-basicval.js");
-@import("../bower_components/fieldval-ui/fieldval-ui.js");
-@import("../bower_components/fieldval-rules/fieldval-rules.js");
-@import("../bower_components/extend/extend.js");
+@import("../../bower_components/jquery/dist/jquery.js");
+@import("../../bower_components/jquery-autosize/jquery.autosize.js");
+@import("../../bower_components/safe/safe.js");
+@import("../../bower_components/fieldval/fieldval.js");
+@import("../../bower_components/fieldval-basicval/fieldval-basicval.js");
+@import("../../bower_components/fieldval-ui/fieldval-ui.js");
+@import("../../bower_components/fieldval-rules/fieldval-rules.js");
+@import("../../bower_components/extend/extend.js");
 @import("../../errors.js");
 
 @import("common.js");
@@ -15,9 +15,9 @@
 @import("../../common_classes/Path.js");
 @import("../../common_classes/ID.js");
 
-@import("fieldval_themes/mino_theme.js");
+@import("../../fieldval_themes/mino_theme.js");
 
-@import("common_elements/common_elements.js");
+@import("../../common_elements/common_elements.js");
 @import("pages/pages.js");
 
 var page_title_append = "MinoDB";
@@ -48,9 +48,9 @@ $(document).ready(function() {
 
         if (old_page != null) {
             old_page.element.css({
+                "position": "absolute",
                 "width": old_page.element.width(),
-                "height": old_page.element.height(),
-                "position": "absolute"
+                "height": old_page.element.height()
             })
             .fadeOut(500, function() {
                 old_page.element.remove();
@@ -64,7 +64,7 @@ $(document).ready(function() {
         return true;
     }
 
-    Site.path = ui_path;
+    Site.path = site_path;
 
     Site.debug = false;
 

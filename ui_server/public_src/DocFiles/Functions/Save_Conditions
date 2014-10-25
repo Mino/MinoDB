@@ -1,2 +1,0 @@
-Save Conditions allow you to specify constraints on a per-<a href="/docs/Objects">object</a> basis when saving them using the API. You can specify that the Object cannot be renamed or moved and also the previous version number.
-

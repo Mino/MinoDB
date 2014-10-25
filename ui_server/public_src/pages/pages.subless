@@ -1,5 +1,3 @@
 @import "HomePage/HomePage.subless";
-@import "BrowserPage/BrowserPage.subless";
-@import "AdminPage/AdminPage.subless";
 @import "AuthPage/AuthPage.subless";
 @import "NotFoundPage/NotFoundPage.subless";

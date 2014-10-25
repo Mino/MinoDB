@@ -1,0 +1,23 @@
+@minoColor1: #2F78B2;
+
+@mino_button_color: #538679;
+@mino_button_color_active: #053D3E;
+
+@item_section_title: #66AA99;
+@item_section_border: @mino_button_color;
+
+@popout_background: #EEE;
+@popout_title: #66AA99;
+@popout_border: black;
+
+@selected_background_color: #6391BD;
+
+@type_field_title: purple;
+@type_field_border: purple;
+
+@background_pane_color: rgba(240,240,240,1.0);
+@background_color: rgba(240,240,240,1.0);
+
+@border_color: gray;
+
+@borderColor: rgba(0,0,0, 0.5);
