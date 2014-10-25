@@ -49,7 +49,7 @@ AdminPage.prototype.new_url = function(req){
     var page = this;
 
     if(req.params.plugin_name!==undefined){
-        page.iframe_load_url(site_path+"plugins/"+req.params.plugin_name);
+        page.iframe_load_url(site_path+"plugin_config/"+req.params.plugin_name);
         page.side_menu.select_item(req.params.plugin_name);
         page.main_menu.hide();
     } else {

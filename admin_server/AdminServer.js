@@ -30,10 +30,19 @@ function AdminServer(options){
     as.express_server.use(morgan())
     as.express_server.use(errorHandler({ dumpExceptions: true, showStack: true }));
     as.express_server.use(express.static(path.join(__dirname, 'public')));
-    // require('./ajax/routes').add_routes(bs);
 
     as.plugin_server = express();
-    as.express_server.use('/plugins/', as.plugin_server);
+    as.express_server.use('/plugin_config/:plugin_name', function(req, res, next){
+        logger.log("plugin_name ",req.params);
+        var pm = as.minodb.plugin_manager;
+        var plugin_details = pm.plugins[req.params.plugin_name];
+        if(plugin_details.plugin.get_config_server!==undefined){
+            var plugin_config_server = plugin_details.plugin.get_config_server();
+            plugin_config_server.handle(req,res,next);
+        } else {
+            next();
+        }
+    });
 
     as.express_server.get('*', process_session(false), function(req, res) {
         
@@ -47,35 +56,6 @@ function AdminServer(options){
             plugins: JSON.stringify(as.minodb.plugin_manager.list_plugins()),
             user: JSON.stringify(req.user)
         });
-    })
-}
-
-AdminServer.prototype.start_plugin_config_server = function(){
-    var as = this;
-
-    var pm = as.minodb.plugin_manager;
-
-    for(var i in pm.plugins){
-        if(pm.plugins.hasOwnProperty(i)){
-            var plugin_details = pm.plugins[i];
-
-            if(plugin_details.plugin.get_config_server!==undefined){
-                var plugin_config_server = plugin_details.plugin.get_config_server();
-
-                logger.log("as.path ",plugin_details.info.name, plugin_config_server);
-                if(plugin_config_server!==undefined){
-                    logger.log("using plugin server");
-                    as.plugin_server.use(
-                        '/'+plugin_details.info.name, 
-                        plugin_config_server
-                    );
-                }
-            }
-        }
-    }
-
-    as.plugin_server.use('*', function(req, res){
-        res.send("PLUGIN SERVER")
     })
 }
 

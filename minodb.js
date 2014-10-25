@@ -35,11 +35,8 @@ function MinoDB(config){
     mdb.add_plugin(admin_server);
     var ui_server = new UIServer({});
     mdb.add_plugin(ui_server);
-    
     mdb.add_plugin(new APIServer({}));
     mdb.add_plugin(new BrowserServer({}));
-
-    admin_server.start_plugin_config_server();
 
     mdb.express_server.get('/*', function(req,res){
         res.send(404, 'MINO 404');
