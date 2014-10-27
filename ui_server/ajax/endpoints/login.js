@@ -47,7 +47,7 @@ module.exports = function(ui_server){
 		        	check_password_hash(
 		        		body.password,
 		        		user_record.password_salt,
-		        		user_record.password_hash,
+		        		user_record.salted_password,
 		        		function(is_correct){
 		        			logger.log("PASSWORD IS: ",is_correct);
 		                    if(is_correct){

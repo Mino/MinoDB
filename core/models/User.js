@@ -10,14 +10,17 @@ User.systemUsers = [
     "Public"
 ];
 
-function User(data) {
+function User(obj) {
     var user = this;
 
-    user.data = data;
+    user.id = obj._id;
+
+    var data = obj.mino_user;
 
     user.username = data.username;
     user.email = data.email;
-    user.password = data.password;
+    user.salted_password = data.salted_password;
+    user.password_salt = data.password_salt;
 }
 
 User.rule_definition = {
@@ -91,17 +94,25 @@ User.validate = function(data, creation){
 User.prototype.create_save_data = function(callback){
     var user = this;
 
-    var to_save = JSON.parse(JSON.stringify(user.data));
+    var build_obj = function(){
+        var to_save = {
+            username: user.username,
+            email: user.email,
+            salted_password: user.salted_password,
+            password_salt: user.password_salt
+        }
+        callback(null, to_save);
+    }
 
     if(user.password){
         security.generate_salted_password(user.password, function(hash, salt){
-            delete to_save.password;
-            to_save.salted_password = hash;
-            to_save.password_salt = salt;
-            callback(null, to_save);
+            delete user.password;
+            user.salted_password = hash;
+            user.password_salt = salt;
+            build_obj();
         });
     } else {
-        callback(null, to_save);
+        build_obj();
     }
 }
 
@@ -115,7 +126,7 @@ User.prototype.save = function(api, callback){
         }, {
             "objects": [
                 {  
-                    
+                    "_id": user.id,
                     "name": user.username,
                     "path": "/Mino/users/",
                     "mino_user": to_save
@@ -124,7 +135,7 @@ User.prototype.save = function(api, callback){
         }, function(save_err, save_res){
             logger.log(save_err, save_res);
 
-            // callback(null, new User(get_res));
+            callback(save_err, save_res);
         })
     });
 }
@@ -153,8 +164,8 @@ User.get = function(username, api, callback){
             callback(get_err);
             return;
         }
-        if(get_res && get_res[0]){
-            return callback(null, new User(get_res));
+        if(get_res && get_res.objects && get_res.objects[0]){
+            return callback(null, new User(get_res.objects[0]));
         }
         callback(null, null);
     })
@@ -168,7 +179,9 @@ User.create = function(data, api, callback){
         return;
     }
 
-    var user = new User(data);
+    var user = new User({
+        mino_user: data
+    });
     user.save(api, callback);
 }
 

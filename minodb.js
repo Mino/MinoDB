@@ -18,8 +18,6 @@ var class_to_string = require('./class_to_string');
 function MinoDB(config){
     var mdb = this;
 
-    logger.log(config);
-
     mdb.config = config;
 
     mdb.plugin_manager = new PluginManager(mdb);
@@ -28,19 +26,24 @@ function MinoDB(config){
 
     mdb.api = new Core(mdb, mdb.config.db_address);
 
+    mdb.internal_express_server = express();
+    mdb.internal_express_server.disable('etag');//Prevents 304s
+
     mdb.express_server = express();
     mdb.express_server.disable('etag');//Prevents 304s
+    mdb.express_server.use(function(req,res,next){
+        mdb.internal_express_server.handle(req,res,function(){
+            mdb.ui_server.express_server.handle(req,res);
+        });
+    });
+
+    mdb.ui_server = new UIServer({});
+    mdb.add_plugin(mdb.ui_server);
 
     var admin_server = new AdminServer({});
     mdb.add_plugin(admin_server);
-    var ui_server = new UIServer({});
-    mdb.add_plugin(ui_server);
     mdb.add_plugin(new APIServer({}));
     mdb.add_plugin(new BrowserServer({}));
-
-    mdb.express_server.get('/*', function(req,res){
-        res.send(404, 'MINO 404');
-    })
 }
 
 MinoDB.prototype.add_plugin = function(plugin){
@@ -58,6 +61,12 @@ MinoDB.prototype.server = function(){
     var mdb = this;
 
     return mdb.express_server;
+}
+
+MinoDB.prototype.internal_server = function(){
+    var mdb = this;
+
+    return mdb.internal_express_server;
 }
 
 MinoDB.ValidationRule = require('fieldval-rules');

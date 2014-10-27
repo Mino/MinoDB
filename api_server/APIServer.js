@@ -71,7 +71,7 @@ APIServer.prototype.init = function(minodb){
     var as = this;
 
     as.minodb = minodb;
-    minodb.server().use(as.path, as.express_server);
+    minodb.internal_server().use(as.path, as.express_server);
 }
 
 module.exports = APIServer;

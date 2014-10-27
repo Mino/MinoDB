@@ -70,7 +70,7 @@ BrowserServer.prototype.init = function(minodb){
     var bs = this;
 
     bs.minodb = minodb;
-    minodb.server().use(bs.path, bs.express_server);
+    minodb.internal_server().use(bs.path, bs.express_server);
 }
 
 module.exports = BrowserServer;

@@ -18,7 +18,7 @@ function UIServer(options){
 
     options = options || {};
 
-    us.path = options.path || '/ui/';
+    us.path = options.path || '/';
 
 	us.express_server = express();
     us.express_server.disable('etag');//Prevents 304s
@@ -32,7 +32,7 @@ function UIServer(options){
     us.express_server.use(express.static(path.join(__dirname, 'public')));
     require('./ajax/routes').add_routes(us);
 
-    us.express_server.get('*', process_session(false), function(req, res) {
+    us.express_server.get('/', process_session(false), function(req, res) {
         
         var original_url = req.originalUrl;
         var mino_path = original_url.substring(0, original_url.length - req._parsedUrl.path.length)
@@ -71,7 +71,7 @@ UIServer.prototype.init = function(minodb){
     var us = this;
 
     us.minodb = minodb;
-    minodb.server().use(us.path, us.express_server);
+    minodb.internal_server().use(us.path, us.express_server);
 }
 
 module.exports = UIServer;

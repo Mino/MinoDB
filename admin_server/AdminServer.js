@@ -33,9 +33,7 @@ function AdminServer(options){
 
     as.plugin_server = express();
     as.express_server.use('/plugin_config/:plugin_name', function(req, res, next){
-        logger.log("plugin_name ",req.params);
-        var pm = as.minodb.plugin_manager;
-        var plugin_details = pm.plugins[req.params.plugin_name];
+        var plugin_details = as.minodb.plugin_manager.plugins[req.params.plugin_name];
         if(plugin_details.plugin.get_config_server!==undefined){
             var plugin_config_server = plugin_details.plugin.get_config_server();
             plugin_config_server.handle(req,res,next);
@@ -72,7 +70,7 @@ AdminServer.prototype.init = function(minodb){
     var as = this;
 
     as.minodb = minodb;
-    minodb.server().use(as.path, as.express_server);
+    minodb.internal_server().use(as.path, as.express_server);
 }
 
 module.exports = AdminServer;
