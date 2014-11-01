@@ -34,9 +34,14 @@ function MinoDB(config){
     mdb.express_server.disable('etag');//Prevents 304s
     mdb.express_server.use(errorHandler({ dumpExceptions: true, showStack: true }));
     mdb.express_server.use(function(req,res,next){
-        logger.log("EXPRESS USE");
+
+        var mino_path = req.originalUrl.substring(0, req.originalUrl.length - req._parsedUrl.path.length);
+        if(mino_path==="" || mino_path[mino_path.length-1]!=="/"){
+            mino_path+="/";
+        }
+        req.mino_path = mino_path;
+        
         mdb.internal_express_server.handle(req,res,function(){
-            logger.log("INTERNAL FAILED");
             mdb.ui_server.express_server.handle(req,res);
         });
     });

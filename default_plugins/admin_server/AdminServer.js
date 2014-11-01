@@ -44,10 +44,7 @@ function AdminServer(options){
 
     as.express_server.get('*', process_session(false), function(req, res) {
         
-        var original_url = req.originalUrl;
-        var mino_path = original_url.substring(0, original_url.length - req._parsedUrl.path.length)
-        var site_path = mino_path+"/";
-        
+        var site_path = path.join(req.mino_path,bs.path);
         res.render('index', {
             custom_fields: JSON.stringify(as.minodb.custom_fields),
             site_path: site_path,
