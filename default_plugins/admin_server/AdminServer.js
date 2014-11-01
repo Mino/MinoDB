@@ -11,7 +11,7 @@ var errorHandler = require('errorhandler');
 var http = require('http');
 var path = require('path');
 
-var process_session = require('./process_session');
+var process_session = require('../../MinoDB/ui_server/process_session');
 
 function AdminServer(options){
 	var as = this;
@@ -28,10 +28,9 @@ function AdminServer(options){
     as.express_server.use(cookieParser());
     as.express_server.use(bodyParser());
     as.express_server.use(morgan())
-    as.express_server.use(errorHandler({ dumpExceptions: true, showStack: true }));
     as.express_server.use(express.static(path.join(__dirname, 'public')));
 
-    as.plugin_server = express();
+    as.express_server.use(process_session(as,false));
     as.express_server.use('/plugin_config/:plugin_name', function(req, res, next){
         var plugin_details = as.minodb.plugin_manager.plugins[req.params.plugin_name];
         if(plugin_details.plugin.get_config_server!==undefined){
@@ -42,9 +41,9 @@ function AdminServer(options){
         }
     });
 
-    as.express_server.get('*', process_session(false), function(req, res) {
-        
-        var site_path = path.join(req.mino_path,bs.path);
+    as.express_server.get('*', function(req, res) {
+
+        var site_path = path.join(req.mino_path,as.path);
         res.render('index', {
             custom_fields: JSON.stringify(as.minodb.custom_fields),
             site_path: site_path,
@@ -52,6 +51,8 @@ function AdminServer(options){
             user: JSON.stringify(req.user)
         });
     })
+
+    as.express_server.use(errorHandler({ showStack: true, dumpExceptions: true}));
 }
 
 AdminServer.prototype.info = function(){

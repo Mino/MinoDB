@@ -28,7 +28,6 @@ function BrowserServer(options){
     bs.express_server.use(cookieParser());
     bs.express_server.use(bodyParser());
     bs.express_server.use(morgan())
-    bs.express_server.use(errorHandler({ dumpExceptions: true, showStack: true }));
     bs.express_server.use(express.static(path.join(__dirname, 'public')));
     require('./ajax/routes').add_routes(bs);
 
@@ -44,8 +43,10 @@ function BrowserServer(options){
 
     bs.config_server = express();
     bs.config_server.get('*', function(req, res){
-        res.send("BROWSER CONFIG")
+        res.send("BROWSER CONFIG "+JSON.stringify(req.user));
     })
+
+    bs.express_server.use(errorHandler({ showStack: true, dumpExceptions: true}));
 }
 
 BrowserServer.prototype.get_config_server = function(){

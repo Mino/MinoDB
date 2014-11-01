@@ -27,8 +27,7 @@ function UIServer(options){
     us.express_server.set('view engine', 'mustache');
     us.express_server.use(cookieParser());
     us.express_server.use(bodyParser());
-    // us.express_server.use(morgan())
-    us.express_server.use(errorHandler({ dumpExceptions: true, showStack: true }));
+    us.express_server.use(morgan())
     us.express_server.use(express.static(path.join(__dirname, 'public')));
     require('./ajax/routes').add_routes(us);
 
@@ -52,6 +51,8 @@ function UIServer(options){
     us.config_server.get('*', function(req, res){
         res.send("UI CONFIG")
     })
+
+    us.express_server.use(errorHandler({ showStack: true, dumpExceptions: true}));
 }
 
 UIServer.prototype.get_config_server = function(){

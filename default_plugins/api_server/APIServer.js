@@ -24,7 +24,6 @@ function APIServer(options){
     as.express_server.use(cookieParser());
     as.express_server.use(bodyParser());
     as.express_server.use(morgan())
-    as.express_server.use(errorHandler({ dumpExceptions: true, showStack: true }));
 
     as.express_server.post('/', process_api_request, function(req, res) {
 
@@ -52,6 +51,8 @@ function APIServer(options){
     as.config_server.get('*', function(req, res){
         res.send("API CONFIG")
     })
+
+    as.express_server.use(errorHandler({ showStack: true, dumpExceptions: true}));
 }
 
 APIServer.prototype.get_config_server = function(){
