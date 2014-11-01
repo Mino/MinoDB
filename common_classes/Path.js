@@ -82,8 +82,17 @@ Path.prototype.init = function(path_string, allow_tilde) {
     return null;
 }
 
-Path.object_name_check = function(value, allowed_tilde){
-    console.log("OBJECT_NAME_CHECK ",value);
+Path.prototype.replace_id_operator = function(id){
+    var path = this;
+
+
+}
+
+Path.object_name_check = function(object_name, allowed_tilde){
+
+    //Remove ~id~ because it will be overwritten (no other tildes are allowed)
+    var value = object_name.replaceAll("~id~","");
+
     for(var i = 0; i < value.length; i++){
         var character = value[i];
 
@@ -97,7 +106,13 @@ Path.is_valid_character_for_object_name = function(path_char, allowed_tilde) {
 
     var path_char_code = path_char.charCodeAt(0);
 
-    if (path_char_code == 10 /*LINE BREAK*/ || path_char_code == 30 || path_char_code == 31 || path_char == '/' || (!allowed_tilde && path_char_code == 126 /*tilde*/ )) {
+    if (
+        path_char_code === 10 /*LINE BREAK*/ || 
+        path_char_code === 30 || /*WHITESPACE*/
+        path_char_code === 31 || /*WHITESPACE*/
+        path_char === '/' || 
+        (allowed_tilde!==true && path_char_code === 126 /*TILDE*/ )
+    ) {
         return false;
     }
     return true;

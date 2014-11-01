@@ -11,9 +11,9 @@ var gulpImports = require('gulp-imports');
 var nodemon = require('gulp-nodemon');
 var path = require('path');
 
-require('./admin_server/gulpfile')(gulp);
-require('./browser_server/gulpfile')(gulp);
-require('./ui_server/gulpfile')(gulp);
+require('./default_plugins/admin_server/gulpfile')(gulp);
+require('./default_plugins/browser_server/gulpfile')(gulp);
+require('./MinoDB/ui_server/gulpfile')(gulp);
 
 var onError = function (err) {  
   gutil.beep();

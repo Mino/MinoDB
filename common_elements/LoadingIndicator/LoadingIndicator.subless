@@ -1,0 +1,10 @@
+.loading_indicator(@root){
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: 100%;
+	width: 100%;
+	background: data-uri("@{root}/common_elements/LoadingIndicator/loading_indicator.gif");
+	background-position: center center;
+	background-repeat: no-repeat;
+}
