@@ -4,7 +4,6 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var favicon = require('serve-favicon');
-var morgan = require('morgan');
 var mustacheExpress = require('mustache-express');
 
 var errorHandler = require('errorhandler');
@@ -18,8 +17,6 @@ function UIServer(options){
 
     options = options || {};
 
-    us.path = options.path || '/';
-
 	us.express_server = express();
     us.express_server.disable('etag');//Prevents 304s
     us.express_server.engine('mustache', mustacheExpress());
@@ -27,18 +24,19 @@ function UIServer(options){
     us.express_server.set('view engine', 'mustache');
     us.express_server.use(cookieParser());
     us.express_server.use(bodyParser());
-    us.express_server.use(morgan())
     us.express_server.use(express.static(path.join(__dirname, 'public')));
     require('./ajax/routes').add_routes(us);
 
-    us.express_server.get('/*', process_session(us,false), function(req, res) {
-        
-        var original_url = req.originalUrl;
-        var mino_path = original_url.substring(0, original_url.length - req._parsedUrl.path.length)
-        var site_path = mino_path+"/";
-        
-        logger.log("USER: ",req.user);
+    us.express_server.get('/toolbar.js', process_session(us,false), function(req, res) {
+        logger.log("req.mino_path",req.mino_path);
+        res.render('toolbar', {
+            mino_path: req.mino_path,
+            user: JSON.stringify(req.user || null)
+        });
+    })
 
+    us.express_server.get('/*', process_session(us,false), function(req, res) {
+        var site_path = req.mino_path;
         res.render('index', {
             custom_fields: JSON.stringify(us.minodb.custom_fields),
             site_path: site_path,
@@ -74,7 +72,6 @@ UIServer.prototype.init = function(minodb){
     var us = this;
 
     us.minodb = minodb;
-    // minodb.internal_server().use(us.path, us.express_server);
 }
 
 module.exports = UIServer;

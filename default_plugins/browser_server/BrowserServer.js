@@ -4,7 +4,6 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var favicon = require('serve-favicon');
-var morgan = require('morgan');
 var mustacheExpress = require('mustache-express');
 
 var errorHandler = require('errorhandler');
@@ -27,16 +26,15 @@ function BrowserServer(options){
     bs.express_server.set('view engine', 'mustache');
     bs.express_server.use(cookieParser());
     bs.express_server.use(bodyParser());
-    bs.express_server.use(morgan())
     bs.express_server.use(express.static(path.join(__dirname, 'public')));
     require('./ajax/routes').add_routes(bs);
 
     bs.express_server.get('*', process_session(bs,true), function(req, res) {
-        
         var site_path = path.join(req.mino_path,bs.path);
         res.render('index', {
             custom_fields: JSON.stringify(bs.minodb.custom_fields),
             site_path: site_path,
+            mino_path: req.mino_path,
             user: JSON.stringify(req.user || null)
         });
     })

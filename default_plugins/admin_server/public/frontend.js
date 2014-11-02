@@ -18397,9 +18397,9 @@ var errors = {
 		error: 176,
 		error_message: "'Child Of' cannot be used if 'Paths Allowed' is not set to true."
 	},
-	SOME_ERROR: {	
+	INCORRECT_PASSWORD: {	
 		error: 177,
-		error_message: "Invalid password."
+		error_message: "Incorrect password."
 	},
 	SOME_ERROR: {	
 		error: 178,
@@ -19247,10 +19247,10 @@ Modal.prototype.close = function(){
 		modal.close_callback();
 	}
 }
-function LoginBox(on_sign_in_url){
+function LoginBox(on_sign_in){
     var lb = this;
 
-    lb.on_sign_in_url = on_sign_in_url;
+    lb.on_sign_in = on_sign_in;
 
     lb.modal = new Modal();
     lb.modal.element.addClass("login_box_modal")
@@ -19299,17 +19299,8 @@ LoginBox.prototype.login_press = function(object) {
             lb.form.enable();
             if (response.success == true) {
                 user = response.user;
-                if(response.admin){
-                    admin_bar = new AdminBar();
-                    admin_bar.element.appendTo("body");
-                }
-                header.check_login();
-                if(lb.on_sign_in_url){
-                    Site.load_url(Site.path + lb.on_sign_in_url, true);
-                } else if(Site.current_page instanceof HomePage){
-                    Site.load_url(Site.path + "my_applications/",true);
-                } else {
-                    Site.reload_page();
+                if(lb.on_sign_in){
+                    lb.on_sign_in(user);
                 }
                 lb.modal.close();
             } else {

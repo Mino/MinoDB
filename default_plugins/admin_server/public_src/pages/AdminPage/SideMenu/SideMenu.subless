@@ -12,7 +12,7 @@
 	overflow-y: auto;
 	width: 199px;
 	position: fixed;
-	top: 50px;
+	top: 90px;
 	left: 0px;
 	bottom: 0px;
 

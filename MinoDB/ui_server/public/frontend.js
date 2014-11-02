@@ -18397,9 +18397,9 @@ var errors = {
 		error: 176,
 		error_message: "'Child Of' cannot be used if 'Paths Allowed' is not set to true."
 	},
-	SOME_ERROR: {	
+	INCORRECT_PASSWORD: {	
 		error: 177,
-		error_message: "Invalid password."
+		error_message: "Incorrect password."
 	},
 	SOME_ERROR: {	
 		error: 178,
@@ -19437,7 +19437,7 @@ HomePage.prototype.redirect = function(req){
         if(req.query.redirect){
             window.location = req.query.redirect;
         } else {
-            window.location = "/mino/admin/";
+            window.location = Site.path+"admin/";
         }
     }
 }
@@ -19496,9 +19496,6 @@ function SignOutPage(req) {
 
     page.element
     .addClass("sign_out_page")
-    .append(
-        $("<div/>").text(JSON.stringify(user))
-    )
 }
 Site.add_url("/sign_out", SignOutPage);
 
@@ -19519,11 +19516,9 @@ SignOutPage.prototype.init = function() {
     var page = this;
 
     user = null;
-    setTimeout(function(){
-        $.post(Site.path + "ajax/sign_out", {}, function(err, res){
-            Site.reload_page();
-        },"json");
-    },500);
+    $.post(Site.path + "ajax/sign_out", {}, function(err, res){
+        Site.reload_page();
+    },"json");
 }
 
 SignOutPage.prototype.remove = function() {

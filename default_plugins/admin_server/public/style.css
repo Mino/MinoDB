@@ -2067,7 +2067,7 @@ textarea {
 .admin_page .logo {
   display: block;
   position: fixed;
-  top: 0px;
+  top: 40px;
   left: 0px;
   width: 200px;
   height: 50px;
@@ -2086,7 +2086,7 @@ textarea {
   overflow-y: auto;
   width: 199px;
   position: fixed;
-  top: 50px;
+  top: 90px;
   left: 0px;
   bottom: 0px;
   border-right: 1px solid gray;
@@ -2118,7 +2118,7 @@ textarea {
 }
 .admin_page .content_pane {
   position: absolute;
-  top: 0px;
+  top: 40px;
   left: 200px;
   right: 0px;
   bottom: 0px;

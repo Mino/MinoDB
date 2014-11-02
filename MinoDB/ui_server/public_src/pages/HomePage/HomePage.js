@@ -34,7 +34,7 @@ HomePage.prototype.redirect = function(req){
         if(req.query.redirect){
             window.location = req.query.redirect;
         } else {
-            window.location = "/mino/admin/";
+            window.location = Site.path+"admin/";
         }
     }
 }

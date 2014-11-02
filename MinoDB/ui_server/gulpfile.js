@@ -33,8 +33,17 @@ module.exports = function(gulp){
         .pipe(concat('style.css'))
         .pipe(gulp.dest(wrap_path('./public/')));
     });
+    //LESS compilation
+    gulp.task('ui_toolbar_less', function(){
+        return gulp.src(wrap_path('./toolbar_src/style/style.less'))
+        .pipe(plumber(onError))
+        .pipe(less())
+        .pipe(concat('style.css'))
+        .pipe(gulp.dest(wrap_path('./public/')));
+    });
     gulp.task('ui_less', function(){
         gulp.start('ui_public_less');
+        gulp.start('ui_toolbar_less');
     });
 
     var public_js_task = null;
@@ -54,27 +63,28 @@ module.exports = function(gulp){
         .pipe(concat('frontend.js'))
         .pipe(gulp.dest(wrap_path('./public/')))
     });
-    gulp.task('ui_dynamic_js', function(){
+    gulp.task('ui_toolbar_js', function(){
         return gulp.src([
-            wrap_path('./public_src/DynamicPages/**/*.js')
+            wrap_path('./toolbar_src/init.js')
         ])
         .pipe(plumber(onError))
         .pipe(gulpImports())
         .on('error', onError)
-        .pipe(gulp.dest(wrap_path('./public/DynamicPages/')))
+        .pipe(concat('toolbar.mustache'))
+        .pipe(gulp.dest(wrap_path('./views/')))
     });
     gulp.task('ui_js', function(){
         gulp.start('ui_public_js');
-        gulp.start('ui_dynamic_js');
+        gulp.start('ui_toolbar_js');
     })
-
-    gulp.start("ui_public_js");
-
 
 
     gulp.task('ui_watch', function(){
-        gulp.watch([wrap_path('./public_src/**/*.js')], ['ui_js']);
-        gulp.watch([wrap_path('./public_src/**/*.less'),wrap_path('./public_src/**/*.subless')], ['ui_less']);
+        gulp.watch([wrap_path('./public_src/**/*.js')], ['ui_public_js']);
+        gulp.watch([wrap_path('./public_src/**/*.less'),wrap_path('./public_src/**/*.subless')], ['ui_public_less']);
+
+        gulp.watch([wrap_path('./toolbar_src/**/*.js')], ['ui_toolbar_js']);
+        gulp.watch([wrap_path('./toolbar_src/**/*.less'),wrap_path('./toolbar_src/**/*.subless')], ['ui_toolbar_less']);
     });
 
     gulp.task('ui_default', function(){

@@ -7,8 +7,8 @@ module.exports = function(ui_server, require_session) {
     	var fail = function(){
     		logger.log("fail");
     		if(require_session){
-    			logger.log("/mino/?redirect="+req.originalUrl);
-	    		res.redirect("/mino/?redirect="+req.originalUrl);
+    			logger.log(req.mino_path+"?redirect="+req.originalUrl);
+	    		res.redirect(req.mino_path+"?redirect="+req.originalUrl);
 	    		return;
 	    	}
     		next();

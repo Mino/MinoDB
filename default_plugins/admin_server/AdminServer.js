@@ -27,17 +27,16 @@ function AdminServer(options){
     as.express_server.set('view engine', 'mustache');
     as.express_server.use(cookieParser());
     as.express_server.use(bodyParser());
-    as.express_server.use(morgan())
     as.express_server.use(express.static(path.join(__dirname, 'public')));
 
-    as.express_server.use(process_session(as,false));
+    as.express_server.use(process_session(as,true));
     as.express_server.use('/plugin_config/:plugin_name', function(req, res, next){
         var plugin_details = as.minodb.plugin_manager.plugins[req.params.plugin_name];
         if(plugin_details.plugin.get_config_server!==undefined){
             var plugin_config_server = plugin_details.plugin.get_config_server();
             plugin_config_server.handle(req,res,next);
         } else {
-            next();
+            res.send("No plugin config for: "+JSON.stringify(req.params.plugin_name))
         }
     });
 
@@ -47,6 +46,7 @@ function AdminServer(options){
         res.render('index', {
             custom_fields: JSON.stringify(as.minodb.custom_fields),
             site_path: site_path,
+            mino_path: req.mino_path,
             plugins: JSON.stringify(as.minodb.plugin_manager.list_plugins()),
             user: JSON.stringify(req.user)
         });

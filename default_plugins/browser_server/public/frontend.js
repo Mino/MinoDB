@@ -18397,9 +18397,9 @@ var errors = {
 		error: 176,
 		error_message: "'Child Of' cannot be used if 'Paths Allowed' is not set to true."
 	},
-	SOME_ERROR: {	
+	INCORRECT_PASSWORD: {	
 		error: 177,
-		error_message: "Invalid password."
+		error_message: "Incorrect password."
 	},
 	SOME_ERROR: {	
 		error: 178,

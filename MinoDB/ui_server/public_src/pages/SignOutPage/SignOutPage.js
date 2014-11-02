@@ -7,9 +7,6 @@ function SignOutPage(req) {
 
     page.element
     .addClass("sign_out_page")
-    .append(
-        $("<div/>").text(JSON.stringify(user))
-    )
 }
 Site.add_url("/sign_out", SignOutPage);
 
@@ -30,11 +27,9 @@ SignOutPage.prototype.init = function() {
     var page = this;
 
     user = null;
-    setTimeout(function(){
-        $.post(Site.path + "ajax/sign_out", {}, function(err, res){
-            Site.reload_page();
-        },"json");
-    },500);
+    $.post(Site.path + "ajax/sign_out", {}, function(err, res){
+        Site.reload_page();
+    },"json");
 }
 
 SignOutPage.prototype.remove = function() {
