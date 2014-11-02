@@ -1,2 +1,2 @@
-MinoDB (Testing)
+MinoDB
 ======
