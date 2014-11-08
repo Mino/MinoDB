@@ -4,6 +4,7 @@ var BasicVal = require('fieldval-basicval');
 var Path = require('../../../../common_classes/Path')
 var ValidationRule = require('fieldval-rules');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
+var FolderChecker = require('../../models/FolderChecker');
 var SaveObject = require('./SaveObject')
 var logger = require('tracer').console();
 
@@ -20,9 +21,11 @@ function SaveHandler(api, user, parameters, callback){
     sh.types_to_retrieve = [];
     
     sh.permissions_checked = false;
+    sh.folders_checked = false;
     sh.types_retrived = false;
 
     sh.path_permission_checker = new PathPermissionChecker(sh);
+    sh.folder_checker = new FolderChecker(sh);
 
     sh.validator = new Validator(parameters);
 
@@ -41,13 +44,20 @@ function SaveHandler(api, user, parameters, callback){
     sh.result_object_array = new Array(sh.save_objects.length);
 
     sh.retrieve_types();
+
     sh.path_permission_checker.retrieve_permissions(function(){
 
         //Turn the path_permission_checker to immediate_mode to make subsequent permission checks immediate
         sh.path_permission_checker.immediate_mode = true;
-
         sh.permissions_checked = true;
+        sh.check_ready_to_save();
+    });
 
+    sh.folder_checker.retrieve_existances(function(){
+
+        //Turn the path_permission_checker to immediate_mode to make subsequent permission checks immediate
+        sh.folder_checker.immediate_mode = true;
+        sh.folders_checked = true;
         sh.check_ready_to_save();
     });
 }
@@ -67,8 +77,8 @@ SaveHandler.prototype.request_type = function(type_name, save_object){
 SaveHandler.prototype.check_ready_to_save = function(){
     var sh = this;
 
-    if(sh.permissions_checked && sh.types_retrived){
-        logger.log("FINISHED GETTING RULES AND PERMISSIONS");
+    if(sh.permissions_checked && sh.types_retrived && sh.folders_checked){
+        logger.log("FINISHED GETTING RULES, PERMISSIONS AND FOLDER EXISTANCES");
 
         logger.log(sh.objects_validator);
 
@@ -76,8 +86,6 @@ SaveHandler.prototype.check_ready_to_save = function(){
             var save_object = sh.save_objects[i];
 
             var object_error = save_object.validator.end();
-
-            logger.log(object_error);
 
             if(object_error){
                 logger.log(object_error);

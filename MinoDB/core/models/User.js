@@ -182,7 +182,23 @@ User.create = function(data, api, callback){
     var user = new User({
         mino_user: data
     });
-    user.save(api, callback);
+    user.save(api, function(err, res){
+        new api.handlers.save(api, {
+            "username": "Mino"
+        }, {
+            "objects": [
+                {
+                    "name": user.username,
+                    "path": "/",
+                    "folder": true
+                }
+            ]
+        }, function(save_err, save_res){
+            logger.log(JSON.stringify(save_err,null,4), save_res);
+
+            callback(err, res);
+        });
+    });
 }
 
 module.exports = User;

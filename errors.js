@@ -147,7 +147,7 @@ var errors = {
 		error: 42,
 		error_message: "Internal save error 3."
 	},
-	SOME_ERROR: {	
+	FULL_PATH_EXISTS: {	
 		error: 43,
 		error_message: "An object with this name already exists in this folder."
 	},

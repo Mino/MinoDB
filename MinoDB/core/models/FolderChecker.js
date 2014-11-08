@@ -1,12 +1,11 @@
-var Constants = require('../../common_classes/Constants');
+var Constants = require('../../../common_classes/Constants');
 var logger = require('tracer').console();
 
 function CallbackObject(callback){
 	var co = this;
 
 	co.callback = callback;
-	co.has_read = false;
-	co.has_write = false;
+	co.exists = false;
 }
 
 function FolderChecker(handler){
@@ -24,6 +23,8 @@ function FolderChecker(handler){
 
 FolderChecker.prototype.check_path_existance = function(path, callback){
 	var fc = this;
+
+	logger.log("check_path_existance ",path);
 
 	if(fc.immediate_mode){
 		paths = {};
@@ -71,11 +72,10 @@ FolderChecker.prototype.resolve_callbacks = function(callback_objects){
 	for(var i = 0; i < callback_objects.length; i++){
 		var co = callback_objects[i];
 
-		logger.log("FAILING CALLBACK");
-		if(co.has_write){
-			co.callback(Constants.WRITE_PERMISSION);
+		if(co.exists){
+			co.callback(Constants.EXISTS);
 		} else {
-			co.callback(Constants.NO_PERMISSION);
+			co.callback(null);
 		}
 	}
 }
@@ -91,7 +91,6 @@ FolderChecker.prototype.retrieve_existances = function(callback, paths, callback
 	}
 
 	var keys = Object.keys(paths);
-	logger.log(keys);
 
 	if(keys.length===0){
 		fc.resolve_callbacks(callback_objects);
@@ -101,12 +100,33 @@ FolderChecker.prototype.retrieve_existances = function(callback, paths, callback
 		return;
 	}
 
-	logger.log(fc.handler.api);
+	logger.log(keys);
+	logger.log(callback_objects);
 	fc.handler.api.ds.object_collection.find({
 		"full_path" : {"$in" : keys}
 	}).toArray(function(array_err, array){
 		logger.log(array_err);
 		logger.log(array);
+
+		for(var i = 0; i < array.length; i++){
+			var object = array[i];
+
+			logger.log(object.full_path);
+			var callbacks = paths[object.full_path];
+			if(callbacks){
+				for(var n = 0; n < callbacks.length; n++){
+					callbacks[n].exists = true;
+				}
+			}
+		}
+
+	
+		var root_path_callbacks = paths["/"];
+		if(root_path_callbacks){
+			for(var n = 0; n < root_path_callbacks.length; n++){
+				root_path_callbacks[n].exists = true;
+			}
+		}
 
 		fc.resolve_callbacks(callback_objects);
 

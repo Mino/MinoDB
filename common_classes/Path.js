@@ -23,9 +23,7 @@ Path.prototype.init = function(path_string, allow_tilde) {
     path.sub_paths = [];
 
     path.string_length = path_string.length;
-    if (path.string_length < 3) { //Length must be at least 3 (One forward slash, at least one character and another forward slash)
-        return errors.INVALID_PATH_FORMAT
-    } else if (path.string_length >= Constants.maximumAccessiblePathLength) {
+    if (path.string_length >= Constants.maximumAccessiblePathLength) {
         return errors.INVALID_PATH_FORMAT
     }
     var path_char = path.path_string.charAt(0);
@@ -50,9 +48,6 @@ Path.prototype.init = function(path_string, allow_tilde) {
             }
         }
         last_char = path_char;
-    }
-    if (total == 0) { //path is a single item path e.g. "/Item"
-        return errors.INVALID_PATH_FORMAT
     }
 
     if (last_char.charCodeAt(0) == 47) {
@@ -151,6 +146,10 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
         }
 
         return null;
+    }
+
+    if(path.object_names.length===0){
+        return "Mino";
     }
 
     return path.object_names[0];

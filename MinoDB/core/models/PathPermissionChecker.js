@@ -123,6 +123,8 @@ PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths,
 		logger.log(array_err);
 		logger.log(array);
 
+		//TODO USE FOUND PERMISSIONS
+
 		ppc.resolve_callbacks(callback_objects);
 
 		if(callback){

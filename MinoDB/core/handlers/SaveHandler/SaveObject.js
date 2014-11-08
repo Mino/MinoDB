@@ -1,3 +1,4 @@
+var errors = require('../../../../errors')
 var Constants = require('../../../../common_classes/Constants');
 var Path = require('../../../../common_classes/Path');
 var logger = require('tracer').console();
@@ -52,6 +53,18 @@ function SaveObject(json, handler, index, options){
 					so.validator.invalid("path",{
 						error: -1,
 						error_message: "NO ACCESS TO PATH"
+					})
+				}
+			});
+			handler.folder_checker.check_path_existance(so.path,function(status){
+				logger.log("folder_checker response ", so.path, status);
+				if(status===Constants.EXISTS){
+					//Can write to the specified path
+					so.new_path_exists = true;
+				} else {
+					so.validator.invalid("path",{
+						error: -1,
+						error_message: "PATH DOES NOT EXIST"
 					})
 				}
 			});
@@ -139,10 +152,7 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 
 				if(err){
 	    			logger.log(err);
-	    			so.validator.invalid("name",{
-	    				error: -1,
-	    				error_message: "FULL PATH ALREADY EXISTS"
-	    			})
+	    			so.validator.invalid("name", errors.FULL_PATH_EXISTS)
 			       	on_save_callback(so,so.validator.end(),null);
 	    		} else {
 	    			on_save_callback(so,null,{

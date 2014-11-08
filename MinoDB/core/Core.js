@@ -49,16 +49,16 @@ Core.prototype.connect = function(callback){
                 logger.log(user_err, user_res);
             })
 
-            // new core.handlers.delete(api, {
-            //     "username": "TestUser"
-            // }, {
-            //     "addresses": [
-            //         // "795"
-            //         "/TestUser/test/My Blank Item"
-            //     ]
-            // }, function(save_err, save_res){
-            //     logger.log(JSON.stringify(save_err,null,4), save_res);
-            // })
+            new core.handlers.delete(core.minodb.api, {
+                "username": "testuser"
+            }, {
+                "addresses": [
+                    // "795"
+                    "/testuser/test/My Blank Item"
+                ]
+            }, function(save_err, save_res){
+                logger.log(JSON.stringify(save_err,null,4), save_res);
+            })
             callback();
         })
     })
