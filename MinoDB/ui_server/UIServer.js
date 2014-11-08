@@ -19,7 +19,9 @@ function UIServer(options){
 
 	us.express_server = express();
     us.express_server.disable('etag');//Prevents 304s
-    us.express_server.engine('mustache', mustacheExpress());
+    var mustache_engine = mustacheExpress();
+    delete mustache_engine.cache;
+    us.express_server.engine('mustache', mustache_engine);
     us.express_server.set('views', path.join(__dirname, 'views'));
     us.express_server.set('view engine', 'mustache');
     us.express_server.use(cookieParser());

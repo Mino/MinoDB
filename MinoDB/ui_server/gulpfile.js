@@ -38,7 +38,7 @@ module.exports = function(gulp){
         return gulp.src(wrap_path('./toolbar_src/style/style.less'))
         .pipe(plumber(onError))
         .pipe(less())
-        .pipe(concat('style.css'))
+        .pipe(concat('toolbar_style.css'))
         .pipe(gulp.dest(wrap_path('./public/')));
     });
     gulp.task('ui_less', function(){

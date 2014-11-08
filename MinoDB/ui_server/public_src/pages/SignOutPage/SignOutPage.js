@@ -28,6 +28,7 @@ SignOutPage.prototype.init = function() {
 
     user = null;
     $.post(Site.path + "ajax/sign_out", {}, function(err, res){
+        window.hide_toolbar();
         Site.reload_page();
     },"json");
 }

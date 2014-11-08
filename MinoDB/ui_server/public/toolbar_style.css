@@ -1,0 +1,38 @@
+.mino_toolbar {
+  height: 40px;
+  width: 100%;
+  position: fixed;
+  top: 0px;
+  z-index: 1000;
+  background-color: white;
+  box-sizing: border-box;
+  outline: 3px solid rgba(0, 0, 0, 0.2);
+}
+.mino_toolbar > .apps_dropdown {
+  float: left;
+  margin-left: 5px;
+}
+.mino_toolbar > .apps_dropdown .fv_field_title {
+  display: none;
+}
+.mino_toolbar > a > button {
+  -webkit-appearance: none;
+  border: none;
+  outline: none;
+  min-height: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background-color: #5a3a77;
+  cursor: pointer;
+  margin: 0px;
+  margin-left: 5px;
+  margin-top: 5px;
+}
+.mino_toolbar > a > button:active {
+  background-color: #9d4479;
+}
+.mino_toolbar > a.sign_out_button {
+  float: right;
+  margin-right: 5px;
+}

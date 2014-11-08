@@ -1,5 +1,3 @@
-
-
 extend(AuthPage, Page);
 
 function AuthPage(req) {
@@ -54,8 +52,6 @@ AuthPage.prototype.login_press = function(object) {
                 header.check_login();
                 if(page.on_sign_in_url){
                     Site.load_url(page.on_sign_in_url, true);
-                } else if(Site.current_page instanceof HomePage){
-                    Site.load_url("/my_applications/",true);
                 } else {
                     Site.reload_page();
                 }

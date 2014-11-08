@@ -9,16 +9,11 @@ function AdminPage(req) {
     page.side_menu = new SideMenu(page);
 
     page.element.addClass("admin_page").append(
-        page.logo = $("<a />",{href:Site.path})
-        .ajax_url()
-        .addClass("logo")
-        .text("MinoDB")
-    ,
-        page.side_menu.element
-    ,
         page.content_pane = $("<div/>").addClass("content_pane").append(
             page.main_menu = $("<div />").addClass("main_menu").text("Main Menu")
         )
+    ,
+        page.side_menu.element
     )
 
     for(var i = 0; i < plugins.length; i++){
@@ -48,6 +43,8 @@ AdminPage.prototype.iframe_load_url = function(url){
 AdminPage.prototype.new_url = function(req){
     var page = this;
 
+    page.side_menu.close_if_compact();
+
     if(req.params.plugin_name!==undefined){
         page.iframe_load_url(site_path+"plugin_config/"+req.params.plugin_name);
         page.side_menu.select_item(req.params.plugin_name);
@@ -69,14 +66,42 @@ AdminPage.prototype.get_title = function() {
 AdminPage.prototype.init = function() {
     var page = this;
 
+    page.side_menu.init();
 }
 
 AdminPage.prototype.remove = function() {
     var page = this;
 
+    page.side_menu.remove();
+}
+
+AdminPage.prototype.compact_mode = function(){
+    var page = this;
+
+    page.side_menu.compact_mode();
+    page.content_pane.css("left","0px");
+}
+
+AdminPage.prototype.normal_mode = function(){
+    var page = this;
+
+    page.side_menu.normal_mode();
+    page.content_pane.css("left","200px");
 }
 
 AdminPage.prototype.resize = function(resize_obj) {
     var page = this;
+
+    if(resize_obj.window_width<700){
+        if(page.is_compact!==true){
+            page.is_compact = true;
+            page.compact_mode();
+        }
+    } else {
+        if(page.is_compact!==false){
+            page.is_compact = false;
+            page.normal_mode();
+        }
+    }
 
 }

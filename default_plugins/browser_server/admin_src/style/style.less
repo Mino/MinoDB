@@ -1,25 +1,13 @@
-@import "../../../../common_elements/common_elements.subless";
-
 @fa-font-path: "/fonts/";
 @import "../../../../bower_components/font-awesome/less/font-awesome.less";
 
-html{
-    height: 100%;
-	-webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-    background-repeat:no-repeat;
-	.gradient;
-}
-
 body{
 	margin: 0px;
+	background-color: @background_color;
 	font-family: Arial, Helmet, Freesans, sans-serif;
 	-webkit-font-smoothing: antialiased;
 	font-size: 14px;
 	line-height: 18px;
-	height: 100%;
 }
 
 a{
@@ -33,8 +21,20 @@ input,textarea{
 	outline: none;
 }
 
-.page_holder{
-	text-align: center;
+.bold{
+	font-weight: bold;
+}
+
+.semibold{
+	font-weight: bold;
+}
+
+.no_select{
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
 }
 
 .center_holder{
@@ -56,4 +56,5 @@ input,textarea{
 	overflow-x: hidden;
 }
 
+@import "../../../../common_elements/common_elements.subless";
 @import "../pages/pages.subless";

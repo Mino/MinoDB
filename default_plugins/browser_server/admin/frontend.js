@@ -10307,281 +10307,6 @@ return jQuery;
 
 }));
 
-/*!
-	Autosize 1.18.13
-	license: MIT
-	http://www.jacklmoore.com/autosize
-*/
-(function ($) {
-	var
-	defaults = {
-		className: 'autosizejs',
-		id: 'autosizejs',
-		append: '\n',
-		callback: false,
-		resizeDelay: 10,
-		placeholder: true
-	},
-
-	// border:0 is unnecessary, but avoids a bug in Firefox on OSX
-	copy = '<textarea tabindex="-1" style="position:absolute; top:-999px; left:0; right:auto; bottom:auto; border:0; padding: 0; -moz-box-sizing:content-box; -webkit-box-sizing:content-box; box-sizing:content-box; word-wrap:break-word; height:0 !important; min-height:0 !important; overflow:hidden; transition:none; -webkit-transition:none; -moz-transition:none;"/>',
-
-	// line-height is conditionally included because IE7/IE8/old Opera do not return the correct value.
-	typographyStyles = [
-		'fontFamily',
-		'fontSize',
-		'fontWeight',
-		'fontStyle',
-		'letterSpacing',
-		'textTransform',
-		'wordSpacing',
-		'textIndent',
-		'whiteSpace'
-	],
-
-	// to keep track which textarea is being mirrored when adjust() is called.
-	mirrored,
-
-	// the mirror element, which is used to calculate what size the mirrored element should be.
-	mirror = $(copy).data('autosize', true)[0];
-
-	// test that line-height can be accurately copied.
-	mirror.style.lineHeight = '99px';
-	if ($(mirror).css('lineHeight') === '99px') {
-		typographyStyles.push('lineHeight');
-	}
-	mirror.style.lineHeight = '';
-
-	$.fn.autosize = function (options) {
-		if (!this.length) {
-			return this;
-		}
-
-		options = $.extend({}, defaults, options || {});
-
-		if (mirror.parentNode !== document.body) {
-			$(document.body).append(mirror);
-		}
-
-		return this.each(function () {
-			var
-			ta = this,
-			$ta = $(ta),
-			maxHeight,
-			minHeight,
-			boxOffset = 0,
-			callback = $.isFunction(options.callback),
-			originalStyles = {
-				height: ta.style.height,
-				overflow: ta.style.overflow,
-				overflowY: ta.style.overflowY,
-				wordWrap: ta.style.wordWrap,
-				resize: ta.style.resize
-			},
-			timeout,
-			width = $ta.width(),
-			taResize = $ta.css('resize');
-
-			if ($ta.data('autosize')) {
-				// exit if autosize has already been applied, or if the textarea is the mirror element.
-				return;
-			}
-			$ta.data('autosize', true);
-
-			if ($ta.css('box-sizing') === 'border-box' || $ta.css('-moz-box-sizing') === 'border-box' || $ta.css('-webkit-box-sizing') === 'border-box'){
-				boxOffset = $ta.outerHeight() - $ta.height();
-			}
-
-			// IE8 and lower return 'auto', which parses to NaN, if no min-height is set.
-			minHeight = Math.max(parseInt($ta.css('minHeight'), 10) - boxOffset || 0, $ta.height());
-
-			$ta.css({
-				overflow: 'hidden',
-				overflowY: 'hidden',
-				wordWrap: 'break-word' // horizontal overflow is hidden, so break-word is necessary for handling words longer than the textarea width
-			});
-
-			if (taResize === 'vertical') {
-				$ta.css('resize','none');
-			} else if (taResize === 'both') {
-				$ta.css('resize', 'horizontal');
-			}
-
-			// The mirror width must exactly match the textarea width, so using getBoundingClientRect because it doesn't round the sub-pixel value.
-			// window.getComputedStyle, getBoundingClientRect returning a width are unsupported, but also unneeded in IE8 and lower.
-			function setWidth() {
-				var width;
-				var style = window.getComputedStyle ? window.getComputedStyle(ta, null) : false;
-				
-				if (style) {
-
-					width = ta.getBoundingClientRect().width;
-
-					if (width === 0 || typeof width !== 'number') {
-						width = parseInt(style.width,10);
-					}
-
-					$.each(['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'], function(i,val){
-						width -= parseInt(style[val],10);
-					});
-				} else {
-					width = $ta.width();
-				}
-
-				mirror.style.width = Math.max(width,0) + 'px';
-			}
-
-			function initMirror() {
-				var styles = {};
-
-				mirrored = ta;
-				mirror.className = options.className;
-				mirror.id = options.id;
-				maxHeight = parseInt($ta.css('maxHeight'), 10);
-
-				// mirror is a duplicate textarea located off-screen that
-				// is automatically updated to contain the same text as the
-				// original textarea.  mirror always has a height of 0.
-				// This gives a cross-browser supported way getting the actual
-				// height of the text, through the scrollTop property.
-				$.each(typographyStyles, function(i,val){
-					styles[val] = $ta.css(val);
-				});
-				
-				$(mirror).css(styles).attr('wrap', $ta.attr('wrap'));
-
-				setWidth();
-
-				// Chrome-specific fix:
-				// When the textarea y-overflow is hidden, Chrome doesn't reflow the text to account for the space
-				// made available by removing the scrollbar. This workaround triggers the reflow for Chrome.
-				if (window.chrome) {
-					var width = ta.style.width;
-					ta.style.width = '0px';
-					var ignore = ta.offsetWidth;
-					ta.style.width = width;
-				}
-			}
-
-			// Using mainly bare JS in this function because it is going
-			// to fire very often while typing, and needs to very efficient.
-			function adjust() {
-				var height, original;
-
-				if (mirrored !== ta) {
-					initMirror();
-				} else {
-					setWidth();
-				}
-
-				if (!ta.value && options.placeholder) {
-					// If the textarea is empty, copy the placeholder text into 
-					// the mirror control and use that for sizing so that we 
-					// don't end up with placeholder getting trimmed.
-					mirror.value = ($ta.attr("placeholder") || '');
-				} else {
-					mirror.value = ta.value;
-				}
-
-				mirror.value += options.append || '';
-				mirror.style.overflowY = ta.style.overflowY;
-				original = parseInt(ta.style.height,10);
-
-				// Setting scrollTop to zero is needed in IE8 and lower for the next step to be accurately applied
-				mirror.scrollTop = 0;
-
-				mirror.scrollTop = 9e4;
-
-				// Using scrollTop rather than scrollHeight because scrollHeight is non-standard and includes padding.
-				height = mirror.scrollTop;
-
-				if (maxHeight && height > maxHeight) {
-					ta.style.overflowY = 'scroll';
-					height = maxHeight;
-				} else {
-					ta.style.overflowY = 'hidden';
-					if (height < minHeight) {
-						height = minHeight;
-					}
-				}
-
-				height += boxOffset;
-
-				if (original !== height) {
-					ta.style.height = height + 'px';
-					if (callback) {
-						options.callback.call(ta,ta);
-					}
-					$ta.trigger('autosize.resized');
-				}
-			}
-
-			function resize () {
-				clearTimeout(timeout);
-				timeout = setTimeout(function(){
-					var newWidth = $ta.width();
-
-					if (newWidth !== width) {
-						width = newWidth;
-						adjust();
-					}
-				}, parseInt(options.resizeDelay,10));
-			}
-
-			if ('onpropertychange' in ta) {
-				if ('oninput' in ta) {
-					// Detects IE9.  IE9 does not fire onpropertychange or oninput for deletions,
-					// so binding to onkeyup to catch most of those occasions.  There is no way that I
-					// know of to detect something like 'cut' in IE9.
-					$ta.on('input.autosize keyup.autosize', adjust);
-				} else {
-					// IE7 / IE8
-					$ta.on('propertychange.autosize', function(){
-						if(event.propertyName === 'value'){
-							adjust();
-						}
-					});
-				}
-			} else {
-				// Modern Browsers
-				$ta.on('input.autosize', adjust);
-			}
-
-			// Set options.resizeDelay to false if using fixed-width textarea elements.
-			// Uses a timeout and width check to reduce the amount of times adjust needs to be called after window resize.
-
-			if (options.resizeDelay !== false) {
-				$(window).on('resize.autosize', resize);
-			}
-
-			// Event for manual triggering if needed.
-			// Should only be needed when the value of the textarea is changed through JavaScript rather than user input.
-			$ta.on('autosize.resize', adjust);
-
-			// Event for manual triggering that also forces the styles to update as well.
-			// Should only be needed if one of typography styles of the textarea change, and the textarea is already the target of the adjust method.
-			$ta.on('autosize.resizeIncludeStyle', function() {
-				mirrored = null;
-				adjust();
-			});
-
-			$ta.on('autosize.destroy', function(){
-				mirrored = null;
-				clearTimeout(timeout);
-				$(window).off('resize', resize);
-				$ta
-					.off('autosize')
-					.off('.autosize')
-					.css(originalStyles)
-					.removeData('autosize');
-			});
-
-			// Call adjust in case the textarea already contains text.
-			adjust();
-		});
-	};
-}(jQuery || $)); // jQuery or jQuery-like library, such as Zepto
-
 /**
  * History.js jQuery Adapter
  * @author Benjamin Arthur Lupton <contact@balupton.com>
@@ -18589,43 +18314,6 @@ if (typeof module != 'undefined') {
     module.exports = errors;
 }
 
-function isEmptyObject(object){
-	for(key in object){
-		return false;
-	}
-	return true;
-}
-
-var ajax_request_id = 0;
-function ajax_request(endpoint, params, callback){
-    var id = ajax_request_id++;
-    console.log("ajax_request",id, params);
-    $.ajax({
-        type: "POST",
-        url: ui_path+"ajax/"+endpoint,
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: JSON.stringify(params),
-        success: function(response) {
-            console.log("ajax_response",id,response);
-            callback(null, response);
-        },
-        error: function(err, response) {
-            console.log(err);
-            callback(err)
-        }
-    })
-    return id;
-}
-
-function api_request(params, callback){
-    return ajax_request("api", params, callback);
-}
-
-function encode_path(path){
-    return encodeURIComponent(path).replaceAll('%2F','/');
-}
-
 var constant_count = 0;
 
 var Constants = {
@@ -19298,6 +18986,28 @@ Field.prototype.layout = function(){
 }
 
 
+var ajax_request_id = 0;
+function ajax_request(endpoint, params, callback){
+    var id = ajax_request_id++;
+    console.log("ajax_request",id, params);
+    $.ajax({
+        type: "POST",
+        url: site_path+"ajax/"+endpoint,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify(params),
+        success: function(response) {
+            console.log("ajax_response",id,response);
+            callback(null, response);
+        },
+        error: function(err, response) {
+            console.log(err);
+            callback(err)
+        }
+    })
+    return id;
+}
+
 function Modal(props){
 	var modal = this;
 
@@ -19470,369 +19180,45 @@ LoginBox.prototype.login_press = function(object) {
         }
     })
 };
-function SideMenu(page) {
-    var menu = this;
-
-    menu.page = page;
-
-	menu.state = SideMenu.OUT;
-
-	menu.current_pos = -200;
-
-	menu.original_touch = null;
-	menu.last_touch = null;
-	menu.is_pulling = false;
-	menu.is_compact = false;
-	menu.animating = false;
-
-	menu.visible = false;
-
-    menu.menu_items = {};
-
-    menu.element = $("<div />").addClass("side_menu")
-    .on('touchmove mousemove',function(event){
-    	if(!menu.last_touch){
-    		return;
-    	}
-    	event.originalEvent.preventDefault();
-    	var this_touch = {
-    		x: event.originalEvent.pageX
-    	}
-    	var diff_x = this_touch.x - menu.last_touch.x;
-    	
-    	menu.current_pos+=diff_x*1.25;
-    	if(menu.current_pos>0){
-    		menu.current_pos = 0;
-    	} else if(menu.current_pos<-200){
-    		menu.current_pos = -200;
-    	}
-
-    	var percent = 1+menu.current_pos / 200.0;
-
-    	menu.shade.css({
-    		"opacity": percent*SideMenu.SHADE_MAX_ALPHA
-    	})
-
-    	menu.side_element.css({
-    		"left": menu.current_pos
-    	})
-
-    	menu.pull_tab.css({
-    		"margin-right": (menu.current_pos/4)
-    	})
-
-    	var from_start_x = this_touch.x - menu.original_touch.x;
-
-    	if(Math.abs(from_start_x)>20){
-    		menu.is_pulling = true;
-    	}
-
-    	menu.last_touch = this_touch;
-    })
-    .on('touchend mouseup',function(event){
-    	if(!menu.last_touch){
-    		return;
-    	}
-    	event.originalEvent.preventDefault();
-    	menu.original_touch = null;
-    	menu.last_touch = null;
-    	if(!menu.is_pulling){
-    		menu.is_pulling = false;
-    		menu.pull_tab.css({
-    			"background-color": "rgba("+Math.random()*255+","+Math.random()*255+","+Math.random()*255+",1.0)"
-    		})
-    		menu.tab_press();
-    		return;
-    	}
-    	menu.is_pulling = false;
-    	if(menu.current_pos<-100){
-    		menu.push_in();
-    	} else {
-    		menu.push_out();
-    	}
-    })
-    .append(
-    	menu.shade = $("<div />").addClass("shade")
-    ,
-	    menu.side_element = $("<div />").addClass("side_element").append(
-	    // 	menu.logo = $("<a />",{href:Site.path})
-	    //     .ajax_url()
-	    //     .addClass("logo")
-	    //     .text("Admin")
-	    // ,
-			menu.pull_tab = $("<div />").addClass("pull_tab fa fa-bars")
-			.on('touchstart mousedown',function(event){
-				event.originalEvent.preventDefault();
-
-				menu.shade.show();
-
-				menu.original_touch = {
-					x: event.originalEvent.pageX || event.pageX
-				}
-				menu.last_touch = menu.original_touch;
-			})
-			.on('tap',function(){
-				menu.tab_press();
-			})
-		,	
-	    	menu.menu_list_holder = $("<div />").addClass("menu_list_holder").append(
-		    	menu.menu_list = $("<div />").addClass("menu_list").append(
-
-		    	)
-		    )
-	    ,
-	        menu.loading_overlay = $("<div />").addClass("loading_overlay").hide()
-	    ).bind('mousewheel DOMMouseScroll', function(e) {
-		    var scrollTo = null;
-
-		    if (e.type == 'mousewheel') {
-		        scrollTo = (e.originalEvent.wheelDelta * -0.5);
-		    }
-		    else if (e.type == 'DOMMouseScroll') {
-		        scrollTo =40 * e.originalEvent.detail;
-		    }
-
-		    if (scrollTo) {
-		        e.preventDefault();
-		        $(this).scrollTop(scrollTo + $(this).scrollTop());
-		    }
-		})
-	);
-}
-
-SideMenu.PARTIAL = {};
-SideMenu.IN = {};
-SideMenu.OUT = {};
-SideMenu.SHADE_MAX_ALPHA = 0.3;
-
-SideMenu.prototype.init = function(){
-	var menu = this;
-
-	$('html').on('tap.side_menu',function(event){
-		if(menu.is_compact){
-			if (!$(event.target).closest(menu.side_element).length){
-				menu.push_in();
-			}
-		}
-	})
-}
-
-SideMenu.prototype.remove = function(){
-	var menu = this;
-
-	$('html').off('tap.side_menu')
-}
-
-SideMenu.prototype.normal_mode = function(){
-	var menu = this;
-
-	menu.is_compact = false;
-
-	menu.shade.hide();
-
-	menu.pull_tab.hide();
-	menu.push_out(0);
-}
-
-SideMenu.prototype.compact_mode = function(){
-	var menu = this;
-
-	menu.is_compact = true;
-
-	menu.pull_tab.show();
-	menu.push_in(0);
-}
-
-SideMenu.prototype.tab_press = function(){
-	var menu = this;
-
-	if(menu.animating){
-		return;
-	}
-
-	if(menu.state===SideMenu.OUT){
-		menu.push_in();
-	} else {
-		if(menu.state===SideMenu.IN){
-			menu.push_out();
-		}
-	}
-}
-
-SideMenu.prototype.select_item = function(name){
-	var menu = this;
-
-	for(var i in menu.menu_items){
-		if(menu.menu_items.hasOwnProperty(i)){
-			if(i===name){
-				menu.menu_items[i].addClass("active");
-			} else {
-				menu.menu_items[i].removeClass("active");
-			}
-		}
-	}
-}
-
-SideMenu.prototype.add_item = function(name, display_name){
-	var menu = this;
-
-	var menu_item = $("<a />",{href:Site.path+"plugins/"+name})
-	.ajax_url()
-	.addClass("menu_item")
-	.append(
-		$("<div />").text(display_name)
-	)
-
-	menu.menu_items[name] = menu_item;
-    menu.menu_list.append(menu_item);
-}
-
-SideMenu.prototype.close_if_compact = function(){
-	var menu = this;
-
-	if(menu.is_compact){
-		menu.push_in();
-	}
-}
-
-SideMenu.prototype.show = function(){
-	var menu = this;
-
-	if(!menu.visible){
-		menu.element.show();
-		menu.visible = true;
-	}
-}
-
-SideMenu.prototype.hide = function(){
-	var menu = this;
-
-	if(menu.visible){
-		menu.element.hide();
-		menu.visible = false;
-	}
-}
-
-SideMenu.prototype.push_out = function(duration){
-	var menu = this;
-
-	if(duration===undefined){
-		duration = 400;
-	}
-
-	if(menu.is_compact){
-		menu.shade.show();
-	}
-
-	menu.animating = true;
-
-	menu.side_element.animate({
-		"left": 0
-	},
-	duration,
-	function(){
-		menu.animating = false;
-	})
-
-	menu.pull_tab.animate({
-		"margin-right": 0
-	},duration);
-
-	menu.shade.animate({
-		"opacity": SideMenu.SHADE_MAX_ALPHA
-	},duration);
-
-	// menu.shadow.fadeIn(duration || 100);
-	menu.state = SideMenu.OUT;
-	menu.current_pos = 0;
-}
-
-SideMenu.prototype.push_in = function(duration){
-	var menu = this;
-
-	if(duration===undefined){
-		duration = 400;
-	}
-
-	menu.animating = true;
-	menu.side_element.animate({
-		"left": -200
-	},
-	duration ,
-	function(){
-		menu.animating = false;
-		menu.shade.hide();
-	})
-
-	menu.pull_tab.animate({
-		"margin-right": "-50px"
-	},duration );
-
-	menu.shade.animate({
-		"opacity": 0
-	},duration);
-
-	// menu.shadow.fadeOut(duration );
-	menu.state = SideMenu.IN;
-	menu.current_pos = -200;
-}
-
 extend(AdminPage, Page);
+
 function AdminPage(req) {
     var page = this;
 
     AdminPage.superConstructor.call(this);
 
-    page.side_menu = new SideMenu(page);
-
-    page.element.addClass("admin_page").append(
-        page.content_pane = $("<div/>").addClass("content_pane").append(
-            page.main_menu = $("<div />").addClass("main_menu").text("Main Menu")
-        )
-    ,
-        page.side_menu.element
+    page.element
+    .addClass("admin_page")
+    .append(
+        page.form_holder = $("<div />")
     )
 
-    for(var i = 0; i < plugins.length; i++){
-        var plugin_info = plugins[i];
+    ajax_request("get_config",{
 
-        page.side_menu.add_item(
-            plugin_info.name,
-            plugin_info.display_name || plugin_info.name
-        );
-    }
+    },function(err,res){
+        page.populate(res);
+    })
 
     page.new_url(req);
 }
 Site.add_url("/", AdminPage);
-Site.add_url("/plugins/", AdminPage);
-Site.add_url("/plugins/:plugin_name", AdminPage);
 
-AdminPage.prototype.iframe_load_url = function(url){
+AdminPage.prototype.populate = function(data){
     var page = this;
 
-    if(page.iframe!==undefined){
-        page.iframe.remove();
+    if(page.form){
+        page.form.remove();
     }
-    page.iframe = $("<iframe />",{src: url}).appendTo(page.content_pane);
-}
 
-AdminPage.prototype.new_url = function(req){
-    var page = this;
+    page.form = new FVForm();
+    page.form.add_field("name", new TextField("Name"));
+    page.form.add_field("display_name", new TextField("Display Name"));
 
-    page.side_menu.close_if_compact();
+    page.form_holder.append(
+        page.form.element
+    )
 
-    if(req.params.plugin_name!==undefined){
-        page.iframe_load_url(site_path+"plugin_config/"+req.params.plugin_name);
-        page.side_menu.select_item(req.params.plugin_name);
-        page.main_menu.hide();
-    } else {
-        if(page.iframe!==undefined){
-            page.iframe.hide();
-        }
-        page.main_menu.show();
-        page.side_menu.select_item(null);
-    }
+    page.form.val(data).disable();
 }
 
 AdminPage.prototype.get_title = function() {
@@ -19843,43 +19229,15 @@ AdminPage.prototype.get_title = function() {
 AdminPage.prototype.init = function() {
     var page = this;
 
-    page.side_menu.init();
 }
 
 AdminPage.prototype.remove = function() {
     var page = this;
 
-    page.side_menu.remove();
-}
-
-AdminPage.prototype.compact_mode = function(){
-    var page = this;
-
-    page.side_menu.compact_mode();
-    page.content_pane.css("left","0px");
-}
-
-AdminPage.prototype.normal_mode = function(){
-    var page = this;
-
-    page.side_menu.normal_mode();
-    page.content_pane.css("left","200px");
 }
 
 AdminPage.prototype.resize = function(resize_obj) {
     var page = this;
-
-    if(resize_obj.window_width<700){
-        if(page.is_compact!==true){
-            page.is_compact = true;
-            page.compact_mode();
-        }
-    } else {
-        if(page.is_compact!==false){
-            page.is_compact = false;
-            page.normal_mode();
-        }
-    }
 
 }
 
@@ -19926,11 +19284,6 @@ $(document).ready(function() {
          * transition has been handled. */
         return true;
     }
-
     Site.path = site_path;
-
-    Site.debug = false;
-
     Site.init();
-
 });

@@ -27,11 +27,11 @@ function BrowserServer(options){
     bs.express_server.use(cookieParser());
     bs.express_server.use(bodyParser());
     bs.express_server.use(express.static(path.join(__dirname, 'public')));
-    require('./ajax/routes').add_routes(bs);
+    require('./public_ajax/routes').add_routes(bs);
 
     bs.express_server.get('*', process_session(bs,true), function(req, res) {
         var site_path = path.join(req.mino_path,bs.path);
-        res.render('index', {
+        res.render('public', {
             custom_fields: JSON.stringify(bs.minodb.custom_fields),
             site_path: site_path,
             mino_path: req.mino_path,
@@ -40,8 +40,22 @@ function BrowserServer(options){
     })
 
     bs.config_server = express();
-    bs.config_server.get('*', function(req, res){
-        res.send("BROWSER CONFIG "+JSON.stringify(req.user));
+    bs.config_server.disable('etag');//Prevents 304s
+    bs.config_server.engine('mustache', mustacheExpress());
+    bs.config_server.set('views', path.join(__dirname, 'views'));
+    bs.config_server.set('view engine', 'mustache');
+    bs.config_server.use(cookieParser());
+    bs.config_server.use(bodyParser());
+    bs.config_server.use(express.static(path.join(__dirname, 'admin')));
+    require('./admin_ajax/routes').add_routes(bs);
+    bs.config_server.get('*', process_session(bs,true), function(req, res) {
+        var site_path = path.join(req.mino_path,"/admin/plugin_config/",bs.info().name+"/");
+        res.render('admin', {
+            custom_fields: JSON.stringify(bs.minodb.custom_fields),
+            site_path: site_path,
+            mino_path: req.mino_path,
+            user: JSON.stringify(req.user || null)
+        });
     })
 
     bs.express_server.use(errorHandler({ showStack: true, dumpExceptions: true}));

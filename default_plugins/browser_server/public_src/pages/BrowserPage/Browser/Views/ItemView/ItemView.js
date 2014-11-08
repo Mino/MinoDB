@@ -34,12 +34,11 @@ function ItemView(path, data, browser, options){
 		}
 		var section = new ItemSection(type_name, null, item_view);
 		item_view.sections[type_name] = section;
-		section.edit_mode();
+		section.enable();
 	})
 
 	item_view.toolbar_element = $("<div />").append(
 		item_view.edit_button = $("<button />").addClass("mino_button").text("Edit").on('tap',function(){
-			console.log("element ",item_view.element);
 			item_view.edit();
 		}).hide(),
 		item_view.save_button = $("<button />").addClass("mino_button").text("Save").on('tap',function(){
@@ -61,9 +60,6 @@ function ItemView(path, data, browser, options){
 
 ItemView.prototype.populate = function(data){
 	var item_view = this;
-
-	console.log("populate");
-	console.log(data);
 
 	item_view.item_data = data;
 	item_view.base_data = JSON.parse(JSON.stringify(item_view.item_data));
@@ -94,9 +90,9 @@ ItemView.prototype.populate = function(data){
 
 	if(item_view.options.create){
 		item_view.form.fields.path.val(item_view.path);
-		item_view.edit_mode();
+		item_view.enable();
 	} else {
-		item_view.view_mode();
+		item_view.disable();
 	}
 
 	for(var i in item_view.sections){
@@ -155,36 +151,36 @@ ItemView.prototype.remove = function(){
 ItemView.prototype.edit = function(){
 	var item_view = this;
 
-	item_view.edit_mode();
+	item_view.enable();
 }
 
-ItemView.prototype.edit_mode = function(){
+ItemView.prototype.enable = function(){
 	var item_view = this;
 
-	item_view.is_edit_mode = true;
+	item_view.is_enable = true;
 
 	item_view.edit_button.hide();
 	item_view.cancel_button.show();
 	item_view.save_button.show();
 	item_view.add_type_button.show();
 
-	item_view.form.edit_mode();
+	item_view.form.enable();
 
 	for(var i in item_view.sections){
 		var section = item_view.sections[i];
-		section.edit_mode();
+		section.enable();
 	}
 
 	//Disable any fields that should always be disabled
-	item_view.form.fields.full_path.view_mode();
+	item_view.form.fields.full_path.disable();
 
 	item_view.resize();
 }
 
-ItemView.prototype.view_mode = function(){
+ItemView.prototype.disable = function(){
 	var item_view = this;
 
-	item_view.is_edit_mode = false;
+	item_view.is_enable = false;
 	
 	item_view.cancel_button.hide();
 	item_view.save_button.hide();
@@ -193,11 +189,11 @@ ItemView.prototype.view_mode = function(){
 
 	item_view.error(null);
 
-	item_view.form.view_mode();
+	item_view.form.disable();
 
 	for(var i in item_view.sections){
 		var section = item_view.sections[i];
-		section.view_mode();
+		section.disable();
 	}
 
 	item_view.resize();
@@ -231,8 +227,6 @@ ItemView.prototype.save = function(){
 			]
 		}
 	},function(err, response){
-		console.log("err ",err);
-		console.log("response ",response);
 
 		if(response.error!==undefined){
 			item_view.error(response.invalid.parameters.invalid.objects.invalid[0]);
@@ -255,11 +249,11 @@ ItemView.prototype.save = function(){
 
 			item_view.base_data = JSON.parse(JSON.stringify(item_view.item_data));
 
-			item_view.view_mode();
+			item_view.disable();
 		}
 	})
 
-	// item_view.view_mode();
+	// item_view.disable();
 
 	// item_view.save_button.hide();
 	// item_view.cancel_button.hide();

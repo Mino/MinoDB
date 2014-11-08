@@ -33,11 +33,20 @@ module.exports = function(gulp){
         .pipe(concat('style.css'))
         .pipe(gulp.dest(wrap_path('./public/')));
     });
+    gulp.task('browser_admin_less', function(){
+        return gulp.src(wrap_path('./admin_src/style/style.less'))
+        .pipe(plumber(onError))
+        .pipe(less())
+        .pipe(concat('style.css'))
+        .pipe(gulp.dest(wrap_path('./admin/')));
+    });
     gulp.task('browser_less', function(){
         gulp.start('browser_public_less');
+        gulp.start('browser_admin_less');
     });
 
     var public_js_task = null;
+    var admin_js_task = null;
 
     //JS compilation
     gulp.task('browser_public_js', function(){
@@ -54,17 +63,34 @@ module.exports = function(gulp){
         .pipe(concat('frontend.js'))
         .pipe(gulp.dest(wrap_path('./public/')))
     });
+    gulp.task('browser_admin_js', function(){
+        if(admin_js_task){
+            admin_js_task.stop();
+        }
+        admin_js_task = this;
+        return gulp.src([
+            wrap_path('./admin_src/init.js')
+        ])
+        .pipe(plumber(onError))
+        .pipe(gulpImports())
+        .on('error', onError)
+        .pipe(concat('frontend.js'))
+        .pipe(gulp.dest(wrap_path('./admin/')))
+    });
     gulp.task('browser_js', function(){
         gulp.start('browser_public_js');
+        gulp.start('browser_admin_js');
     })
 
-    gulp.start("browser_public_js");
+    gulp.start("browser_js");
 
 
 
     gulp.task('browser_watch', function(){
-        gulp.watch([wrap_path('./public_src/**/*.js')], ['browser_js']);
+        gulp.watch([wrap_path('./public_src/**/*.js')], ['browser_public_js']);
         gulp.watch([wrap_path('./public_src/**/*.less'),wrap_path('./public_src/**/*.subless')], ['browser_less']);
+        gulp.watch([wrap_path('./admin_src/**/*.js')], ['browser_admin_js']);
+        gulp.watch([wrap_path('./admin_src/**/*.less'),wrap_path('./public_src/**/*.subless')], ['browser_admin_less']);
     });
 
     gulp.task('browser_default', function(){

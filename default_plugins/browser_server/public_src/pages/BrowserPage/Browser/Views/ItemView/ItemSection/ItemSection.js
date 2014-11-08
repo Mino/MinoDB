@@ -4,11 +4,7 @@ function ItemSection(name, value, item_view){
 	section.name = name;
 	section.item_view = item_view;
 
-    console.log("ITEM SECTION NAME ",name);
 	item_view.browser.type_cache.load(name, function(err, data){
-        console.log("ITEM SECTION LOADED");
-		console.log(err);
-		console.log(data);
         section.populate_type(data);
         section.populate(value);
 	})
@@ -48,24 +44,24 @@ ItemSection.prototype.error = function(argument){
     }
 }
 
-ItemSection.prototype.edit_mode = function(){
+ItemSection.prototype.enable = function(){
     var section = this;
     
-    section.is_edit_mode = true;
+    section.is_enable = true;
 
     if(section.field){
-        section.field.edit_mode();
+        section.field.enable();
         section.remove_button.show();
     }
 }
 
-ItemSection.prototype.view_mode = function(){
+ItemSection.prototype.disable = function(){
     var section = this;
  
-    section.is_edit_mode = false;
+    section.is_enable = false;
 
     if(section.field){
-        section.field.view_mode();
+        section.field.disable();
         section.remove_button.hide();
     }
 }
@@ -89,7 +85,7 @@ ItemSection.prototype.populate_type = function(type){
 	section.type = type;
 
     section.vr = new ValidationRule();
-	console.log(section.vr.init(type));
+	section.vr.init(type);
 
 	section.field = section.vr.field.create_ui(section.item_view.form);
 
@@ -106,10 +102,10 @@ ItemSection.prototype.populate_type = function(type){
         section.field.init();
     }
 
-    if(section.is_edit_mode){
-        section.edit_mode();
+    if(section.is_enable){
+        section.enable();
     } else {
-        section.view_mode();
+        section.disable();
     }
 
 }

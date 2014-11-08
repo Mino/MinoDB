@@ -1,4 +1,4 @@
 .auth_page{
-
-
+	margin: 20px;
+	background-color: white;
 }

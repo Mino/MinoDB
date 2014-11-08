@@ -59,7 +59,7 @@
 	.text_input_holder{
 
 		position: absolute;
-		top: 0px;
+		top: 40px;
 		left: 0px;
 		z-index: 20;
 

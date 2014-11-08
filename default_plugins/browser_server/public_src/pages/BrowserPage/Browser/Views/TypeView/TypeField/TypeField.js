@@ -6,6 +6,9 @@ function TypeField(value, parent){
 	tf.parent = parent;
 	tf.value = value || {};
 
+    tf.is_enable = true;
+    tf.base_fields = {};
+
 	TypeField.superConstructor.call(this, "", {});
 	tf.contents = tf.input_holder.addClass("contents")
 
@@ -41,14 +44,10 @@ function TypeField(value, parent){
 	tf.contents.append(
 		tf.form.element
 	)
-	tf.form.val(value);
-
-    tf.is_edit_mode = true;
-
-    tf.base_fields = {};
-    for(var name in tf.form.fields){
+	for(var name in tf.form.fields){
     	tf.base_fields[name] = true;
     }
+	tf.form.val(value);
 
     tf.update_title_name();
     tf.update_type_fields();
@@ -136,26 +135,26 @@ TypeField.prototype.error = function(argument){
     return tf.form.error(argument);
 }
 
-TypeField.prototype.edit_mode = function(){
+TypeField.prototype.enable = function(){
     var tf = this;
     
-    tf.is_edit_mode = true;
+    tf.is_enable = true;
 
     if(tf.form){
-        tf.form.edit_mode();
+        tf.form.enable();
     }
 
-    Field.prototype.edit_mode.call(this);
+    Field.prototype.enable.call(this);
 }
 
-TypeField.prototype.view_mode = function(){
+TypeField.prototype.disable = function(){
     var tf = this;
  
-    tf.is_edit_mode = false;
+    tf.is_enable = false;
 
     if(tf.form){
-        tf.form.view_mode();
+        tf.form.disable();
     }
 
-    Field.prototype.view_mode.call(this);
+    Field.prototype.disable.call(this);
 }

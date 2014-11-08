@@ -42,9 +42,9 @@ TypeView.prototype.populate = function(data){
 	)
 
 	if(type_view.options.create){
-		type_view.edit_mode();
+		type_view.enable();
 	} else {
-		type_view.view_mode();
+		type_view.disable();
 	}
 
 }
@@ -52,13 +52,13 @@ TypeView.prototype.populate = function(data){
 TypeView.prototype.edit = function(){
 	var type_view = this;
 
-	type_view.edit_mode();
+	type_view.enable();
 }
 
-TypeView.prototype.edit_mode = function(){
+TypeView.prototype.enable = function(){
 	var type_view = this;
 
-	type_view.type_field.edit_mode();
+	type_view.type_field.enable();
 
 	type_view.edit_button.hide();
 	type_view.cancel_button.show();
@@ -67,10 +67,10 @@ TypeView.prototype.edit_mode = function(){
 	type_view.resize();
 }
 
-TypeView.prototype.view_mode = function(){
+TypeView.prototype.disable = function(){
 	var type_view = this;
 
-	type_view.type_field.view_mode();
+	type_view.type_field.disable();
 
 	type_view.edit_button.show();
 	type_view.cancel_button.hide();
