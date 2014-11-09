@@ -72,7 +72,7 @@ describe('Path', function() {
 
         it('init should throw an error for single object path that doesn\'t end with /', function(done) {
             var path = new Path();
-            assert.notEqual(path.init("/Test"),null);
+            assert.strictEqual(path.init("/Test"),null);
             done();
         });
 

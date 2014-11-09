@@ -15,9 +15,9 @@
     "mongodb" : "*",
     "minosdk" : "git+https://bestan:09915eb57c27b7417bc43e2735ab93890c76e4c9@github.com/MarcusLongmuir/MinoSDK.git",
     "tracer": "*",
-    "fieldval" : "FieldVal/fieldval-js#develop",
-    "fieldval-basicval" : "FieldVal/fieldval-basicval-js#develop",
-    "fieldval-rules" : "0.1.2",
+    "fieldval" : "0.1.3",
+    "fieldval-basicval" : "0.1.3",
+    "fieldval-rules" : "0.1.4",
     "extend": "MarcusLongmuir/extend"
   },
   "devDependencies": {
@@ -25,6 +25,9 @@
     "gulp-nodemon" : "*",
     "gulp-util": "^2.2.14",
     "gulp": "^3.6.1",
+    "gulp-istanbul": "^0.2.2",
+    "gulp-jshint": "^1.8.4",
+    "gulp-mocha": "^1.0.0",
     "gulp-less": "^1.2.3",
     "gulp-uglify": "^0.2.1",
     "gulp-concat": "^2.2.0",

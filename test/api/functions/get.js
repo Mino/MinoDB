@@ -45,9 +45,6 @@ describe('get', function() {
                     done();
                 })
             });
-
-
-
         });
 
     });

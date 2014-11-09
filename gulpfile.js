@@ -11,6 +11,10 @@ var gulpImports = require('gulp-imports');
 var nodemon = require('gulp-nodemon');
 var path = require('path');
 
+
+var mocha = require('gulp-mocha');
+var istanbul = require('gulp-istanbul');
+
 require('./default_plugins/admin_server/gulpfile')(gulp);
 require('./default_plugins/browser_server/gulpfile')(gulp);
 require('./MinoDB/ui_server/gulpfile')(gulp);
@@ -19,6 +23,16 @@ var onError = function (err) {
   gutil.beep();
   console.log(err);
 };
+
+gulp.task('test', function(cb){
+    gulp.src( [ 'test/test.js' ] )
+    .pipe( mocha( {
+        reporter: 'spec'
+    }))
+    .on('error', gutil.log)
+    .pipe(istanbul.writeReports())
+    .on('end', cb);
+});
 
 gulp.task('watch', function(){
     gulp.start('browser_watch');

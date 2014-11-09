@@ -135,6 +135,7 @@ describe('MinoDB API', function() {
                     } else {
                         jsonout(response);
                     }
+                    logger.log("FINISHED")
                     done();
                 }
             });

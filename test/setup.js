@@ -20,11 +20,9 @@ module.exports = function(done) {
 			var sdk = new MinoSDK("testuser");
 			sdk.set_local_api(mino.api);
 
-			setTimeout(function() {
-				globals.sdk = sdk;			
-				logger.log("finished");
-				done();
-			}, 1000);
+			globals.sdk = sdk;			
+			logger.log("finished");
+			done();
 			
 		});
 	});

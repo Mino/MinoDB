@@ -67,31 +67,34 @@ Core.prototype.connect = function(callback){
 Core.prototype.call = function(user, request, callback){
 	var core = this;
 
-    var api_val = new FieldVal(request);
+    core.ds.connect(function(err){
 
-    var function_name = api_val.get("function", BasicVal.string(true), BasicVal.one_of(core.handlers));
-    var parameters = api_val.get("parameters", BasicVal.object(true));
+        var api_val = new FieldVal(request);
 
-    var handler = core.handlers[function_name];
+        var function_name = api_val.get("function", BasicVal.string(true), BasicVal.one_of(core.handlers));
+        var parameters = api_val.get("parameters", BasicVal.object(true));
 
-    var error = api_val.end();
-    if(error){
-        callback(error);
-        return;
-    }
+        var handler = core.handlers[function_name];
 
-    if (handler != null) {
-        var handler_callback = function(error, response) {
-            // logger.log(JSON.stringify(error, null, 4));
-            // logger.log(JSON.stringify(response, null, 4));
-            if (error != null) {
-                return callback(api_val.invalid("parameters", error).end());
-            } else {
-                callback(null, response);
-            }
-        };
-        new handler(core, user, parameters, handler_callback)
-    }
+        var error = api_val.end();
+        if(error){
+            callback(error);
+            return;
+        }
+
+        if (handler != null) {
+            var handler_callback = function(error, response) {
+                // logger.log(JSON.stringify(error, null, 4));
+                // logger.log(JSON.stringify(response, null, 4));
+                if (error != null) {
+                    return callback(api_val.invalid("parameters", error).end());
+                } else {
+                    callback(null, response);
+                }
+            };
+            new handler(core, user, parameters, handler_callback)
+        }
+    });
 }
 
 module.exports = Core;
