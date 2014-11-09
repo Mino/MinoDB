@@ -19052,9 +19052,6 @@ Path.prototype.init = function(path_string, allow_tilde) {
     path.sub_paths = [];
 
     path.string_length = path_string.length;
-    // if (path.string_length < 3) { //Length must be at least 3 (One forward slash, at least one character and another forward slash)
-    //     return errors.INVALID_PATH_FORMAT
-    // } else 
     if (path.string_length >= Constants.maximumAccessiblePathLength) {
         return errors.INVALID_PATH_FORMAT
     }
