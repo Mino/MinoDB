@@ -1,13 +1,11 @@
 var request = require('request');
 var assert = require("assert");
 var logger = require('tracer').console();
-var MinoSDK = require('minosdk');
+var globals = require('../globals');
 
 var jsonout = function(json) {
     logger.log(JSON.stringify(json, null, 4));
 }
-
-var db = new MinoSDK("TestUser", "TEST123fmafo4agnlanq23");
 
 describe('MinoDB API', function() {
 
@@ -95,7 +93,7 @@ describe('MinoDB API', function() {
 
     describe('When I make a save a simple type', function() {
         it('should return a 200 OK', function(done) {
-            db.platform_request("/", {
+            globals.sdk.call({
                 "function": "save_type",
                 "parameters": {
                     "type" : {
@@ -126,6 +124,7 @@ describe('MinoDB API', function() {
                     }
                 }
             }, function(error, response) {
+                logger.log(error, response);
                 if (error != null) {
                     logger.log(error);
                     assert.fail('Just threw a connection error')
