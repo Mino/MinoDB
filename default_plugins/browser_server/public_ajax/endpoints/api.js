@@ -11,7 +11,7 @@ module.exports = function(browser_server){
 		var sdk = new MinoSDK(req.user.username);
 		sdk.set_local_api(browser_server.minodb.api);
 
-		sdk.platform_request(req.body ,function(api_err, api_res){
+		sdk.call(req.body ,function(api_err, api_res){
 	        if(api_err){
 	            res.json(api_err);
 	            return;
