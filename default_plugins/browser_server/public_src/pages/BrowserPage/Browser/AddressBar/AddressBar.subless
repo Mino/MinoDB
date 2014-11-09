@@ -1,0 +1,101 @@
+.address_bar{
+	width: 100%;
+	min-height: 40px;
+	padding:0px;
+	margin:0px;
+	z-index: 11;
+	overflow: visible;
+	top:0px;
+	left:0px;
+	overflow-x: hidden;
+
+	button{
+		vertical-align: top;
+	}
+
+	.nav_buttons{
+		display: inline-block;
+
+		button{
+			margin-right: 5px;
+		}
+
+		.back_button, .forward_button{
+			padding-left: 10px;
+			padding-right: 10px;
+			font-size: 20px;
+		}
+	}
+
+	.path_buttons{
+		
+		list-style: none;
+		display: inline;
+
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-o-user-select: none;
+		user-select: none;
+
+		min-height: 35px;
+		margin: 0px;
+
+		@import "PathButton/PathButton.subless";
+	}
+
+	.edit_address_button{
+		background-color: gray;
+	}
+
+	.goAddressButton{
+		float:left;
+	}
+
+	.cancel_addressButton{
+		float:left;
+	}
+
+	.text_input_holder{
+
+		position: absolute;
+		top: 40px;
+		left: 0px;
+		z-index: 20;
+
+		.text_input{
+			width: 100%;
+			box-sizing: border-box;
+			padding: 5px;
+			line-height: 13px;
+			font-size: 13px;
+			border-top: none;
+			border-left: none;
+			-webkit-border-radius: 0px;
+			resize: none;
+		}
+	}
+		
+	.addressBarButtonsHolder{
+		position: absolute;
+		top:0px;
+		right: 0px;
+		height: 40px;
+		z-index: 2;
+	}
+
+	.historybutton{
+		float: left;
+		margin-right: 5px;
+		margin-top: 5px;
+		font: normal 12px arial, sans-serif;
+	}
+
+	.historybutton.backButton{
+		margin-left: 5px;
+	}
+
+	.historybutton.forwardButton{
+		margin-right: 0px;
+	}
+}

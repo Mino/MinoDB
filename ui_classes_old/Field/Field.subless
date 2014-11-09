@@ -1,0 +1,92 @@
+.field{
+	margin-bottom: 5px;
+	overflow: hidden;
+	width: 100%;
+
+	.titleRow{
+		display: block;
+		.name{
+			.fieldName{
+				.bold;
+			}
+			.deprecatedLabel{
+				position: relative;
+				cursor: pointer;
+				color: @tooltipColor;
+				font-weight: normal;
+				display: inline-block;
+			}
+			padding-left: 4px;
+			padding-right: 4px;
+		}
+	}
+	
+	.inputRow{
+		display: block;
+		position: relative;
+		textarea{
+			margin: 2px;
+		}
+		.tablevaluefield.minofield{
+			word-wrap: break-word;
+			padding-right: 13px;
+			padding-bottom:4px;
+		}
+		.arrayValueField.tablevaluefield.minofield{
+			padding-right: 0px;
+			.field{
+				.titleRow{
+					width: 100%;
+				}
+				.inputRow{
+					width: 100%;
+					.tablevaluefield.minofield{
+						padding-left: 30px;
+					}
+					.deleteRowButtonHolder{
+						display: inline-block;
+						position: absolute;
+						left: 0px;
+						top: 2px;
+						.deleteRowButton{
+							height: 30px;
+							color: black;
+							line-height: 22px;
+
+							&:active{
+								color: white;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		.nestedValueField.tablevaluefield.minofield{
+			padding-right: 0px;
+			.field{
+				.titleRow{
+					width: 100%;
+				}
+				.inputRow{
+					width: 100%;
+					.tablevaluefield.minofield{
+						padding-left: 0px;
+					}
+				}
+			}
+		}
+	}
+
+	.errorRow{
+		width: 100%;
+	}
+	
+	&.error{
+		border: 1px solid @errorColor;
+		.inputRow{
+
+		}
+	}
+
+}

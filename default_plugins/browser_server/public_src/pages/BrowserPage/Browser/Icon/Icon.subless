@@ -1,0 +1,72 @@
+.icon{
+	cursor: pointer;
+	position: relative;
+	display: inline-block;
+	width: 90px;
+	height: 120px;
+	margin: 5px;
+
+	>.holder{
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		width: 70px;
+		height: 70px;
+		text-align: center;;
+		vertical-align: middle;
+		color: #555;
+	}
+
+	>.text{
+		position: absolute;
+		top: 85px;
+		left: 0px;
+		width: 90px;
+		color: black;
+		line-height: 15px;
+		text-align: center;
+		overflow:hidden;
+		text-overflow: ellipsis;
+		word-wrap: break-word;
+		white-space: nowrap;
+		box-sizing: border-box;
+	}
+
+	&:active{
+		>.holder{
+			color: @mino_button_color_active;
+		}
+	}
+
+	&:hover{
+		>.text{
+			color: black;
+			text-overflow: none;
+			background-color: white;
+			overflow:hidden;
+			text-align: center;
+			word-wrap: break-word;
+		    hyphens:auto;
+		    white-space: normal;
+			-webkit-hyphens: auto;
+		    -moz-hyphens:auto;
+		    border: 1px solid #999;
+		}
+	}
+
+	&.selected{
+		background-color: @selected_background_color;
+		>.text{
+			color: white;
+		}
+		&:hover{
+			>.text{
+				color: black;
+			}
+		}
+	}
+}
+
+@import "FolderIcon/FolderIcon.subless";
+@import "ItemIcon/ItemIcon.subless";
+@import "TypeIcon/TypeIcon.subless";

@@ -1,0 +1,11 @@
+.not_found_page{
+	.error_code{
+		padding-top: 20px;
+		text-align: center;
+		font-weight: bold;
+	}
+
+	.description{
+		text-align: center;
+	}
+}

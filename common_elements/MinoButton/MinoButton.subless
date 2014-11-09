@@ -1,0 +1,16 @@
+.mino_button{
+	-webkit-appearance: none;
+	border: none;
+	outline: none;
+	min-height: 30px;
+	font-size: 16px;
+	font-weight: bold;
+	color: white;
+	background-color: @mino_button_color;
+	cursor: pointer;
+	margin: 0px;
+
+	&:active{
+		background-color: @mino_button_color_active;
+	}
+}

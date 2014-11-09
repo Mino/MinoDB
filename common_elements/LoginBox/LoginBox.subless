@@ -1,0 +1,26 @@
+.login_box{
+	
+}
+
+.modal.login_box_modal{
+
+	.fv_field_container{
+		margin-left: 20px;
+		width: 260px;
+		>.fv_field_title{
+			color: black;
+			.bold;
+		}
+		>.fv_field{
+			>.fv_input_holder{
+				>input{
+					
+				}
+			}
+		}
+	}
+
+	button{
+		margin-left: 20px;
+	}
+}

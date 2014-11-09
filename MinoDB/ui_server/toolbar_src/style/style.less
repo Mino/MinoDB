@@ -1,0 +1,33 @@
+@import (reference) "../../../../common_elements/common_elements.subless";
+
+.mino_toolbar{
+	height: 40px;
+	width: 100%;
+	position: fixed;
+	top: 0px;
+	z-index: 1000;
+	background-color: white;
+	box-sizing: border-box;
+	outline: 3px solid rgba(0,0,0,0.2);
+
+	>.apps_dropdown{
+		float: left;
+		margin-left: 5px;
+		.fv_field_title{
+			display: none;
+		}
+	}
+
+	>a{
+		>button{
+			.mino_button;
+			margin-left: 5px;
+			margin-top: 5px;
+		}
+
+		&.sign_out_button{
+			float: right;
+			margin-right: 5px;
+		}
+	}
+}

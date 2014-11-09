@@ -1,0 +1,6 @@
+.item_icon{
+	
+	>.holder{
+		font-size: 60px;
+	}
+}

@@ -1,0 +1,5 @@
+.sign_out_page{
+	height: 100%;
+
+	.loading_indicator("../../../../");
+}

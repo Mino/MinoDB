@@ -1,0 +1,87 @@
+.side_menu{
+
+	.shade{
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		width: 100%;
+		height: 100%;
+		background-color: black;
+		opacity: 0;
+	}
+
+	&:after{
+		clear: both;
+	}
+
+	&:before, &:after {
+	    content: " ";
+	    display: table;
+	}
+
+	.side_element{
+		width: 199px;
+		position: fixed;
+		top: 40px;
+		left: 0px;
+		bottom: 0px;
+		background-color: white;
+
+		border-right: 1px solid gray;
+
+		.logo{
+			display: block;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 200px;
+			height: 50px;
+			box-sizing: border-box;
+			padding: 10px;
+			text-align: center;
+			line-height: 30px;
+			font-size: 20px;
+			background-color: white;
+			color: @minoColor1;
+			.bold;
+			border-right: 1px solid gray;
+			border-bottom: 1px solid gray;
+		}
+
+		.pull_tab{
+			position: absolute;
+			top: 0px;
+			right: 0px;
+			width: 50px;
+			height: 50px;
+			line-height: 50px;
+			text-align: center;
+			margin-right: -50px;
+			background-color: rgba(0,0,0,0.3);
+			color: white;
+			cursor: pointer;
+			font-size: 30px;
+		}
+
+		.menu_list{
+			margin-top: 0px;
+			padding-bottom: 50px;
+			box-sizing: border-box;
+
+			.menu_item{
+				display: block;
+				font-size: 15px;
+				padding: 5px;
+				border-bottom: 1px solid gray;
+				color: black;
+				background-color: white;
+				.bold;
+
+				&.active{
+					color: white;
+					background-color: @minoColor1;
+				}
+			}
+		}
+	}
+}

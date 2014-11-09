@@ -1,0 +1,17 @@
+{
+	"name":"mino.user",
+	"display_name":"User",
+	"fields":[
+		{
+			"name":"username",
+			"display_name":"Username",
+			"type":"text",
+			"required":true
+		},{
+			"name":"email",
+			"display_name":"Email",
+			"type":"email",
+			"required":true
+		}
+	]
+}

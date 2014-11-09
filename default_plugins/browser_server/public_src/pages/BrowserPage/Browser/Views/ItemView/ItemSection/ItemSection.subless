@@ -1,0 +1,35 @@
+.item_section{
+	border: 1px solid @item_section_border;
+	background-color: white;
+
+	padding-top: 0px;
+	margin-bottom: 10px;
+
+	>.fv_field_title{
+		background-color: @item_section_title;
+		.bold;
+		color: white;
+		padding: 5px;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	>.fv_input_holder{
+		width: 100%;
+		padding-right: 10px;
+
+		>.fv_field{
+			width: 100%;
+		}
+
+		>.fv_object_field{
+			padding: 5px;
+			margin-top: 0px;
+
+			>.fv_input_holder{
+				padding-left: 5px;
+				padding-right: 5px;
+			}
+		}
+	}
+}

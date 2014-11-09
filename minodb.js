@@ -1,0 +1,1 @@
+module.exports = require('./MinoDB/MinoDB');

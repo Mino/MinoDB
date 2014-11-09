@@ -1,0 +1,7 @@
+.delete_modal{
+	.fv_field{
+		.fv_field_title{
+			display: none;
+		}
+	}	
+}

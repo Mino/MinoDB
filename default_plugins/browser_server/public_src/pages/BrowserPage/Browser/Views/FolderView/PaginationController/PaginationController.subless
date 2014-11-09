@@ -1,0 +1,35 @@
+.pagination_controller{
+	
+	text-align: center;
+
+	.page_controls{
+		background-color: white;
+		display: inline-block;
+		position: relative;
+		width: 250px;
+		height: 30px;
+
+		.mino_button{
+			position: absolute;
+			width: 50px;
+			top: 0px;
+			
+			&.previous_button{
+				left: 0px;
+			}
+
+			&.next_button{
+				right: 0px;
+			}
+		}
+
+		.page_number{
+			position: absolute;
+			top: 0px;
+			left: 50px;
+			width: 150px;
+			line-height: 30px;
+			text-align: center;
+		}
+	}	
+}

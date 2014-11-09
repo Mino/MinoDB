@@ -1,0 +1,16 @@
+.home_page{
+	box-sizing: border-box;
+	display: inline-block;
+	text-align: center;
+	width: 100%;
+	padding: 10px;
+	form{
+		display: inline-block;
+		box-sizing: border-box;
+		width: 100%;
+		padding: 10px;
+		text-align: left;
+		background-color: white;
+		max-width: 700px;
+	}
+}
