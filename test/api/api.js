@@ -7,92 +7,68 @@ var jsonout = function(json) {
     logger.log(JSON.stringify(json, null, 4));
 }
 
-describe('MinoDB API', function() {
+describe('API', function() {
 
-    // describe('When I make an invalid API request', function() {
-    //     it('should return a 200 OK, but with an error response', function(done) {
-    //         db.platform_request("/", {
-    //             "something": "invalid"
-    //         }, function(error, response) {
-    //             if (error != null) {
-    //                 logger.log(error);
-    //                 assert.fail('Just threw a connection error')
-    //             } else {
-    //                 if (response.error != null) {
-    //                     jsonout(response);
-    //                     done();
-    //                 } else {
-    //                     assert.fail('Didn\'t return structured error')
-    //                 }
-    //             }
-    //         });
-    //     });
-    // });
+    describe('When I make an invalid API request', function() {
+        it('should return an error', function(done) {
+            globals.sdk.call({
+                "something": "invalid"
+            }, function(error, response) {
+                logger.log(error, response)
+                assert.notEqual(error, null);
+                done();
+            });
+        });
+    });
 
-    // describe('When I make a simple get request', function() {
-    //     it('should return a 200 OK', function(done) {
-    //         db.platform_request("/", {
-    //             "function": "get",
-    //             "parameters": {
-    //                 "addresses" : [
-    //                     "/TestUser/",
-    //                     "/AnotherUser/Shared/Another/Folder/One",
-    //                     81,
-    //                     "person"
-    //                 ]
-    //             }
-    //         }, function(error, response) {
-    //             if (error != null) {
-    //                 logger.log(error);
-    //                 assert.fail('Just threw a connection error')
-    //             } else {
-    //                 if (response.error != null) {
-    //                     jsonout(response);
-    //                     assert.fail('Returned an error')
-    //                 } else {
-    //                     jsonout(response);
-    //                 }
-    //                 done();
-    //             }
-    //         });
-    //     });
-    // });
+    describe('When I make a simple save request', function() {
+        it('should save an object', function(done) {
+            globals.sdk.call({
+                "function": "save",
+                "parameters": {
+                    "objects" : [{
+                        "_id":"436",
+                        "name": "TestSave",
+                        "path":"/testuser/",
+                        "person":{
+                            "first_name":"Marcus",
+                            "last_name":"L2",
+                            "office_number" : 25
+                        }
+                    }]
+                }
+            }, function(error, response) {
+                logger.log(JSON.stringify(error, null, 4), response);
+                assert.equal(error,null)
+                done();
+            });
+        });
 
-    // describe('When I make a simple save request', function() {
-    //     it('should return a 200 OK', function(done) {
-    //         db.platform_request("/", {
-    //             "function": "save",
-    //             "parameters": {
-    //                 "objects" : [{
-    //                     "_id":"436",
-    //                     "name": "Test"+Math.random(),
-    //                     "path":"/TestUser/",
-    //                     "person":{
-    //                         "first_name":"Marcus",
-    //                         "last_name":"L2",
-    //                         "office_number" : 25
-    //                     }
-    //                 }]
-    //             }
-    //         }, function(error, response) {
-    //             if (error != null) {
-    //                 logger.log(error);
-    //                 assert.fail('Just threw a connection error')
-    //             } else {
-    //                 if (response.error != null) {
-    //                     jsonout(response);
-    //                     assert.fail('Returned an error')
-    //                 } else {
-    //                     jsonout(response);
-    //                 }
-    //                 done();
-    //             }
-    //         });
-    //     });
-    // });
+        it('should not save an object if path does not exist', function(done) {
+            globals.sdk.call({
+                "function": "save",
+                "parameters": {
+                    "objects" : [{
+                        "_id":"436",
+                        "name": "TestSave",
+                        "path":"/testuser/randompath/",
+                        "person":{
+                            "first_name":"Marcus",
+                            "last_name":"L2",
+                            "office_number" : 25
+                        }
+                    }]
+                }
+            }, function(error, response) {
+                logger.log(JSON.stringify(error, null, 4), response);
+                assert.notEqual(error,null)
+                done();
+            });
+        });
+    });
 
-    describe('When I make a save a simple type', function() {
-        it('should return a 200 OK', function(done) {
+    describe('When I make save type request', function() {
+        it('should save type', function(done) {
             globals.sdk.call({
                 "function": "save_type",
                 "parameters": {
@@ -125,19 +101,13 @@ describe('MinoDB API', function() {
                 }
             }, function(error, response) {
                 logger.log(error, response);
-                if (error != null) {
-                    logger.log(error);
-                    assert.fail('Just threw a connection error')
-                } else {
-                    if (response.error != null) {
-                        jsonout(response);
-                        assert.fail('Returned an error')
-                    } else {
-                        jsonout(response);
-                    }
-                    logger.log("FINISHED")
+                assert.equal(error, null);
+
+                globals.sdk.get(["/Mino/types/person"], function(err, res) {
+                    var person_type = res.objects[0];
+                    assert.notEqual(person_type, null);
                     done();
-                }
+                })
             });
         });
     });
