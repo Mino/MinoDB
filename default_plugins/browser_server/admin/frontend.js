@@ -17979,13 +17979,13 @@ var errors = {
 		error: 79,
 		error_message: "Multiple objects with this ID."
 	},
-	SOME_ERROR: {	
+	NOT_FOUND_OR_NO_PERMISSION_TO_MODIFY: {	
 		error: 80,
 		error_message: "Object does not exist or you do not have permission to modify it."
 	},
-	SOME_ERROR: {	
+	NOT_FOUND_OR_NO_PERMISSION_TO_ACCESS: {	
 		error: 81,
-		error_message: "Invalid date."
+		error_message: "Object does not exist or you do not have permission to access it."
 	},
 	SOME_ERROR: {	
 		error: 82,

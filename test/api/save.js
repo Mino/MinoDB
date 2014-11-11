@@ -4,7 +4,7 @@ var assert = require('assert');
 
 describe('When I make a simple save request', function() {
     it('should save an object', function(done) {
-        globals.sdk.with_user("testuser").call({
+        globals.user_sdk.with_user("testuser").call({
             "function": "save",
             "parameters": {
                 "objects" : [{
@@ -21,7 +21,8 @@ describe('When I make a simple save request', function() {
             logger.log(JSON.stringify(error, null, 4), response);
             assert.equal(error,null)
             
-            globals.sdk.get(["/testuser/TestSave"], function(err, res) {
+            globals.user_sdk.get(["/testuser/TestSave"], function(err, res) {
+                logger.log(err, res);
                 assert.equal(err, null);
                 var object = res.objects[0];
                 assert.notEqual(object, null);
@@ -31,7 +32,7 @@ describe('When I make a simple save request', function() {
     });
 
     it('should not save an object if path does not exist', function(done) {
-        globals.sdk.call({
+        globals.user_sdk.call({
             "function": "save",
             "parameters": {
                 "objects" : [{
@@ -47,7 +48,7 @@ describe('When I make a simple save request', function() {
         }, function(error, response) {
             logger.log(JSON.stringify(error, null, 4), response);
             assert.notEqual(error,null)
-            globals.sdk.get(["/testuser/randompath/TestSave"], function(err, res) {
+            globals.user_sdk.get(["/testuser/randompath/TestSave"], function(err, res) {
                 assert.equal(err, null);
                 var object = res.objects[0];
                 assert.equal(object, null);
