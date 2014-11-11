@@ -58,6 +58,7 @@ describe('API', function() {
                 assert.equal(error, null);
 
                 globals.sdk.get(["/Mino/types/person"], function(err, res) {
+                    assert.equal(err, null);
                     var person_type = res.objects[0];
                     assert.notEqual(person_type, null);
                     done();
@@ -84,7 +85,13 @@ describe('API', function() {
             }, function(error, response) {
                 logger.log(JSON.stringify(error, null, 4), response);
                 assert.equal(error,null)
-                done();
+                
+                globals.sdk.get(["/testuser/TestSave"], function(err, res) {
+                    assert.equal(err, null);
+                    var object = res.objects[0];
+                    assert.notEqual(object, null);
+                    done();
+                })
             });
         });
 
@@ -105,7 +112,12 @@ describe('API', function() {
             }, function(error, response) {
                 logger.log(JSON.stringify(error, null, 4), response);
                 assert.notEqual(error,null)
-                done();
+                globals.sdk.get(["/testuser/randompath/TestSave"], function(err, res) {
+                    assert.equal(err, null);
+                    var object = res.objects[0];
+                    assert.equal(object, null);
+                    done();
+                })
             });
         });
     });
