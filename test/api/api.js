@@ -23,16 +23,15 @@ describe('API', function() {
 
     describe('When I make a simple save request', function() {
         it('should save an object', function(done) {
-            globals.sdk.call({
+            globals.sdk.with_user("testuser").call({
                 "function": "save",
                 "parameters": {
                     "objects" : [{
-                        "_id":"436",
                         "name": "TestSave",
                         "path":"/testuser/",
                         "person":{
                             "first_name":"Marcus",
-                            "last_name":"L2",
+                            "last_name":"Longmuir",
                             "office_number" : 25
                         }
                     }]
@@ -49,7 +48,6 @@ describe('API', function() {
                 "function": "save",
                 "parameters": {
                     "objects" : [{
-                        "_id":"436",
                         "name": "TestSave",
                         "path":"/testuser/randompath/",
                         "person":{

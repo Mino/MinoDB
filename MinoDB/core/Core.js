@@ -24,6 +24,18 @@ function Core(minodb, db_address){
         "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler.js'),
         "delete": require('./handlers/DeleteHandler/DeleteHandler.js')
     }
+
+    core.connected = false;
+    core.connect_callbacks = [];
+}
+
+Core.prototype.call_connect_callbacks = function(){
+    var core = this;
+
+    logger.log("CALLING CORE CONNECT CALLBACKS");
+    for(var i = 0; i < core.connect_callbacks.length; i++){
+        core.connect_callbacks[i]();
+    }
 }
 
 Core.prototype.connect = function(callback){
@@ -59,15 +71,34 @@ Core.prototype.connect = function(callback){
             }, function(save_err, save_res){
                 logger.log(JSON.stringify(save_err,null,4), save_res);
             })
+
+            core.connected = true;
+            for(var i = 0; i < core.connect_callbacks.length; i++){
+                logger.log("CALLING CONNECTED CALLBACK ",i);
+                core.connect_callbacks[i]();
+            }
+
             callback();
         })
     })
 }
 
+Core.prototype.on_connected = function(callback){
+    var core = this;
+
+    if(core.connected){
+        callback();
+        return;
+    }
+    core.connect_callbacks.push(callback);
+}
+
 Core.prototype.call = function(user, request, callback){
 	var core = this;
 
-    core.ds.connect(function(err){
+    core.on_connected(function(){
+
+        logger.log("Core.call connected");
 
         var api_val = new FieldVal(request);
 

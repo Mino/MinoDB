@@ -28,17 +28,17 @@ DataStore.prototype.call_connect_callbacks = function(){
 }
 
 DataStore.prototype.connect = function(callback) {
-	var ds =this;
+	var ds = this;
 
 	if(ds.connected){
 		callback();
 		return;
 	}
-
 	ds.connect_callbacks.push(callback);
 	if(ds.connecting){
 		return;
 	}
+	ds.connecting = true;
 
 	MongoClient.connect(ds.config.address, function(err, mongo) {
 	    if (err){

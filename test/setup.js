@@ -8,7 +8,6 @@ module.exports = function(done) {
 		db.dropDatabase(function(err, res) {
 			assert.equal(err, null);
 			assert.equal(res, true);
-
 			var MinoDB = require('../minodb');
 			var mino = new MinoDB({
 			    api: true,
@@ -17,13 +16,12 @@ module.exports = function(done) {
 			})
 
 			var MinoSDK = require('minosdk');
-			var sdk = new MinoSDK("testuser");
+			var sdk = new MinoSDK("Mino");
 			sdk.set_local_api(mino.api);
 
 			globals.sdk = sdk;			
 			logger.log("finished");
 			done();
-			
 		});
 	});
 

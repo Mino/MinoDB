@@ -11,6 +11,7 @@ describe('Initial setup', function() {
 			
 			var objects = res.objects[0];
 			assert.notEqual(objects, null);
+			done();
 		});
 	});
 
@@ -21,6 +22,7 @@ describe('Initial setup', function() {
 			
 			var objects = res.objects[0];
 			assert.notEqual(objects, null);
+			done();
 		});
 	});
 
@@ -31,6 +33,7 @@ describe('Initial setup', function() {
 			
 			var objects = res.objects[0];
 			assert.notEqual(objects, null);
+			done();
 		});
 	});
 });
