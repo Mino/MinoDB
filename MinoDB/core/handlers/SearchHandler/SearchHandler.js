@@ -2,6 +2,7 @@ var errors = require('../../../../errors')
 var Validator = require('fieldval');
 var BasicVal = require('fieldval-basicval');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
+var Constants = require('../../../../common_classes/Constants');
 var logger = require('tracer').console();
 
 function SearchHandler(api, user, parameters, callback){
@@ -17,10 +18,6 @@ function SearchHandler(api, user, parameters, callback){
     sh.validator = new Validator(parameters);
 
     sh.paths = sh.validator.get("paths", BasicVal.array(true));
-
-    sh.path_permission_checker.retrieve_permissions(function(){
-
-    });
 
     var error = sh.validator.end();
     if(error){
@@ -40,17 +37,47 @@ SearchHandler.prototype.do_search = function(callback){
 
     var db = sh.api.ds;
 
-    db.object_collection.find({
-        "path": {
-            "$in": sh.paths
-        }
-    },{
 
-    }).toArray(function(search_err, search_res){
-        // logger.log(search_err, search_res);
-        callback(null, {
-            "objects": search_res
-        })
+    var path_validator = new FieldVal(null);
+    for(var i = 0; i < sh.paths.length; i++){
+        (function(i){
+            var sh = this;
+
+            var path = new Path();
+            var path_error = path.init(sh.paths[i]);
+            logger.log(path_error);
+
+            sh.path_permission_checker.check_permissions_for_path(path,function(status){
+                if(status===Constants.WRITE_PERMISSION || status===Constants.READ_PERMISSION){
+                    //All good
+                } else {
+                    path_validator.invalid(i, errors.NOT_FOUND_OR_NO_PERMISSION_TO_ACCESS);
+                }
+            });
+        }).call(sh,i);
+    }
+
+    sh.path_permission_checker.retrieve_permissions(function(){
+
+        var path_error = path_validator.end();
+        if(path_error){
+            sh.validator.invalid("paths", path_error);
+            sh.callback(sh.validator.end());
+            return;
+        }
+
+        db.object_collection.find({
+            "path": {
+                "$in": sh.paths
+            }
+        },{
+
+        }).toArray(function(search_err, search_res){
+            // logger.log(search_err, search_res);
+            callback(null, {
+                "objects": search_res
+            })
+        });
     });
 }
 
