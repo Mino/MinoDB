@@ -20,6 +20,11 @@ module.exports = function(done) {
 			sdk.set_local_api(mino.api);
 
 			globals.sdk = sdk;			
+
+			var testuser_sdk = new MinoSDK("testuser");
+			testuser_sdk.set_local_api(mino.api);
+			globals.user_sdk = testuser_sdk;
+
 			logger.log("finished");
 			done();
 		});
