@@ -19,7 +19,9 @@ function DeleteHandler(api, user, parameters, callback){
     
     dh.permissions_checked = false;
 
-    dh.path_permission_checker = new PathPermissionChecker(dh);
+    dh.path_permission_checker = new PathPermissionChecker(dh,{
+        for_write: true
+    });
 
     dh.validator = new Validator(parameters);
 

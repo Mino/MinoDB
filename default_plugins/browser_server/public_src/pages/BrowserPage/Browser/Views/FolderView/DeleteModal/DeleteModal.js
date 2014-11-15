@@ -34,7 +34,7 @@ function DeleteModal(icon_list, callback){
 	)
 
 	dm.form.val(dm.name_list);
-	dm.form.view_mode();
+	dm.form.disable();
 
 	modal.bottom_bar.append(
 		$("<button />").addClass("mino_button").text("Delete").on('tap',function(event){

@@ -232,7 +232,7 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 					    );
 		    		}
 
-		    		var username_for_permission = old_path.username_for_permission(so.handler.user.username);
+		    		var username_for_permission = old_path.username_for_permission(so.handler.user.username, true);
 					if(username_for_permission===so.handler.user.username){
 						have_permission();
 					} else {
