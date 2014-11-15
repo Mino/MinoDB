@@ -19179,6 +19179,14 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
         return null;
     }
 
+
+    //Allow all users to read the types folder
+    if (path.object_names.length > 1 && path.object_names[0] === "Mino" && path.object_names[1] === "types"){
+        if(!for_write){
+            return requesting_username;
+        }
+    }
+
     if(path.object_names.length===0){
         return "Mino";
     }
