@@ -1,6 +1,7 @@
 var logger = require('tracer').console();
 var FieldVal = require('fieldval');
 var BasicVal = require('fieldval-basicval');
+var ValidationRule = require('fieldval-rules');
 
 var security = require('../security');
 

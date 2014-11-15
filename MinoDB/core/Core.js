@@ -48,39 +48,6 @@ Core.prototype.connect = function(callback){
         logger.log("CORE CONNECTED");
 
         require('./initial_setup')(core.minodb.api, function(){
-
-            var User = require('./models/User');
-            User.get("testuser", core.minodb.api, function(get_err, get_user){
-                logger.log(get_err, get_user);
-            })
-
-            User.create({
-                username: "testuser",
-                email: "test@minocloud.com",
-                password: "my_password"
-            }, core.minodb.api, function(user_err, user_res){
-                logger.log(user_err, user_res);
-            })
-
-            User.create({
-                username: "otheruser",
-                email: "otheruser@minocloud.com",
-                password: "other_password"
-            }, core.minodb.api, function(user_err, user_res){
-                logger.log(user_err, user_res);
-            })
-
-            new core.handlers.delete(core.minodb.api, {
-                "username": "testuser"
-            }, {
-                "addresses": [
-                    // "795"
-                    "/testuser/test/My Blank Item"
-                ]
-            }, function(save_err, save_res){
-                logger.log(JSON.stringify(save_err,null,4), save_res);
-            })
-
             core.connected = true;
             for(var i = 0; i < core.connect_callbacks.length; i++){
                 logger.log("CALLING CONNECTED CALLBACK ",i);
