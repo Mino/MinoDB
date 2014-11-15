@@ -19,7 +19,7 @@ var errors = {
 		error: 10,
 		error_message: "A plugin with this name is already present."
 	},
-	SOME_ERROR: {	
+	INVALID_ADDRESS_FORMAT: {	
 		error: 11,
 		error_message: "Invalid format for address."
 	},
@@ -103,7 +103,7 @@ var errors = {
 		error: 31,
 		error_message: "Length is greater than __Maximum Length__."
 	},
-	SOME_ERROR: {	
+	FOLDER_NOT_EXIST_OR_NO_PERMISSION: {	
 		error: 32,
 		error_message: "Folder does not exist or you are not permitted to write to it."
 	},
@@ -273,7 +273,7 @@ var errors = {
 	},
 	CANT_GRANT_PATH: {
 		error: 75,
-		error_message: "You cannot grant privileges to this folder."
+		error_message: "You cannot grant permission to this folder."
 	},
 	USER_DOES_NOT_EXIST: {	
 		error: 76,

@@ -1,3 +1,4 @@
+var errors = require('../../../../errors');
 var FieldVal = require('fieldval');
 var BasicVal = require('fieldval-basicval');
 var Path = require('../../../../common_classes/Path')
@@ -47,7 +48,7 @@ function GetHandler(api, user, parameters, callback) {
         } else if(address_type==="id_version"){
             gh.id_versions.push([address_value, index]);
         } else {
-            return FieldVal.Error(0)
+            return errors.INVALID_ADDRESS_FORMAT;
         }
 
         gh.response_array.push(null);
@@ -99,7 +100,9 @@ GetHandler.prototype.get_id = function(id_object){
     }, function(err, res){
         if(res){
             var full_path = new Path();
-            var path_error = full_path.init(res.full_path);
+            var path_error = full_path.init(res.full_path, {
+                "allow_tilde": true
+            });
             logger.log(path_error);
             gh.path_permission_checker.check_permissions_for_path(full_path,function(status){
                 if(status===Constants.WRITE_PERMISSION || status===Constants.READ_PERMISSION){
@@ -127,7 +130,9 @@ GetHandler.prototype.get_path = function(path_object){
     }, function(err, res){
         if(res){
             var full_path = new Path();
-            var path_error = full_path.init(res.full_path);
+            var path_error = full_path.init(res.full_path, {
+                "allow_tilde": true
+            });
             logger.log(path_error);
             gh.path_permission_checker.check_permissions_for_path(full_path,function(status){
                 if(status===Constants.WRITE_PERMISSION || status===Constants.READ_PERMISSION){

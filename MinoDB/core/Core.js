@@ -22,7 +22,8 @@ function Core(minodb, db_address){
         "save": require('./handlers/SaveHandler/SaveHandler.js'),
         "search": require('./handlers/SearchHandler/SearchHandler.js'),
         "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler.js'),
-        "delete": require('./handlers/DeleteHandler/DeleteHandler.js')
+        "delete": require('./handlers/DeleteHandler/DeleteHandler.js'),
+        "add_permissions": require('./handlers/AddPermissionsHandler/AddPermissionsHandler.js')
     }
 
     core.connected = false;
@@ -57,6 +58,14 @@ Core.prototype.connect = function(callback){
                 username: "testuser",
                 email: "test@minocloud.com",
                 password: "my_password"
+            }, core.minodb.api, function(user_err, user_res){
+                logger.log(user_err, user_res);
+            })
+
+            User.create({
+                username: "otheruser",
+                email: "otheruser@minocloud.com",
+                password: "other_password"
             }, core.minodb.api, function(user_err, user_res){
                 logger.log(user_err, user_res);
             })

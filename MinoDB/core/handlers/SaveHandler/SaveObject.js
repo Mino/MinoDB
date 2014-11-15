@@ -39,21 +39,15 @@ function SaveObject(json, handler, index, options){
 		var permission_called = false;
 		logger.log(so.path);
 
-		if(!so.options.bypass_checks){
+		if(!so.options.bypass_path_checks){
 			handler.path_permission_checker.check_permissions_for_path(so.path,function(status){
 				if(status===Constants.WRITE_PERMISSION){
 					//Can write to the specified path
 					so.granted_new_path = true;
 				} else if(status===Constants.READ_PERMISSION){
-					so.validator.invalid("path",{
-						error: -1,
-						error_message: "NOT ALLOWED TO WRITE NEW PATH"
-					})
+					so.validator.invalid("path",errors.NO_WRITE_PERMISSION);
 				} else if(status===Constants.NO_PERMISSION){
-					so.validator.invalid("path",{
-						error: -1,
-						error_message: "NO ACCESS TO PATH"
-					})
+					so.validator.invalid("path",errors.NO_WRITE_PERMISSION);
 				}
 			});
 			handler.folder_checker.check_path_existance(so.path,function(status){
@@ -62,15 +56,12 @@ function SaveObject(json, handler, index, options){
 					//Can write to the specified path
 					so.new_path_exists = true;
 				} else {
-					so.validator.invalid("path",{
-						error: -1,
-						error_message: "PATH DOES NOT EXIST"
-					})
+					so.validator.invalid("path",errors.FOLDER_NOT_EXIST_OR_NO_PERMISSION);
 				}
 			});
 		}
 	}
-	so.name = so.validator.get("name", BasicVal.string(true), BasicVal.not_empty(true), Path.object_name_check);
+	so.name = so.validator.get("name", BasicVal.string(true), BasicVal.not_empty(true), Path.object_name_check(so.options.bypass_path_checks));
 	if(so.name!=null && so.path!=null){
 		
 	}
@@ -80,7 +71,7 @@ function SaveObject(json, handler, index, options){
 	for(var i = 0; i < unrecognized.length; i++){
 		var key = unrecognized[i];
 		so.type_keys[key] = so.json[key];
-		if(!so.options.bypass_checks){
+		if(!so.options.bypass_type_checks){
 			so.handler.request_type(key, so);
 		}
 	}
@@ -251,7 +242,7 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 							if(status!=Constants.WRITE_PERMISSION){
 								so.validator.invalid("_id",{
 									error: -1,
-									error_message: "NOT ALLOWED TO WRITE OLD PATH"
+									error_message: errors.NO_WRITE_PERMISSION
 								});
 								on_save_callback(so, null, so.validator.end())
 							} else {

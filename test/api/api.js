@@ -21,8 +21,9 @@ describe('API', function() {
         });
     });
 
-    require('./save_type.js');
-    require('./save.js')
-    require('./permissions.js');
+    // require('./save_type.js');
+    // require('./save.js')
+    require('./modify_permissions.js');
+    // require('./permissions.js');
 
 });

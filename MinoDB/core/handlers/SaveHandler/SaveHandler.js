@@ -8,13 +8,18 @@ var FolderChecker = require('../../models/FolderChecker');
 var SaveObject = require('./SaveObject')
 var logger = require('tracer').console();
 
-function SaveHandler(api, user, parameters, callback){
+function SaveHandler(api, user, parameters, options, callback){
     var sh = this;
 
     sh.api = api;
     sh.user = user;
     sh.parameters = parameters;
-    sh.callback = callback;
+    if(typeof options === 'function'){
+        sh.callback = options;
+    } else {
+        sh.callback = callback;
+        sh.options = options;
+    }
 
     sh.save_objects = [];
     sh.types_to_items = {};
@@ -36,7 +41,14 @@ function SaveHandler(api, user, parameters, callback){
         logger.log(object);
         logger.log(index);
 
-        sh.save_objects.push(new SaveObject(object,sh,index));
+        sh.save_objects.push(
+            new SaveObject(
+                object,
+                sh,
+                index,
+                sh.options
+            )
+        );
     }));
 
 
@@ -158,15 +170,6 @@ SaveHandler.prototype.retrieve_types = function(){
                     var save_object = save_objects[k];
                     save_object.got_type(type_name, null, validation_type);
                 }
-            } else {
-                // for(var i = 0; i < save_objects.length; i++){
-                //     var save_object = save_objects[i];
-                //     var error = save_object.validator.end();
-                //     logger.log(error);
-                //     if(error!=null){
-                //         sh.objects_validator.invalid(save_object.index, error);
-                //     }
-                // }
             }
         }
         
