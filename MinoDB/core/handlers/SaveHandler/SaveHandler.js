@@ -28,6 +28,7 @@ function SaveHandler(api, user, parameters, options, callback){
     sh.permissions_checked = false;
     sh.folders_checked = false;
     sh.types_retrived = false;
+    
 
     sh.path_permission_checker = new PathPermissionChecker(sh,{
         for_write: true
