@@ -1,6 +1,7 @@
 var logger = require('tracer').console();
 var FieldVal = require('fieldval');
 var BasicVal = require('fieldval-basicval');
+var ValidationRule = require('fieldval-rules');
 
 var security = require('../security');
 
@@ -19,6 +20,7 @@ function User(obj) {
 
     user.username = data.username;
     user.email = data.email;
+    user.password = data.password;
     user.salted_password = data.salted_password;
     user.password_salt = data.password_salt;
 }
