@@ -25,14 +25,15 @@ describe('API', function() {
         require('./save_type/type')
     });
 
-    describe("When I make get request", function() {
-        require('./get/folder')
-        require('./get/item')
-    })
-
     describe('When I make a save request', function() {
         require('./save/folder')
         require('./save/item')
+    });
+
+    describe("When I make get request", function() {
+        require('./get/folder')
+        require('./get/item')
+        
     });
 
 });
