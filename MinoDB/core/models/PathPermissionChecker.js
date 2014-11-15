@@ -26,9 +26,7 @@ PathPermissionChecker.prototype.check_permissions_for_path = function(path, call
 	var ppc = this;
 
 	var username_for_permission = path.username_for_permission(ppc.handler.user.username);
-	logger.log("username_for_permission ",username_for_permission, ppc.handler.user.username);
 	if(username_for_permission===ppc.handler.user.username){
-		logger.log("IS SAME USER");
 		callback(Constants.WRITE_PERMISSION);
 		return;
 	}

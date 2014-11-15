@@ -83,16 +83,19 @@ Path.prototype.replace_id_operator = function(id){
 
 }
 
-Path.object_name_check = function(object_name, allowed_tilde){
+Path.object_name_check = function(allowed_tilde){
 
-    //Remove ~id~ because it will be overwritten (no other tildes are allowed)
-    var value = object_name.replaceAll("~id~","");
+    return function(val, emit){
 
-    for(var i = 0; i < value.length; i++){
-        var character = value[i];
+        //Remove ~id~ because it will be overwritten (no other tildes are allowed)
+        var value = val.replaceAll("~id~","");
 
-        if(!Path.is_valid_character_for_object_name(character, allowed_tilde)){
-            return errors.INVALID_OBJECT_NAME;
+        for(var i = 0; i < value.length; i++){
+            var character = value[i];
+
+            if(!Path.is_valid_character_for_object_name(character, allowed_tilde)){
+                return errors.INVALID_OBJECT_NAME;
+            }
         }
     }
 }
@@ -111,7 +114,12 @@ Path.is_valid_character_for_object_name = function(path_char, allowed_tilde) {
         return false;
     }
     return true;
+}
 
+Path.prototype.to_tilde_path = function(){
+    var path = this;
+
+    return Common.convert_path_to_tilde_path(path.toString())
 }
 
 Path.prototype.permission_path = function(requesting_username,for_write){
@@ -119,14 +127,16 @@ Path.prototype.permission_path = function(requesting_username,for_write){
 
     var user = path.username_for_permission(requesting_username,for_write);
 
-    return "/"+requesting_username+"/Permissions/"+user+"/"+Common.convert_path_to_tilde_path(path.toString());
+    return "/"+requesting_username+"/permissions/received/"+Common.convert_path_to_tilde_path(path.toString());
 }
 
 Path.prototype.username_for_permission = function(requesting_username, for_write) {
     var path = this;
 
-    //Restricts access to the Permissions folder in each user's root
-    if (path.object_names.length > 1 && path.object_names[1] == "Permissions") {
+    //Restricts access to the permissions folder in each user's root
+    if (path.object_names.length > 1 && path.object_names[1] == "permissions") {
+
+        console.log("USERNAME FOR PERMISSION ",path.toString(), requesting_username);
 
         if (path.object_names.length==2 && !path.is_folder) {
             /* The request is for an item with the same name as one of the restricted folders, not the folder itself
@@ -136,8 +146,8 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
         }
 
         //Allows read access of permissions by user
-        if (path.object_names[0] == requesting_username && !for_write) {
-            return requesting_username;
+        if (!for_write) {
+            return path.object_names[0];
         }
 
         //Allows "Mino" user to write

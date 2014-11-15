@@ -2,6 +2,7 @@ var logger = require('tracer').console();
 var SaveObject = require('./handlers/SaveHandler/SaveObject');
 var User = require('./models/User');
 var Session = require('../ui_server/models/Session');
+var Permission = require('./handlers/AddPermissionsHandler/Permission');
 var Type = require('./models/Type');
 
 module.exports = function(api, callback){
@@ -53,7 +54,8 @@ module.exports = function(api, callback){
     	            username: "Mino"
     	        }
     	    },0,{
-    	        bypass_checks: true
+    	        bypass_type_checks: true,
+                bypass_path_checks: true
     	    })
 
     	    so.do_saving(function(save_object, error, save_details){
@@ -73,7 +75,16 @@ module.exports = function(api, callback){
                         type: Session.rule_definition
                     }, function(session_type_err, session_type_res){
                         logger.log(session_type_err, session_type_res);
-                        callback();
+                        
+                        api.handlers.save_type(api, {
+                            "username": "Mino"
+                        }, {
+                            type: Permission.rule_definition
+                        }, function(perm_type_err, perm_type_res){
+                            logger.log(perm_type_err, perm_type_res);
+                            
+                            callback();
+                        });
                     })
                 })
     	    })

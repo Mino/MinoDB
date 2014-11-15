@@ -33,7 +33,8 @@ describe('API', function() {
     describe("When I make get request", function() {
         require('./get/folder')
         require('./get/item')
-        
     });
+
+    require('./modify_permissions');
 
 });

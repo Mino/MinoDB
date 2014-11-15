@@ -78,6 +78,7 @@ User.sign_in_rule_definition = {
 User.sign_in_rule = new ValidationRule();
 User.sign_in_rule.init(User.sign_in_rule_definition);
 
+//TODO add more checks for tilde, slashes, etc
 User.username_validator = [
     BasicVal.no_whitespace(),
     BasicVal.start_with_letter()
@@ -122,6 +123,8 @@ User.prototype.save = function(api, callback){
     var user = this;
 
     user.create_save_data(function(err, to_save){
+
+        logger.log(to_save);
 
         new api.handlers.save(api, {
             "username": "Mino"
@@ -185,6 +188,9 @@ User.create = function(data, api, callback){
         mino_user: data
     });
     user.save(api, function(err, res){
+
+        logger.log(JSON.stringify(err,null,4), res);
+
         new api.handlers.save(api, {
             "username": "Mino"
         }, {
@@ -198,7 +204,39 @@ User.create = function(data, api, callback){
         }, function(save_err, save_res){
             logger.log(JSON.stringify(save_err,null,4), save_res);
 
-            callback(err, res);
+            new api.handlers.save(api, {
+                "username": user.username
+            }, {
+                "objects": [
+                    {
+                        "name": "permissions",
+                        "path": "/"+user.username+"/",
+                        "folder": true
+                    }
+                ]
+            }, function(save_err, save_res){
+                logger.log(JSON.stringify(save_err,null,4), save_res);
+
+
+                new api.handlers.save(api, {
+                    "username": user.username
+                }, {
+                    "objects": [
+                        {
+                            "name": "sent",
+                            "path": "/"+user.username+"/permissions/",
+                            "folder": true
+                        },{
+                            "name": "received",
+                            "path": "/"+user.username+"/permissions/",
+                            "folder": true
+                        }
+                    ]
+                }, function(save_err, save_res){
+                    logger.log(JSON.stringify(save_err,null,4), save_res);
+                    callback(err, res);
+                })
+            });
         });
     });
 }

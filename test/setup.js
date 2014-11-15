@@ -33,7 +33,18 @@ module.exports = function(done) {
 	                var testuser_sdk = new MinoSDK("testuser");
 	                testuser_sdk.set_local_api(mino.api);
 	                globals.user_sdk = testuser_sdk;
-					done();
+
+					User.create({
+					    username: "otheruser",
+					    email: "test@minocloud.com",
+					    password: "my_password"
+					}, mino.api, function(user_err, user_res){
+					    logger.log(JSON.stringify(user_err, null, 4), user_res);
+					    var testuser_sdk = new MinoSDK("testuser");
+					    testuser_sdk.set_local_api(mino.api);
+					    globals.user_sdk = testuser_sdk;
+						done();
+					})
 	            })
 			});
 

@@ -17707,7 +17707,7 @@ var errors = {
 		error: 10,
 		error_message: "A plugin with this name is already present."
 	},
-	SOME_ERROR: {	
+	INVALID_ADDRESS_FORMAT: {	
 		error: 11,
 		error_message: "Invalid format for address."
 	},
@@ -17791,7 +17791,7 @@ var errors = {
 		error: 31,
 		error_message: "Length is greater than __Maximum Length__."
 	},
-	SOME_ERROR: {	
+	FOLDER_NOT_EXIST_OR_NO_PERMISSION: {	
 		error: 32,
 		error_message: "Folder does not exist or you are not permitted to write to it."
 	},
@@ -17961,7 +17961,7 @@ var errors = {
 	},
 	CANT_GRANT_PATH: {
 		error: 75,
-		error_message: "You cannot grant privileges to this folder."
+		error_message: "You cannot grant permission to this folder."
 	},
 	USER_DOES_NOT_EXIST: {	
 		error: 76,
@@ -18363,7 +18363,7 @@ Common.get_resource_type = function(this_address){
             //First char is slash - must be pat
 
             var path = new Path();
-            var path_error = path.init(this_address);
+            var path_error = path.init(this_address, true/*allow tilde*/);
             if (!path_error) {
                 return ["path",path];
             }
@@ -18792,16 +18792,19 @@ Path.prototype.replace_id_operator = function(id){
 
 }
 
-Path.object_name_check = function(object_name, allowed_tilde){
+Path.object_name_check = function(allowed_tilde){
 
-    //Remove ~id~ because it will be overwritten (no other tildes are allowed)
-    var value = object_name.replaceAll("~id~","");
+    return function(val, emit){
 
-    for(var i = 0; i < value.length; i++){
-        var character = value[i];
+        //Remove ~id~ because it will be overwritten (no other tildes are allowed)
+        var value = val.replaceAll("~id~","");
 
-        if(!Path.is_valid_character_for_object_name(character, allowed_tilde)){
-            return errors.INVALID_OBJECT_NAME;
+        for(var i = 0; i < value.length; i++){
+            var character = value[i];
+
+            if(!Path.is_valid_character_for_object_name(character, allowed_tilde)){
+                return errors.INVALID_OBJECT_NAME;
+            }
         }
     }
 }
@@ -18820,7 +18823,12 @@ Path.is_valid_character_for_object_name = function(path_char, allowed_tilde) {
         return false;
     }
     return true;
+}
 
+Path.prototype.to_tilde_path = function(){
+    var path = this;
+
+    return Common.convert_path_to_tilde_path(path.toString())
 }
 
 Path.prototype.permission_path = function(requesting_username,for_write){
@@ -18828,14 +18836,16 @@ Path.prototype.permission_path = function(requesting_username,for_write){
 
     var user = path.username_for_permission(requesting_username,for_write);
 
-    return "/"+requesting_username+"/Permissions/"+user+"/"+Common.convert_path_to_tilde_path(path.toString());
+    return "/"+requesting_username+"/permissions/received/"+Common.convert_path_to_tilde_path(path.toString());
 }
 
 Path.prototype.username_for_permission = function(requesting_username, for_write) {
     var path = this;
 
-    //Restricts access to the Permissions folder in each user's root
-    if (path.object_names.length > 1 && path.object_names[1] == "Permissions") {
+    //Restricts access to the permissions folder in each user's root
+    if (path.object_names.length > 1 && path.object_names[1] == "permissions") {
+
+        console.log("USERNAME FOR PERMISSION ",path.toString(), requesting_username);
 
         if (path.object_names.length==2 && !path.is_folder) {
             /* The request is for an item with the same name as one of the restricted folders, not the folder itself
@@ -18845,8 +18855,8 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
         }
 
         //Allows read access of permissions by user
-        if (path.object_names[0] == requesting_username && !for_write) {
-            return requesting_username;
+        if (!for_write) {
+            return path.object_names[0];
         }
 
         //Allows "Mino" user to write

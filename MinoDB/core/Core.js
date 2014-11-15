@@ -22,7 +22,8 @@ function Core(minodb, db_address){
         "save": require('./handlers/SaveHandler/SaveHandler.js'),
         "search": require('./handlers/SearchHandler/SearchHandler.js'),
         "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler.js'),
-        "delete": require('./handlers/DeleteHandler/DeleteHandler.js')
+        "delete": require('./handlers/DeleteHandler/DeleteHandler.js'),
+        "add_permissions": require('./handlers/AddPermissionsHandler/AddPermissionsHandler.js')
     }
 
     core.connected = false;
