@@ -1798,6 +1798,7 @@ a {
   color: white;
   font-size: 14px;
   display: inline-block;
+  box-sizing: border-box;
   padding: 5px;
 }
 .fv_field > .fv_field_description {
@@ -2482,6 +2483,7 @@ a {
   border: 1px solid #5a3a77;
   background-color: white;
   padding-top: 0px;
+  padding-bottom: 0px;
   margin-bottom: 10px;
 }
 .browser_page .browser .view_container .item_view .item_section > .fv_field_title {
@@ -2492,9 +2494,11 @@ a {
   width: 100%;
   box-sizing: border-box;
 }
+.browser_page .browser .view_container .item_view .item_section > .fv_field_title a {
+  color: white;
+}
 .browser_page .browser .view_container .item_view .item_section > .fv_input_holder {
   width: 100%;
-  padding-right: 10px;
 }
 .browser_page .browser .view_container .item_view .item_section > .fv_input_holder > .fv_field {
   width: 100%;
@@ -2506,6 +2510,13 @@ a {
 .browser_page .browser .view_container .item_view .item_section > .fv_input_holder > .fv_object_field > .fv_input_holder {
   padding-left: 5px;
   padding-right: 5px;
+}
+.browser_page .browser .view_container .item_view .item_section.fv_object_field > .fv_input_holder {
+  padding-right: 10px;
+}
+.browser_page .browser .view_container .item_view .item_section > .fv_error_message {
+  width: 100%;
+  margin-left: 0px;
 }
 .browser_page .browser .view_container .type_view .type_field {
   border: 1px solid #800080;
@@ -2562,8 +2573,8 @@ a {
   width: 300px;
   height: 200px;
   position: absolute;
-  top: -200px;
-  left: -150px;
+  top: -210px;
+  left: 0px;
   border: 1px solid #000000;
 }
 .browser_page .browser .type_selector > .title {
@@ -2598,4 +2609,25 @@ a {
 .browser_page .browser .type_selector .results .result:active {
   background-color: blue;
   color: white;
+}
+.browser_page .browser .type_selector > .bottom_arrow {
+  position: absolute;
+  bottom: -10px;
+  left: 100px;
+  width: 0px;
+  height: 0px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid black;
+}
+.browser_page .browser .type_selector > .bottom_arrow:after {
+  content: '';
+  position: absolute;
+  bottom: 1px;
+  left: -10px;
+  width: 0px;
+  height: 0px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid white;
 }

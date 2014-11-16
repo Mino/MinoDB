@@ -1803,6 +1803,7 @@ textarea {
   color: white;
   font-size: 14px;
   display: inline-block;
+  box-sizing: border-box;
   padding: 5px;
 }
 .fv_field > .fv_field_description {

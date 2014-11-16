@@ -130,9 +130,8 @@ GetHandler.prototype.get_path = function(path_object){
     }, function(err, res){
         if(res){
             var full_path = new Path();
-            var path_error = full_path.init(res.full_path, {
-                "allow_tilde": true
-            });
+            var path_error = full_path.init(res.full_path, true);
+            logger.log(res.full_path);
             logger.log(path_error);
             gh.path_permission_checker.check_permissions_for_path(full_path,function(status){
                 if(status===Constants.WRITE_PERMISSION || status===Constants.READ_PERMISSION){

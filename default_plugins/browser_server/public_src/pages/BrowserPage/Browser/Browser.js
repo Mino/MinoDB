@@ -129,6 +129,7 @@ Browser.prototype.load = function(address, options){
 
 	api_request(request,function(err, response){
 		console.log(err);
+		console.log("response ",response);
 
 		browser.view.remove();//Will be the LoadingView
 

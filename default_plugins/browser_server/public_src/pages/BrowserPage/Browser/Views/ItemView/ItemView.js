@@ -141,11 +141,15 @@ ItemView.prototype.init = function(){
 	}
 
 	item_view.resize(Site.resize_obj);
+
+	item_view.toolbar_type_selector.init();
 }
 
 ItemView.prototype.remove = function(){
 	var item_view = this;
 	item_view.form.remove();
+
+	item_view.toolbar_type_selector.remove();
 }
 
 ItemView.prototype.edit = function(){

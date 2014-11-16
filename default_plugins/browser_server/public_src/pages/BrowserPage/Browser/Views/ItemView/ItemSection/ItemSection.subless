@@ -3,6 +3,7 @@
 	background-color: white;
 
 	padding-top: 0px;
+	padding-bottom: 0px;
 	margin-bottom: 10px;
 
 	>.fv_field_title{
@@ -12,11 +13,14 @@
 		padding: 5px;
 		width: 100%;
 		box-sizing: border-box;
+
+		a{
+			color: white;
+		}
 	}
 
 	>.fv_input_holder{
 		width: 100%;
-		padding-right: 10px;
 
 		>.fv_field{
 			width: 100%;
@@ -31,5 +35,16 @@
 				padding-right: 5px;
 			}
 		}
+	}
+
+	&.fv_object_field{
+		>.fv_input_holder{
+			padding-right: 10px;
+		}
+	}
+
+	>.fv_error_message{
+		width: 100%;
+		margin-left: 0px;
 	}
 }

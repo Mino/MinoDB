@@ -12897,7 +12897,6 @@ return jQuery;
         var delta = Math.max(xDelta, yDelta);
 
         return (
-            e.timeStamp - startEvent.timeStamp < $.tap.TIME_DELTA &&
             delta < $.tap.POSITION_DELTA &&
             (!startEvent.touches || TOUCH_VALUES.count === 1) &&
             Tap.isTracking
@@ -13130,7 +13129,6 @@ return jQuery;
     // Configurable options
     $.tap = {
         POSITION_DELTA: 10, // Max distance between touchstart and touchend to be considered a tap
-        TIME_DELTA: 400, // Max duration between touchstart and touchend to be considered a tap
         LEFT_BUTTON_ONLY: true // Only accept left mouse button actions
     };
 
@@ -13346,7 +13344,7 @@ SAFEClass.prototype.use_page_class = function(details){
             return;
         } else {
             //Load as URL
-            sf.load_url(pre_load_response, true);
+            sf.load_url(pre_load_response, false);
         }
         return;
     }
@@ -13700,7 +13698,12 @@ SAFEClass.prototype.load_url = function(url_with_query, push_state) {
         push_state = true;
     }
 
-    var full_url = Site.origin + url_with_query;
+    var full_url;
+    if(url_with_query.substring(0,Site.origin.length)===Site.origin){
+        full_url = url_with_query;
+    } else {
+        full_url = Site.origin + url_with_query;
+    }
 
     if (!sf.history_state_supported) {
         var target = encodeURI(full_url);
@@ -13713,6 +13716,8 @@ SAFEClass.prototype.load_url = function(url_with_query, push_state) {
             sf.ignore_next_url = true;
             History.pushState(null, "", full_url);
             sf.previous_url = full_url;
+        } else {
+            History.replaceState(null, "", full_url);
         }
     }
 
@@ -19490,18 +19495,24 @@ var button_type_child = 1;
 var button_type_item = 2;
 var button_type_type = 3;
 
-function PathButton(text,address,browser){
+function PathButton(text,address,browser,options){
 	var pb = this;
 
 	pb.text = text;
 	pb.address = address;
 	pb.browser = browser;
+	pb.options = options || {};
 
-	console.log(arguments);
+	var href;
+	if(pb.options.encode!==undefined && pb.options.encode===false){
+		href = Site.path+address;
+	} else {
+		href = Site.path+encode_path(address);
+	}
 
 	pb.element = $("<div />").addClass("pathbutton")
 	.append(
-		$("<a />")
+		$("<a />", {"href": href})
 		.ajax_url(function(){
 			if(browser instanceof MainBrowser){
 				return true;
@@ -19510,7 +19521,6 @@ function PathButton(text,address,browser){
 				return false;
 			}
 		})
-		.attr("href", Site.path+encode_path(address))
 		.text(pb.text)
 	)
 }
@@ -19608,7 +19618,26 @@ function AddressBar(browser){
 	);
 }
 
-AddressBar.prototype.populate_path_buttons = function(path){
+AddressBar.prototype.populate_special_path_button = function(text, link, address){
+	var address_bar = this;
+
+	address_bar.path_buttons.empty();
+
+	var pathbutton = new PathButton(
+		text,
+		link,
+		address_bar.browser,
+		{
+			encode: false
+		}
+	);
+
+	address_bar.path_buttons.append(pathbutton.element);
+
+	address_bar.set_address(address);
+}
+
+AddressBar.prototype.populate_path_buttons = function(path, address /*optional*/){
 	var address_bar = this;
 
 	address_bar.path_buttons.empty();
@@ -19616,7 +19645,7 @@ AddressBar.prototype.populate_path_buttons = function(path){
 	if(typeof path === 'string'){
 		var pathbutton = new PathButton(
 			path,
-			path,
+			address!==undefined ? address : path,
 			address_bar.browser
 		);
 
@@ -20255,7 +20284,18 @@ ItemSection.prototype.populate_type = function(type){
 
     section.field.element.addClass("item_section");
 
-    section.field.title.append(
+    var title_text;
+    if(section.field.display_name){
+        title_text = type.display_name + " ("+type.name+")";
+    } else {
+        title_text = type.name;
+    }
+
+    section.field.title.empty().append(
+        $("<a />",{
+             "href": Site.path + type.name
+        }).ajax_url().text(title_text)
+        ,
         section.remove_button = $("<button />").addClass("mino_button").text("Remove").on('tap',function(event){
             event.preventDefault();
             section.remove_press();
@@ -20415,11 +20455,15 @@ ItemView.prototype.init = function(){
 	}
 
 	item_view.resize(Site.resize_obj);
+
+	item_view.toolbar_type_selector.init();
 }
 
 ItemView.prototype.remove = function(){
 	var item_view = this;
 	item_view.form.remove();
+
+	item_view.toolbar_type_selector.remove();
 }
 
 ItemView.prototype.edit = function(){
@@ -20887,7 +20931,7 @@ function TypeSearchView(browser){
 		)
 	)
 	
-	browser.address_bar.populate_path_buttons("Types");
+	browser.address_bar.populate_special_path_button("Types","?types","");
 
 	tsv.do_search();
 }
@@ -21102,25 +21146,63 @@ function TypeSelector(selection_callback){
 	ts.element = $("<div />").addClass("type_selector").append(
 		$("<div />").addClass("title").text("Add a Type"),
 		ts.form.element,
-		ts.results = $("<div />").addClass("results")
+		ts.results = $("<div />").addClass("results"),
+		$("<div />").addClass("bottom_arrow")
 	)
+
+	ts.visible = false;
+	ts.can_close = true;
 
 	ts.do_search();
 }
 
 TypeSelector.prototype.toggle = function(){
 	var ts = this;
-	ts.element.toggle();
+
+	if(ts.visible){
+		ts.hide();
+	} else {
+		ts.show();
+	}
+}
+
+TypeSelector.prototype.init = function(){
+	var ts = this;
+
+	$('html').on('tap.type_selector',function(event){
+		console.log(ts.visible, ts.can_close);
+		if(ts.visible && ts.can_close){
+			if (!$(event.target).closest(ts.element).length){
+				console.log("HIDING FROM TAP OFF");
+				ts.hide();
+			}
+		}
+	})
+}
+
+TypeSelector.prototype.remove = function(){
+	var ts = this;
+
+	console.log("removing");
+
+	$('html').off('tap.type_selector')
 }
 
 TypeSelector.prototype.hide = function(){
 	var ts = this;
 	ts.element.hide();
+	ts.visible = false;
 }
 
 TypeSelector.prototype.show = function(){
 	var ts = this;
 	ts.element.show();
+	ts.visible = true;
+
+	ts.can_close = false;
+	setTimeout(function(){
+		ts.can_close = true;
+	},10);
 }
 
 TypeSelector.prototype.do_search = function(query){
@@ -21283,6 +21365,7 @@ Browser.prototype.load = function(address, options){
 
 	api_request(request,function(err, response){
 		console.log(err);
+		console.log("response ",response);
 
 		browser.view.remove();//Will be the LoadingView
 

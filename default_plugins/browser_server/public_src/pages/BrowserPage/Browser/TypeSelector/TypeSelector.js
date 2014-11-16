@@ -21,25 +21,63 @@ function TypeSelector(selection_callback){
 	ts.element = $("<div />").addClass("type_selector").append(
 		$("<div />").addClass("title").text("Add a Type"),
 		ts.form.element,
-		ts.results = $("<div />").addClass("results")
+		ts.results = $("<div />").addClass("results"),
+		$("<div />").addClass("bottom_arrow")
 	)
+
+	ts.visible = false;
+	ts.can_close = true;
 
 	ts.do_search();
 }
 
 TypeSelector.prototype.toggle = function(){
 	var ts = this;
-	ts.element.toggle();
+
+	if(ts.visible){
+		ts.hide();
+	} else {
+		ts.show();
+	}
+}
+
+TypeSelector.prototype.init = function(){
+	var ts = this;
+
+	$('html').on('tap.type_selector',function(event){
+		console.log(ts.visible, ts.can_close);
+		if(ts.visible && ts.can_close){
+			if (!$(event.target).closest(ts.element).length){
+				console.log("HIDING FROM TAP OFF");
+				ts.hide();
+			}
+		}
+	})
+}
+
+TypeSelector.prototype.remove = function(){
+	var ts = this;
+
+	console.log("removing");
+
+	$('html').off('tap.type_selector')
 }
 
 TypeSelector.prototype.hide = function(){
 	var ts = this;
 	ts.element.hide();
+	ts.visible = false;
 }
 
 TypeSelector.prototype.show = function(){
 	var ts = this;
 	ts.element.show();
+	ts.visible = true;
+
+	ts.can_close = false;
+	setTimeout(function(){
+		ts.can_close = true;
+	},10);
 }
 
 TypeSelector.prototype.do_search = function(query){
