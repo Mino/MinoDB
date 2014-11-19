@@ -9,10 +9,14 @@ function CallbackObject(callback){
 	co.has_write = false;
 }
 
-function PathPermissionChecker(handler){
+function PathPermissionChecker(handler, options){
 	var ppc = this;
 
 	ppc.handler = handler;
+
+	ppc.options = options || {};
+
+	ppc.for_write = ppc.options.for_write || false;
 
 	ppc.paths = {};
 	ppc.callback_objects = [];
@@ -25,7 +29,8 @@ function PathPermissionChecker(handler){
 PathPermissionChecker.prototype.check_permissions_for_path = function(path, callback){
 	var ppc = this;
 
-	var username_for_permission = path.username_for_permission(ppc.handler.user.username);
+	var username_for_permission = path.username_for_permission(ppc.handler.user.username, ppc.for_write);
+
 	if(username_for_permission===ppc.handler.user.username){
 		callback(Constants.WRITE_PERMISSION);
 		return;

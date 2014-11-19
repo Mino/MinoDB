@@ -136,7 +136,7 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
 			    );
     		}
 
-    		var username_for_permission = old_path.username_for_permission(del_obj.handler.user.username);
+    		var username_for_permission = old_path.username_for_permission(del_obj.handler.user.username, true);
 			if(username_for_permission===del_obj.handler.user.username){
 				have_permission();
 			} else {
