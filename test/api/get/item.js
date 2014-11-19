@@ -3,7 +3,7 @@ var logger = require('tracer').console();
 var assert = require('assert');
 
 it('should not throw an error if access denied', function(done) {
-	globals.user_sdk.get(["/Mino/users/testuser"], function(err, res) {
+	globals.sdk.with_user("testuser").get(["/Mino/users/testuser"], function(err, res) {
 		logger.log(res);
 		assert.equal(err, null);
 		assert.equal(res.objects[0], null)
@@ -13,7 +13,7 @@ it('should not throw an error if access denied', function(done) {
 
 it('should return a folder to Mino user even if access is denied', function(done) {
 	var path = "/testuser/TestSave";
-	globals.user_sdk.get([path], function(err, res) {
+	globals.sdk.get([path], function(err, res) {
 		logger.log(res);
 		assert.equal(err, null);
 

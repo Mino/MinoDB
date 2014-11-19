@@ -4,7 +4,7 @@ var assert = require('assert');
 
 describe('When I add permissions', function() {
     it('should save the permission object', function(done) {
-        globals.user_sdk.with_user("testuser").call({
+        globals.sdk.with_user("testuser").with_user("testuser").call({
             "function": "add_permissions",
             "parameters": {
                 "permissions" : [{
