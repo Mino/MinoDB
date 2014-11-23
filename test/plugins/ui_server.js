@@ -7,7 +7,7 @@ var request_plugin_config = require('./request_plugin_config');
 var request = require('supertest');
 
 describe("UI plugin", function() {
-	it("should be added", function(done) {
+	it("should retrieve config server", function(done) {
 		var test_server = express()
 		test_server.use("/mino/", globals.mino.server());
 		request_plugin_config("ui", test_server, function(err, res) {

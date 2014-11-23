@@ -8,7 +8,7 @@ describe("Plugins", function() {
 
 	describe("New plugin", function() {
 
-		it("should be added", function(done) {
+		it("should retrieve config server", function(done) {
 			var PLUGIN_RESPONSE = "Testing plugin response";
 
 			var server = express();
@@ -45,7 +45,7 @@ describe("Plugins", function() {
 	});
 
 	describe("API plugin", function() {
-		it("should be added", function(done) {
+		it("should retrieve config server", function(done) {
 			var test_server = express()
 			test_server.use("/mino/", globals.mino.server());
 			request_plugin_config("api", test_server, function(err, res) {
@@ -57,7 +57,7 @@ describe("Plugins", function() {
 	})
 
 	describe("Browser plugin", function() {
-		it("should be added", function(done) {
+		it("should retrieve config server", function(done) {
 			var test_server = express()
 			test_server.use("/mino/", globals.mino.server());
 			request_plugin_config("browser", test_server, function(err, res) {
