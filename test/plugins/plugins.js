@@ -68,15 +68,5 @@ describe("Plugins", function() {
 		})
 	})
 
-	describe("UI plugin", function() {
-		it("should be added", function(done) {
-			var test_server = express()
-			test_server.use("/mino/", globals.mino.server());
-			request_plugin_config("ui", test_server, function(err, res) {
-				assert.equal(err, null);
-				assert.equal(res, "UI CONFIG");
-				done();
-			})
-		})
-	})
+	require('./ui_server');
 });
