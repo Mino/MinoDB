@@ -2,40 +2,37 @@ var globals = require('../../globals');
 var logger = require('tracer').console();
 var assert = require('assert');
 
-
-it('should save a folder', function(done) {
+it('should delete a folder', function(done) {
     globals.sdk.with_user("testuser").with_user("testuser").call({
-        "function": "save",
+        "function": "delete",
         "parameters": {
-            "objects" : [{
-                "name": "TestFolder",
-                "path":"/testuser/",
-                "folder": true
-            }]
+            "addresses": [
+                "/testuser/TestFolder/"
+            ]
         }
     }, function(error, response) {
         logger.log(JSON.stringify(error, null, 4), response);
         assert.equal(error,null)
+        var object = response.objects[0];
+        assert.equal(object.deleted, true)
         
         globals.sdk.with_user("testuser").get(["/testuser/TestFolder/"], function(err, res) {
             logger.log(err, res);
             assert.equal(err, null);
             var object = res.objects[0];
-            assert.notEqual(object, null);
+            assert.equal(object, null);
             done();
         })
     });
 });
 
-it('should not save a folder if path does not exist', function(done) {
+it('should not delete a folder if path does not exist', function(done) {
     globals.sdk.with_user("testuser").call({
-        "function": "save",
+        "function": "delete",
         "parameters": {
-            "objects" : [{
-                "name": "TestFolder",
-                "path": "/testuser/randompath/",
-                "folder": true
-            }]
+            "addresses": [
+                "/testuser/randompath/TestFolder/"
+            ]
         }
     }, function(error, response) {
         logger.log(JSON.stringify(error, null, 4), response);
@@ -47,14 +44,8 @@ it('should not save a folder if path does not exist', function(done) {
                         "objects": {
                             "invalid": {
                                 "0": {
-                                    "invalid": {
-                                        "path": {
-                                            "error": 32,
-                                            "error_message": "Folder does not exist or you are not permitted to write to it."
-                                        }
-                                    },
-                                    "error_message": "One or more errors.",
-                                    "error": 0
+                                    "error": -1,
+                                    "error_message": "ID DOES NOT EXIST"
                                 }
                             },
                             "error_message": "One or more errors.",
@@ -67,8 +58,8 @@ it('should not save a folder if path does not exist', function(done) {
             },
             "error_message": "One or more errors.",
             "error": 0
-        })
-
+        });
+        
         globals.sdk.with_user("testuser").get(["/testuser/randompath/TestFolder/"], function(err, res) {
             assert.equal(err, null);
             var object = res.objects[0];
@@ -78,34 +69,25 @@ it('should not save a folder if path does not exist', function(done) {
     });
 });
 
-it('should not save a folder if access denied', function(done) {
+it('should not delete a folder if access denied', function(done) {
     globals.sdk.with_user("testuser").call({
-        "function": "save",
+        "function": "delete",
         "parameters": {
-            "objects" : [{
-                "name": "TestFolder",
-                "path": "/Mino/",
-                "folder": true
-            }]
+            "addresses": [
+                "/Mino/TestFolder/"
+            ]
         }
     }, function(error, response) {
         logger.log(JSON.stringify(error, null, 4), response);
-        assert.notEqual(error,null)
-        assert.deepEqual(error, { 
+        assert.deepEqual(error, {
             "invalid": {
                 "parameters": {
                     "invalid": {
                         "objects": {
                             "invalid": {
                                 "0": {
-                                    "invalid": {
-                                        "path": {
-                                            "error": 19,
-                                            "error_message": "You do not have permission to write to this path."
-                                        }
-                                    },
-                                    "error_message": "One or more errors.",
-                                    "error": 0
+                                    "error": -1,
+                                    "error_message": "ID DOES NOT EXIST"
                                 }
                             },
                             "error_message": "One or more errors.",

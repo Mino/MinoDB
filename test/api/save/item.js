@@ -3,7 +3,7 @@ var logger = require('tracer').console();
 var assert = require('assert');
 
 it('should save an object', function(done) {
-    globals.user_sdk.with_user("testuser").call({
+    globals.sdk.with_user("testuser").with_user("testuser").call({
         "function": "save",
         "parameters": {
             "objects" : [{
@@ -20,7 +20,7 @@ it('should save an object', function(done) {
         logger.log(JSON.stringify(error, null, 4), response);
         assert.equal(error,null)
         
-        globals.user_sdk.get(["/testuser/TestSave"], function(err, res) {
+        globals.sdk.with_user("testuser").get(["/testuser/TestSave"], function(err, res) {
             logger.log(err, res);
             assert.equal(err, null);
             var object = res.objects[0];
@@ -31,7 +31,7 @@ it('should save an object', function(done) {
 });
 
 it('should not save an object if path does not exist', function(done) {
-    globals.user_sdk.call({
+    globals.sdk.with_user("testuser").call({
         "function": "save",
         "parameters": {
             "objects" : [{
@@ -76,7 +76,7 @@ it('should not save an object if path does not exist', function(done) {
             "error": 0
         });
         
-        globals.user_sdk.get(["/testuser/randompath/TestSave"], function(err, res) {
+        globals.sdk.with_user("testuser").get(["/testuser/randompath/TestSave"], function(err, res) {
             assert.equal(err, null);
             var object = res.objects[0];
             assert.equal(object, null);
@@ -86,7 +86,7 @@ it('should not save an object if path does not exist', function(done) {
 });
 
 it('should not save an object if access denied', function(done) {
-    globals.user_sdk.call({
+    globals.sdk.with_user("testuser").call({
         "function": "save",
         "parameters": {
             "objects" : [{
@@ -130,7 +130,7 @@ it('should not save an object if access denied', function(done) {
             "error": 0
         });
         
-        globals.user_sdk.get(["/Mino/TestSave"], function(err, res) {
+        globals.sdk.get(["/Mino/TestSave"], function(err, res) {
             assert.equal(err, null);
             var object = res.objects[0];
             assert.equal(object, null);
@@ -140,7 +140,7 @@ it('should not save an object if access denied', function(done) {
 });
 
 it('should throw an error if I save an object with a non-existant type', function(done) {
-    globals.user_sdk.with_user("testuser").call({
+    globals.sdk.with_user("testuser").with_user("testuser").call({
         "function": "save",
         "parameters": {
             "objects" : [{
