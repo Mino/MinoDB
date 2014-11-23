@@ -40,6 +40,10 @@ describe('API', function() {
         require('./delete/item')
     });
 
+    describe("Plugin", function() {
+        require('./plugins/plugins.js')
+    });
+
     require('./modify_permissions');
 
 });

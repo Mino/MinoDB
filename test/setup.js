@@ -21,8 +21,9 @@ module.exports = function(done) {
 			var sdk = new MinoSDK("Mino");
 			sdk.set_local_api(mino.api);
 
-			globals.sdk = sdk;			
-
+			globals.sdk = sdk;
+			globals.mino = mino;
+			
 			mino.api.connect_callbacks.push(function() {
 	            User.create({
 	                username: "testuser",
