@@ -9,5 +9,6 @@ describe('MinoDB', function() {
 	require('./initial_setup.js');
 	require('./models/models.js');
 	require('./api/api.js');
+    require('./plugins/plugins.js')
 
 });

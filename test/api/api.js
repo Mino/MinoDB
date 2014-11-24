@@ -35,6 +35,11 @@ describe('API', function() {
         require('./get/item')
     });
 
+    describe("When I make delete request", function() {
+        require('./delete/folder')
+        require('./delete/item')
+    });
+
     require('./modify_permissions');
 
 });

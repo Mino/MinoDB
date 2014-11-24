@@ -21,8 +21,9 @@ module.exports = function(done) {
 			var sdk = new MinoSDK("Mino");
 			sdk.set_local_api(mino.api);
 
-			globals.sdk = sdk;			
-
+			globals.sdk = sdk;
+			globals.mino = mino;
+			
 			mino.api.connect_callbacks.push(function() {
 	            User.create({
 	                username: "testuser",
@@ -30,9 +31,6 @@ module.exports = function(done) {
 	                password: "my_password"
 	            }, mino.api, function(user_err, user_res){
 	                logger.log(JSON.stringify(user_err, null, 4), user_res);
-	                var testuser_sdk = new MinoSDK("testuser");
-	                testuser_sdk.set_local_api(mino.api);
-	                globals.user_sdk = testuser_sdk;
 
 					User.create({
 					    username: "otheruser",
@@ -40,9 +38,6 @@ module.exports = function(done) {
 					    password: "my_password"
 					}, mino.api, function(user_err, user_res){
 					    logger.log(JSON.stringify(user_err, null, 4), user_res);
-					    var testuser_sdk = new MinoSDK("testuser");
-					    testuser_sdk.set_local_api(mino.api);
-					    globals.user_sdk = testuser_sdk;
 						done();
 					})
 	            })
