@@ -1,7 +1,7 @@
 var logger = require('tracer').console();
 var FieldVal = require('fieldval');
 var BasicVal = require('fieldval-basicval');
-var ValidationRule = require('fieldval-rules');
+var FVRule = require('fieldval-rules');
 
 var security = require('../security');
 
@@ -51,7 +51,7 @@ User.rule_definition = {
         min_length: 8
     }]
 };
-User.rule = new ValidationRule();
+User.rule = new FVRule();
 User.rule.init(User.rule_definition);
 
 
@@ -75,7 +75,7 @@ User.sign_in_rule_definition = {
         type: "string"
     }]
 };
-User.sign_in_rule = new ValidationRule();
+User.sign_in_rule = new FVRule();
 User.sign_in_rule.init(User.sign_in_rule_definition);
 
 //TODO add more checks for tilde, slashes, etc

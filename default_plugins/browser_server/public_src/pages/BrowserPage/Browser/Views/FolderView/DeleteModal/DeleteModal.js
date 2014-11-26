@@ -26,7 +26,7 @@ function DeleteModal(icon_list, callback){
 
 		dm.list.push(icon.full_path);
 		dm.name_list.push(icon.name);
-		dm.form.add_field(i, new TextField(i));
+		dm.form.add_field(i, new FVTextField(i));
 	}
 
 	modal.contents.append(

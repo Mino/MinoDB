@@ -21,7 +21,7 @@
 					"type":"text/css"
 				}).appendTo("head");
 
-				var choice_field = new ChoiceField("Apps", {
+				var choice_field = new FVChoiceField("Apps", {
 					"choices": [
 						["admin","Admin"],
 						["browser","Browser"]

@@ -4,7 +4,7 @@ function TypeSelector(selection_callback){
 	ts.selection_callback = selection_callback;
 
 	ts.form = new FVForm();
-	ts.query_field = new TextField("Search for a type...");
+	ts.query_field = new FVTextField("Search for a type...");
 	ts.query_field.on_change(function(query){
 		var error = FieldVal.use_checks(query, [
 			BasicVal.string(false), 

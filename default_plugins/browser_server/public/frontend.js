@@ -13866,7 +13866,6 @@ var FieldVal = (function(){
         return new FieldVal(current_value,current_error);
     };
 
-
     //TODO guard against invalid arguments
     FieldVal.prototype.invalid = function(){
         var fv = this;
@@ -14241,6 +14240,13 @@ var FieldVal = (function(){
                     value = parsed_float;
                     desired_type = "number";
                 }
+            } else if (desired_type === "boolean") {
+                if(value === 'true'){
+                    value = true;
+                }
+                if(value === 'false'){
+                    value = false;
+                }
             }
         }
 
@@ -14346,7 +14352,7 @@ var FieldVal = (function(){
                 } else {
 
                     if (shared_options.existing_validator) {
-                        if (shared_options.field_name) {
+                        if (shared_options.field_name!==undefined) {
                             shared_options.validator.invalid(shared_options.field_name, response);
                         } else {
                             shared_options.validator.error(response);
@@ -15194,237 +15200,7 @@ function fieldval_ui_extend(sub, sup) {
 	sub.superConstructor = sup;
 	sub.superClass = sup.prototype;
 }
-function FVForm(fields){
-	var form = this;
-
-	form.element = $("<form />").addClass("fv_form").append(
-		form.error_message = $("<div />").addClass("fv_error_message").hide()
-	).on("submit",function(event){
-        event.preventDefault();
-        form.submit();
-        return false;
-	});
-
-	form.fields = fields || {};
-
-	//Used because ObjectField uses some FVForm.prototype functions
-	form.fields_element = form.element;
-
-	form.submit_callbacks = [];
-}
-FVForm.button_event = 'click';
-FVForm.is_mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|nokia|series40|x11|opera mini/i.test(navigator.userAgent.toLowerCase());
-if($.tap){
-	FVForm.button_event = 'tap';
-}
-
-FVForm.prototype.init = function(){
-	var form = this;
-
-	for(var i in form.fields){
-        var inner_field = form.fields[i];
-        inner_field.init();
-    }
-}
-
-FVForm.prototype.remove = function(){
-	var form = this;
-
-	for(var i in form.fields){
-        var inner_field = form.fields[i];
-        inner_field.remove();
-    }
-}
-
-FVForm.prototype.blur = function() {
-    var form = this;
-
-    for(var i in form.fields){
-        var inner_field = form.fields[i];
-        inner_field.blur();
-    }
-
-    return form;
-}
-
-FVForm.prototype.on_submit = function(callback){
-	var form = this;
-
-	form.submit_callbacks.push(callback);
-
-	return form;
-}
-
-FVForm.prototype.submit = function(){
-	var form = this;
-
-	var compiled = form.val();
-
-	for(var i = 0; i < form.submit_callbacks.length; i++){
-		var callback = form.submit_callbacks[i];
-
-		callback(compiled);
-	}
-
-	//returns compiled as well as invoking callback
-	return compiled;
-}
-
-FVForm.prototype.add_field = function(name, field){
-	var form = this;
-
-    field.element.appendTo(form.fields_element);
-    form.fields[name] = field;
-
-    return form;
-}
-
-FVForm.prototype.remove_field = function(name){
-	var form = this;
-
-    var field = form.fields[name];
-    if(field){
-    	field.remove();//Field class will perform field.element.remove()
-    	delete form.fields[name];
-    }
-}
-
-//Same as FVForm.error(null)
-FVForm.prototype.clear_errors = function(){
-	var form = this;
-	form.error(null);
-}
-
-FVForm.prototype.fields_error = function(error){
-	var form = this;
-
-	if(error){
-	    var invalid_fields = error.invalid || {};
-	    var missing_fields = error.missing || {};
-	    var unrecognized_fields = error.unrecognized || {};
-	    
-	    for(var i in form.fields){
-	    	var field = form.fields[i];
-
-	    	var field_error = invalid_fields[i] || missing_fields[i] || unrecognized_fields[i] || null;
-    		field.error(field_error);
-	    }
-
-	} else {
-		for(var i in form.fields){
-			var field = form.fields[i];
-			field.error(null);
-		}
-	}
-}
-
-FVForm.prototype.show_error = function(){
-    var form = this;
-    form.error_message.show();
-}
-
-FVForm.prototype.hide_error = function(){
-    var form = this;
-    form.error_message.hide();
-}
-
-FVForm.prototype.error = function(error) {
-    var form = this;
-
-    form.error_message.empty();
-
-    if(error){
-
-    	if(error.error===undefined){
-    		console.error("No error provided");
-    		return;
-    	}
-
-    	if(error.error===0){
-        	form.fields_error(error);
-        	form.hide_error();
-        } else {
-        	if(error.error===4){
-	            var error_list = $("<ul />");
-	            for(var i = 0; i < error.errors.length; i++){
-	                var sub_error = error.errors[i];
-	                if(sub_error.error===0){
-	                	form.fields_error(sub_error);
-	                } else {
-		                error_list.append(
-		                    $("<li />").text(sub_error.error_message)
-		                )
-		            }
-	            }
-	            form.error_message.append(
-	                error_list
-	            );
-	        } else {
-	        	form.error_message.append(
-	                $("<span />").text(error.error_message)
-	            )
-	        }
-	        form.show_error();
-		}
-    } else {
-    	//Clear error
-    	form.fields_error(null);
-    	form.hide_error();
-    }
-}
-
-FVForm.prototype.disable = function(){
-	var form = this;
-
-	for(var i in form.fields){
-		var field = form.fields[i];
-		field.disable();
-	}
-
-	form.element.addClass("disable");
-
-	return form;
-}
-
-FVForm.prototype.enable = function(){
-	var form = this;
-
-	for(var i in form.fields){
-		var field = form.fields[i];
-		field.enable();
-	}
-
-	form.element.removeClass("disable");
-
-	return form;
-}
-
-FVForm.prototype.val = function(set_val){
-    var form = this;
-
-    if (arguments.length===0) {
-        var output = {};
-		for(var i in form.fields){
-			var field = form.fields[i];
-			if(field.output_flag!==false){
-				var value = field.val();
-				if(value!=null){
-					output[i] = value;
-				}
-			}
-		}
-		return output;
-    } else {
-    	if(set_val){
-	    	for(var i in form.fields){
-	    		var field = form.fields[i];
-	    		field.val(set_val[i]);
-	    	}
-	    }
-        return form;
-    }
-}
-function Field(name, options) {
+function FVField(name, options) {
     var field = this;
 
     field.name = name;
@@ -15447,7 +15223,7 @@ function Field(name, options) {
     field.layout();
 }
 
-Field.prototype.in_array = function(remove_callback){
+FVField.prototype.in_array = function(remove_callback){
     var field = this;
 
     field.is_in_array = true;
@@ -15467,23 +15243,23 @@ Field.prototype.in_array = function(remove_callback){
     )
 }
 
-Field.prototype.init = function(){
+FVField.prototype.init = function(){
     var field = this;
 }
 
-Field.prototype.remove = function(){
+FVField.prototype.remove = function(){
     var field = this;
 
     field.element.remove();
 }
 
-Field.prototype.change_name = function(name) {
+FVField.prototype.change_name = function(name) {
     var field = this;
     field.name = name;
     return field;
 }
 
-Field.prototype.layout = function(){
+FVField.prototype.layout = function(){
     var field = this;
 
     field.element.append(
@@ -15494,7 +15270,7 @@ Field.prototype.layout = function(){
     )
 }
 
-Field.prototype.on_change = function(callback){
+FVField.prototype.on_change = function(callback){
     var field = this;
 
     field.on_change_callbacks.push(callback);
@@ -15502,13 +15278,13 @@ Field.prototype.on_change = function(callback){
     return field;
 }
 
-Field.prototype.output = function(do_output){
+FVField.prototype.output = function(do_output){
     var field = this;
     field.output_flag = do_output;
     return field;
 }
 
-Field.prototype.did_change = function(){
+FVField.prototype.did_change = function(){
     var field = this;
 
     var val = field.val();
@@ -15521,15 +15297,15 @@ Field.prototype.did_change = function(){
     return field;
 }
 
-Field.prototype.icon = function(params) {
+FVField.prototype.icon = function(params) {
     var field = this;
 }
 
-Field.prototype.val = function(set_val) {
-    console.error("Did not override Field.val()")
+FVField.prototype.val = function(set_val) {
+    console.error("Did not override FVField.val()")
 }
 
-Field.prototype.disable = function() {
+FVField.prototype.disable = function() {
     var field = this;
     field.is_disabled = true;
     field.element.addClass("fv_disabled");
@@ -15542,7 +15318,7 @@ Field.prototype.disable = function() {
     return field;
 }
 
-Field.prototype.enable = function() {
+FVField.prototype.enable = function() {
     var field = this;
     field.is_disabled = false;
     field.element.removeClass("fv_disabled");
@@ -15555,25 +15331,25 @@ Field.prototype.enable = function() {
     return field;
 }
 
-Field.prototype.blur = function() {
+FVField.prototype.blur = function() {
     var field = this;
 }
 
-Field.prototype.focus = function() {
+FVField.prototype.focus = function() {
     var field = this;
 }
 
-Field.prototype.show_error = function(){
+FVField.prototype.show_error = function(){
     var field = this;
     field.error_message.show();
 }
 
-Field.prototype.hide_error = function(){
+FVField.prototype.hide_error = function(){
     var field = this;
     field.error_message.hide();
 }
 
-Field.prototype.error = function(error) {
+FVField.prototype.error = function(error) {
     var field = this;
 
     if (error) {
@@ -15605,9 +15381,9 @@ Field.prototype.error = function(error) {
         }
     }
 }
-fieldval_ui_extend(TextField, Field);
+fieldval_ui_extend(FVTextField, FVField);
 
-function TextField(name, options) {
+function FVTextField(name, options) {
     var field = this;
 
     var options_type = typeof options;
@@ -15621,7 +15397,7 @@ function TextField(name, options) {
         options = {};
     }
 
-    TextField.superConstructor.call(this, name, options);
+    FVTextField.superConstructor.call(this, name, options);
 
     field.element.addClass("fv_text_field");
 
@@ -15654,7 +15430,7 @@ function TextField(name, options) {
     .appendTo(field.input_holder);
 }
 
-TextField.prototype.check_changed = function(){
+FVTextField.prototype.check_changed = function(){
     var field = this;
 
     var this_value = field.val();
@@ -15664,7 +15440,7 @@ TextField.prototype.check_changed = function(){
     }
 }
 
-TextField.prototype.on_enter = function(callback){
+FVTextField.prototype.on_enter = function(callback){
     var field = this;
 
     field.enter_callbacks.push(callback);
@@ -15672,7 +15448,7 @@ TextField.prototype.on_enter = function(callback){
     return field;
 }
 
-TextField.prototype.icon = function(params) {
+FVTextField.prototype.icon = function(params) {
     var field = this;
 
     var css_props = {
@@ -15686,47 +15462,47 @@ TextField.prototype.icon = function(params) {
     return field;
 }
 
-TextField.prototype.change_name = function(name) {
+FVTextField.prototype.change_name = function(name) {
     var field = this;
 
-    TextField.superClass.change_name.call(this,name);
+    FVTextField.superClass.change_name.call(this,name);
 
     field.input.attr("placeholder", name);
     return field;
 }
 
-TextField.prototype.disable = function() {
+FVTextField.prototype.disable = function() {
     var field = this;
     field.input.attr("disabled", "disabled");
-    return Field.prototype.disable.call(this);
+    return FVField.prototype.disable.call(this);
 }
 
-TextField.prototype.enable = function() {
+FVTextField.prototype.enable = function() {
     var field = this;
     field.input.attr("disabled", null);
-    return Field.prototype.enable.call(this);
+    return FVField.prototype.enable.call(this);
 }
 
-TextField.prototype.focus = function() {
+FVTextField.prototype.focus = function() {
     var field = this;
     field.input.focus();
     return field;
 }
 
-TextField.prototype.blur = function() {
+FVTextField.prototype.blur = function() {
     var field = this;
     field.input.blur();
     return field;
 }
 
-TextField.numeric_regex = /^\d+(\.\d+)?$/;
+FVTextField.numeric_regex = /^\d+(\.\d+)?$/;
 
-TextField.prototype.val = function(set_val) {
+FVTextField.prototype.val = function(set_val) {
     var field = this;
 
     if (arguments.length===0) {
         var value = field.input.val();
-        if(field.input_type==="number" && TextField.numeric_regex.test(value)){
+        if(field.input_type==="number" && FVTextField.numeric_regex.test(value)){
             return parseFloat(value);
         }
         if(value.length===0){
@@ -15738,20 +15514,21 @@ TextField.prototype.val = function(set_val) {
         return field;
     }
 }
+fieldval_ui_extend(FVPasswordField, FVTextField);
 
-fieldval_ui_extend(PasswordField, TextField);
-
-function PasswordField(name) {
+function FVPasswordField(name) {
     var field = this;
 
-    PasswordField.superConstructor.call(this, name, "password");
+    FVPasswordField.superConstructor.call(this, name, {
+        type: "password"
+    });
 }
-fieldval_ui_extend(DisplayField, Field);
+fieldval_ui_extend(FVDisplayField, FVField);
 
-function DisplayField(name, options) {
+function FVDisplayField(name, options) {
     var field = this;
 
-    DisplayField.superConstructor.call(this, name, options);
+    FVDisplayField.superConstructor.call(this, name, options);
 
     field.element.addClass("fv_display_field");
 
@@ -15761,7 +15538,7 @@ function DisplayField(name, options) {
     field.output_flag = false;//Don't output the field
 }
 
-DisplayField.prototype.icon = function(params) {
+FVDisplayField.prototype.icon = function(params) {
     var field = this;
 
     var css_props = {
@@ -15775,7 +15552,7 @@ DisplayField.prototype.icon = function(params) {
     return field;
 }
 
-DisplayField.replace_line_breaks = function(string){
+FVDisplayField.replace_line_breaks = function(string){
     if(typeof string !== 'string'){
         return string;
     }
@@ -15788,22 +15565,22 @@ DisplayField.replace_line_breaks = function(string){
     return htmls.join("<br>");
 }
 
-DisplayField.prototype.val = function(set_val) {
+FVDisplayField.prototype.val = function(set_val) {
     var field = this;
 
     if (arguments.length===0) {
         return field.input.text();
     } else {
-        field.input.html(DisplayField.replace_line_breaks(set_val));
+        field.input.html(FVDisplayField.replace_line_breaks(set_val));
         return field;
     }
 }
-fieldval_ui_extend(ChoiceField, Field);
+fieldval_ui_extend(FVChoiceField, FVField);
 
-function ChoiceField(name, options) {
+function FVChoiceField(name, options) {
     var field = this;
 
-    ChoiceField.superConstructor.call(this, name, options);
+    FVChoiceField.superConstructor.call(this, name, options);
 
     field.choices = field.options.choices || [];
     field.allow_empty = field.options.allow_empty || false;
@@ -15903,7 +15680,7 @@ function ChoiceField(name, options) {
     field.filter("");
 }
 
-ChoiceField.prototype.show_list = function(){
+FVChoiceField.prototype.show_list = function(){
     var field = this;
 
     if(!field.is_disabled){
@@ -15921,7 +15698,7 @@ ChoiceField.prototype.show_list = function(){
     }
 }
 
-ChoiceField.prototype.hide_list = function(){
+FVChoiceField.prototype.hide_list = function(){
     var field = this;
 
     field.input_holder.css("min-height","");
@@ -15931,7 +15708,7 @@ ChoiceField.prototype.hide_list = function(){
     field.choice_list.hide();
 }
 
-ChoiceField.prototype.filter = function(text, initial){
+FVChoiceField.prototype.filter = function(text, initial){
     var field = this;
 
     var text_lower = text.toLowerCase();
@@ -15959,7 +15736,7 @@ ChoiceField.prototype.filter = function(text, initial){
     }
 }
 
-ChoiceField.prototype.value_to_text = function(value){
+FVChoiceField.prototype.value_to_text = function(value){
     var field = this;
 
     for(var i = 0; i < field.choice_values.length; i++){
@@ -15973,7 +15750,7 @@ ChoiceField.prototype.value_to_text = function(value){
     return null;
 }
 
-ChoiceField.prototype.select_option = function(value, ignore_change){
+FVChoiceField.prototype.select_option = function(value, ignore_change){
     var field = this;
 
     field.selected_value = value;
@@ -15988,7 +15765,7 @@ ChoiceField.prototype.select_option = function(value, ignore_change){
     }
 }
 
-ChoiceField.prototype.move_up = function(){
+FVChoiceField.prototype.move_up = function(){
     var field = this;
 
     if(field.current_highlight){
@@ -16004,7 +15781,7 @@ ChoiceField.prototype.move_up = function(){
     }
 }
 
-ChoiceField.prototype.move_down = function(){
+FVChoiceField.prototype.move_down = function(){
     var field = this;
 
     if(!field.current_highlight){
@@ -16023,7 +15800,7 @@ ChoiceField.prototype.move_down = function(){
     }
 }
 
-ChoiceField.prototype.move_into_view = function(target){
+FVChoiceField.prototype.move_into_view = function(target){
     var field = this;
 
     if(target===undefined){
@@ -16040,7 +15817,7 @@ ChoiceField.prototype.move_into_view = function(target){
     },1);
 }
 
-ChoiceField.prototype.add_option = function(choice_value, display_name, initial){
+FVChoiceField.prototype.add_option = function(choice_value, display_name, initial){
     var field = this;
 
     var option_element = $("<div />").addClass("fv_choice_option").data("value",choice_value).text(display_name).on(FVForm.button_event,function(e){
@@ -16050,7 +15827,7 @@ ChoiceField.prototype.add_option = function(choice_value, display_name, initial)
     field.finalize_option(option_element, choice_value, initial);
 }
 
-ChoiceField.prototype.default_click = function(e, value){
+FVChoiceField.prototype.default_click = function(e, value){
     var field = this;
 
     e.preventDefault();
@@ -16062,7 +15839,7 @@ ChoiceField.prototype.default_click = function(e, value){
     field.select_option(value);
 }
 
-ChoiceField.prototype.finalize_option = function(option_element, choice_value, initial){
+FVChoiceField.prototype.finalize_option = function(option_element, choice_value, initial){
     var field = this;
 
     if(field.selected_value===choice_value){
@@ -16077,7 +15854,7 @@ ChoiceField.prototype.finalize_option = function(option_element, choice_value, i
     option_element.appendTo(field.choice_list)
 }
 
-ChoiceField.prototype.select_highlighted = function(){
+FVChoiceField.prototype.select_highlighted = function(){
     var field = this;
 
     if(field.current_highlight && field.current_highlight[0]){
@@ -16085,7 +15862,7 @@ ChoiceField.prototype.select_highlighted = function(){
     }
 }
 
-ChoiceField.prototype.focus = function() {
+FVChoiceField.prototype.focus = function() {
     var field = this;
     
     field.filter_input.val("");
@@ -16096,7 +15873,7 @@ ChoiceField.prototype.focus = function() {
     return field;
 }
 
-ChoiceField.prototype.blur = function() {
+FVChoiceField.prototype.blur = function() {
     var field = this;
     
     field.hide_list();
@@ -16104,7 +15881,7 @@ ChoiceField.prototype.blur = function() {
     return field;
 }
 
-ChoiceField.prototype.val = function(set_val) {
+FVChoiceField.prototype.val = function(set_val) {
     var field = this;
 
     if (arguments.length===0) {
@@ -16116,17 +15893,17 @@ ChoiceField.prototype.val = function(set_val) {
         return field;
     }
 }
-fieldval_ui_extend(DateField, Field);
+fieldval_ui_extend(FVDateField, FVField);
 
-function DateField(name, options) {//format is currently unused
+function FVDateField(name, options) {//format is currently unused
     var field = this;
 
     if(typeof DateVal === 'undefined'){
-        console.error("DateField requires fieldval-dateval-js");
+        console.error("FVDateField requires fieldval-dateval-js");
         return;
     }
 
-    DateField.superConstructor.call(this, name, options);
+    FVDateField.superConstructor.call(this, name, options);
 
     field.element.addClass("fv_date_field");
 
@@ -16152,7 +15929,7 @@ function DateField(name, options) {//format is currently unused
     }
 }
 
-DateField.prototype.add_element_from_component = function(component, component_value){
+FVDateField.prototype.add_element_from_component = function(component, component_value){
     var field = this;
 
     if(component_value===0){
@@ -16184,22 +15961,22 @@ DateField.prototype.add_element_from_component = function(component, component_v
     }
 }
 
-DateField.prototype.icon = function(params) {
+FVDateField.prototype.icon = function(params) {
     var field = this;
 
     return field;
 }
 
-DateField.prototype.change_name = function(name) {
+FVDateField.prototype.change_name = function(name) {
     var field = this;
 
-    DateField.superClass.change_name.call(this,name);
+    FVDateField.superClass.change_name.call(this,name);
 
     field.input.attr("placeholder", name);
     return field;
 }
 
-DateField.prototype.disable = function() {
+FVDateField.prototype.disable = function() {
     var field = this;
     for(var i = 0; i < field.inputs.length; i++){
         var input = field.inputs[i];
@@ -16207,10 +15984,10 @@ DateField.prototype.disable = function() {
             input.attr("disabled", "disabled");
         }
     }
-    return Field.prototype.disable.call(this);
+    return FVField.prototype.disable.call(this);
 }
 
-DateField.prototype.enable = function() {
+FVDateField.prototype.enable = function() {
     var field = this;
     for(var i = 0; i < field.inputs.length; i++){
         var input = field.inputs[i];
@@ -16218,10 +15995,10 @@ DateField.prototype.enable = function() {
             input.attr("disabled", null);
         }
     }
-    return Field.prototype.enable.call(this);
+    return FVField.prototype.enable.call(this);
 }
 
-DateField.prototype.focus = function() {
+FVDateField.prototype.focus = function() {
     var field = this;
     
     var input = field.inputs[0];
@@ -16232,7 +16009,7 @@ DateField.prototype.focus = function() {
     return field;
 }
 
-DateField.prototype.blur = function() {
+FVDateField.prototype.blur = function() {
     var field = this;
     for(var i = 0; i < field.inputs.length; i++){
         var input = field.inputs[i];
@@ -16243,7 +16020,7 @@ DateField.prototype.blur = function() {
     return field;
 }
 
-DateField.prototype.val = function(set_val) {
+FVDateField.prototype.val = function(set_val) {
     var field = this;
 
     if (arguments.length===0) {
@@ -16282,7 +16059,7 @@ DateField.prototype.val = function(set_val) {
             })
 
             if(validation){
-                console.error("Invalid format passed to .val of DateField");
+                console.error("Invalid format passed to .val of FVDateField");
                 return;
             }
 
@@ -16301,12 +16078,12 @@ DateField.prototype.val = function(set_val) {
         return field;
     }
 }
-fieldval_ui_extend(BooleanField, Field);
+fieldval_ui_extend(FVBooleanField, FVField);
 
-function BooleanField(name, options) {
+function FVBooleanField(name, options) {
     var field = this;
 
-    BooleanField.superConstructor.call(this, name, options);
+    FVBooleanField.superConstructor.call(this, name, options);
 
     field.element.addClass("fv_boolean_field");
 
@@ -16318,31 +16095,31 @@ function BooleanField(name, options) {
     .appendTo(field.input_holder);
 }
 
-BooleanField.prototype.disable = function() {
+FVBooleanField.prototype.disable = function() {
     var field = this;
     field.input.attr("disabled", "disabled");
-    return Field.prototype.disable.call(this);
+    return FVField.prototype.disable.call(this);
 }
 
-BooleanField.prototype.enable = function() {
+FVBooleanField.prototype.enable = function() {
     var field = this;
     field.input.attr("disabled", null);
-    return Field.prototype.enable.call(this);
+    return FVField.prototype.enable.call(this);
 }
 
-BooleanField.prototype.focus = function() {
+FVBooleanField.prototype.focus = function() {
     var field = this;
     field.input.focus();
     return field;
 }
 
-BooleanField.prototype.blur = function() {
+FVBooleanField.prototype.blur = function() {
     var field = this;
     field.input.blur();
     return field;
 }
 
-BooleanField.prototype.val = function(set_val) {
+FVBooleanField.prototype.val = function(set_val) {
     var field = this;
 
     if (arguments.length===0) {
@@ -16357,12 +16134,12 @@ BooleanField.prototype.val = function(set_val) {
         return field;
     }
 }
-fieldval_ui_extend(ObjectField, Field);
+fieldval_ui_extend(FVObjectField, FVField);
 
-function ObjectField(name, options) {
+function FVObjectField(name, options) {
     var field = this;
 
-    ObjectField.superConstructor.call(this, name, options);
+    FVObjectField.superConstructor.call(this, name, options);
 
     field.element.addClass("fv_object_field");
 
@@ -16371,78 +16148,176 @@ function ObjectField(name, options) {
     field.fields = {};
 }
 
-ObjectField.prototype.init = function(){
-    FVForm.prototype.init.call(this);
-}
-
-ObjectField.prototype.remove = function(){
-    FVForm.prototype.remove.call(this);
-
-    Field.prototype.remove.call(this);
-}
-
-ObjectField.prototype.add_field = function(name, field){
-    FVForm.prototype.add_field.call(this,name,field);
-}
-
-ObjectField.prototype.change_name = function(name) {
+FVObjectField.prototype.init = function(){
     var field = this;
-    ObjectField.superClass.change_name.call(this,name);
+
+    for(var i in field.fields){
+        var inner_field = field.fields[i];
+        inner_field.init();
+    }
+}
+
+FVObjectField.prototype.remove = function(){
+    var field = this;
+
+    for(var i in field.fields){
+        var inner_field = field.fields[i];
+        inner_field.remove();
+    }
+
+    FVField.prototype.remove.call(this);
+}
+
+FVObjectField.prototype.add_field = function(name, inner_field){
+    var field = this;
+
+    inner_field.element.appendTo(field.fields_element);
+    field.fields[name] = inner_field;
+
     return field;
 }
 
-ObjectField.prototype.disable = function() {
+FVObjectField.prototype.remove_field = function(name){
     var field = this;
-    FVForm.prototype.disable.call(this);
-    return Field.prototype.disable.call(this);
+
+    var inner_field = field.fields[name];
+    if(inner_field){
+        inner_field.remove();//Field class will perform inner_field.element.remove()
+        delete field.fields[name];
+    }
 }
 
-ObjectField.prototype.enable = function() {
+FVObjectField.prototype.change_name = function(name) {
     var field = this;
-    FVForm.prototype.enable.call(this);
-    return Field.prototype.enable.call(this);
+    FVObjectField.superClass.change_name.call(this,name);
+    return field;
 }
 
-ObjectField.prototype.focus = function() {
+FVObjectField.prototype.disable = function() {
+    var field = this;
+    
+    for(var i in field.fields){
+        var inner_field = field.fields[i];
+        inner_field.disable();
+    }
+
+    return FVField.prototype.disable.call(this);
+}
+
+FVObjectField.prototype.enable = function() {
+    var field = this;
+    
+    for(var i in field.fields){
+        var inner_field = field.fields[i];
+        inner_field.enable();
+    }
+
+    return FVField.prototype.enable.call(this);
+}
+
+FVObjectField.prototype.focus = function() {
     var field = this;
     return field;
 }
 
-ObjectField.prototype.blur = function() {
+FVObjectField.prototype.blur = function() {
     var field = this;
 
-    FVForm.prototype.blur.call(this);
+    for(var i in field.fields){
+        var inner_field = field.fields[i];
+        inner_field.blur();
+    }
+
+    return field;
 }
 
-ObjectField.prototype.error = function(error){
+FVObjectField.prototype.error = function(error){
     var field = this;
 
-    ObjectField.superClass.error.call(this,error);
+    FVObjectField.superClass.error.call(this,error);
 
-    FVForm.prototype.error.call(this,error);
+    field.error_message.empty();
+
+    if(error){
+
+        if(error.error===undefined){
+            console.error("No error provided");
+            return;
+        }
+
+        if(error.error===0){
+            field.fields_error(error);
+            field.hide_error();
+        } else {
+            if(error.error===4){
+                var error_list = $("<ul />");
+                for(var i = 0; i < error.errors.length; i++){
+                    var sub_error = error.errors[i];
+                    if(sub_error.error===0){
+                        field.fields_error(sub_error);
+                    } else {
+                        error_list.append(
+                            $("<li />").text(sub_error.error_message)
+                        )
+                    }
+                }
+                field.error_message.append(
+                    error_list
+                );
+            } else {
+                field.error_message.append(
+                    $("<span />").text(error.error_message)
+                )
+            }
+            field.show_error();
+        }
+    } else {
+        //Clear error
+        field.fields_error(null);
+        field.hide_error();
+    }
 }
 
-ObjectField.prototype.fields_error = function(error){
+FVObjectField.prototype.fields_error = function(error){
     var field = this;
 
-    FVForm.prototype.fields_error.call(this,error);
+    if(error){
+        var invalid_fields = error.invalid || {};
+        var missing_fields = error.missing || {};
+        var unrecognized_fields = error.unrecognized || {};
+        
+        for(var i in field.fields){
+            var inner_field = field.fields[i];
+
+            var field_error = invalid_fields[i] || missing_fields[i] || unrecognized_fields[i] || null;
+            inner_field.error(field_error);
+        }
+
+    } else {
+        for(var i in field.fields){
+            var inner_field = field.fields[i];
+            inner_field.error(null);
+        }
+    }
 }
 
 
-ObjectField.prototype.clear_errors = function(){
+FVObjectField.prototype.clear_errors = function(){
 	var field = this;
 
-	FVForm.prototype.clear_errors.call(this);
+	field.error(null);
 }
 
-ObjectField.prototype.val = function(set_val) {
+FVObjectField.prototype.val = function(set_val) {
     var field = this;
 
     if (arguments.length===0) {
     	var compiled = {};
     	for(var i in field.fields){
     		var inner_field = field.fields[i];
-    		compiled[i] = inner_field.val();
+            if(inner_field.output_flag!==false){
+        		compiled[i] = inner_field.val();
+            }
     	}
         return compiled;
     } else {
@@ -16945,11 +16820,11 @@ ObjectField.prototype.val = function(set_val) {
 })(window.jQuery || window.Zepto, window, document);
 
 
-fieldval_ui_extend(ArrayField, Field);
-function ArrayField(name, options) {
+fieldval_ui_extend(FVArrayField, FVField);
+function FVArrayField(name, options) {
     var field = this;
 
-    ArrayField.superConstructor.call(this, name, options);
+    FVArrayField.superConstructor.call(this, name, options);
 
     field.fields = [];
 
@@ -16975,7 +16850,7 @@ function ArrayField(name, options) {
     });
 }
 
-ArrayField.prototype.reorder = function(){
+FVArrayField.prototype.reorder = function(){
     var field = this;
 
     field.fields = [];
@@ -16988,7 +16863,7 @@ ArrayField.prototype.reorder = function(){
     }
 }
 
-ArrayField.prototype.create_add_field_button = function(){
+FVArrayField.prototype.create_add_field_button = function(){
     var field = this;
 
     var add_field_button = $("<button />").addClass("fv_add_field_button").text("+").on(FVForm.button_event,function(event){
@@ -17001,12 +16876,12 @@ ArrayField.prototype.create_add_field_button = function(){
     return add_field_button;
 }
 
-ArrayField.prototype.new_field = function(index){
+FVArrayField.prototype.new_field = function(index){
     var field = this;
-    throw new Error("ArrayField.new_field must be overriden to create fields");
+    throw new Error("FVArrayField.new_field must be overriden to create fields");
 }
 
-ArrayField.prototype.add_field = function(name, inner_field){
+FVArrayField.prototype.add_field = function(name, inner_field){
     var field = this;
 
     inner_field.in_array(function(){
@@ -17016,9 +16891,13 @@ ArrayField.prototype.add_field = function(name, inner_field){
     field.fields.push(inner_field);
 
     field.input_holder.nestable('init');
+
+    if(field.is_disabled){
+        inner_field.disable();
+    }
 }
 
-ArrayField.prototype.remove_field = function(inner_field){
+FVArrayField.prototype.remove_field = function(inner_field){
     var field = this;
 
     for(var i = 0; i < field.fields.length; i++){
@@ -17028,13 +16907,13 @@ ArrayField.prototype.remove_field = function(inner_field){
     }
 }
 
-ArrayField.prototype.error = function(error){
+FVArrayField.prototype.error = function(error){
     var field = this;
 
-    ArrayField.superClass.error.call(this,error);
+    FVArrayField.superClass.error.call(this,error);
 }
 
-ArrayField.prototype.fields_error = function(error){
+FVArrayField.prototype.fields_error = function(error){
     var field = this;
 
     if(error){
@@ -17058,7 +16937,7 @@ ArrayField.prototype.fields_error = function(error){
 }
 
 
-ArrayField.prototype.clear_errors = function(){
+FVArrayField.prototype.clear_errors = function(){
     var field = this;
 
     for(var i=0; i<field.fields.length; i++){
@@ -17067,7 +16946,7 @@ ArrayField.prototype.clear_errors = function(){
     }    
 }
 
-ArrayField.prototype.disable = function(){
+FVArrayField.prototype.disable = function(){
     var field = this;
 
     for(var i=0; i<field.fields.length; i++){
@@ -17078,10 +16957,10 @@ ArrayField.prototype.disable = function(){
         var add_field_button = field.add_field_buttons[i];
         add_field_button.hide();
     }
-    return Field.prototype.disable.call(this);
+    return FVField.prototype.disable.call(this);
 }
 
-ArrayField.prototype.enable = function(){
+FVArrayField.prototype.enable = function(){
     var field = this;
 
     for(var i=0; i<field.fields.length; i++){
@@ -17092,10 +16971,10 @@ ArrayField.prototype.enable = function(){
         var add_field_button = field.add_field_buttons[i];
         add_field_button.show();
     }
-    return Field.prototype.enable.call(this);
+    return FVField.prototype.enable.call(this);
 }
 
-ArrayField.prototype.error = function(error) {
+FVArrayField.prototype.error = function(error) {
     var field = this;
 
     field.error_message.empty();
@@ -17140,7 +17019,7 @@ ArrayField.prototype.error = function(error) {
     }
 }
 
-ArrayField.prototype.val = function(set_val) {
+FVArrayField.prototype.val = function(set_val) {
     var field = this;
 
     if (arguments.length===0) {
@@ -17164,6 +17043,55 @@ ArrayField.prototype.val = function(set_val) {
         return field;
     }
 }
+fieldval_ui_extend(FVForm, FVObjectField);
+
+function FVForm(fields){
+	var form = this;
+
+	FVForm.superConstructor.call(this);
+
+	var children = form.element.children();
+
+	form.element.remove();
+	form.element = $("<form />").addClass("fv_form").append(children);
+
+	form.element.on("submit",function(event){
+        event.preventDefault();
+        form.submit();
+        return false;
+	});
+
+	form.fields_element = form.element;
+
+	form.submit_callbacks = [];
+}
+FVForm.button_event = 'click';
+FVForm.is_mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|nokia|series40|x11|opera mini/i.test(navigator.userAgent.toLowerCase());
+if($.tap){
+	FVForm.button_event = 'tap';
+}
+
+FVForm.prototype.on_submit = function(callback){
+	var form = this;
+
+	form.submit_callbacks.push(callback);
+
+	return form;
+}
+
+FVForm.prototype.submit = function(){
+	var form = this;
+
+	var compiled = form.val();
+
+	for(var i = 0; i < form.submit_callbacks.length; i++){
+		var callback = form.submit_callbacks[i];
+
+		callback(compiled);
+	}
+
+	return compiled;
+}
 //Used to subclass Javascript classes
 function extend(sub, sup) {
 	function emptyclass() {}
@@ -17181,7 +17109,7 @@ if (typeof module != 'undefined') {
     module.exports = extend;
 }
 
-function RuleField(json, validator) {
+function FVRuleField(json, validator) {
     var field = this;
 
     field.json = json;
@@ -17202,16 +17130,16 @@ function RuleField(json, validator) {
     }
 }
 
-RuleField.types = {};
+FVRuleField.types = {};
 
-RuleField.add_field_type = function(field_type_data){
-    RuleField.types[field_type_data.name] = {
+FVRuleField.add_field_type = function(field_type_data){
+    FVRuleField.types[field_type_data.name] = {
         display_name: field_type_data.display_name,
         class: field_type_data.class
     }
 }
 
-RuleField.create_field = function(json, options) {
+FVRuleField.create_field = function(json, options) {
     var field = null;
 
     var error = BasicVal.object(true).check(json); 
@@ -17220,9 +17148,16 @@ RuleField.create_field = function(json, options) {
     }
 
     var validator = new FieldVal(json);
+    var name_checks = [BasicVal.string(false)];
 
-    if(options && options.need_name!==undefined && options.need_name===true){
-        var name_checks = [BasicVal.string(true)]
+    if(options){
+        if(options.need_name!==undefined && options.need_name===true){
+            name_checks.push(BasicVal.string(true));
+        }
+        if(options.allow_dots!==undefined && options.allow_dots===false){
+            name_checks.push(BasicVal.does_not_contain(["."]));
+        }
+
         if(options.existing_names){
             name_checks.push(BasicVal.not_one_of(options.existing_names, {
                 error: {
@@ -17231,13 +17166,14 @@ RuleField.create_field = function(json, options) {
                 }
             }));
         }
-        validator.get("name", name_checks);
-    } 
+    }
 
-    var type = validator.get("type", BasicVal.string(true), BasicVal.one_of(RuleField.types));
+    validator.get("name", name_checks);
+
+    var type = validator.get("type", BasicVal.string(true), BasicVal.one_of(FVRuleField.types));
 
     if(type){
-        var field_type_data = RuleField.types[type];
+        var field_type_data = FVRuleField.types[type];
         var field_class = field_type_data.class;
         field = new field_class(json, validator)
     } else {
@@ -17252,7 +17188,7 @@ RuleField.create_field = function(json, options) {
     return [null, field];
 }
 
-RuleField.prototype.validate_as_field = function(name, validator){
+FVRuleField.prototype.validate_as_field = function(name, validator){
     var field = this;
     
     var value = validator.get(name, field.checks);
@@ -17260,7 +17196,7 @@ RuleField.prototype.validate_as_field = function(name, validator){
     return value;
 }
 
-RuleField.prototype.validate = function(value){
+FVRuleField.prototype.validate = function(value){
     var field = this;
 
     var validator = new FieldVal(null);
@@ -17273,90 +17209,90 @@ RuleField.prototype.validate = function(value){
     return validator.end();
 }
 
-RuleField.prototype.make_nested = function(){}
-RuleField.prototype.init = function(){}
-RuleField.prototype.remove = function(){}
-RuleField.prototype.view_mode = function(){}
-RuleField.prototype.edit_mode = function(){}
-RuleField.prototype.change_name = function(name) {}
-RuleField.prototype.disable = function() {}
-RuleField.prototype.enable = function() {}
-RuleField.prototype.focus = function() {}
-RuleField.prototype.blur = function() {}
-RuleField.prototype.val = function(set_val) {}
+FVRuleField.prototype.make_nested = function(){}
+FVRuleField.prototype.init = function(){}
+FVRuleField.prototype.remove = function(){}
+FVRuleField.prototype.view_mode = function(){}
+FVRuleField.prototype.edit_mode = function(){}
+FVRuleField.prototype.change_name = function(name) {}
+FVRuleField.prototype.disable = function() {}
+FVRuleField.prototype.enable = function() {}
+FVRuleField.prototype.focus = function() {}
+FVRuleField.prototype.blur = function() {}
+FVRuleField.prototype.val = function(set_val) {}
 
 if (typeof module != 'undefined') {
-    module.exports = RuleField;
+    module.exports = FVRuleField;
 }
 if((typeof require) === 'function'){
     extend = require('extend')
 }
-extend(BasicRuleField, RuleField);
+extend(FVBasicRuleField, FVRuleField);
 
-function BasicRuleField(json, validator) {
+function FVBasicRuleField(json, validator) {
     var field = this;
 
-    BasicRuleField.superConstructor.call(this, json, validator);
+    FVBasicRuleField.superConstructor.call(this, json, validator);
 }
 
-BasicRuleField.prototype.init = function(){
+FVBasicRuleField.prototype.init = function(){
     var field = this;
     return field.ui_field.init.apply(field.ui_field, arguments);    
 }
-BasicRuleField.prototype.remove = function(){
+FVBasicRuleField.prototype.remove = function(){
     var field = this;
     return field.ui_field.remove.apply(field.ui_field, arguments);
 }
-BasicRuleField.prototype.in_array = function(){
+FVBasicRuleField.prototype.in_array = function(){
     var field = this;
     return field.ui_field.in_array.apply(field.ui_field, arguments);
 }
-BasicRuleField.prototype.change_name = function(name) {
+FVBasicRuleField.prototype.change_name = function(name) {
     var field = this;
     return field.ui_field.change_name.apply(field.ui_field, arguments);
 }
-BasicRuleField.prototype.disable = function() {
+FVBasicRuleField.prototype.disable = function() {
     var field = this;
     return field.ui_field.disable.apply(field.ui_field, arguments);
 }
-BasicRuleField.prototype.enable = function() {
+FVBasicRuleField.prototype.enable = function() {
     var field = this;
     return field.ui_field.enable.apply(field.ui_field, arguments);
 }
-BasicRuleField.prototype.val = function(){
+FVBasicRuleField.prototype.val = function(){
     var field = this;
     return field.ui_field.val.apply(field.ui_field, arguments);
 }
-BasicRuleField.prototype.error = function(){
+FVBasicRuleField.prototype.error = function(){
     var field = this;
     return field.ui_field.error.apply(field.ui_field, arguments);
 }
-BasicRuleField.prototype.blur = function(){
+FVBasicRuleField.prototype.blur = function(){
     var field = this;
     return field.ui_field.blur.apply(field.ui_field, arguments);
 }
-BasicRuleField.prototype.focus = function(){
+FVBasicRuleField.prototype.focus = function(){
     var field = this;
     return field.ui_field.blur.apply(field.ui_field, arguments);
 }
 
 if (typeof module != 'undefined') {
-    module.exports = BasicRuleField;
+    module.exports = FVBasicRuleField;
 }
 
 if((typeof require) === 'function'){
     extend = require('extend')
-    BasicRuleField = require('./BasicRuleField');
+    FVBasicRuleField = require('./FVBasicRuleField');
 }
-extend(TextRuleField, BasicRuleField);
+extend(FVTextRuleField, FVBasicRuleField);
 
-function TextRuleField(json, validator) {
+function FVTextRuleField(json, validator) {
     var field = this;
 
-    TextRuleField.superConstructor.call(this, json, validator);
+    FVTextRuleField.superConstructor.call(this, json, validator);
 }
 
-TextRuleField.prototype.create_ui = function(parent){
+FVTextRuleField.prototype.create_ui = function(parent){
     var field = this;
 
     var type = field.json.type;
@@ -17364,7 +17300,7 @@ TextRuleField.prototype.create_ui = function(parent){
         type = "textarea";
     }
 
-    field.ui_field = new TextField(field.display_name || field.name, {
+    field.ui_field = new FVTextField(field.display_name || field.name, {
         name: field.json.name,
         display_name: field.json.display_name,
         type: type
@@ -17374,7 +17310,7 @@ TextRuleField.prototype.create_ui = function(parent){
     return field.ui_field;
 }
 
-TextRuleField.prototype.init = function() {
+FVTextRuleField.prototype.init = function() {
     var field = this;
 
     field.checks.push(BasicVal.string(field.required));
@@ -17403,30 +17339,30 @@ TextRuleField.prototype.init = function() {
 }
 
 if (typeof module != 'undefined') {
-    module.exports = TextRuleField;
+    module.exports = FVTextRuleField;
 }
 if((typeof require) === 'function'){
     extend = require('extend')
-    BasicRuleField = require('./BasicRuleField');
+    FVBasicRuleField = require('./FVBasicRuleField');
 }
-extend(NumberRuleField, BasicRuleField);
+extend(FVNumberRuleField, FVBasicRuleField);
 
-function NumberRuleField(json, validator) {
+function FVNumberRuleField(json, validator) {
     var field = this;
 
-    NumberRuleField.superConstructor.call(this, json, validator);
+    FVNumberRuleField.superConstructor.call(this, json, validator);
 }
 
-NumberRuleField.prototype.create_ui = function(parent){
+FVNumberRuleField.prototype.create_ui = function(parent){
     var field = this;
 
-    field.ui_field = new TextField(field.display_name || field.name, field.json);
+    field.ui_field = new FVTextField(field.display_name || field.name, field.json);
     field.element = field.ui_field.element;
     parent.add_field(field.name, field);
     return field.ui_field;
 }
 
-NumberRuleField.prototype.init = function() {
+FVNumberRuleField.prototype.init = function() {
     var field = this;
 
     field.checks.push(BasicVal.number(field.required));
@@ -17450,25 +17386,25 @@ NumberRuleField.prototype.init = function() {
 }
 
 if (typeof module != 'undefined') {
-    module.exports = NumberRuleField;
+    module.exports = FVNumberRuleField;
 }
 if((typeof require) === 'function'){
     extend = require('extend')
-    BasicRuleField = require('./BasicRuleField');
+    FVBasicRuleField = require('./FVBasicRuleField');
 }
-extend(ObjectRuleField, BasicRuleField);
+extend(FVObjectRuleField, FVBasicRuleField);
 
-function ObjectRuleField(json, validator) {
+function FVObjectRuleField(json, validator) {
     var field = this;
 
-    ObjectRuleField.superConstructor.call(this, json, validator);
+    FVObjectRuleField.superConstructor.call(this, json, validator);
 }
 
-ObjectRuleField.prototype.create_ui = function(parent, form){
+FVObjectRuleField.prototype.create_ui = function(parent, form){
     var field = this;
 
     if(field.json.any){
-        field.ui_field = new TextField(field.display_name || field.name, {type: 'textarea'});//Empty options
+        field.ui_field = new FVTextField(field.display_name || field.name, {type: 'textarea'});//Empty options
 
         field.ui_field.val = function(set_val){//Override the .val function
             var ui_field = this;
@@ -17494,7 +17430,7 @@ ObjectRuleField.prototype.create_ui = function(parent, form){
         if(form){
             field.ui_field = form;
         } else {
-            field.ui_field = new ObjectField(field.display_name || field.name, field.json);
+            field.ui_field = new FVObjectField(field.display_name || field.name, field.json);
         }
 
         for(var i in field.fields){
@@ -17512,7 +17448,7 @@ ObjectRuleField.prototype.create_ui = function(parent, form){
     return field.ui_field;
 }
 
-ObjectRuleField.prototype.init = function() {
+FVObjectRuleField.prototype.init = function() {
     var field = this;
 
     field.checks.push(BasicVal.object(field.required));
@@ -17523,12 +17459,10 @@ ObjectRuleField.prototype.init = function() {
     if (fields_json != null) {
         var fields_validator = new FieldVal(null);
 
-        //TODO prevent duplicate name keys
-
         for (var i = 0; i < fields_json.length; i++) {
             var field_json = fields_json[i];
 
-            var field_creation = RuleField.create_field(
+            var field_creation = FVRuleField.create_field(
                 field_json,
                 {
                     need_name: true,
@@ -17573,19 +17507,19 @@ ObjectRuleField.prototype.init = function() {
 }
 
 if (typeof module != 'undefined') {
-    module.exports = ObjectRuleField;
+    module.exports = FVObjectRuleField;
 }
 if((typeof require) === 'function'){
     extend = require('extend')
-    BasicRuleField = require('./BasicRuleField');
-    ValidationRule = require('../ValidationRule');
+    FVBasicRuleField = require('./FVBasicRuleField');
+    FVRule = require('../FVRule');
 }
-extend(ArrayRuleField, BasicRuleField);
+extend(FVArrayRuleField, FVBasicRuleField);
 
-function ArrayRuleField(json, validator) {
+function FVArrayRuleField(json, validator) {
     var field = this;
 
-    ArrayRuleField.superConstructor.call(this, json, validator);
+    FVArrayRuleField.superConstructor.call(this, json, validator);
 
     field.rules = [];
     field.fields = [];
@@ -17593,10 +17527,10 @@ function ArrayRuleField(json, validator) {
     field.interval_offsets = [];
 }
 
-ArrayRuleField.prototype.create_ui = function(parent, form){
+FVArrayRuleField.prototype.create_ui = function(parent, form){
     var field = this;
 
-    field.ui_field = new ArrayField(field.display_name || field.name, field.json);
+    field.ui_field = new FVArrayField(field.display_name || field.name, field.json);
     field.ui_field.new_field = function(index){
         return field.new_field(index);
     }
@@ -17614,7 +17548,7 @@ ArrayRuleField.prototype.create_ui = function(parent, form){
     return field.ui_field;
 }
 
-ArrayRuleField.prototype.new_field = function(index){
+FVArrayRuleField.prototype.new_field = function(index){
     var field = this;
 
     var rule = field.rule_for_index(index);
@@ -17622,13 +17556,13 @@ ArrayRuleField.prototype.new_field = function(index){
     return rule.create_ui(field.ui_field);
 }
 
-ArrayRuleField.prototype.rule_for_index = function(index){
+FVArrayRuleField.prototype.rule_for_index = function(index){
     var field = this;
 
     var rule = field.rules[index];
     if(!rule){
         var rule_json = field.rule_json_for_index(index);
-        var field_creation = RuleField.create_field(rule_json);
+        var field_creation = FVRuleField.create_field(rule_json);
         var err = field_creation[0];
         rule = field_creation[1];
         field.rules[index] = rule;
@@ -17636,7 +17570,7 @@ ArrayRuleField.prototype.rule_for_index = function(index){
     return rule;
 }
 
-ArrayRuleField.prototype.rule_json_for_index = function(index){
+FVArrayRuleField.prototype.rule_json_for_index = function(index){
     var field = this;
 
     var rule_json = field.indices[index];
@@ -17653,9 +17587,9 @@ ArrayRuleField.prototype.rule_json_for_index = function(index){
     return rule_json;
 }
 
-ArrayRuleField.integer_regex = /^(\d+)$/;
-ArrayRuleField.interval_regex = /^(\d+)n(\+(\d+))?$/;
-ArrayRuleField.prototype.init = function() {
+FVArrayRuleField.integer_regex = /^(\d+)$/;
+FVArrayRuleField.interval_regex = /^(\d+)n(\+(\d+))?$/;
+FVArrayRuleField.prototype.init = function() {
     var field = this;
 
     field.checks.push(BasicVal.array(field.required));
@@ -17670,8 +17604,8 @@ ArrayRuleField.prototype.init = function() {
         for(var index_string in indices_json){
         	var field_json = indices_json[index_string];
 
-            //RuleField is created to validate properties, not to use
-        	var field_creation = RuleField.create_field(field_json);
+            //FVRuleField is created to validate properties, not to use
+        	var field_creation = FVRuleField.create_field(field_json);
             var err = field_creation[0];
 
             if(err!=null){
@@ -17679,7 +17613,7 @@ ArrayRuleField.prototype.init = function() {
                 continue;
             }
 
-            var interval_match = index_string.match(ArrayRuleField.interval_regex);
+            var interval_match = index_string.match(FVArrayRuleField.interval_regex);
             if(interval_match){
                 //Matched
                 var interval = interval_match[1];
@@ -17688,7 +17622,7 @@ ArrayRuleField.prototype.init = function() {
                     indices_validator.invalid(
                         index_string,
                         FieldVal.create_error(
-                            ValidationRule.errors.interval_conflict,
+                            FVRule.errors.interval_conflict,
                             {},
                             interval,
                             field.interval
@@ -17699,7 +17633,7 @@ ArrayRuleField.prototype.init = function() {
                 field.interval = interval;
                 field.interval_offsets[offset] = field_json;
             } else {
-                var integer_match = index_string.match(ArrayRuleField.integer_regex);
+                var integer_match = index_string.match(FVArrayRuleField.integer_regex);
                 if(integer_match){
                     var integer_index = integer_match[1];
                     field.indices[integer_index] = field_json;
@@ -17709,7 +17643,7 @@ ArrayRuleField.prototype.init = function() {
                     indices_validator.invalid(
                         index_string,
                         FieldVal.create_error(
-                            ValidationRule.errors.invalid_indices_format,
+                            FVRule.errors.invalid_indices_format,
                             {}
                         )
                     );
@@ -17742,32 +17676,32 @@ ArrayRuleField.prototype.init = function() {
 }
 
 if (typeof module != 'undefined') {
-    module.exports = ArrayRuleField;
+    module.exports = FVArrayRuleField;
 }
 if((typeof require) === 'function'){
     extend = require('extend')
-    BasicRuleField = require('./BasicRuleField');
+    FVBasicRuleField = require('./FVBasicRuleField');
 }
-extend(ChoiceRuleField, BasicRuleField);
+extend(FVChoiceRuleField, FVBasicRuleField);
 
-function ChoiceRuleField(json, validator) {
+function FVChoiceRuleField(json, validator) {
     var field = this;
 
-    ChoiceRuleField.superConstructor.call(this, json, validator);
+    FVChoiceRuleField.superConstructor.call(this, json, validator);
 }
 
-ChoiceRuleField.prototype.create_ui = function(parent){
+FVChoiceRuleField.prototype.create_ui = function(parent){
     var field = this;
 
     field.json.choices = field.choices;
 
-    field.ui_field = new ChoiceField(field.display_name || field.name, field.json);
+    field.ui_field = new FVChoiceField(field.display_name || field.name, field.json);
     field.element = field.ui_field.element;
     parent.add_field(field.name, field);
     return field.ui_field;
 }
 
-ChoiceRuleField.prototype.init = function() {
+FVChoiceRuleField.prototype.init = function() {
     var field = this;
 
     field.allow_empty = field.validator.get("allow_empty", BasicVal.boolean(false));
@@ -17782,30 +17716,30 @@ ChoiceRuleField.prototype.init = function() {
 }
 
 if (typeof module != 'undefined') {
-    module.exports = ChoiceRuleField;
+    module.exports = FVChoiceRuleField;
 }
 if((typeof require) === 'function'){
     extend = require('extend')
-    BasicRuleField = require('./BasicRuleField');
+    FVBasicRuleField = require('./FVBasicRuleField');
 }
-extend(BooleanRuleField, BasicRuleField);
+extend(FVBooleanRuleField, FVBasicRuleField);
 
-function BooleanRuleField(json, validator) {
+function FVBooleanRuleField(json, validator) {
     var field = this;
 
-    BooleanRuleField.superConstructor.call(this, json, validator);
+    FVBooleanRuleField.superConstructor.call(this, json, validator);
 }
 
-BooleanRuleField.prototype.create_ui = function(parent){
+FVBooleanRuleField.prototype.create_ui = function(parent){
     var field = this;
 
-    field.ui_field = new BooleanField(field.display_name || field.name, field.json);
+    field.ui_field = new FVBooleanField(field.display_name || field.name, field.json);
     field.element = field.ui_field.element;
     parent.add_field(field.name, field);
     return field.ui_field;
 }
 
-BooleanRuleField.prototype.init = function() {
+FVBooleanRuleField.prototype.init = function() {
     var field = this;
 
     field.checks.push(BasicVal.boolean(field.required));
@@ -17819,30 +17753,30 @@ BooleanRuleField.prototype.init = function() {
 }
 
 if (typeof module != 'undefined') {
-    module.exports = BooleanRuleField;
+    module.exports = FVBooleanRuleField;
 }
 if((typeof require) === 'function'){
     extend = require('extend')
-    BasicRuleField = require('./BasicRuleField');
+    FVBasicRuleField = require('./FVBasicRuleField');
 }
-extend(EmailRuleField, BasicRuleField);
+extend(FVEmailRuleField, FVBasicRuleField);
 
-function EmailRuleField(json, validator) {
+function FVEmailRuleField(json, validator) {
     var field = this;
 
-    EmailRuleField.superConstructor.call(this, json, validator);
+    FVEmailRuleField.superConstructor.call(this, json, validator);
 }
 
-EmailRuleField.prototype.create_ui = function(parent){
+FVEmailRuleField.prototype.create_ui = function(parent){
     var field = this;
 
-    field.ui_field = new TextField(field.display_name || field.name, field.json);
+    field.ui_field = new FVTextField(field.display_name || field.name, field.json);
     field.element = field.ui_field.element;
     parent.add_field(field.name, field);
     return field.ui_field;
 }
 
-EmailRuleField.prototype.init = function() {
+FVEmailRuleField.prototype.init = function() {
     var field = this;
 
     field.checks.push(BasicVal.string(field.required), BasicVal.email());
@@ -17851,20 +17785,20 @@ EmailRuleField.prototype.init = function() {
 }
 
 if (typeof module != 'undefined') {
-    module.exports = EmailRuleField;
+    module.exports = FVEmailRuleField;
 }
 
 if((typeof require) === 'function'){
     FieldVal = require('fieldval')
     BasicVal = require('fieldval-basicval')
-    RuleField = require('./fields/RuleField');
+    FVRuleField = require('./fields/FVRuleField');
 }
 
-function ValidationRule() {
+function FVRule() {
     var vr = this;
 }
 
-ValidationRule.errors = {
+FVRule.errors = {
     interval_conflict: function(this_interval, existing_interval) {
         return {
             error: 501,
@@ -17881,13 +17815,13 @@ ValidationRule.errors = {
     }
 }
 
-ValidationRule.RuleField = RuleField;
+FVRule.FVRuleField = FVRuleField;
 
 //Performs validation required for saving
-ValidationRule.prototype.init = function(json, options) {
+FVRule.prototype.init = function(json, options) {
     var vr = this;
 
-    var field_res = RuleField.create_field(json, options);
+    var field_res = FVRuleField.create_field(json, options);
 
     //There was an error creating the field
     if(field_res[0]){
@@ -17899,7 +17833,7 @@ ValidationRule.prototype.init = function(json, options) {
     return null;
 }
 
-ValidationRule.prototype.create_form = function(){
+FVRule.prototype.create_form = function(){
     var vr = this;
 
     if(FVForm){
@@ -17909,7 +17843,7 @@ ValidationRule.prototype.create_form = function(){
     }
 }
 
-ValidationRule.prototype.validate = function(value) {
+FVRule.prototype.validate = function(value) {
     var vr = this;
 
     var error = vr.field.validate(value);
@@ -17918,48 +17852,48 @@ ValidationRule.prototype.validate = function(value) {
 }
 
 if (typeof module != 'undefined') {
-    module.exports = ValidationRule;
+    module.exports = FVRule;
 }
 
-RuleField.add_field_type({
+FVRuleField.add_field_type({
     name: 'text',
     display_name: 'Text',
-    class: (typeof TextRuleField) !== 'undefined' ? TextRuleField : require('./fields/TextRuleField')
+    class: (typeof FVTextRuleField) !== 'undefined' ? FVTextRuleField : require('./fields/FVTextRuleField')
 });
-RuleField.add_field_type({
+FVRuleField.add_field_type({
     name: 'string',
     display_name: 'String',
-    class: (typeof TextRuleField) !== 'undefined' ? TextRuleField : require('./fields/TextRuleField')
+    class: (typeof FVTextRuleField) !== 'undefined' ? FVTextRuleField : require('./fields/FVTextRuleField')
 });
-RuleField.add_field_type({
+FVRuleField.add_field_type({
     name: 'boolean',
     display_name: 'Boolean',
-    class: (typeof BooleanRuleField) !== 'undefined' ? BooleanRuleField : require('./fields/BooleanRuleField')
+    class: (typeof FVBooleanRuleField) !== 'undefined' ? FVBooleanRuleField : require('./fields/FVBooleanRuleField')
 });
-RuleField.add_field_type({
+FVRuleField.add_field_type({
     name: 'number',
     display_name: 'Number',
-    class: (typeof NumberRuleField) !== 'undefined' ? NumberRuleField : require('./fields/NumberRuleField')
+    class: (typeof FVNumberRuleField) !== 'undefined' ? FVNumberRuleField : require('./fields/FVNumberRuleField')
 });
-RuleField.add_field_type({
+FVRuleField.add_field_type({
     name: 'object',
     display_name: 'Object',
-    class: (typeof ObjectRuleField) !== 'undefined' ? ObjectRuleField : require('./fields/ObjectRuleField')
+    class: (typeof FVObjectRuleField) !== 'undefined' ? FVObjectRuleField : require('./fields/FVObjectRuleField')
 });
-RuleField.add_field_type({
+FVRuleField.add_field_type({
     name: 'array',
     display_name: 'Array',
-    class: (typeof ArrayRuleField) !== 'undefined' ? ArrayRuleField : require('./fields/ArrayRuleField')
+    class: (typeof FVArrayRuleField) !== 'undefined' ? FVArrayRuleField : require('./fields/FVArrayRuleField')
 });
-RuleField.add_field_type({
+FVRuleField.add_field_type({
     name: 'choice',
     display_name: 'Choice',
-    class: (typeof ChoiceRuleField) !== 'undefined' ? ChoiceRuleField : require('./fields/ChoiceRuleField')
+    class: (typeof FVChoiceRuleField) !== 'undefined' ? FVChoiceRuleField : require('./fields/FVChoiceRuleField')
 });
-RuleField.add_field_type({
+FVRuleField.add_field_type({
     name: 'email',
     display_name: 'Email',
-    class: (typeof EmailRuleField) !== 'undefined' ? EmailRuleField : require('./fields/EmailRuleField')
+    class: (typeof FVEmailRuleField) !== 'undefined' ? FVEmailRuleField : require('./fields/FVEmailRuleField')
 });
 //Used to subclass Javascript classes
 function extend(sub, sup) {
@@ -19303,11 +19237,11 @@ if (typeof module != 'undefined') {
 
 //Based on "minimal"
 //Change the layout function for ObjectFields to place the error at the top
-var layout_function = Field.prototype.layout;
-Field.prototype.layout = function(){
+var layout_function = FVField.prototype.layout;
+FVField.prototype.layout = function(){
     var field = this;
 
-    if(field instanceof ObjectField){
+    if(field instanceof FVObjectField){
     	field.element.append(
 	        field.title,field.error_message,
             field.input_holder
@@ -19831,7 +19765,7 @@ function CreateFolderModal(parent_folder, callback){
 	cfm.modal = modal;
 
 	cfm.form = new FVForm();
-	cfm.form.add_field("name", new TextField("Folder Name"))
+	cfm.form.add_field("name", new FVTextField("Folder Name"))
 
 	modal.contents.append(
 		cfm.form.element
@@ -19924,7 +19858,7 @@ function DeleteModal(icon_list, callback){
 
 		dm.list.push(icon.full_path);
 		dm.name_list.push(icon.name);
-		dm.form.add_field(i, new TextField(i));
+		dm.form.add_field(i, new FVTextField(i));
 	}
 
 	modal.contents.append(
@@ -20277,7 +20211,7 @@ ItemSection.prototype.populate_type = function(type){
 
 	section.type = type;
 
-    section.vr = new ValidationRule();
+    section.vr = new FVRule();
 	section.vr.init(type);
 
 	section.field = section.vr.field.create_ui(section.item_view.form);
@@ -20383,16 +20317,16 @@ ItemView.prototype.populate = function(data){
 	item_view.browser.address_bar.populate_path_buttons(item_view.path);
 
 	item_view.form = new FVForm();
-	item_view.form.add_field("_id", new TextField("ID"));
-	item_view.form.add_field("name", new TextField("Name"));
+	item_view.form.add_field("_id", new FVTextField("ID"));
+	item_view.form.add_field("name", new FVTextField("Name"));
 	item_view.form.fields.name.on_change(function(){
 		item_view.update_full_path();
 	})
-	item_view.form.add_field("path", new TextField("Path"));
+	item_view.form.add_field("path", new FVTextField("Path"));
 	item_view.form.fields.path.on_change(function(){
 		item_view.update_full_path();
 	})
-	item_view.form.add_field("full_path", new TextField("Full Path"));
+	item_view.form.add_field("full_path", new FVTextField("Full Path"));
 	item_view.form.on_submit(function(form_val){
 		item_view.save();
 	})
@@ -20597,7 +20531,7 @@ ItemView.prototype.resize = function(resize_obj){
 
 	item_view.form.element.toggleClass("rows", resize_obj.window_width>700)
 }
-fieldval_ui_extend(TypeField, Field);
+fieldval_ui_extend(TypeField, FVField);
 
 function TypeField(value, parent){
 	var tf = this;
@@ -20616,8 +20550,8 @@ function TypeField(value, parent){
 	)
 
 	var field_type_choices = [];
-	for(var i in ValidationRule.RuleField.types){
-		var field_type_class = ValidationRule.RuleField.types[i];
+	for(var i in FVRule.FVRuleField.types){
+		var field_type_class = FVRule.FVRuleField.types[i];
 
 		var name = i;
 		var display_name = field_type_class.display_name;
@@ -20629,13 +20563,13 @@ function TypeField(value, parent){
 	}
 
 	tf.form = new FVForm();
-	tf.form.add_field("name", new TextField("Name").on_change(function(){
+	tf.form.add_field("name", new FVTextField("Name").on_change(function(){
 		tf.update_title_name();
 	}));
-	tf.form.add_field("display_name", new TextField("Display Name").on_change(function(){
+	tf.form.add_field("display_name", new FVTextField("Display Name").on_change(function(){
 		tf.update_title_name();
 	}));
-	tf.form.add_field("type", new ChoiceField("Type", {
+	tf.form.add_field("type", new FVChoiceField("Type", {
 		choices: field_type_choices
 	}).on_change(function(){
 		tf.update_type_fields();
@@ -20660,7 +20594,7 @@ TypeField.prototype.init = function(){
 TypeField.prototype.remove = function(){
 	var tf = this;
 	tf.form.remove();
-	Field.prototype.remove.call(this);
+	FVField.prototype.remove.call(this);
 }
 
 TypeField.prototype.update_title_name = function(){
@@ -20690,15 +20624,15 @@ TypeField.prototype.update_type_fields = function(){
 	}
 
 	if(type==='text'){
-		tf.form.add_field("min_length", new TextField("Minimum Length", {type: "number"}));
-		tf.form.add_field("max_length", new TextField("Maximum Length", {type: "number"}));
+		tf.form.add_field("min_length", new FVTextField("Minimum Length", {type: "number"}));
+		tf.form.add_field("max_length", new FVTextField("Maximum Length", {type: "number"}));
 		tf.form.fields.min_length.val(tf.value.min_length);
 		tf.form.fields.max_length.val(tf.value.max_length);
 	} else if(type==='number'){
 
 	} else if(type==='object'){
 
-		var fields_field = new ArrayField("Fields");
+		var fields_field = new FVArrayField("Fields");
 		fields_field.new_field = function(index){
 			var inner_field = new TypeField(null, tf);
 			fields_field.add_field(null, inner_field);
@@ -20743,7 +20677,7 @@ TypeField.prototype.enable = function(){
         tf.form.enable();
     }
 
-    Field.prototype.enable.call(this);
+    FVField.prototype.enable.call(this);
 }
 
 TypeField.prototype.disable = function(){
@@ -20755,7 +20689,7 @@ TypeField.prototype.disable = function(){
         tf.form.disable();
     }
 
-    Field.prototype.disable.call(this);
+    FVField.prototype.disable.call(this);
 }
 
 function TypeView(name, data, browser, options){
@@ -21129,7 +21063,7 @@ function TypeSelector(selection_callback){
 	ts.selection_callback = selection_callback;
 
 	ts.form = new FVForm();
-	ts.query_field = new TextField("Search for a type...");
+	ts.query_field = new FVTextField("Search for a type...");
 	ts.query_field.on_change(function(query){
 		var error = FieldVal.use_checks(query, [
 			BasicVal.string(false), 

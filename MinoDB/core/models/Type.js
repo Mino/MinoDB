@@ -1,7 +1,7 @@
 var logger = require('tracer').console();
 var FieldVal = require('fieldval');
 var BasicVal = require('fieldval-basicval');
-var ValidationRule = require('fieldval-rules');
+var FVRule = require('fieldval-rules');
 
 function Type(item) {
     var type = this;
@@ -13,7 +13,7 @@ function Type(item) {
     type.rule = item['mino_type'];
 }
 
-Type.rule = new ValidationRule();
+Type.rule = new FVRule();
 Type.rule_definition = {
     name: "mino_type",
     display_name: "Type",
@@ -31,11 +31,12 @@ Type.prototype.init = function(type_data){
 }
 
 Type.validate = function(data, creation){
-    var rule = new ValidationRule();
+    var rule = new FVRule();
     var type_error = rule.init(
         data,
         {
-            need_name: true
+            need_name: true,
+            allow_dots: false
         }
     );
 

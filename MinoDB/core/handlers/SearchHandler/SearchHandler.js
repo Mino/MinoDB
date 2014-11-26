@@ -5,6 +5,8 @@ var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var Constants = require('../../../../common_classes/Constants');
 var logger = require('tracer').console();
 
+var SearchOperator = require('./SearchOperator');
+
 function SearchHandler(api, user, parameters, callback){
     var sh = this;
 
@@ -18,6 +20,15 @@ function SearchHandler(api, user, parameters, callback){
     sh.validator = new Validator(parameters);
 
     sh.paths = sh.validator.get("paths", BasicVal.array(true));
+    sh.query = sh.validator.get("query", BasicVal.object(false));
+    if(sh.query!==undefined){
+        var operator = new SearchOperator();
+        var error = operator.init(sh.query, sh);
+        logger.log(error);
+        if(error){
+            sh.validator.invalid("query", error);
+        }
+    }
 
     var error = sh.validator.end();
     if(error){

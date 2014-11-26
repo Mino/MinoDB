@@ -69,16 +69,16 @@ ItemView.prototype.populate = function(data){
 	item_view.browser.address_bar.populate_path_buttons(item_view.path);
 
 	item_view.form = new FVForm();
-	item_view.form.add_field("_id", new TextField("ID"));
-	item_view.form.add_field("name", new TextField("Name"));
+	item_view.form.add_field("_id", new FVTextField("ID"));
+	item_view.form.add_field("name", new FVTextField("Name"));
 	item_view.form.fields.name.on_change(function(){
 		item_view.update_full_path();
 	})
-	item_view.form.add_field("path", new TextField("Path"));
+	item_view.form.add_field("path", new FVTextField("Path"));
 	item_view.form.fields.path.on_change(function(){
 		item_view.update_full_path();
 	})
-	item_view.form.add_field("full_path", new TextField("Full Path"));
+	item_view.form.add_field("full_path", new FVTextField("Full Path"));
 	item_view.form.on_submit(function(form_val){
 		item_view.save();
 	})

@@ -84,7 +84,7 @@ ItemSection.prototype.populate_type = function(type){
 
 	section.type = type;
 
-    section.vr = new ValidationRule();
+    section.vr = new FVRule();
 	section.vr.init(type);
 
 	section.field = section.vr.field.create_ui(section.item_view.form);

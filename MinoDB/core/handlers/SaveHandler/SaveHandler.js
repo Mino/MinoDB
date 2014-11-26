@@ -2,7 +2,7 @@ var errors = require('../../../../errors')
 var Validator = require('fieldval');
 var BasicVal = require('fieldval-basicval');
 var Path = require('../../../../common_classes/Path')
-var ValidationRule = require('fieldval-rules');
+var FVRule = require('fieldval-rules');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var FolderChecker = require('../../models/FolderChecker');
 var SaveObject = require('./SaveObject')
@@ -165,7 +165,7 @@ SaveHandler.prototype.retrieve_types = function(){
 
             if(res){
                 logger.log(res);
-                var validation_type = new ValidationRule();
+                var validation_type = new FVRule();
                 var type_init = validation_type.init(res['mino_type']);
                 logger.log(validation_type);
                 logger.log(type_init);

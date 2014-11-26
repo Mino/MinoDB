@@ -76,12 +76,12 @@ MinoDB.prototype.internal_server = function(){
     return mdb.internal_express_server;
 }
 
-MinoDB.ValidationRule = require('fieldval-rules');
+MinoDB.FVRule = require('fieldval-rules');
 
 MinoDB.prototype.add_field_type = function(field_data){
     var mdb = this;
 
-    MinoDB.ValidationRule.RuleField.add_field_type(field_data);
+    MinoDB.FVRule.FVRuleField.add_field_type(field_data);
 
     var as_string = class_to_string(field_data.class);
     field_data.string = as_string;

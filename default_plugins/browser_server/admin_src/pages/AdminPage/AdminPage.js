@@ -29,8 +29,8 @@ AdminPage.prototype.populate = function(data){
     }
 
     page.form = new FVForm();
-    page.form.add_field("name", new TextField("Name"));
-    page.form.add_field("display_name", new TextField("Display Name"));
+    page.form.add_field("name", new FVTextField("Name"));
+    page.form.add_field("display_name", new FVTextField("Display Name"));
 
     page.form_holder.append(
         page.form.element

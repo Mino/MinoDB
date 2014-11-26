@@ -6,6 +6,7 @@ var User = require('../MinoDB/core/models/User');
 
 
 module.exports = function(done) {
+	this.timeout(200000);
 	MongoClient.connect(globals.db_address, function(err, db) {
 		db.dropDatabase(function(err, res) {
 			assert.equal(err, null);

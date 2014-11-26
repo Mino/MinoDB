@@ -30,7 +30,7 @@ Session.rule_definition = {
         min_length: 32
     }]
 };
-Session.rule = new ValidationRule();
+Session.rule = new FVRule();
 Session.rule.init(Session.rule_definition);
 
 Session.prototype.create_save_data = function(callback){
