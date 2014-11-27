@@ -7,11 +7,11 @@ it('should perform a basic search', function(done) {
         "function": "search",
         "parameters": {
             "paths": [
-                "/Mino/"
+                "/Mino/users/"
             ],
+            "include_subfolders": true,
             "query" : {
-                $eq: "test",
-                $neq: "not_test"
+                "mino_user.username": "testuser"
             }
         }
     }, function(error, response) {
