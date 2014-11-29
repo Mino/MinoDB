@@ -31,6 +31,9 @@ function SearchHandler(api, user, parameters, callback){
         sh.include_subfolders = false;
     }
     sh.query = sh.validator.get("query", BasicVal.object(false));
+    if(sh.query===undefined){
+        sh.query = {};
+    }
 
     var error = sh.validator.end();
     if(error){
