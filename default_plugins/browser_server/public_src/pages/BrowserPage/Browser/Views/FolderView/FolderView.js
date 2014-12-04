@@ -3,15 +3,15 @@
 @import("PaginationController/PaginationController.js");
 
 
-function FolderView(path, data, browser){
+function FolderView(path, data, browser, options){
 	var folder_view = this;
 
 	folder_view.browser = browser;
 	folder_view.path = path;
 	folder_view.item_data = data;
+	folder_view.options = options || {};
 
     folder_view.pagination_controller = new PaginationController(folder_view);
-    folder_view.pagination_controller.hide();
 
     folder_view.select_mode = false;
     folder_view.selected = [];
@@ -145,13 +145,29 @@ FolderView.prototype.create_item = function(){
 	folder_view.browser.load_address(encode_path(folder_view.path.toString()),{new_item:""});
 }
 
+FolderView.prototype.link_with_skip_and_limit = function(skip, limit){
+	var folder_view = this;
+
+	var query = {};
+	if(skip!==undefined){
+		query.skip = skip;
+	}
+	if(limit!==undefined){
+		query.limit = limit;
+	}
+
+	return Site.path+folder_view.path.toString()+SAFE.build_query_string(query);
+}
+
 FolderView.prototype.load = function(options){
 	var folder_view = this;
 
 	var request = {
 		"function" : "search",
 		"parameters" : {
-			"paths" : [folder_view.path.toString()]
+			"paths" : [folder_view.path.toString()],
+			"skip": parseInt(folder_view.options.skip),
+			"limit": parseInt(folder_view.options.limit)
 		}
 	};
 
@@ -185,6 +201,8 @@ FolderView.prototype.populate = function(options, data){
 		}
 		folder_view.contents.append(icon.element);
 	}
+
+	folder_view.pagination_controller.populate(data);
 }
 
 FolderView.prototype.resize = function(resize_obj){

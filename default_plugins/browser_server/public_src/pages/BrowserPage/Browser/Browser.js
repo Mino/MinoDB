@@ -155,7 +155,8 @@ Browser.prototype.load = function(address, options){
 					browser.view = new FolderView(
 				    	path,
 				    	object,
-					    browser
+					    browser,
+					    options
 				    );
 				}
 			} else {

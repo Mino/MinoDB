@@ -18,9 +18,9 @@ function SearchHandler(api, user, parameters, callback){
     sh.validator = new Validator(parameters);
 
     sh.paths = sh.validator.get("paths", BasicVal.array(true));
-    sh.start = sh.validator.get("start", BasicVal.integer(false), BasicVal.minimum(0));
-    if(sh.start===undefined){
-        sh.start = 0;
+    sh.skip = sh.validator.get("skip", BasicVal.integer(false), BasicVal.minimum(0));
+    if(sh.skip===undefined){
+        sh.skip = 0;
     }
     sh.limit = sh.validator.get("limit", BasicVal.integer(false), BasicVal.minimum(1), BasicVal.maximum(1000));
     if(sh.limit===undefined){
@@ -103,15 +103,19 @@ SearchHandler.prototype.do_search = function(callback){
                     objects: results,
                     total: count,
                     limit: sh.limit,
-                    start: sh.start
+                    skip: sh.skip
                 });
             }
         }
 
-        var mongo_query = db.object_collection.find(sh.query,
-        {
+        var options = {
+            skip: sh.skip,
+            limit: sh.limit
+        };
 
-        });
+        logger.log(options);
+
+        var mongo_query = db.object_collection.find(sh.query,options);
 
         mongo_query.toArray(function(search_err, search_res){
             logger.log(search_err, search_res);
