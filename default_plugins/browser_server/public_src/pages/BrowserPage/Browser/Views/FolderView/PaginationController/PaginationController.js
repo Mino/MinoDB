@@ -9,17 +9,16 @@ function PaginationController(parent){
 		$("<div />")
 		.addClass("page_controls")
 		.append(
-			pc.previous_button = $("<a />").ajax_url().append(
+			pc.previous_button = $("<a />").append(
                 $("<button/>").addClass("mino_button previous_button").text("Prev.")
             )
 		)
 		.append(
 			pc.page_status = $("<div />")
 			.addClass("page_status")
-			.text("Page 1 of 1")//MOCKED
 		)
 		.append(
-			pc.next_button = $("<a />").ajax_url().append(
+			pc.next_button = $("<a />").append(
                 $("<button/>").addClass("mino_button next_button").text("Next")
             )
 		)
@@ -38,7 +37,7 @@ PaginationController.prototype.populate = function(response){
 	    if(prev_skip<0){
 	        prev_skip = 0;
 	    }
-        pc.previous_button.attr("href",pc.parent.link_with_skip_and_limit(prev_skip,pc.limit));
+        pc.previous_button.attr("href",pc.parent.link_with_skip_and_limit(prev_skip,pc.limit)).ajax_url();
 	} else {
 	    pc.previous_button.hide();
 	}
@@ -51,7 +50,7 @@ PaginationController.prototype.populate = function(response){
 	    //There is a next page
 	    pc.next_button.show();
 	    var next_skip = response.skip+results.length;
-        pc.next_button.attr("href",pc.parent.link_with_skip_and_limit(next_skip,pc.limit));
+        pc.next_button.attr("href",pc.parent.link_with_skip_and_limit(next_skip,pc.limit)).ajax_url();
 	} else {
 	    pc.next_button.hide();
 	}
