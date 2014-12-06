@@ -80,6 +80,7 @@ User.sign_in_rule.init(User.sign_in_rule_definition);
 
 //TODO add more checks for tilde, slashes, etc
 User.username_validator = [
+    BasicVal.string(true),
     BasicVal.no_whitespace(),
     BasicVal.start_with_letter()
 ]

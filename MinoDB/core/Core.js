@@ -18,12 +18,13 @@ function Core(minodb, db_address){
     })
 
     core.handlers = {
-        "get": require('./handlers/GetHandler/GetHandler.js'),
-        "save": require('./handlers/SaveHandler/SaveHandler.js'),
-        "search": require('./handlers/SearchHandler/SearchHandler.js'),
-        "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler.js'),
-        "delete": require('./handlers/DeleteHandler/DeleteHandler.js'),
-        "add_permissions": require('./handlers/AddPermissionsHandler/AddPermissionsHandler.js')
+        "get": require('./handlers/GetHandler/GetHandler'),
+        "save": require('./handlers/SaveHandler/SaveHandler'),
+        "search": require('./handlers/SearchHandler/SearchHandler'),
+        "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler'),
+        "delete": require('./handlers/DeleteHandler/DeleteHandler'),
+        "add_permissions": require('./handlers/AddPermissionsHandler/AddPermissionsHandler'),
+        "create_user": require('./handlers/CreateUserHandler/CreateUserHandler')
     }
 
     core.connected = false;

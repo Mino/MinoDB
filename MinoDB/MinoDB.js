@@ -1,8 +1,6 @@
 var logger = require('tracer').console();
 
 var express = require('express');
-var http = require('http');
-var path = require('path');
 var errorHandler = require('errorhandler');
 
 var PluginManager = require('./PluginManager');
@@ -53,7 +51,7 @@ function MinoDB(config){
     mdb.add_plugin(new BrowserServer({}));
 }
 
-MinoDB.prototype.add_plugin = function(plugin){
+MinoDB.prototype.add_plugin = function(plugin, callback){
     var mdb = this;
 
     var plugin_error = mdb.plugin_manager.add_plugin(plugin);
@@ -61,7 +59,9 @@ MinoDB.prototype.add_plugin = function(plugin){
     if(plugin_error){
         throw new Error(JSON.stringify(plugin_error,null,4));
     }
-    plugin.init(mdb);
+    plugin.init(mdb, callback);
+
+    return mdb;
 }
 
 MinoDB.prototype.server = function(){
@@ -88,6 +88,8 @@ MinoDB.prototype.add_field_type = function(field_data){
     field_data.class_name = field_data.class.name;
 
     mdb.custom_fields.push(field_data);
+
+    return mdb;
 }
 
 module.exports = MinoDB;
