@@ -11,10 +11,16 @@ var APIServer = require('../default_plugins/api_server/APIServer');
 var BrowserServer = require('../default_plugins/browser_server/BrowserServer');
 var UIServer = require('./ui_server/UIServer');
 
+var MinoSDK = require('minosdk');
+var extend = require('extend');
+
 var class_to_string = require('./class_to_string');
 
-function MinoDB(config){
+extend(MinoDB, MinoSDK);
+function MinoDB(config, username /*optional*/){
     var mdb = this;
+
+    MinoDB.superConstructor.call(this, username);
 
     mdb.config = config;
 
@@ -43,23 +49,53 @@ function MinoDB(config){
     });
 
     mdb.ui_server = new UIServer({});
-    mdb.add_plugin(mdb.ui_server);
-
-    var admin_server = new AdminServer({});
-    mdb.add_plugin(admin_server);
-    mdb.add_plugin(new APIServer({}));
-    mdb.add_plugin(new BrowserServer({}));
+    mdb.add_plugin(
+        mdb.ui_server,
+        new AdminServer({}),
+        new APIServer({}),
+        new BrowserServer({})
+    );
 }
 
-MinoDB.prototype.add_plugin = function(plugin, callback){
+MinoDB.prototype.add_plugin = function(){
     var mdb = this;
 
-    var plugin_error = mdb.plugin_manager.add_plugin(plugin);
+    var plugin_args = arguments;
 
-    if(plugin_error){
-        throw new Error(JSON.stringify(plugin_error,null,4));
+    var i = -1;
+    var next = function(){
+        i++;
+
+        if(i>=plugin_args.length){
+            return;
+        }
+
+        var arg = plugin_args[i];
+        if(arg instanceof Function){
+            if(arg.length===0){
+                arg();
+                next();
+            } else {
+                arg(next);
+            }
+        } else if(arg instanceof Object){
+            var plugin = arg;
+            var plugin_error = mdb.plugin_manager.add_plugin(plugin);
+
+            if(plugin_error){
+                throw new Error(JSON.stringify(plugin_error,null,4));
+            }
+            if(plugin.init.length===1){
+                plugin.init(mdb);
+                next();
+            } else {
+                plugin.init(mdb, next);
+            }
+        } else {
+            throw new Error("Argument is not an object or function");
+        }
     }
-    plugin.init(mdb, callback);
+    next();
 
     return mdb;
 }
