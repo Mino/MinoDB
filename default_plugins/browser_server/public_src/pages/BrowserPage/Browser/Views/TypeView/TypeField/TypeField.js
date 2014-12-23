@@ -101,7 +101,7 @@ TypeField.prototype.update_type_fields = function(){
 
 		var fields_field = new FVArrayField("Fields");
 		fields_field.new_field = function(index){
-			var inner_field = new TypeField(null, tf);
+			var inner_field = new tf.constructor(null, tf);
 			fields_field.add_field(null, inner_field);
 		}
 
@@ -112,7 +112,7 @@ TypeField.prototype.update_type_fields = function(){
 			for(var i = 0; i < tf.value.fields.length; i++){
 				var field_data = tf.value.fields[i];
 
-				var inner_field = new TypeField(field_data, tf);
+				var inner_field = new tf.constructor(field_data, tf);
 				fields_field.add_field(null, inner_field);
 			}
 		}
