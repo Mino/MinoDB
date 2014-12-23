@@ -7,8 +7,8 @@ describe('MinoDB', function() {
 	before(require("./setup.js"));
 
 	require('./initial_setup.js');
-	// require('./models/models.js');
+	require('./models/models.js');
 	require('./api/api.js');
-    // require('./plugins/plugins.js')
+    require('./plugins/plugins.js')
 
 });

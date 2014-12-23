@@ -17,7 +17,7 @@ describe('When I add permissions', function() {
             logger.log(JSON.stringify(error, null, 4), response);
             assert.equal(error,null);
             
-            globals.sdk.get(["/testuser/permissions/sent/~testuser~subfolder~"], function(err, res) {
+            globals.sdk.with_user("testuser").get(["/testuser/permissions/sent/~testuser~subfolder~"], function(err, res) {
                 logger.log(JSON.stringify(err, null, 4), res);
                 assert.equal(err, null);
                 var object = res.objects[0];
