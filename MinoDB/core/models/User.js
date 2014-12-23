@@ -85,14 +85,14 @@ User.username_validator = [
     BasicVal.start_with_letter()
 ]
 
-User.validate = function(data, creation){
-    var user_error = User.sign_in_rule.validate(data);
-    logger.log(user_error);
+User.validate = function(data, creation, callback){
+    User.sign_in_rule.validate(data, function(user_error) {
+        logger.log(user_error);
 
-    var validator = new FieldVal(data, user_error);
-    validator.get("username", User.username_validator);
-
-    return validator.end();
+        var validator = new FieldVal(data, user_error);
+        validator.get("username", User.username_validator);
+        callback(validator.end());
+    });
 }
 
 User.prototype.create_save_data = function(callback){
@@ -179,67 +179,69 @@ User.get = function(username, api, callback){
 
 User.create = function(data, api, callback){
     
-    var error = User.validate(data, true);
-    if(error){
-        callback(error,null);
-        return;
-    }
+    User.validate(data, true, function(error) {
+        if(error){
+            callback(error,null);
+            return;
+        }
 
-    var user = new User({
-        mino_user: data
-    });
-    user.save(api, function(err, res){
+        var user = new User({
+            mino_user: data
+        });
+        user.save(api, function(err, res){
 
-        logger.log(JSON.stringify(err,null,4), res);
-
-        new api.handlers.save(api, {
-            "username": "Mino"
-        }, {
-            "objects": [
-                {
-                    "name": user.username,
-                    "path": "/",
-                    "folder": true
-                }
-            ]
-        }, function(save_err, save_res){
-            logger.log(JSON.stringify(save_err,null,4), save_res);
+            logger.log(JSON.stringify(err,null,4), res);
 
             new api.handlers.save(api, {
-                "username": user.username
+                "username": "Mino"
             }, {
                 "objects": [
                     {
-                        "name": "permissions",
-                        "path": "/"+user.username+"/",
+                        "name": user.username,
+                        "path": "/",
                         "folder": true
                     }
                 ]
             }, function(save_err, save_res){
                 logger.log(JSON.stringify(save_err,null,4), save_res);
 
-
                 new api.handlers.save(api, {
                     "username": user.username
                 }, {
                     "objects": [
                         {
-                            "name": "sent",
-                            "path": "/"+user.username+"/permissions/",
-                            "folder": true
-                        },{
-                            "name": "received",
-                            "path": "/"+user.username+"/permissions/",
+                            "name": "permissions",
+                            "path": "/"+user.username+"/",
                             "folder": true
                         }
                     ]
                 }, function(save_err, save_res){
                     logger.log(JSON.stringify(save_err,null,4), save_res);
-                    callback(err, res);
-                })
+
+
+                    new api.handlers.save(api, {
+                        "username": user.username
+                    }, {
+                        "objects": [
+                            {
+                                "name": "sent",
+                                "path": "/"+user.username+"/permissions/",
+                                "folder": true
+                            },{
+                                "name": "received",
+                                "path": "/"+user.username+"/permissions/",
+                                "folder": true
+                            }
+                        ]
+                    }, function(save_err, save_res){
+                        logger.log(JSON.stringify(save_err,null,4), save_res);
+                        callback(err, res);
+                    })
+                });
             });
         });
     });
+
 }
 
 module.exports = User;

@@ -17,7 +17,7 @@
     "tracer": "*",
     "fieldval" : "0.1.5",
     "fieldval-basicval" : "0.1.4",
-    "fieldval-rules" : "0.2.2",
+    "fieldval-rules" : "0.3.0",
     "extend": "MarcusLongmuir/extend"
   },
   "devDependencies": {

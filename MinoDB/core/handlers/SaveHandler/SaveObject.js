@@ -105,12 +105,12 @@ SaveObject.prototype.got_type = function(name, error, type){
 
 	var value = so.json[name];
 
-	var error = type.validate(value);
-
-	logger.log(error);
-	if(error!=null){
-		so.validator.invalid(name, error);
-	}
+	type.validate(value, function(error) {
+		logger.log(error);
+		if(error!=null){
+			so.validator.invalid(name, error);
+		}
+	});	
 }
 
 SaveObject.prototype.replace_id_in_name = function(){
