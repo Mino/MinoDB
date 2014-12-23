@@ -2,6 +2,7 @@ var errors = require('../../../../errors')
 var Validator = require('fieldval');
 var BasicVal = require('fieldval-basicval');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
+var Path = require('../../../../common_classes/Path');
 var Constants = require('../../../../common_classes/Constants');
 var logger = require('tracer').console();
 
