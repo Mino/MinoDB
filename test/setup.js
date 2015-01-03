@@ -2,7 +2,6 @@ var logger = require('tracer').console();
 var globals = require('./globals');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
-var User = require('../MinoDB/core/models/User');
 
 
 module.exports = function(done) {
@@ -26,18 +25,29 @@ module.exports = function(done) {
 			globals.mino = mino;
 			
 			mino.api.connect_callbacks.push(function() {
-	            User.create({
-	                username: "testuser",
-	                email: "test@minocloud.com",
-	                password: "my_password"
-	            }, mino.api, function(user_err, user_res){
+	            
+				mino.api.call("Mino", {
+					"function": "create_user",
+					"parameters": {
+						user: {
+			                username: "testuser",
+			                email: "test@minocloud.com",
+			                password: "my_password"
+						}
+		            }
+				}, function(user_err, user_res){
 	                logger.log(JSON.stringify(user_err, null, 4), user_res);
 
-					User.create({
-					    username: "otheruser",
-					    email: "test@minocloud.com",
-					    password: "my_password"
-					}, mino.api, function(user_err, user_res){
+					mino.api.call("Mino", {
+						"function": "create_user",
+						"parameters": {
+							user: {
+				                username: "otheruser",
+				                email: "test@minocloud.com",
+				                password: "my_password"
+							}
+			            }
+					}, function(user_err, user_res){
 					    logger.log(JSON.stringify(user_err, null, 4), user_res);
 						done();
 					})
