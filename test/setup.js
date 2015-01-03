@@ -25,28 +25,17 @@ module.exports = function(done) {
 			globals.mino = mino;
 			
 			mino.api.connect_callbacks.push(function() {
-	            
-				mino.api.call("Mino", {
-					"function": "create_user",
-					"parameters": {
-						user: {
-			                username: "testuser",
-			                email: "test@minocloud.com",
-			                password: "my_password"
-						}
-		            }
+				mino.create_user({
+	                username: "testuser",
+	                email: "test@minocloud.com",
+	                password: "my_password"
 				}, function(user_err, user_res){
 	                logger.log(JSON.stringify(user_err, null, 4), user_res);
 
-					mino.api.call("Mino", {
-						"function": "create_user",
-						"parameters": {
-							user: {
-				                username: "otheruser",
-				                email: "test@minocloud.com",
-				                password: "my_password"
-							}
-			            }
+					mino.create_user({
+		                username: "otheruser",
+		                email: "test@minocloud.com",
+		                password: "my_password"
 					}, function(user_err, user_res){
 					    logger.log(JSON.stringify(user_err, null, 4), user_res);
 						done();
