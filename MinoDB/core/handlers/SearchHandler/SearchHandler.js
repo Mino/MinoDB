@@ -1,6 +1,6 @@
 var errors = require('../../../../errors')
-var Validator = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var Path = require('../../../../common_classes/Path');
 var Constants = require('../../../../common_classes/Constants');
@@ -16,7 +16,7 @@ function SearchHandler(api, user, parameters, callback){
 
     sh.path_permission_checker = new PathPermissionChecker(sh);
 
-    sh.validator = new Validator(parameters);
+    sh.validator = new FieldVal(parameters);
 
     sh.paths = sh.validator.get("paths", BasicVal.array(true));
     sh.skip = sh.validator.get("skip", BasicVal.integer(false), BasicVal.minimum(0));

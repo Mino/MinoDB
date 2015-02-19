@@ -3,8 +3,8 @@ var Constants = require('../../../../common_classes/Constants');
 var Path = require('../../../../common_classes/Path');
 var User = require('../../models/User');
 var logger = require('tracer').console();
-var Validator = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 var validators = require('../../validators');
 
 function Permission(json, handler, index, options){
@@ -15,7 +15,7 @@ function Permission(json, handler, index, options){
 	perm.handler = handler;
 	perm.index = index;
 
-	perm.validator = new Validator(json);
+	perm.validator = new FieldVal(json);
 
 	perm.username = perm.validator.get("username", BasicVal.string(true), User.username_validator);
 	perm.path = perm.validator.get("path", BasicVal.string(true), validators.path);

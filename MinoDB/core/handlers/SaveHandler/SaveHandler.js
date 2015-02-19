@@ -1,6 +1,6 @@
 var errors = require('../../../../errors')
-var Validator = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 var Path = require('../../../../common_classes/Path')
 var FVRule = require('fieldval-rules');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
@@ -35,9 +35,9 @@ function SaveHandler(api, user, parameters, options, callback){
     });
     sh.folder_checker = new FolderChecker(sh);
 
-    sh.validator = new Validator(parameters);
+    sh.validator = new FieldVal(parameters);
 
-    sh.objects_validator = new Validator(null);//No object to validate
+    sh.objects_validator = new FieldVal(null);//No object to validate
 
     var objects = sh.validator.get("objects", BasicVal.array(true), BasicVal.each(function(object, index){
         var error = BasicVal.object(true).check(object); if(error) return error;

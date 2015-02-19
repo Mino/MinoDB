@@ -2,8 +2,8 @@ var errors = require('../../../../errors')
 var Constants = require('../../../../common_classes/Constants');
 var Path = require('../../../../common_classes/Path');
 var logger = require('tracer').console();
-var Validator = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 var validators = require('../../validators');
 
 function SaveObject(json, handler, index, options){
@@ -18,7 +18,7 @@ function SaveObject(json, handler, index, options){
 	so.waiting_for_types = {};
 	so.type_keys = {};
 
-	so.validator = new Validator(json);
+	so.validator = new FieldVal(json);
 
 	so.granted_new_path = false;
 

@@ -1,6 +1,6 @@
 var errors = require('../../../../errors');
 var FieldVal = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var BasicVal = FieldVal.BasicVal;
 var Path = require('../../../../common_classes/Path')
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var Common = require('../../../../common_classes/Common')

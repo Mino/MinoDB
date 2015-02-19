@@ -2,8 +2,8 @@ var Constants = require('../../../../common_classes/Constants');
 var Common = require('../../../../common_classes/Common')
 var Path = require('../../../../common_classes/Path');
 var logger = require('tracer').console();
-var Validator = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 var validators = require('../../validators');
 
 function DeleteObject(address, handler, index, options){

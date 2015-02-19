@@ -1,6 +1,6 @@
 var errors = require('../../../../errors')
-var Validator = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 var Path = require('../../../../common_classes/Path')
 var User = require('../../models/User');
 var FVRule = require('fieldval-rules');
@@ -14,7 +14,7 @@ function CreateUserHandler(api, user, parameters, callback){
     cuh.parameters = parameters;
     cuh.callback = callback;
 
-    cuh.validator = new Validator(parameters);
+    cuh.validator = new FieldVal(parameters);
 
     var output = {}
 

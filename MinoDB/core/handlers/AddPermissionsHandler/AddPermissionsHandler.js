@@ -1,6 +1,6 @@
 var errors = require('../../../../errors')
-var Validator = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 var Path = require('../../../../common_classes/Path')
 var FVRule = require('fieldval-rules');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
@@ -20,9 +20,9 @@ function AddPermissionsHandler(api, user, parameters, callback){
 
     aph.folder_checker = new FolderChecker(aph);
 
-    aph.validator = new Validator(parameters);
+    aph.validator = new FieldVal(parameters);
 
-    aph.perms_validator = new Validator(null);//No object to validate
+    aph.perms_validator = new FieldVal(null);//No object to validate
 
     var perms = aph.validator.get("permissions", BasicVal.array(true), BasicVal.each(function(object, index){
         var error = BasicVal.object(true).check(object); if(error) return error;

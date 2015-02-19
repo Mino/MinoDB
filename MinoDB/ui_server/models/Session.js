@@ -1,6 +1,6 @@
 var logger = require('tracer').console();
 var FieldVal = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var BasicVal = FieldVal.BasicVal;
 
 function Session(obj) {
     var session = this;
