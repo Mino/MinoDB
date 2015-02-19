@@ -53,7 +53,7 @@ describe("UI plugin", function() {
 				        }
 				    },
 				    "error_message": "One or more errors.",
-				    "error": 0
+				    "error": 5
 				})
 				done();
 			});
@@ -78,7 +78,7 @@ describe("UI plugin", function() {
 				        }
 				    },
 				    "error_message": "One or more errors.",
-				    "error": 0
+				    "error": 5
 				})
 				done();
 			});

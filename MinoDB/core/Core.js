@@ -77,7 +77,7 @@ Core.prototype.call = function(user, request, callback){
 
         logger.log("Core.call connected");
 
-        var api_val = new FieldVal(request);
+        var api_val = new Validator(request);
 
         var function_name = api_val.get("function", BasicVal.string(true), BasicVal.one_of(core.handlers));
         var parameters = api_val.get("parameters", BasicVal.object(true));

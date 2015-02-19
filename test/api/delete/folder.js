@@ -49,15 +49,15 @@ it('should not delete a folder if path does not exist', function(done) {
                                 }
                             },
                             "error_message": "One or more errors.",
-                            "error": 0
+                            "error": 5
                         }
                     },
                     "error_message": "One or more errors.",
-                    "error": 0
+                    "error": 5
                 }
             },
             "error_message": "One or more errors.",
-            "error": 0
+            "error": 5
         });
         
         globals.sdk.with_user("testuser").get(["/testuser/randompath/TestFolder/"], function(err, res) {
@@ -91,15 +91,15 @@ it('should not delete a folder if access denied', function(done) {
                                 }
                             },
                             "error_message": "One or more errors.",
-                            "error": 0
+                            "error": 5
                         }
                     },
                     "error_message": "One or more errors.",
-                    "error": 0
+                    "error": 5
                 }
             },
             "error_message": "One or more errors.",
-            "error": 0
+            "error": 5
         });
         
         globals.sdk.get(["/Mino/TestFolder/"], function(err, res) {

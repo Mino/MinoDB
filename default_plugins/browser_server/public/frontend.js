@@ -13361,7 +13361,7 @@ SAFEClass.prototype.use_page_class = function(details){
     //Call before page transition to give the opportunity to correctly size any page elements
     sf.resize();
 
-    var transition_response = sf.transition_page(sf.current_page, old_page);
+    var transition_response = sf.transition_page(sf.current_page, old_page, details_for_page);
 
     if (transition_response === true) {
         //The callback handled the page switching
@@ -13706,7 +13706,7 @@ SAFEClass.prototype.load_url = function(url_with_query, push_state) {
     }
 
     if (!sf.history_state_supported) {
-        var target = encodeURI(full_url);
+        var target = full_url;
         if (window.location != target && window.location != full_url) {
             window.location = target;
             return;
@@ -17096,10 +17096,7 @@ FVForm.prototype.submit = function(){
 function extend(sub, sup) {
 	function emptyclass() {}
 	emptyclass.prototype = sup.prototype;
-	var empty_instance = new emptyclass();
-	for(var i in empty_instance){
-		sub.prototype[i] = empty_instance[i];
-	}
+	sub.prototype = new emptyclass();
 	sub.prototype.constructor = sub;
 	sub.superConstructor = sup;
 	sub.superClass = sup.prototype;
@@ -17191,22 +17188,19 @@ FVRuleField.create_field = function(json, options) {
 FVRuleField.prototype.validate_as_field = function(name, validator){
     var field = this;
     
-    var value = validator.get(name, field.checks);
-
-    return value;
+    validator.get_async(name, field.checks);
 }
 
-FVRuleField.prototype.validate = function(value){
+FVRuleField.prototype.validate = function(value, callback){
     var field = this;
 
-    var validator = new FieldVal(null);
-
-    var error = FieldVal.use_checks(value, field.checks);
-    if(error){
-        validator.error(error);
+    if(!callback){
+        throw new Error("No callback specified");
     }
 
-    return validator.end();
+    return FieldVal.use_checks(value, field.checks, {}, function(error){
+        callback(error);
+    });
 }
 
 FVRuleField.prototype.make_nested = function(){}
@@ -17247,6 +17241,10 @@ FVBasicRuleField.prototype.in_array = function(){
     var field = this;
     return field.ui_field.in_array.apply(field.ui_field, arguments);
 }
+FVBasicRuleField.prototype.in_key_value = function(){
+    var field = this;
+    return field.ui_field.in_key_value.apply(field.ui_field, arguments);
+}
 FVBasicRuleField.prototype.change_name = function(name) {
     var field = this;
     return field.ui_field.change_name.apply(field.ui_field, arguments);
@@ -17258,6 +17256,10 @@ FVBasicRuleField.prototype.disable = function() {
 FVBasicRuleField.prototype.enable = function() {
     var field = this;
     return field.ui_field.enable.apply(field.ui_field, arguments);
+}
+FVBasicRuleField.prototype.name_val = function(){
+    var field = this;
+    return field.ui_field.name_val.apply(field.ui_field, arguments);
 }
 FVBasicRuleField.prototype.val = function(){
     var field = this;
@@ -17391,6 +17393,7 @@ if (typeof module != 'undefined') {
 if((typeof require) === 'function'){
     extend = require('extend')
     FVBasicRuleField = require('./FVBasicRuleField');
+    FVRule = require('../FVRule');
 }
 extend(FVObjectRuleField, FVBasicRuleField);
 
@@ -17403,28 +17406,47 @@ function FVObjectRuleField(json, validator) {
 FVObjectRuleField.prototype.create_ui = function(parent, form){
     var field = this;
 
-    if(field.json.any){
-        field.ui_field = new FVTextField(field.display_name || field.name, {type: 'textarea'});//Empty options
+    if(field.any){
+        if(field.field_type){
+            field.ui_field = new FVKeyValueField(field.display_name || field.name, field.json);
 
-        field.ui_field.val = function(set_val){//Override the .val function
-            var ui_field = this;
-            if (arguments.length===0) {
-                var value = ui_field.input.val();
-                if(value.length===0){
-                    return null;
-                }
-                try{
-                    return JSON.parse(value);
-                } catch (e){
-                    console.error("FAILED TO PARSE: ",value);
-                }
-                return value;
-            } else {
-                ui_field.input.val(JSON.stringify(set_val,null,4));
-                return ui_field;
+            field.element = field.ui_field.element;
+
+            field.ui_field.new_field = function(index){
+                return field.new_field(index);
             }
+            var original_remove_field = field.ui_field.remove_field;
+            field.ui_field.remove_field = function(inner_field){
+                for(var i = 0; i < field.fields.length; i++){
+                    if(field.fields[i]===inner_field){
+                        field.fields.splice(i,1);
+                    }
+                }
+                return original_remove_field.call(field.ui_field, inner_field);
+            }
+        } else {
+            field.ui_field = new FVTextField(field.display_name || field.name, {type: 'textarea'});//Empty options
+
+            field.ui_field.val = function(set_val){//Override the .val function
+                var ui_field = this;
+                if (arguments.length===0) {
+                    var value = ui_field.input.val();
+                    if(value.length===0){
+                        return null;
+                    }
+                    try{
+                        return JSON.parse(value);
+                    } catch (e){
+                        console.error("FAILED TO PARSE: ",value);
+                    }
+                    return value;
+                } else {
+                    ui_field.input.val(JSON.stringify(set_val,null,4));
+                    return ui_field;
+                }
+            }
+            field.element = field.ui_field.element;
         }
-        field.element = field.ui_field.element;
     } else {
 
         if(form){
@@ -17446,6 +17468,16 @@ FVObjectRuleField.prototype.create_ui = function(parent, form){
     }
 
     return field.ui_field;
+}
+
+FVObjectRuleField.prototype.new_field = function(index){
+    var field = this;
+
+    var field_creation = FVRuleField.create_field(field.field_type.json);
+    var err = field_creation[0];
+    var rule = field_creation[1];
+    
+    return rule.create_ui(field.ui_field);
 }
 
 FVObjectRuleField.prototype.init = function() {
@@ -17488,7 +17520,7 @@ FVObjectRuleField.prototype.init = function() {
 
     field.any = field.validator.get("any", BasicVal.boolean(false));
     if(!field.any){
-        field.checks.push(function(value,emit){
+        field.checks.push(function(value,emit,done){
 
             var inner_validator = new FieldVal(value);
 
@@ -17497,11 +17529,39 @@ FVObjectRuleField.prototype.init = function() {
                 inner_field.validate_as_field(i, inner_validator);
             }
 
-            var inner_error = inner_validator.end();
-
-            return inner_error;
+            return inner_validator.end(function(error){
+                done(error);
+            });
         });
     }    
+
+    field.validator.get("field_type", BasicVal.object(false), {
+        check: function(val){
+            if(!field.any){
+                return FVRule.errors.field_type_without_any();
+            }
+        },
+        stop_on_error: true
+    }, function(val, emit){
+        var field_creation = FVRuleField.create_field(val);
+        var err = field_creation[0];
+        field.field_type = field_creation[1];
+        if(err){
+            return err;
+        }
+        field.checks.push(function(value,emit){
+
+            var inner_validator = new FieldVal(value);
+
+            for(var i in value){
+                if(value.hasOwnProperty(i)){
+                    field.field_type.validate_as_field(i, inner_validator);
+                }
+            }
+
+            return inner_validator.end();
+        });
+    });
 
     return field.validator.end();
 }
@@ -17812,6 +17872,12 @@ FVRule.errors = {
             error: 502,
             error_message: "Invalid format for an indices rule."
         }    
+    },
+    field_type_without_any: function(){
+        return {
+            error: 503,
+            error_message: "field_type can't be used with setting any to true."
+        }    
     }
 }
 
@@ -17843,12 +17909,9 @@ FVRule.prototype.create_form = function(){
     }
 }
 
-FVRule.prototype.validate = function(value) {
+FVRule.prototype.validate = function() {
     var vr = this;
-
-    var error = vr.field.validate(value);
-
-    return error;
+    return vr.field.validate.apply(vr.field,arguments);
 }
 
 if (typeof module != 'undefined') {
