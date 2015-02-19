@@ -1,7 +1,6 @@
 @import("../../../bower_components/jquery/dist/jquery.js");
 @import("../../../bower_components/safe/safe.js");
 @import("../../../bower_components/fieldval/fieldval.js");
-@import("../../../bower_components/fieldval-basicval/fieldval-basicval.js");
 @import("../../../bower_components/fieldval-ui/fieldval-ui.js");
 @import("../../../bower_components/fieldval-rules/fieldval-rules.js");
 @import("../../../bower_components/extend/extend.js");
