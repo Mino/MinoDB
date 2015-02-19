@@ -51,9 +51,9 @@
 
 				    field.finalize_option(option_element, choice_value, initial);
 				}
-				choice_field.select_option = function(value){
+				choice_field.select_option = function(choice_option){
 					var field = this;
-
+					var value = choice_option.get_value();
 					if(value===DOMAIN_VALUE){
 						window.location = "/";
 					} else {
