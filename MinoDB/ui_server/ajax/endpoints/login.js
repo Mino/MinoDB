@@ -3,7 +3,7 @@ var errors = require('../../../../errors');
 var User = require('../../../core/models/User')
 
 var FieldVal = require("fieldval");
-var bval = require("fieldval-basicval");
+var bval = FieldVal.BasicVal;
 var check_password_hash = require('../check_password_hash');
 
 var Session = require('../../models/Session');
