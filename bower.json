@@ -5,7 +5,7 @@
     "jquery": "1.11.1",
     "safe": "0.1.6",
     "fieldval" : "FieldVal/fieldval-js#develop",
-    "fieldval-rules" : "0.3.0",
+    "fieldval-rules" : "FieldVal/fieldval-rules-js#develop",
     "fieldval-ui": "0.3.4",
     "jquery-autosize": "1.18.13",
     "font-awesome": "4.2.0",

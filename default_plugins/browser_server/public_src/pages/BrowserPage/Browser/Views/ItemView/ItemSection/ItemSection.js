@@ -76,7 +76,7 @@ ItemSection.prototype.remove_press = function(){
     var section = this;
 
     section.item_view.remove_section(section.name);
-    section.item_view.form.remove_field(name);
+    section.item_view.form.remove_field(section.name);
 }
 
 ItemSection.prototype.populate_type = function(type){
@@ -88,7 +88,7 @@ ItemSection.prototype.populate_type = function(type){
 	section.vr.init(type);
 
 	section.field = section.vr.field.create_ui(section.item_view.form);
-
+    section.item_view.form.add_field(section.name, section.field);
     section.field.element.addClass("item_section");
 
     var title_text;

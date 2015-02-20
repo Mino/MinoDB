@@ -14321,7 +14321,7 @@ var FieldVal = (function(){
                 return FieldVal.ASYNC;
             } else {
                 flags = this_check;
-                this_check_function = flags.check;
+                this_check_function = flags;
                 if (flags && (flags.stop_on_error !== undefined)) {
                     stop_on_error = flags.stop_on_error;
                 }
@@ -14382,11 +14382,22 @@ var FieldVal = (function(){
             }
         };
 
-        var check_response = this_check_function(shared_options.value, shared_options.emit, function(response){
-            //Response callback
-            with_response(response);
-        });
-        if (this_check_function.length===3){//Is async - it has a third (callback) parameter
+        var check_response;
+        var actual_function;
+        if(typeof this_check_function === 'function') {
+            actual_function = this_check_function;
+            check_response = this_check_function(shared_options.value, shared_options.emit, function(response){
+                //Response callback
+                with_response(response);
+            });
+        } else {
+            actual_function = this_check_function.check;
+            check_response = this_check_function.check(shared_options.value, shared_options.emit, function(response){
+                //Response callback
+                with_response(response);
+            });
+        }
+        if (actual_function.length===3){//Is async - it has a third (callback) parameter
             //Waiting for async
             return FieldVal.ASYNC;
         } else {
@@ -17988,7 +17999,10 @@ function FVRuleField(json, validator) {
     field.display_name = field.validator.get("display_name", BasicVal.string(false));
     field.description = field.validator.get("description", BasicVal.string(false));
     field.type = field.validator.get("type", BasicVal.string(true));
-    field.required = field.validator.default_value(true).get("required", BasicVal.boolean(false))
+    field.required = field.validator.get("required", BasicVal.boolean(false));
+    if(field.required===undefined){
+        field.required = true;//Default to true
+    }
 
     if (json != null) {
         var exists = field.validator.get("exists", BasicVal.boolean(false));
@@ -18168,18 +18182,13 @@ function FVTextRuleField(json, validator) {
 FVTextRuleField.prototype.create_ui = function(parent){
     var field = this;
 
-    var type = field.json.type;
-    if(field.json.textarea===true){
-        type = "textarea";
-    }
-
     field.ui_field = new FVTextField(field.display_name || field.name, {
         name: field.json.name,
         display_name: field.json.display_name,
-        type: type
+        type: field.json.ui_type
     });
+
     field.element = field.ui_field.element;
-    parent.add_field(field.name, field);
     return field.ui_field;
 }
 
@@ -18198,7 +18207,11 @@ FVTextRuleField.prototype.init = function() {
         field.checks.push(BasicVal.max_length(field.max_length,{stop_on_error:false}));
     }
 
-    field.textarea = field.validator.get("textarea", BasicVal.boolean(false));
+    field.ui_type = field.validator.get("ui_type", BasicVal.string(false), BasicVal.one_of([
+        "text",
+        "textarea",
+        "password"
+    ]));
 
     //Currently unused
     field.phrase = field.validator.get("phrase", BasicVal.string(false));
@@ -18231,7 +18244,6 @@ FVNumberRuleField.prototype.create_ui = function(parent){
 
     field.ui_field = new FVTextField(field.display_name || field.name, field.json);
     field.element = field.ui_field.element;
-    parent.add_field(field.name, field);
     return field.ui_field;
 }
 
@@ -18328,14 +18340,11 @@ FVObjectRuleField.prototype.create_ui = function(parent, form){
 
         for(var i in field.fields){
             var inner_field = field.fields[i];
-            inner_field.create_ui(field.ui_field);
+            var inner_ui_field = inner_field.create_ui(field.ui_field);
+            field.ui_field.add_field(inner_field.name, inner_ui_field);
         }
 
         field.element = field.ui_field.element;
-    }
-
-    if(!form){
-        parent.add_field(field.name, field.ui_field);
     }
 
     return field.ui_field;
@@ -18475,7 +18484,6 @@ FVArrayRuleField.prototype.create_ui = function(parent, form){
         return original_remove_field.call(field.ui_field, inner_field);
     }
     field.element = field.ui_field.element;
-    parent.add_field(field.name, field);
     return field.ui_field;
 }
 
@@ -18628,7 +18636,6 @@ FVChoiceRuleField.prototype.create_ui = function(parent){
 
     field.ui_field = new FVChoiceField(field.display_name || field.name, field.json);
     field.element = field.ui_field.element;
-    parent.add_field(field.name, field);
     return field.ui_field;
 }
 
@@ -18666,7 +18673,6 @@ FVBooleanRuleField.prototype.create_ui = function(parent){
 
     field.ui_field = new FVBooleanField(field.display_name || field.name, field.json);
     field.element = field.ui_field.element;
-    parent.add_field(field.name, field);
     return field.ui_field;
 }
 
@@ -18703,7 +18709,6 @@ FVEmailRuleField.prototype.create_ui = function(parent){
 
     field.ui_field = new FVTextField(field.display_name || field.name, field.json);
     field.element = field.ui_field.element;
-    parent.add_field(field.name, field);
     return field.ui_field;
 }
 
@@ -18780,9 +18785,23 @@ FVRule.prototype.create_form = function(){
     }
 }
 
+FVRule.prototype.create_ui = function(){
+    var vr = this;
+
+    return vr.field.create_ui();
+}
+
 FVRule.prototype.validate = function() {
     var vr = this;
     return vr.field.validate.apply(vr.field,arguments);
+}
+
+FVRule.prototype.check = function(val, emit, done) {
+    var vr = this;
+    
+    vr.field.validate(val,function(err){
+        done(err);
+    });
 }
 
 if (typeof module != 'undefined') {
@@ -21187,7 +21206,7 @@ ItemSection.prototype.remove_press = function(){
     var section = this;
 
     section.item_view.remove_section(section.name);
-    section.item_view.form.remove_field(name);
+    section.item_view.form.remove_field(section.name);
 }
 
 ItemSection.prototype.populate_type = function(type){
@@ -21199,7 +21218,7 @@ ItemSection.prototype.populate_type = function(type){
 	section.vr.init(type);
 
 	section.field = section.vr.field.create_ui(section.item_view.form);
-
+    section.item_view.form.add_field(section.name, section.field);
     section.field.element.addClass("item_section");
 
     var title_text;
