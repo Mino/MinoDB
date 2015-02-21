@@ -83,9 +83,23 @@ SearchHandler.prototype.do_search = function(callback){
             return;
         }
 
-        sh.query.path = {
-            "$in": sh.paths
-        };
+        if(sh.include_subfolders){
+            var path_prefixes = [];
+            for(var i = 0; i < sh.paths.length; i++){
+                var path = sh.paths[i];
+
+                path_prefixes.push({
+                    "path":{
+                        "$regex": "^"+path
+                    }
+                })
+            }
+            sh.query["$or"] = path_prefixes;
+        } else {
+            sh.query.path = {
+                "$in": sh.paths
+            };
+        }
 
         var error;
         var results;
