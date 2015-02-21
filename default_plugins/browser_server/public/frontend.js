@@ -20645,13 +20645,16 @@ Icon.prototype.select = function(){
 	icon.view.add_selected(icon);
 }
 
-Icon.prototype.deselect = function(remove_from_view){
+/* from_view indicates whether this call was made from the view this
+ * icon is in. If it is, it shouldn't call remove_selected on the 
+ * view. */
+Icon.prototype.deselect = function(from_view){
 	var icon = this;
 
 	icon.selected = false;
 	icon.element.removeClass("selected");
 
-	if((typeof remove_from_view)==='boolean' && remove_from_view!==false){
+	if(!from_view){
 		icon.view.remove_selected(icon);
 	}
 }
@@ -20988,14 +20991,10 @@ FolderView.prototype.add_selected = function(icon){
 FolderView.prototype.remove_selected = function(icon){
 	var folder_view = this;
 
-	for(var i = 0; i < folder_view.selected.length; i++){
-		if(folder_view.selected[i] === icon){
-			console.log(i);
-			folder_view.selected.splice(i, 1);
-			return;
-		}
+	var ind = folder_view.selected.indexOf(icon);
+	if(ind!==-1){
+		folder_view.selected.splice(ind, 1);
 	}
-	console.log(folder_view.selected);
 }
 
 FolderView.prototype.select_button_press = function(){
@@ -21013,12 +21012,12 @@ FolderView.prototype.select_button_press = function(){
 FolderView.prototype.delete_button_press = function(){
 	var folder_view = this;
 
-	var cfm = new DeleteModal(folder_view.selected, function(err, res){
+	var dm = new DeleteModal(folder_view.selected, function(err, res){
 		console.log(err, res);
 	})
 
 	folder_view.element.append(
-		cfm.element
+		dm.element
 	)
 }
 
@@ -21035,7 +21034,7 @@ FolderView.prototype.cancel_button_press = function(){
 
 	for(var i = 0; i < folder_view.selected.length; i++){
 		var icon = folder_view.selected[i];
-		icon.deselect(false);
+		icon.deselect(true);
 	}
 
 	folder_view.selected = [];
