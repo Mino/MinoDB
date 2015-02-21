@@ -183,8 +183,8 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 		    			return;
 		    		}
 
-		    		var old_path = new Path();
-		    		old_path.init(res.path);//Could throw an error, but it's already been save successfully
+		    		var old_full_path = new Path();
+		    		old_full_path.init(res.path);//Could throw an error, but it's already been save successfully
 
 		    		var have_permission = function(){
 		    			so.version = res.version+1;
@@ -232,12 +232,12 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 					    );
 		    		}
 
-		    		var username_for_permission = old_path.username_for_permission(so.handler.user.username, true);
+		    		var username_for_permission = old_full_path.username_for_permission(so.handler.user.username, true);
 					if(username_for_permission===so.handler.user.username){
 						have_permission();
 					} else {
 
-			    		so.handler.path_permission_checker.check_permissions_for_path(old_path,function(status){
+			    		so.handler.path_permission_checker.check_permissions_for_path(old_full_path,function(status){
 			    			logger.log("FAILED OLD PATH: "+so.index);
 							if(status!=Constants.WRITE_PERMISSION){
 								so.validator.invalid("_id",{
