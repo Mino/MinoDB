@@ -61,7 +61,6 @@ TypeField.prototype.init = function(){
 TypeField.prototype.remove = function(){
 	var tf = this;
 	tf.form.remove();
-	FVField.prototype.remove.call(this);
 }
 
 TypeField.prototype.update_title_name = function(){

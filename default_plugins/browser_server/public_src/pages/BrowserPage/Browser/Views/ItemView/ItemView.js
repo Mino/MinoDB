@@ -147,8 +147,12 @@ ItemView.prototype.init = function(){
 
 ItemView.prototype.remove = function(){
 	var item_view = this;
-	console.log(item_view.form);
 	item_view.form.remove();
+
+	for(var i in item_view.sections){
+		var section = item_view.sections[i];
+		section.remove();
+	}
 
 	item_view.toolbar_type_selector.remove();
 }

@@ -21401,8 +21401,12 @@ ItemView.prototype.init = function(){
 
 ItemView.prototype.remove = function(){
 	var item_view = this;
-	console.log(item_view.form);
 	item_view.form.remove();
+
+	for(var i in item_view.sections){
+		var section = item_view.sections[i];
+		section.remove();
+	}
 
 	item_view.toolbar_type_selector.remove();
 }
@@ -21601,7 +21605,6 @@ TypeField.prototype.init = function(){
 TypeField.prototype.remove = function(){
 	var tf = this;
 	tf.form.remove();
-	FVField.prototype.remove.call(this);
 }
 
 TypeField.prototype.update_title_name = function(){
