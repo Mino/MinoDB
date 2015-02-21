@@ -171,6 +171,8 @@ FolderView.prototype.load = function(options){
 		}
 	};
 
+	folder_view.pagination_controller.hide();
+	
 	api_request(request,function(err, response){
 		console.log(err, response);
 		folder_view.populate(options, response);
