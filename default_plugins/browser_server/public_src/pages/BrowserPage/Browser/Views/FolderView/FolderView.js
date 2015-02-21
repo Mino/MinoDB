@@ -189,6 +189,9 @@ FolderView.prototype.populate = function(options, data){
 				$("<div />").text("Empty folder. Create some items...")
 			)
 		)
+		folder_view.pagination_controller.hide();
+	} else {
+		folder_view.pagination_controller.show();
 	}
 
 	for(var i = 0; i < objects.length; i++){
