@@ -33,6 +33,7 @@
     "gulp-watch": "^0.6.2",
     "gulp-plumber": "^0.6.1",
     "gulp-mocha": "2.0.0",
-    "supertest": "*"
+    "supertest": "*",
+    "sa-docs-to-json": "SuperAwesomeLtd/sa-docs-to-json"
   }
 }

@@ -76,6 +76,7 @@ User.sign_in_rule_definition = {
     }]
 };
 User.sign_in_rule = new FVRule();
+logger.log(FVRule.prototype.validate+"");
 User.sign_in_rule.init(User.sign_in_rule_definition);
 
 //TODO add more checks for tilde, slashes, etc
@@ -86,6 +87,7 @@ User.username_validator = [
 ]
 
 User.validate = function(data, creation, callback){
+    logger.log("User.validate");
     User.sign_in_rule.validate(data, function(user_error) {
         logger.log(user_error);
 
@@ -179,7 +181,10 @@ User.get = function(username, api, callback){
 
 User.create = function(data, api, callback){
     
+    logger.log("User.create");
+
     User.validate(data, true, function(error) {
+        logger.log(error);
         if(error){
             callback(error,null);
             return;

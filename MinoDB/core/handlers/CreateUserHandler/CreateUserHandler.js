@@ -16,10 +16,14 @@ function CreateUserHandler(api, user, parameters, callback){
 
     cuh.validator = new FieldVal(parameters);
 
-    var output = {}
+    var output = {};
+
+    logger.log("STARTED CUH");
 
     cuh.validator.get_async("user", [BasicVal.object(true), function(val, emit, done){
+        logger.log("Passed object test",val);
     	User.create(val, api, function(user_err, user_res){
+            logger.log(user_err,user_res);
     	    logger.log(JSON.stringify(user_err, null, 4), user_res);
     	    output.user = user_res;
 	    	done(user_err);
@@ -27,6 +31,7 @@ function CreateUserHandler(api, user, parameters, callback){
     }])
 
     cuh.validator.end(function(error){
+        logger.log(error);
     	if(error){
     		callback(error);
     		return;

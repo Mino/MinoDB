@@ -13,10 +13,6 @@ function Core(minodb, db_address){
         address: db_address
     })
 
-    core.connect(function(){
-        logger.log("API CONNECTED");
-    })
-
     core.handlers = {
         "get": require('./handlers/GetHandler/GetHandler'),
         "save": require('./handlers/SaveHandler/SaveHandler'),
@@ -29,6 +25,10 @@ function Core(minodb, db_address){
 
     core.connected = false;
     core.connect_callbacks = [];
+
+    core.connect(function(){
+        logger.log("API CONNECTED");
+    })
 }
 
 Core.prototype.call_connect_callbacks = function(){
@@ -73,6 +73,8 @@ Core.prototype.on_connected = function(callback){
 Core.prototype.call = function(user, request, callback){
 	var core = this;
 
+    logger.log("Core.call");
+
     core.on_connected(function(){
 
         logger.log("Core.call connected");
@@ -91,9 +93,10 @@ Core.prototype.call = function(user, request, callback){
         }
 
         if (handler != null) {
+            logger.log("Calling handler",handler);
             var handler_callback = function(error, response) {
-                // logger.log(JSON.stringify(error, null, 4));
-                // logger.log(JSON.stringify(response, null, 4));
+                logger.log(JSON.stringify(error, null, 4));
+                logger.log(JSON.stringify(response, null, 4));
                 if (error != null) {
                     return callback(api_val.invalid("parameters", error).end());
                 } else {

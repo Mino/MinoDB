@@ -4,9 +4,6 @@
   "dependencies": {
     "jquery": "1.11.1",
     "safe": "0.1.6",
-    "fieldval" : "FieldVal/fieldval-js#develop",
-    "fieldval-rules" : "FieldVal/fieldval-rules-js#develop",
-    "fieldval-ui": "FieldVal/fieldval-ui#develop",
     "jquery-autosize": "1.18.13",
     "font-awesome": "4.2.0",
     "extend": "MarcusLongmuir/extend"

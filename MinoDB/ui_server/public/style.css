@@ -416,7 +416,12 @@
   cursor: pointer;
   background-color: #00aa00;
   color: #ffffff;
+<<<<<<< HEAD
   margin: 0px;
+=======
+  width: 30px;
+  height: 30px;
+>>>>>>> develop_docs
   border: none;
   font-size: 14px;
 }

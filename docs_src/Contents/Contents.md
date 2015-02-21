@@ -1,0 +1,5 @@
+* [Folders](Folders)
+* [Items](Items)
+* [Types](Types)
+* [Permissions](Permissions)
+* [Plugins](Plugins)

@@ -1,0 +1,11 @@
+{
+    "name": "MinoDB",
+    "text": "MinoDB.md",
+    "sections": [
+    	{
+            "name": "Setup",
+            "text": "Setup/Setup.md",
+            "code": "Setup/Setup.code"
+        }
+	]
+}
