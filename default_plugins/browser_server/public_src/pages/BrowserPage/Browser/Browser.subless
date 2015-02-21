@@ -15,4 +15,5 @@
 
 	@import "Toolbar/Toolbar.subless";
 	@import "TypeSelector/TypeSelector.subless";
+	@import "PaginationController/PaginationController.subless";
 }

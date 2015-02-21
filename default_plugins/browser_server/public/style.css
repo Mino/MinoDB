@@ -2498,35 +2498,6 @@ a {
   padding: 12px;
   padding-bottom: 50px;
 }
-.browser_page .browser .view_container .folder_view .pagination_controller {
-  text-align: center;
-}
-.browser_page .browser .view_container .folder_view .pagination_controller .page_controls {
-  background-color: white;
-  display: inline-block;
-  position: relative;
-  width: 250px;
-  height: 30px;
-}
-.browser_page .browser .view_container .folder_view .pagination_controller .page_controls .mino_button {
-  position: absolute;
-  width: 50px;
-  top: 0px;
-}
-.browser_page .browser .view_container .folder_view .pagination_controller .page_controls .mino_button.previous_button {
-  left: 0px;
-}
-.browser_page .browser .view_container .folder_view .pagination_controller .page_controls .mino_button.next_button {
-  right: 0px;
-}
-.browser_page .browser .view_container .folder_view .pagination_controller .page_controls .page_status {
-  position: absolute;
-  top: 0px;
-  left: 50px;
-  width: 150px;
-  line-height: 30px;
-  text-align: center;
-}
 .browser_page .browser .view_container .folder_view .create_folder_modal .fv_field .fv_field_title {
   display: none;
 }
@@ -2719,4 +2690,33 @@ a {
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
   border-top: 10px solid #eeeeee;
+}
+.browser_page .browser .pagination_controller {
+  text-align: center;
+}
+.browser_page .browser .pagination_controller .page_controls {
+  background-color: white;
+  display: inline-block;
+  position: relative;
+  width: 250px;
+  height: 30px;
+}
+.browser_page .browser .pagination_controller .page_controls .mino_button {
+  position: absolute;
+  width: 50px;
+  top: 0px;
+}
+.browser_page .browser .pagination_controller .page_controls .mino_button.previous_button {
+  left: 0px;
+}
+.browser_page .browser .pagination_controller .page_controls .mino_button.next_button {
+  right: 0px;
+}
+.browser_page .browser .pagination_controller .page_controls .page_status {
+  position: absolute;
+  top: 0px;
+  left: 50px;
+  width: 150px;
+  line-height: 30px;
+  text-align: center;
 }

@@ -1,7 +1,5 @@
 @import("CreateFolderModal/CreateFolderModal.js");
 @import("DeleteModal/DeleteModal.js");
-@import("PaginationController/PaginationController.js");
-
 
 function FolderView(path, data, browser, options){
 	var folder_view = this;

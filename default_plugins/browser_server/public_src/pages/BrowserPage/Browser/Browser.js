@@ -6,6 +6,7 @@
 @import("MainBrowser/MainBrowser.js");
 @import("Toolbar/Toolbar.js");
 @import("TypeSelector/TypeSelector.js");
+@import("PaginationController/PaginationController.js");
 
 function Browser(parent){
 	var browser = this;
