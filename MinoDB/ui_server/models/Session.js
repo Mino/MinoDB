@@ -48,6 +48,8 @@ Session.prototype.save = function(api, callback){
 
     session.create_save_data(function(err, to_save){
 
+        logger.log(err, to_save);
+
         new api.handlers.save(api, {
             "username": "Mino"
         }, {

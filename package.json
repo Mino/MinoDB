@@ -13,11 +13,12 @@
     "morgan" : "*",
     "errorhandler": "*",
     "mongodb" : "*",
-    "minosdk" : "git+https://bestan:09915eb57c27b7417bc43e2735ab93890c76e4c9@github.com/MarcusLongmuir/MinoSDK.git",
+    "minosdk" : "git+https://marcuslongmuir:d266d884aa400c2930780a0c87edb1f68f74977e@github.com/MarcusLongmuir/MinoSDK.git",
     "tracer": "*",
     "fieldval" : "0.1.5",
     "fieldval-basicval" : "0.1.4",
     "fieldval-rules" : "0.3.0",
+    "fieldval-ui" : "0.2.6",
     "extend": "MarcusLongmuir/extend"
   },
   "devDependencies": {
@@ -34,6 +35,7 @@
     "gulp-watch": "^0.6.2",
     "gulp-plumber": "^0.6.1",
     "gulp-mocha": "2.0.0",
-    "supertest": "*"
+    "supertest": "*",
+    "sa-docs-to-json": "SuperAwesomeLtd/sa-docs-to-json"
   }
 }

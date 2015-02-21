@@ -11,6 +11,7 @@ var gulpImports = require('gulp-imports');
 var nodemon = require('gulp-nodemon');
 var path = require('path');
 
+var docs_to_json = require('sa-docs-to-json');
 
 var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');
@@ -34,7 +35,14 @@ gulp.task('test', function(cb){
     .on('end', cb);
 });
 
+gulp.task('docs', function() {
+    return gulp.src('./docs_src/*.json')
+    .pipe(docs_to_json())
+    .pipe(gulp.dest('./docs/'))
+});
+
 gulp.task('watch', function(){
+    gulp.watch('docs_src/**/**.*', ['docs']);
     gulp.start('browser_watch');
     gulp.start('admin_watch');
     gulp.start('ui_watch');

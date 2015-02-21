@@ -66,22 +66,22 @@ module.exports = function(api, callback){
                 }, {
                     type: User.rule_definition
                 }, function(user_type_err, user_type_res){
-                    logger.log(user_type_err, user_type_res);
 
+                    logger.log(JSON.stringify(user_type_err,null,4), user_type_res);
 
                     api.handlers.save_type(api, {
                         "username": "Mino"
                     }, {
                         type: Session.rule_definition
                     }, function(session_type_err, session_type_res){
-                        logger.log(session_type_err, session_type_res);
+                        logger.log(JSON.stringify(session_type_err,null,4), session_type_res);
                         
                         api.handlers.save_type(api, {
                             "username": "Mino"
                         }, {
                             type: Permission.rule_definition
                         }, function(perm_type_err, perm_type_res){
-                            logger.log(perm_type_err, perm_type_res);
+                            logger.log(JSON.stringify(perm_type_err,null,4), perm_type_res);
                             
                             callback();
                         });
