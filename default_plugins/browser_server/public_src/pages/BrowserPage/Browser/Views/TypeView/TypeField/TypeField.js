@@ -89,30 +89,33 @@ TypeField.prototype.update_type_fields = function(){
 		}
 	}
 
-	if(type==='text'){
-		tf.form.add_field("min_length", new FVTextField("Minimum Length", {type: "number"}));
-		tf.form.add_field("max_length", new FVTextField("Maximum Length", {type: "number"}));
-		tf.form.fields.min_length.val(tf.value.min_length);
-		tf.form.fields.max_length.val(tf.value.max_length);
-	} else if(type==='number'){
+	if (type) {
 
-	} else if(type==='object'){
-
-		var fields_field = new FVArrayField("Fields");
-		fields_field.new_field = function(index){
-			var inner_field = new tf.constructor(null, tf);
-			fields_field.add_field(null, inner_field);
-		}
-
-		tf.form.add_field("fields", fields_field);
-
-		var inner_fields = tf.value.fields;
-		if(inner_fields){
-			for(var i = 0; i < tf.value.fields.length; i++){
-				var field_data = tf.value.fields[i];
-
-				var inner_field = new tf.constructor(field_data, tf);
+		if (type === "object") {
+			//TODO make this part of RuleBuilder
+			var fields_field = new FVArrayField("Fields");
+			fields_field.new_field = function(index){
+				var inner_field = new tf.constructor(null, tf);
 				fields_field.add_field(null, inner_field);
+			}
+
+			tf.form.add_field("fields", fields_field);
+
+			var inner_fields = tf.value.fields;
+			if(inner_fields){
+				for(var i = 0; i < tf.value.fields.length; i++){
+					var field_data = tf.value.fields[i];
+
+					var inner_field = new tf.constructor(field_data, tf);
+					fields_field.add_field(null, inner_field);
+				}
+			}
+
+		} else {
+
+			var rule_field = FVRule.FVRuleField.types[type].class;
+			if (rule_field.create_editor_ui !== undefined) {
+				rule_field.create_editor_ui(tf.value, tf.form);
 			}
 		}
 	}
