@@ -21,6 +21,8 @@
 				console.log(field_data);
 				var script = $("<script />").html(field_data.string).appendTo("head");
 
+				field_data.class = window[field_data.class_name];
+
 				FVRule.FVRuleField.add_field_type(field_data);
 			}
 		</script>
