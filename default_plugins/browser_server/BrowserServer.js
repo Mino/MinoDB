@@ -33,6 +33,7 @@ function BrowserServer(options){
         var site_path = path.join(req.mino_path,bs.path);
         res.render('public', {
             custom_fields: JSON.stringify(bs.minodb.custom_fields),
+            plugin_scripts: JSON.stringify(bs.minodb.get_plugin_scripts(req.mino_path)),
             site_path: site_path,
             mino_path: req.mino_path,
             user: JSON.stringify(req.user || null)

@@ -25,6 +25,13 @@
 
 				FVRule.FVRuleField.add_field_type(field_data);
 			}
+
+			var plugin_scripts = {{&plugin_scripts}};
+			for(var i=0; i<plugin_scripts.length; i++){
+				var script_url = plugin_scripts[i];
+				console.log(script_url);
+				$("<script />").attr("src", script_url).appendTo("head");
+			}
 		</script>
 	</head>
 <body>

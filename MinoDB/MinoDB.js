@@ -128,4 +128,22 @@ MinoDB.prototype.add_field_type = function(field_data){
     return mdb;
 }
 
+MinoDB.prototype.get_plugin_scripts = function(mino_path) {
+    var mdb = this;
+    var scripts = [];
+    for (var plugin_name in mdb.plugin_manager.plugins) {
+
+        var plugin = mdb.plugin_manager.plugins[plugin_name].plugin;
+        if (typeof plugin.get_scripts === "function") {
+            var plugin_scripts = plugin.get_scripts();
+            for (var i=0; i<plugin_scripts.length; i++) {
+                plugin_scripts[i] = mino_path + plugin_scripts[i];
+            }
+            scripts = scripts.concat(plugin_scripts);
+        }
+    }
+    logger.log("SCRIPTS", scripts);
+    return scripts;
+}
+
 module.exports = MinoDB;
