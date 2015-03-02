@@ -94,7 +94,7 @@ SaveObject.prototype.create_saving_json = function(){
 	}
 }
 
-SaveObject.prototype.got_type = function(name, error, type){
+SaveObject.prototype.got_type = function(name, error, type, callback){
 	var so = this;
 
 	logger.log(error);
@@ -110,6 +110,7 @@ SaveObject.prototype.got_type = function(name, error, type){
 		if(error!=null){
 			so.validator.invalid(name, error);
 		}
+		callback();
 	});	
 }
 
