@@ -17456,21 +17456,26 @@ FVArrayField.prototype.create_add_field_button = function(){
 
     var add_field_button = $("<button/>",{type:"button"}).addClass("fv_add_field_button").text(field.add_button_text).on(FVForm.button_event,function(event){
         event.preventDefault();
-        var returned_field = field.new_field(field.fields.length);
-
-        /* Allow the new_field function to just return a field - 
-         * this will add the field if it wasn't added in the new_field 
-         * callback. */
-        if(returned_field){
-            if(field.fields.indexOf(returned_field)===-1){
-                field.add_field(returned_field);
-            }
-        }
+        field.add_field_clicked();   
     });
 
     field.add_field_buttons.push(add_field_button);
 
     return add_field_button;
+}
+
+FVArrayField.prototype.add_field_clicked = function() {
+    var field = this;
+    var returned_field = field.new_field(field.fields.length);
+
+    /* Allow the new_field function to just return a field - 
+     * this will add the field if it wasn't added in the new_field 
+     * callback. */
+    if(returned_field){
+        if(field.fields.indexOf(returned_field)===-1){
+            field.add_field(returned_field);
+        }
+    }
 }
 
 FVArrayField.prototype.new_field = function(index){
@@ -17701,21 +17706,26 @@ FVKeyValueField.prototype.create_add_field_button = function(){
 
     var add_field_button = $("<button />",{type:"button"}).addClass("fv_add_field_button").text(field.add_button_text).on(FVForm.button_event,function(event){
         event.preventDefault();
-        var returned_field = field.new_field(field.fields.length);
-
-        /* Allow the new_field function to just return a field - 
-         * this will add the field if it wasn't added in the new_field 
-         * callback. */
-         if(returned_field){
-             if(field.fields.indexOf(returned_field)===-1){
-                 field.add_field(returned_field);
-             }
-         }
+        field.add_field_clicked();
     });
 
     field.add_field_buttons.push(add_field_button);
 
     return add_field_button;
+}
+
+FVKeyValueField.prototype.add_field_clicked = function() {
+    var field = this;
+    var returned_field = field.new_field(field.fields.length);
+
+    /* Allow the new_field function to just return a field - 
+     * this will add the field if it wasn't added in the new_field 
+     * callback. */
+     if(returned_field){
+         if(field.fields.indexOf(returned_field)===-1){
+             field.add_field(returned_field);
+         }
+     }
 }
 
 FVKeyValueField.prototype.new_field = function(){
@@ -17790,7 +17800,6 @@ FVKeyValueField.prototype.remove_field = function(target){
         for(var i = 0; i < field.fields.length; i++){
             if(field.fields.hasOwnProperty(i)){
                 if(field.fields[i]===target){
-                    console.log(i,target);
                     inner_field = field.fields[i];
                     index = i;
                     break;
@@ -18074,17 +18083,17 @@ FVProxyField.prototype.replace = function(inner_field){
         }
     }
 
-    for(var i in inner_field){
-        if(inner_field.hasOwnProperty(i)){
-            field[i] = inner_field[i];
-        }
-    }
-
     var proto = Object.getPrototypeOf(inner_field);
 
     for(var i in proto){
         if(proto.hasOwnProperty(i)){
             field[i] = proto[i];
+        }
+    }
+
+    for(var i in inner_field){
+        if(inner_field.hasOwnProperty(i)){
+            field[i] = inner_field[i];
         }
     }
 
@@ -21683,6 +21692,7 @@ function ItemSection(name, value, item_view){
 
 	section.name = name;
 	section.item_view = item_view;
+    section.value = value;
 
 	item_view.browser.type_cache.load(name, function(err, data){
         section.populate_type(data);
@@ -21763,42 +21773,48 @@ ItemSection.prototype.populate_type = function(type){
 	var section = this;
 
 	section.type = type;
-    console.log('yo type', type);
     section.vr = new FVRule();
 	section.vr.init(type);
 
-	section.field = section.vr.create_form();//field.create_ui(section.item_view.form);
-    console.log('ui', section.field);
-    section.item_view.form.add_field(section.name, section.field);
-    section.field.element.addClass("item_section");
+	section.field = section.vr.create_form();
 
-    var title_text;
-    if(section.field.display_name){
-        title_text = type.display_name + " ("+type.name+")";
-    } else {
-        title_text = type.name;
-    }
+    //TODO implement proper callback when form is loaded
+    setTimeout(function() {
+        section.item_view.form.add_field(section.name, section.field);
+        section.field.element.addClass("item_section");
 
-    section.field.title.empty().append(
-        $("<a />",{
-             "href": Site.path + type.name
-        }).ajax_url().text(title_text)
-        ,
-        section.remove_button = $("<button />").addClass("mino_button").text("Remove").on('tap',function(event){
-            event.preventDefault();
-            section.remove_press();
-        }).hide()
-    )
+        var title_text;
+        if(section.field.display_name){
+            title_text = type.display_name + " ("+type.name+")";
+        } else {
+            title_text = type.name;
+        }
 
-    if(section.init_called){
-        section.field.init();
-    }
+        section.field.title.empty().append(
+            $("<a />",{
+                 "href": Site.path + type.name
+            }).ajax_url().text(title_text)
+            ,
+            section.remove_button = $("<button />").addClass("mino_button").text("Remove").on('tap',function(event){
+                event.preventDefault();
+                section.remove_press();
+            }).hide()
+        )
 
-    if(section.is_enable){
-        section.enable();
-    } else {
-        section.disable();
-    }
+        if(section.init_called){
+            section.field.init();
+        }
+
+        if(section.is_enable){
+            section.enable();
+        } else {
+            section.disable();
+        }
+
+        //TODO refactor set value asynchronously
+        section.field.val(section.value);
+    }, 500);
+    
 
 }
 

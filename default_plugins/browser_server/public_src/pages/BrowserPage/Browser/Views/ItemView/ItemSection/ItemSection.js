@@ -3,6 +3,7 @@ function ItemSection(name, value, item_view){
 
 	section.name = name;
 	section.item_view = item_view;
+    section.value = value;
 
 	item_view.browser.type_cache.load(name, function(err, data){
         section.populate_type(data);
@@ -87,35 +88,43 @@ ItemSection.prototype.populate_type = function(type){
 	section.vr.init(type);
 
 	section.field = section.vr.create_form();
-    section.item_view.form.add_field(section.name, section.field);
-    section.field.element.addClass("item_section");
 
-    var title_text;
-    if(section.field.display_name){
-        title_text = type.display_name + " ("+type.name+")";
-    } else {
-        title_text = type.name;
-    }
+    //TODO implement proper callback when form is loaded
+    setTimeout(function() {
+        section.item_view.form.add_field(section.name, section.field);
+        section.field.element.addClass("item_section");
 
-    section.field.title.empty().append(
-        $("<a />",{
-             "href": Site.path + type.name
-        }).ajax_url().text(title_text)
-        ,
-        section.remove_button = $("<button />").addClass("mino_button").text("Remove").on('tap',function(event){
-            event.preventDefault();
-            section.remove_press();
-        }).hide()
-    )
+        var title_text;
+        if(section.field.display_name){
+            title_text = type.display_name + " ("+type.name+")";
+        } else {
+            title_text = type.name;
+        }
 
-    if(section.init_called){
-        section.field.init();
-    }
+        section.field.title.empty().append(
+            $("<a />",{
+                 "href": Site.path + type.name
+            }).ajax_url().text(title_text)
+            ,
+            section.remove_button = $("<button />").addClass("mino_button").text("Remove").on('tap',function(event){
+                event.preventDefault();
+                section.remove_press();
+            }).hide()
+        )
 
-    if(section.is_enable){
-        section.enable();
-    } else {
-        section.disable();
-    }
+        if(section.init_called){
+            section.field.init();
+        }
+
+        if(section.is_enable){
+            section.enable();
+        } else {
+            section.disable();
+        }
+
+        //TODO refactor set value asynchronously
+        section.field.val(section.value);
+    }, 500);
+    
 
 }
