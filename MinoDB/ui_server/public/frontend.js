@@ -16904,6 +16904,7 @@ FVObjectField.prototype.enable = function() {
     for(var i in field.fields){
         if(field.fields.hasOwnProperty(i)){
             var inner_field = field.fields[i];
+            console.log(i, inner_field);
             inner_field.enable();
         }
     }
@@ -19142,10 +19143,6 @@ var FVDateRuleField = (function(){
     FVDateRuleField.prototype.init = function() {
         var field = this;
 
-        console.log(FieldVal);
-        console.log(FieldVal.DateVal);
-
-        console.log(field.date_format);
         field.date_format = field.validator.get("format", BasicVal.string(true), BasicVal.date_format({emit:FieldVal.DateVal.EMIT_STRING}));
         if (field.date_format !== undefined) {
             field.checks.push(BasicVal.date(field.date_format));

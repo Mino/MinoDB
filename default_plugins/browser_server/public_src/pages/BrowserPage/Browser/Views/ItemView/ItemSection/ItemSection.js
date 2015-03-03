@@ -83,11 +83,10 @@ ItemSection.prototype.populate_type = function(type){
 	var section = this;
 
 	section.type = type;
-
     section.vr = new FVRule();
 	section.vr.init(type);
 
-	section.field = section.vr.field.create_ui(section.item_view.form);
+	section.field = section.vr.create_form();
     section.item_view.form.add_field(section.name, section.field);
     section.field.element.addClass("item_section");
 
