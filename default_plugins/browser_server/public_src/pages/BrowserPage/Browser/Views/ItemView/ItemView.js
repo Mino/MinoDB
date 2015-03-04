@@ -241,9 +241,6 @@ ItemView.prototype.save = function(){
 			item_view.error(response.invalid.parameters.invalid.objects.invalid[0]);
 		} else {
 
-			if(item_view.options.create){
-				item_view.options.create = false;
-			}
 
 			item_view.item_data = value;
 			item_view.item_data._id = response.objects[0]._id;
@@ -259,6 +256,11 @@ ItemView.prototype.save = function(){
 			item_view.base_data = JSON.parse(JSON.stringify(item_view.item_data));
 
 			item_view.disable();
+
+			if(item_view.options.create){
+				item_view.options.create = false;
+				item_view.browser.load_address(item_view.path);
+			}
 		}
 	})
 

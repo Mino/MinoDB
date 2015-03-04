@@ -251,3 +251,8 @@ Browser.prototype.iconCapacity = function(element,verticalPadding){
 		return 3;
 	// }
 }
+
+Browser.prototype.reload_current_address = function() {
+	var browser = this;
+	browser.load_address(browser.current_address);
+}

@@ -21641,7 +21641,7 @@ FolderView.prototype.delete_button_press = function(){
 
 	var dm = new DeleteModal(folder_view.selected, function(err, res){
 		console.log(err, res);
-		folder_view.browser.load_address(folder_view.browser.current_address);
+		folder_view.browser.reload_current_address();
 	})
 
 	folder_view.element.append(
@@ -22132,9 +22132,6 @@ ItemView.prototype.save = function(){
 			item_view.error(response.invalid.parameters.invalid.objects.invalid[0]);
 		} else {
 
-			if(item_view.options.create){
-				item_view.options.create = false;
-			}
 
 			item_view.item_data = value;
 			item_view.item_data._id = response.objects[0]._id;
@@ -22150,6 +22147,11 @@ ItemView.prototype.save = function(){
 			item_view.base_data = JSON.parse(JSON.stringify(item_view.item_data));
 
 			item_view.disable();
+
+			if(item_view.options.create){
+				item_view.options.create = false;
+				item_view.browser.load_address(item_view.path);
+			}
 		}
 	})
 
@@ -23178,6 +23180,11 @@ Browser.prototype.iconCapacity = function(element,verticalPadding){
 		}
 		return 3;
 	// }
+}
+
+Browser.prototype.reload_current_address = function() {
+	var browser = this;
+	browser.load_address(browser.current_address);
 }
 
 extend(BrowserPage, Page);
