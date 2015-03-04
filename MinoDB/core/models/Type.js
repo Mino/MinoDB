@@ -35,9 +35,8 @@ Type.validate = function(data, creation){
     var type_error = rule.init(
         data,
         {
-            need_name: true
-            //TODO fix allow_dots
-            // allow_dots: false
+            need_name: true,
+            allow_dots: false
         }
     );
 
