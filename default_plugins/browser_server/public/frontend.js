@@ -21546,6 +21546,8 @@ DeleteModal.prototype.perform_delete = function(){
 		}
 		if(response.objects){
 			console.log(response.objects);
+			dm.modal.close();
+			dm.callback(null, response.objects);
 		}
 	})
 }
@@ -21639,6 +21641,7 @@ FolderView.prototype.delete_button_press = function(){
 
 	var dm = new DeleteModal(folder_view.selected, function(err, res){
 		console.log(err, res);
+		folder_view.browser.load_address(folder_view.browser.current_address);
 	})
 
 	folder_view.element.append(
@@ -23013,6 +23016,8 @@ Browser.prototype.load = function(address, options){
 		alert("INVALID TYPE");
 		return;
 	}
+
+	browser.current_address = address;
 
 	if(browser.view){
 		browser.view.remove();

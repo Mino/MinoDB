@@ -89,6 +89,8 @@ Browser.prototype.load = function(address, options){
 		return;
 	}
 
+	browser.current_address = address;
+
 	if(browser.view){
 		browser.view.remove();
 	}

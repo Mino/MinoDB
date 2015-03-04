@@ -65,6 +65,8 @@ DeleteModal.prototype.perform_delete = function(){
 		}
 		if(response.objects){
 			console.log(response.objects);
+			dm.modal.close();
+			dm.callback(null, response.objects);
 		}
 	})
 }
