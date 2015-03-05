@@ -17112,10 +17112,11 @@ FVObjectField.prototype.val = function(set_val, options) {
     	}
         return compiled;
     } else {
+        options.ignore_parent_change = true;
     	for(var i in set_val){
     		var inner_field = field.fields[i];
             if(inner_field){
-        		inner_field.val(set_val[i], {ignore_parent_change: true});
+        		inner_field.val(set_val[i], options);
             }
     	}
         if (!options.ignore_change) {
@@ -17713,6 +17714,7 @@ FVArrayField.prototype.val = function(set_val, options) {
         return compiled;
     } else {
         if(set_val){
+            options.ignore_parent_change = true;
             for(var i=0; i<set_val.length; i++){
         		var inner_field = field.fields[i];
                 if(!inner_field){
@@ -17730,7 +17732,7 @@ FVArrayField.prototype.val = function(set_val, options) {
                 if(!inner_field){//A field wasn't returned by the new_field function
                     inner_field = field.fields[i];
                 }
-                inner_field.val(set_val[i], {ignore_parent_change: true});
+                inner_field.val(set_val[i], options);
 
         	}
             
@@ -17841,9 +17843,6 @@ FVKeyValueField.prototype.change_key_name = function(old_name,new_name,inner_fie
 
 FVKeyValueField.prototype.remove_field = function(target){
     var field = this;
-
-    console.log(arguments);
-    console.trace();
 
     var inner_field;
     var index;
@@ -18012,6 +18011,7 @@ FVKeyValueField.prototype.val = function(set_val, options) {
         }
         return compiled;
     } else {
+        options.ignore_parent_change = true;
         if(set_val){
             for(var i in field.keys){
                 if(field.keys.hasOwnProperty(i)){
@@ -18036,7 +18036,7 @@ FVKeyValueField.prototype.val = function(set_val, options) {
                              }
                          }
 	                }
-	                inner_field.val(set_val[i], {ignore_parent_change: true});
+	                inner_field.val(set_val[i], options);
 	                inner_field.name_val(i);
 				}
         	}
@@ -18217,7 +18217,7 @@ function FVForm(fields){
 }
 FVForm.button_event = 'click';
 FVForm.is_mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|nokia|series40|x11|opera mini/i.test(navigator.userAgent.toLowerCase());
-if($.tap){
+if($.fn.tap || $.tap){
 	FVForm.button_event = 'tap';
 }
 //Used to subclass Javascript classes
@@ -22230,7 +22230,7 @@ function TypeField(value, parent){
 	for(var name in tf.form.fields){
     	tf.base_fields[name] = true;
     }
-	tf.form.val(value);
+	tf.form.val(value, {ignore_change:true});
 
     tf.update_title_name();
     tf.update_type_fields();

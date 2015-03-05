@@ -47,7 +47,7 @@ function TypeField(value, parent){
 	for(var name in tf.form.fields){
     	tf.base_fields[name] = true;
     }
-	tf.form.val(value);
+	tf.form.val(value, {ignore_change:true});
 
     tf.update_title_name();
     tf.update_type_fields();
