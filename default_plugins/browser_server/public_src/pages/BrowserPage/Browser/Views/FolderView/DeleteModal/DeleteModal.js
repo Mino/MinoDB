@@ -26,7 +26,7 @@ function DeleteModal(icon_list, callback){
 
 		dm.list.push(icon.full_path);
 		dm.name_list.push(icon.name);
-		dm.form.add_field(i, new TextField(i));
+		dm.form.add_field(i, new FVTextField(i));
 	}
 
 	modal.contents.append(
@@ -34,7 +34,7 @@ function DeleteModal(icon_list, callback){
 	)
 
 	dm.form.val(dm.name_list);
-	dm.form.view_mode();
+	dm.form.disable();
 
 	modal.bottom_bar.append(
 		$("<button />").addClass("mino_button").text("Delete").on('tap',function(event){
@@ -65,6 +65,8 @@ DeleteModal.prototype.perform_delete = function(){
 		}
 		if(response.objects){
 			console.log(response.objects);
+			dm.modal.close();
+			dm.callback(null, response.objects);
 		}
 	})
 }

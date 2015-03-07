@@ -9,10 +9,14 @@ function CallbackObject(callback){
 	co.has_write = false;
 }
 
-function PathPermissionChecker(handler){
+function PathPermissionChecker(handler, options){
 	var ppc = this;
 
 	ppc.handler = handler;
+
+	ppc.options = options || {};
+
+	ppc.for_write = ppc.options.for_write || false;
 
 	ppc.paths = {};
 	ppc.callback_objects = [];
@@ -25,10 +29,9 @@ function PathPermissionChecker(handler){
 PathPermissionChecker.prototype.check_permissions_for_path = function(path, callback){
 	var ppc = this;
 
-	var username_for_permission = path.username_for_permission(ppc.handler.user.username);
-	logger.log("username_for_permission ",username_for_permission, ppc.handler.user.username);
+	var username_for_permission = path.username_for_permission(ppc.handler.user.username, ppc.for_write);
+
 	if(username_for_permission===ppc.handler.user.username){
-		logger.log("IS SAME USER");
 		callback(Constants.WRITE_PERMISSION);
 		return;
 	}
@@ -44,6 +47,7 @@ PathPermissionChecker.prototype.check_permissions_for_path = function(path, call
 	}
 
 	var callback_object = new CallbackObject(callback);
+	callback_object.path = path;
 	callback_objects.push(callback_object);
 
 	var sub_path = path;
@@ -85,7 +89,6 @@ PathPermissionChecker.prototype.resolve_callbacks = function(callback_objects){
 	for(var i = 0; i < callback_objects.length; i++){
 		var co = callback_objects[i];
 
-		logger.log("FAILING CALLBACK");
 		if(co.has_write){
 			co.callback(Constants.WRITE_PERMISSION);
 		} else if(co.has_read){
@@ -116,7 +119,6 @@ PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths,
 		return;
 	}
 
-	logger.log(ppc.handler.api);
 	ppc.handler.api.ds.object_collection.find({
 		"full_path" : {"$in" : keys}
 	}).toArray(function(array_err, array){

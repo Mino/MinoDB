@@ -1774,6 +1774,7 @@ textarea {
   padding-top: 5px;
   padding-bottom: 5px;
   box-sizing: border-box;
+  vertical-align: top;
 }
 .fv_field.fv_field_error > .fv_field_title {
   color: #aa0000;
@@ -1803,6 +1804,7 @@ textarea {
   color: white;
   font-size: 14px;
   display: inline-block;
+  box-sizing: border-box;
   padding: 5px;
 }
 .fv_field > .fv_field_description {
@@ -1831,26 +1833,7 @@ textarea {
   box-sizing: border-box;
   border: 1px solid #999999;
 }
-.fv_field.fv_nested {
-  padding-top: 0px;
-  padding-bottom: 5px;
-  min-height: 35px;
-}
-.fv_field.fv_nested > .fv_field_title {
-  display: none;
-}
-.fv_field.fv_nested > .fv_input_holder {
-  padding-right: 35px;
-  padding-left: 30px;
-}
-.fv_field.fv_nested.fv_disabled > .fv_input_holder {
-  padding-right: 0px;
-  padding-left: 0px;
-}
-.fv_field.fv_nested > .fv_error_message {
-  margin-left: 35px;
-}
-.fv_field.fv_nested > .fv_field_move_handle {
+.fv_field > .fv_field_move_handle {
   cursor: pointer;
   position: absolute;
   top: 0px;
@@ -1863,7 +1846,7 @@ textarea {
   line-height: 30px;
   border: none;
 }
-.fv_field.fv_nested > .fv_field_move_handle:before {
+.fv_field > .fv_field_move_handle:before {
   position: absolute;
   top: 50%;
   left: 14px;
@@ -1876,7 +1859,7 @@ textarea {
   border-left: 6px solid transparent;
   content: "";
 }
-.fv_field.fv_nested > .fv_field_move_handle:after {
+.fv_field > .fv_field_move_handle:after {
   position: absolute;
   top: 50%;
   left: 14px;
@@ -1889,7 +1872,7 @@ textarea {
   border-left: 6px solid transparent;
   content: "";
 }
-.fv_field.fv_nested > .fv_field_remove_button {
+.fv_field > .fv_field_remove_button {
   -webkit-appearance: none;
   cursor: pointer;
   position: absolute;
@@ -1905,12 +1888,13 @@ textarea {
   border: none;
   padding: 0px;
 }
-.fv_field.fv_nested > .fv_field_remove_button:active {
+.fv_field > .fv_field_remove_button:active {
   background-color: #770000;
 }
 .fv_text_field > .fv_input_holder > textarea.fv_text_input {
   width: 100%;
   font-size: 14px;
+  vertical-align: top;
 }
 .fv_text_field > .fv_input_holder > input.fv_text_input {
   width: 100%;
@@ -1947,6 +1931,11 @@ textarea {
   -webkit-border-radius: 0px;
   border: 1px solid #999999;
   font-size: 14px;
+}
+.fv_choice_field > .fv_input_holder > .fv_choice_input > .filter_input.fv_filter_hidden {
+  width: 1px;
+  height: 1px;
+  opacity: 0;
 }
 .fv_choice_field > .fv_input_holder > .fv_choice_input > .fv_choice_display {
   position: relative;
@@ -2005,11 +1994,11 @@ textarea {
   -o-user-select: none;
   user-select: none;
 }
-.fv_choice_field > .fv_input_holder > .fv_choice_input > .fv_choice_list > .fv_choice_option.selected {
+.fv_choice_field > .fv_input_holder > .fv_choice_input > .fv_choice_list > .fv_choice_option.fv_selected {
   background-color: #5DB9FF;
   color: white;
 }
-.fv_choice_field > .fv_input_holder > .fv_choice_input > .fv_choice_list > .fv_choice_option.highlighted {
+.fv_choice_field > .fv_input_holder > .fv_choice_input > .fv_choice_list > .fv_choice_option.fv_highlighted {
   background-color: #2B86F3;
   color: white;
 }
@@ -2030,7 +2019,28 @@ textarea {
 .fv_object_field > .fv_input_holder {
   padding-left: 10px;
 }
-.fv_array_field > .fv_input_holder > .fv_nested_fields > .dd-placeholder {
+.fv_array_field > .fv_input_holder > .fv_array_fields {
+  position: relative;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .fv_field,
+.fv_array_field > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field {
+  padding-top: 0px;
+  padding-bottom: 5px;
+  min-height: 35px;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .fv_field > .fv_input_holder,
+.fv_array_field > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field > .fv_input_holder {
+  padding-right: 35px;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .fv_field > .fv_field_title,
+.fv_array_field > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field > .fv_field_title {
+  display: none;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .fv_field.fv_disabled > .fv_input_holder,
+.fv_array_field > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field.fv_disabled > .fv_input_holder {
+  padding-right: 0px;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .dd-placeholder {
   display: block;
   position: relative;
   margin: 0px;
@@ -2045,24 +2055,96 @@ textarea {
   background-size: 60px 60px;
   background-position: 0 0, 30px 30px;
 }
-.fv_array_field > .fv_input_holder > .dd-dragel {
+.fv_array_field > .fv_input_holder > .fv_array_fields > .dd-dragel {
   position: absolute;
   pointer-events: none;
   z-index: 9999;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .fv_field.fv_in_array > .fv_input_holder {
+  padding-left: 0px;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .fv_field.fv_in_array .fv_error_message {
+  margin-left: 0px;
 }
 .fv_array_field > .fv_input_holder > .fv_add_field_button {
   -webkit-appearance: none;
   cursor: pointer;
   background-color: #00aa00;
   color: #ffffff;
-  width: 30px;
-  height: 30px;
+  margin: 0px;
   border: none;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 14px;
 }
 .fv_array_field > .fv_input_holder > .fv_add_field_button:active {
   background-color: #007700;
+}
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .fv_field > .fv_input_holder,
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field > .fv_input_holder {
+  padding-left: 30px;
+}
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .fv_field > .fv_error_message,
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field > .fv_error_message {
+  margin-left: 30px;
+}
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .fv_field.fv_disabled > .fv_input_holder,
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field.fv_disabled > .fv_input_holder {
+  padding-left: 0px;
+}
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .fv_field.fv_disabled > .fv_error_message,
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field.fv_disabled > .fv_error_message {
+  margin-left: 0px;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field {
+  padding-top: 0px;
+  padding-bottom: 5px;
+  min-height: 35px;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_input_holder {
+  padding-right: 35px;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_field_title {
+  display: none;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field.fv_disabled > .fv_input_holder {
+  padding-right: 0px;
+  padding-left: 0px;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_key_value_name_input {
+  width: 20%;
+  display: inline-block;
+  padding-right: 5px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_key_value_name_input > .fv_field_title {
+  display: none;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_field_title {
+  width: 20%;
+  vertical-align: top;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_input_holder {
+  width: 80%;
+  display: inline-block;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_error_message {
+  margin-left: 20%;
+}
+.fv_key_value_field > .fv_input_holder > .fv_add_field_button {
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-color: #00aa00;
+  color: #ffffff;
+  margin: 0px;
+  border: none;
+  font-size: 14px;
+}
+.fv_key_value_field > .fv_input_holder > .fv_add_field_button:active {
+  background-color: #007700;
+}
+.fv_proxy_field .fv_input_holder .loading_label {
+  line-height: 30px;
+  padding-left: 5px;
 }
 .fv_form .fv_field_container {
   padding-top: 0px;

@@ -100,13 +100,9 @@ FolderChecker.prototype.retrieve_existances = function(callback, paths, callback
 		return;
 	}
 
-	logger.log(keys);
-	logger.log(callback_objects);
 	fc.handler.api.ds.object_collection.find({
 		"full_path" : {"$in" : keys}
 	}).toArray(function(array_err, array){
-		logger.log(array_err);
-		logger.log(array);
 
 		for(var i = 0; i < array.length; i++){
 			var object = array[i];

@@ -1,13 +1,17 @@
+var errors = require('../../../../errors');
 var FieldVal = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var BasicVal = FieldVal.BasicVal;
 var Path = require('../../../../common_classes/Path')
+var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var Common = require('../../../../common_classes/Common')
+var Constants = require('../../../../common_classes/Constants');
 var logger = require('tracer').console();
 
 function GetHandler(api, user, parameters, callback) {
     var gh = this;
 
     gh.api = api;
+    gh.user = user;
     gh.db = gh.api.ds;
 
     //Used to hold the objects ready to send in response
@@ -15,6 +19,8 @@ function GetHandler(api, user, parameters, callback) {
     gh.waiting_for = 0;
 
     gh.callback = callback;
+
+    gh.path_permission_checker = new PathPermissionChecker(gh);
 
     gh.ids = [];
     gh.id_versions = [];
@@ -42,7 +48,7 @@ function GetHandler(api, user, parameters, callback) {
         } else if(address_type==="id_version"){
             gh.id_versions.push([address_value, index]);
         } else {
-            return FieldVal.Error(0)
+            return errors.INVALID_ADDRESS_FORMAT;
         }
 
         gh.response_array.push(null);
@@ -93,10 +99,20 @@ GetHandler.prototype.get_id = function(id_object){
         "_id": id.toString()
     }, function(err, res){
         if(res){
-            //NEED PERMISSIONS CHECK
-            gh.response_array[response_index] = res;
+            var full_path = new Path();
+            var path_error = full_path.init(res.full_path, {
+                "allow_tilde": true
+            });
+            logger.log(path_error);
+            gh.path_permission_checker.check_permissions_for_path(full_path,function(status){
+                if(status===Constants.WRITE_PERMISSION || status===Constants.READ_PERMISSION){
+                    gh.response_array[response_index] = res;
+                } else {
+                    gh.response_array[response_index] = null;
+                }
+            });
         } else {
-
+            gh.response_array[response_index] = null;
         }
         gh.waiting_for--;
         gh.check_if_done();
@@ -113,10 +129,19 @@ GetHandler.prototype.get_path = function(path_object){
         "full_path":full_path.path_string
     }, function(err, res){
         if(res){
-            //NEED PERMISSIONS CHECK
-            gh.response_array[response_index] = res;
+            var full_path = new Path();
+            var path_error = full_path.init(res.full_path, true);
+            logger.log(res.full_path);
+            logger.log(path_error);
+            gh.path_permission_checker.check_permissions_for_path(full_path,function(status){
+                if(status===Constants.WRITE_PERMISSION || status===Constants.READ_PERMISSION){
+                    gh.response_array[response_index] = res;
+                } else {
+                    gh.response_array[response_index] = null;
+                }
+            });
         } else {
-
+            gh.response_array[response_index] = null;
         }
         gh.waiting_for--;
         gh.check_if_done();
@@ -154,9 +179,11 @@ GetHandler.prototype.check_if_done = function(){
 GetHandler.prototype.send_response = function(){
     var gh = this;
 
-    gh.callback(null, {
-        "objects": gh.response_array
-    })
+    gh.path_permission_checker.retrieve_permissions(function(){
+        gh.callback(null, {
+            "objects": gh.response_array
+        })
+    });
 }
 
 module.exports = GetHandler;

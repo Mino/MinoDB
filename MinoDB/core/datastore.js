@@ -28,17 +28,17 @@ DataStore.prototype.call_connect_callbacks = function(){
 }
 
 DataStore.prototype.connect = function(callback) {
-	var ds =this;
+	var ds = this;
 
 	if(ds.connected){
 		callback();
 		return;
 	}
-
 	ds.connect_callbacks.push(callback);
 	if(ds.connecting){
 		return;
 	}
+	ds.connecting = true;
 
 	MongoClient.connect(ds.config.address, function(err, mongo) {
 	    if (err){
@@ -62,9 +62,20 @@ DataStore.prototype.connect = function(callback) {
 	    ds.object_collection.ensureIndex( { name: 1 }, function(err,res){
 	    	logger.log(err, res);
 	    })
-		
-	    ds.connected = true;
-	    ds.call_connect_callbacks();
+
+	    ds.object_collection.ensureIndex(
+	    	{ 
+	    		"$**": "text"
+	    	},
+	    	{
+	    		name: "AllTextIndex"
+	    	},
+	    	function(){
+	    		logger.log(arguments);
+			    ds.connected = true;
+			    ds.call_connect_callbacks();
+			}
+		);
 
 	    // mongo.runCommand({shardCollection:"minods.objects", key: { full_path: 1 }}, function(err,res){
 	    // 	logger.log(err);

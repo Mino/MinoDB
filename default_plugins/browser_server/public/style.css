@@ -1769,6 +1769,7 @@ a {
   padding-top: 5px;
   padding-bottom: 5px;
   box-sizing: border-box;
+  vertical-align: top;
 }
 .fv_field.fv_field_error > .fv_field_title {
   color: #aa0000;
@@ -1798,6 +1799,7 @@ a {
   color: white;
   font-size: 14px;
   display: inline-block;
+  box-sizing: border-box;
   padding: 5px;
 }
 .fv_field > .fv_field_description {
@@ -1826,26 +1828,7 @@ a {
   box-sizing: border-box;
   border: 1px solid #999999;
 }
-.fv_field.fv_nested {
-  padding-top: 0px;
-  padding-bottom: 5px;
-  min-height: 35px;
-}
-.fv_field.fv_nested > .fv_field_title {
-  display: none;
-}
-.fv_field.fv_nested > .fv_input_holder {
-  padding-right: 35px;
-  padding-left: 30px;
-}
-.fv_field.fv_nested.fv_disabled > .fv_input_holder {
-  padding-right: 0px;
-  padding-left: 0px;
-}
-.fv_field.fv_nested > .fv_error_message {
-  margin-left: 35px;
-}
-.fv_field.fv_nested > .fv_field_move_handle {
+.fv_field > .fv_field_move_handle {
   cursor: pointer;
   position: absolute;
   top: 0px;
@@ -1858,7 +1841,7 @@ a {
   line-height: 30px;
   border: none;
 }
-.fv_field.fv_nested > .fv_field_move_handle:before {
+.fv_field > .fv_field_move_handle:before {
   position: absolute;
   top: 50%;
   left: 14px;
@@ -1871,7 +1854,7 @@ a {
   border-left: 6px solid transparent;
   content: "";
 }
-.fv_field.fv_nested > .fv_field_move_handle:after {
+.fv_field > .fv_field_move_handle:after {
   position: absolute;
   top: 50%;
   left: 14px;
@@ -1884,7 +1867,7 @@ a {
   border-left: 6px solid transparent;
   content: "";
 }
-.fv_field.fv_nested > .fv_field_remove_button {
+.fv_field > .fv_field_remove_button {
   -webkit-appearance: none;
   cursor: pointer;
   position: absolute;
@@ -1900,12 +1883,13 @@ a {
   border: none;
   padding: 0px;
 }
-.fv_field.fv_nested > .fv_field_remove_button:active {
+.fv_field > .fv_field_remove_button:active {
   background-color: #770000;
 }
 .fv_text_field > .fv_input_holder > textarea.fv_text_input {
   width: 100%;
   font-size: 14px;
+  vertical-align: top;
 }
 .fv_text_field > .fv_input_holder > input.fv_text_input {
   width: 100%;
@@ -1942,6 +1926,11 @@ a {
   -webkit-border-radius: 0px;
   border: 1px solid #999999;
   font-size: 14px;
+}
+.fv_choice_field > .fv_input_holder > .fv_choice_input > .filter_input.fv_filter_hidden {
+  width: 1px;
+  height: 1px;
+  opacity: 0;
 }
 .fv_choice_field > .fv_input_holder > .fv_choice_input > .fv_choice_display {
   position: relative;
@@ -2000,11 +1989,11 @@ a {
   -o-user-select: none;
   user-select: none;
 }
-.fv_choice_field > .fv_input_holder > .fv_choice_input > .fv_choice_list > .fv_choice_option.selected {
+.fv_choice_field > .fv_input_holder > .fv_choice_input > .fv_choice_list > .fv_choice_option.fv_selected {
   background-color: #5DB9FF;
   color: white;
 }
-.fv_choice_field > .fv_input_holder > .fv_choice_input > .fv_choice_list > .fv_choice_option.highlighted {
+.fv_choice_field > .fv_input_holder > .fv_choice_input > .fv_choice_list > .fv_choice_option.fv_highlighted {
   background-color: #2B86F3;
   color: white;
 }
@@ -2025,7 +2014,28 @@ a {
 .fv_object_field > .fv_input_holder {
   padding-left: 10px;
 }
-.fv_array_field > .fv_input_holder > .fv_nested_fields > .dd-placeholder {
+.fv_array_field > .fv_input_holder > .fv_array_fields {
+  position: relative;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .fv_field,
+.fv_array_field > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field {
+  padding-top: 0px;
+  padding-bottom: 5px;
+  min-height: 35px;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .fv_field > .fv_input_holder,
+.fv_array_field > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field > .fv_input_holder {
+  padding-right: 35px;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .fv_field > .fv_field_title,
+.fv_array_field > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field > .fv_field_title {
+  display: none;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .fv_field.fv_disabled > .fv_input_holder,
+.fv_array_field > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field.fv_disabled > .fv_input_holder {
+  padding-right: 0px;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .dd-placeholder {
   display: block;
   position: relative;
   margin: 0px;
@@ -2040,24 +2050,96 @@ a {
   background-size: 60px 60px;
   background-position: 0 0, 30px 30px;
 }
-.fv_array_field > .fv_input_holder > .dd-dragel {
+.fv_array_field > .fv_input_holder > .fv_array_fields > .dd-dragel {
   position: absolute;
   pointer-events: none;
   z-index: 9999;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .fv_field.fv_in_array > .fv_input_holder {
+  padding-left: 0px;
+}
+.fv_array_field > .fv_input_holder > .fv_array_fields > .fv_field.fv_in_array .fv_error_message {
+  margin-left: 0px;
 }
 .fv_array_field > .fv_input_holder > .fv_add_field_button {
   -webkit-appearance: none;
   cursor: pointer;
   background-color: #00aa00;
   color: #ffffff;
-  width: 30px;
-  height: 30px;
+  margin: 0px;
   border: none;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 14px;
 }
 .fv_array_field > .fv_input_holder > .fv_add_field_button:active {
   background-color: #007700;
+}
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .fv_field > .fv_input_holder,
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field > .fv_input_holder {
+  padding-left: 30px;
+}
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .fv_field > .fv_error_message,
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field > .fv_error_message {
+  margin-left: 30px;
+}
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .fv_field.fv_disabled > .fv_input_holder,
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field.fv_disabled > .fv_input_holder {
+  padding-left: 0px;
+}
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .fv_field.fv_disabled > .fv_error_message,
+.fv_array_field.fv_array_field_sortable > .fv_input_holder > .fv_array_fields > .dd-dragel > .fv_field.fv_disabled > .fv_error_message {
+  margin-left: 0px;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field {
+  padding-top: 0px;
+  padding-bottom: 5px;
+  min-height: 35px;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_input_holder {
+  padding-right: 35px;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_field_title {
+  display: none;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field.fv_disabled > .fv_input_holder {
+  padding-right: 0px;
+  padding-left: 0px;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_key_value_name_input {
+  width: 20%;
+  display: inline-block;
+  padding-right: 5px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_key_value_name_input > .fv_field_title {
+  display: none;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_field_title {
+  width: 20%;
+  vertical-align: top;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_input_holder {
+  width: 80%;
+  display: inline-block;
+}
+.fv_key_value_field > .fv_input_holder > .fv_key_value_fields > .fv_field > .fv_error_message {
+  margin-left: 20%;
+}
+.fv_key_value_field > .fv_input_holder > .fv_add_field_button {
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-color: #00aa00;
+  color: #ffffff;
+  margin: 0px;
+  border: none;
+  font-size: 14px;
+}
+.fv_key_value_field > .fv_input_holder > .fv_add_field_button:active {
+  background-color: #007700;
+}
+.fv_proxy_field .fv_input_holder .loading_label {
+  line-height: 30px;
+  padding-left: 5px;
 }
 .fv_form .fv_field_container {
   padding-top: 0px;
@@ -2420,35 +2502,6 @@ a {
   padding: 12px;
   padding-bottom: 50px;
 }
-.browser_page .browser .view_container .folder_view .pagination_controller {
-  text-align: center;
-}
-.browser_page .browser .view_container .folder_view .pagination_controller .page_controls {
-  background-color: white;
-  display: inline-block;
-  position: relative;
-  width: 250px;
-  height: 30px;
-}
-.browser_page .browser .view_container .folder_view .pagination_controller .page_controls .mino_button {
-  position: absolute;
-  width: 50px;
-  top: 0px;
-}
-.browser_page .browser .view_container .folder_view .pagination_controller .page_controls .mino_button.previous_button {
-  left: 0px;
-}
-.browser_page .browser .view_container .folder_view .pagination_controller .page_controls .mino_button.next_button {
-  right: 0px;
-}
-.browser_page .browser .view_container .folder_view .pagination_controller .page_controls .page_number {
-  position: absolute;
-  top: 0px;
-  left: 50px;
-  width: 150px;
-  line-height: 30px;
-  text-align: center;
-}
 .browser_page .browser .view_container .folder_view .create_folder_modal .fv_field .fv_field_title {
   display: none;
 }
@@ -2482,6 +2535,7 @@ a {
   border: 1px solid #5a3a77;
   background-color: white;
   padding-top: 0px;
+  padding-bottom: 0px;
   margin-bottom: 10px;
 }
 .browser_page .browser .view_container .item_view .item_section > .fv_field_title {
@@ -2492,9 +2546,11 @@ a {
   width: 100%;
   box-sizing: border-box;
 }
+.browser_page .browser .view_container .item_view .item_section > .fv_field_title a {
+  color: white;
+}
 .browser_page .browser .view_container .item_view .item_section > .fv_input_holder {
   width: 100%;
-  padding-right: 10px;
 }
 .browser_page .browser .view_container .item_view .item_section > .fv_input_holder > .fv_field {
   width: 100%;
@@ -2506,6 +2562,13 @@ a {
 .browser_page .browser .view_container .item_view .item_section > .fv_input_holder > .fv_object_field > .fv_input_holder {
   padding-left: 5px;
   padding-right: 5px;
+}
+.browser_page .browser .view_container .item_view .item_section.fv_object_field > .fv_input_holder {
+  padding-right: 10px;
+}
+.browser_page .browser .view_container .item_view .item_section > .fv_error_message {
+  width: 100%;
+  margin-left: 0px;
 }
 .browser_page .browser .view_container .type_view .type_field {
   border: 1px solid #800080;
@@ -2558,44 +2621,106 @@ a {
   margin-right: 5px;
 }
 .browser_page .browser .type_selector {
+  position: relative;
+  top: 0px;
+  left: 0px;
+  width: 0px;
+  height: 0px;
+  background-color: orange;
+  display: inline-block;
+  vertical-align: top;
+}
+.browser_page .browser .type_selector .content_holder {
   background-color: #eeeeee;
   width: 300px;
   height: 200px;
-  position: absolute;
-  top: -200px;
+  position: relative;
+  top: -210px;
   left: -150px;
   border: 1px solid #000000;
 }
-.browser_page .browser .type_selector > .title {
+.browser_page .browser .type_selector .content_holder > .title {
   font-weight: bold;
   background-color: #66aa99;
   color: white;
   padding: 5px;
 }
-.browser_page .browser .type_selector > .fv_form > .fv_field {
+.browser_page .browser .type_selector .content_holder > .fv_form > .fv_field {
   padding: 0px;
-}
-.browser_page .browser .type_selector > .fv_form > .fv_field > .fv_field_title {
-  display: none;
-}
-.browser_page .browser .type_selector > .fv_form > .fv_field > .fv_field {
   margin: 0px;
 }
-.browser_page .browser .type_selector > .fv_form > .fv_field > .fv_field > .fv_error_message {
+.browser_page .browser .type_selector .content_holder > .fv_form > .fv_field > .fv_field_title {
+  display: none;
+}
+.browser_page .browser .type_selector .content_holder > .fv_form > .fv_field > .fv_input_holder input {
+  border: none;
+  border-bottom: 1px solid #999999;
+}
+.browser_page .browser .type_selector .content_holder > .fv_form > .fv_field > .fv_error_message {
   position: absolute;
 }
-.browser_page .browser .type_selector .results {
+.browser_page .browser .type_selector .content_holder .results {
   height: 142px;
   overflow-y: scroll;
 }
-.browser_page .browser .type_selector .results .result {
+.browser_page .browser .type_selector .content_holder .results .result {
   background-color: white;
   line-height: 15px;
   border-bottom: 1px solid #BBB;
   padding: 5px;
   cursor: pointer;
 }
-.browser_page .browser .type_selector .results .result:active {
+.browser_page .browser .type_selector .content_holder .results .result:active {
   background-color: blue;
   color: white;
+}
+.browser_page .browser .type_selector .content_holder > .bottom_arrow {
+  position: absolute;
+  bottom: -10px;
+  left: 140px;
+  width: 0px;
+  height: 0px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid black;
+}
+.browser_page .browser .type_selector .content_holder > .bottom_arrow:after {
+  content: '';
+  position: absolute;
+  bottom: 1px;
+  left: -10px;
+  width: 0px;
+  height: 0px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #eeeeee;
+}
+.browser_page .browser .pagination_controller {
+  text-align: center;
+}
+.browser_page .browser .pagination_controller .page_controls {
+  background-color: white;
+  display: inline-block;
+  position: relative;
+  width: 250px;
+  height: 30px;
+}
+.browser_page .browser .pagination_controller .page_controls .mino_button {
+  position: absolute;
+  width: 50px;
+  top: 0px;
+}
+.browser_page .browser .pagination_controller .page_controls .mino_button.previous_button {
+  left: 0px;
+}
+.browser_page .browser .pagination_controller .page_controls .mino_button.next_button {
+  right: 0px;
+}
+.browser_page .browser .pagination_controller .page_controls .page_status {
+  position: absolute;
+  top: 0px;
+  left: 50px;
+  width: 150px;
+  line-height: 30px;
+  text-align: center;
 }

@@ -1,5 +1,4 @@
 .folder_view{
-	@import "PaginationController/PaginationController.subless";
 	@import "CreateFolderModal/CreateFolderModal.subless";
 	@import "DeleteModal/DeleteModal.subless";
 

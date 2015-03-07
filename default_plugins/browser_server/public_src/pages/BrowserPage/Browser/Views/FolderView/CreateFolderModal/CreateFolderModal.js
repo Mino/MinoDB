@@ -14,7 +14,7 @@ function CreateFolderModal(parent_folder, callback){
 	cfm.modal = modal;
 
 	cfm.form = new FVForm();
-	cfm.form.add_field("name", new TextField("Folder Name"))
+	cfm.form.add_field("name", new FVTextField("Folder Name"))
 
 	modal.contents.append(
 		cfm.form.element

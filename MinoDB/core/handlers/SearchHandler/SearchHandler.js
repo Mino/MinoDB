@@ -1,7 +1,10 @@
 var errors = require('../../../../errors')
-var Validator = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
+var Path = require('../../../../common_classes/Path');
+var Constants = require('../../../../common_classes/Constants');
+var validators = require('../../validators');
 var logger = require('tracer').console();
 
 function SearchHandler(api, user, parameters, callback){
@@ -14,13 +17,33 @@ function SearchHandler(api, user, parameters, callback){
 
     sh.path_permission_checker = new PathPermissionChecker(sh);
 
-    sh.validator = new Validator(parameters);
+    sh.validator = new FieldVal(parameters);
+
+    sh.mongo_query = {}
+    sh.query_and = [];
 
     sh.paths = sh.validator.get("paths", BasicVal.array(true));
+    sh.skip = sh.validator.get("skip", BasicVal.integer(false), BasicVal.minimum(0));
+    if(sh.skip===undefined){
+        sh.skip = 0;
+    }
+    sh.limit = sh.validator.get("limit", BasicVal.integer(false), BasicVal.minimum(1), BasicVal.maximum(1000));
+    if(sh.limit===undefined){
+        sh.limit = 10;
+    }
+    sh.include_subfolders = sh.validator.get("include_subfolders", BasicVal.boolean(false));
+    if(sh.include_subfolders===undefined){
+        sh.include_subfolders = false;
+    }
+    sh.query = sh.validator.get("query", BasicVal.object(false));
+    if(sh.query){
+        sh.query_and.push(sh.query);
+    }
 
-    sh.path_permission_checker.retrieve_permissions(function(){
-
-    });
+    sh.text_search = sh.validator.get("text_search", BasicVal.string(false));
+    if(sh.text_search){
+        sh.query_and.push({"$text":{"$search":sh.text_search}});
+    }
 
     var error = sh.validator.end();
     if(error){
@@ -40,16 +63,115 @@ SearchHandler.prototype.do_search = function(callback){
 
     var db = sh.api.ds;
 
-    db.object_collection.find({
-        "path": {
-            "$in": sh.paths
-        }
-    },{
 
-    }).toArray(function(search_err, search_res){
-        // logger.log(search_err, search_res);
-        callback(null, {
-            "objects": search_res
+    var path_validator = new FieldVal(null);
+    for(var i = 0; i < sh.paths.length; i++){
+        (function(i){
+            var sh = this;
+
+            var path;
+            var path_error = validators.folder_path(sh.paths[i], function(emit_path){
+                path = emit_path
+            })
+            logger.log(path_error);
+
+            if(path_error){
+                path_validator.invalid(i, path_error);
+            } else {
+                sh.path_permission_checker.check_permissions_for_path(path,function(status){
+                    if(status===Constants.WRITE_PERMISSION || status===Constants.READ_PERMISSION){
+                        //All good
+                    } else {
+                        path_validator.invalid(i, errors.NOT_FOUND_OR_NO_PERMISSION_TO_ACCESS);
+                    }
+                });
+            }
+        }).call(sh,i);
+    }
+
+    sh.path_permission_checker.retrieve_permissions(function(){
+
+        var path_error = path_validator.end();
+        if(path_error){
+            sh.validator.invalid("paths", path_error);
+            sh.callback(sh.validator.end());
+            return;
+        }
+
+        if(sh.include_subfolders){
+            var path_prefixes = [];
+            for(var i = 0; i < sh.paths.length; i++){
+                var path = sh.paths[i];
+
+                path_prefixes.push({
+                    "path":{
+                        "$regex": "^"+path
+                    }
+                })
+            }
+            sh.mongo_query["$or"] = path_prefixes;
+        } else {
+            sh.mongo_query.path = {
+                "$in": sh.paths
+            };
+        }
+
+        var error;
+        var results;
+        var have_results;
+        var count;
+        var have_count;
+        var done = function(){
+            if(have_results && have_count){
+
+                if(error){
+                    callback(error);
+                    return;
+                }
+
+                callback(null,{
+                    objects: results,
+                    total: count,
+                    limit: sh.limit,
+                    skip: sh.skip
+                });
+            }
+        }
+
+        var options = {
+            skip: sh.skip,
+            limit: sh.limit
+        };
+
+        if(sh.query_and.length>0){
+            sh.mongo_query["$and"] = sh.query_and;
+        }
+
+        logger.log(JSON.stringify(sh.mongo_query,null,4));
+        logger.log(options);
+
+        var mongo_cursor = db.object_collection.find(sh.mongo_query,options);
+
+        mongo_cursor.toArray(function(search_err, search_res){
+            logger.log(search_err, search_res);
+            if(search_err){
+                error = search_err;
+            } else {
+                results = search_res;
+            }
+            have_results = true;
+            done();
+        });
+
+        mongo_cursor.count(function(err, res_count){
+            logger.log(err, res_count);
+            if(err){
+                error = err;
+            } else {
+                count = res_count;
+            }
+            have_count = true;
+            done();
         })
     });
 }

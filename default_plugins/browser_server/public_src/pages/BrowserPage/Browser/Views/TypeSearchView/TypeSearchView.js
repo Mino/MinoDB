@@ -15,7 +15,7 @@ function TypeSearchView(browser){
 		)
 	)
 	
-	browser.address_bar.populate_path_buttons("Types");
+	browser.address_bar.populate_special_path_button("Types","?types","");
 
 	tsv.do_search();
 }

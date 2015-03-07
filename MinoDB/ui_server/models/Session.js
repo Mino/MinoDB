@@ -1,6 +1,7 @@
 var logger = require('tracer').console();
 var FieldVal = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var BasicVal = FieldVal.BasicVal;
+var FVRule = require("fieldval-rules");
 
 function Session(obj) {
     var session = this;
@@ -30,7 +31,7 @@ Session.rule_definition = {
         min_length: 32
     }]
 };
-Session.rule = new ValidationRule();
+Session.rule = new FVRule();
 Session.rule.init(Session.rule_definition);
 
 Session.prototype.create_save_data = function(callback){
@@ -47,6 +48,8 @@ Session.prototype.save = function(api, callback){
     var session = this;
 
     session.create_save_data(function(err, to_save){
+
+        logger.log(err, to_save);
 
         new api.handlers.save(api, {
             "username": "Mino"

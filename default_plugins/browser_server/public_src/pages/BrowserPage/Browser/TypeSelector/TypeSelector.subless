@@ -1,47 +1,85 @@
 .type_selector{
-	background-color: @popout_background;
-	width: 300px;
-	height: 200px;
-	position: absolute;
-	top: -200px;
-	left: -150px;
-	border: 1px solid @popout_border;
+	position: relative;
+	top: 0px;
+	left: 0px;
+	width: 0px;
+	height: 0px;
+	background-color: orange;
+	display:inline-block;
+	vertical-align: top;
 
-	>.title{
-		.bold;
-		background-color: @popout_title;
-		color: white;
-		padding: 5px;
-	}
+	.content_holder{
+		background-color: @popout_background;
+		width: 300px;
+		height: 200px;
+		position: relative;
+		top: -210px;
+		left: -150px;
+		border: 1px solid @popout_border;
 
-	>.fv_form{
-		>.fv_field{
-			padding: 0px;
-			>.fv_field_title{
-				display: none;
-			}
+		>.title{
+			.bold;
+			background-color: @popout_title;
+			color: white;
+			padding: 5px;
+		}
+
+		>.fv_form{
 			>.fv_field{
+				padding: 0px;
 				margin: 0px;
+				>.fv_field_title{
+					display: none;
+				}
+				>.fv_input_holder{
+					input{
+						border: none;
+						border-bottom: 1px solid @fv_border_color;
+					}
+				}
 				>.fv_error_message{
 					position: absolute;
 				}
 			}
 		}
-	}
 
-	.results{
-		height: 142px;
-		overflow-y: scroll;
-		.result{
-			background-color: white;
-			line-height: 15px;
-			border-bottom: 1px solid #BBB;
-			padding: 5px;
-			cursor: pointer;
+		.results{
+			height: 142px;
+			overflow-y: scroll;
+			.result{
+				background-color: white;
+				line-height: 15px;
+				border-bottom: 1px solid #BBB;
+				padding: 5px;
+				cursor: pointer;
 
-			&:active{
-				background-color: blue;
-				color: white;
+				&:active{
+					background-color: blue;
+					color: white;
+				}
+			}
+		}
+
+		>.bottom_arrow{
+			position: absolute;
+			bottom: -10px;
+			left: 140px;
+			width: 0px;
+			height: 0px;
+			border-left: 10px solid transparent;
+			border-right: 10px solid transparent;
+			border-top: 10px solid black;
+
+			&:after{
+				content: '';
+				position: absolute;
+				bottom: 1px;
+				left: -10px;
+				width: 0px;
+				height: 0px;
+				border-left: 10px solid transparent;
+				border-right: 10px solid transparent;
+				border-top: 10px solid @popout_background;
 			}
 		}
 	}

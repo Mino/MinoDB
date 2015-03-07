@@ -1,4 +1,4 @@
-fieldval_ui_extend(TypeField, Field);
+fieldval_ui_extend(TypeField, FVField);
 
 function TypeField(value, parent){
 	var tf = this;
@@ -17,8 +17,8 @@ function TypeField(value, parent){
 	)
 
 	var field_type_choices = [];
-	for(var i in ValidationRule.RuleField.types){
-		var field_type_class = ValidationRule.RuleField.types[i];
+	for(var i in FVRule.FVRuleField.types){
+		var field_type_class = FVRule.FVRuleField.types[i];
 
 		var name = i;
 		var display_name = field_type_class.display_name;
@@ -30,13 +30,13 @@ function TypeField(value, parent){
 	}
 
 	tf.form = new FVForm();
-	tf.form.add_field("name", new TextField("Name").on_change(function(){
+	tf.form.add_field("name", new FVTextField("Name").on_change(function(){
 		tf.update_title_name();
 	}));
-	tf.form.add_field("display_name", new TextField("Display Name").on_change(function(){
+	tf.form.add_field("display_name", new FVTextField("Display Name").on_change(function(){
 		tf.update_title_name();
 	}));
-	tf.form.add_field("type", new ChoiceField("Type", {
+	tf.form.add_field("type", new FVChoiceField("Type", {
 		choices: field_type_choices
 	}).on_change(function(){
 		tf.update_type_fields();
@@ -47,7 +47,7 @@ function TypeField(value, parent){
 	for(var name in tf.form.fields){
     	tf.base_fields[name] = true;
     }
-	tf.form.val(value);
+	tf.form.val(value, {ignore_change:true});
 
     tf.update_title_name();
     tf.update_type_fields();
@@ -61,7 +61,6 @@ TypeField.prototype.init = function(){
 TypeField.prototype.remove = function(){
 	var tf = this;
 	tf.form.remove();
-	Field.prototype.remove.call(this);
 }
 
 TypeField.prototype.update_title_name = function(){
@@ -90,30 +89,33 @@ TypeField.prototype.update_type_fields = function(){
 		}
 	}
 
-	if(type==='text'){
-		tf.form.add_field("min_length", new TextField("Minimum Length", {type: "number"}));
-		tf.form.add_field("max_length", new TextField("Maximum Length", {type: "number"}));
-		tf.form.fields.min_length.val(tf.value.min_length);
-		tf.form.fields.max_length.val(tf.value.max_length);
-	} else if(type==='number'){
+	if (type) {
 
-	} else if(type==='object'){
-
-		var fields_field = new ArrayField("Fields");
-		fields_field.new_field = function(index){
-			var inner_field = new TypeField(null, tf);
-			fields_field.add_field(null, inner_field);
-		}
-
-		tf.form.add_field("fields", fields_field);
-
-		var inner_fields = tf.value.fields;
-		if(inner_fields){
-			for(var i = 0; i < tf.value.fields.length; i++){
-				var field_data = tf.value.fields[i];
-
-				var inner_field = new TypeField(field_data, tf);
+		if (type === "object") {
+			//TODO make this part of RuleBuilder
+			var fields_field = new FVArrayField("Fields");
+			fields_field.new_field = function(index){
+				var inner_field = new tf.constructor(null, tf);
 				fields_field.add_field(null, inner_field);
+			}
+
+			tf.form.add_field("fields", fields_field);
+
+			var inner_fields = tf.value.fields;
+			if(inner_fields){
+				for(var i = 0; i < tf.value.fields.length; i++){
+					var field_data = tf.value.fields[i];
+
+					var inner_field = new tf.constructor(field_data, tf);
+					fields_field.add_field(null, inner_field);
+				}
+			}
+
+		} else {
+
+			var rule_field = FVRule.FVRuleField.types[type].class;
+			if (rule_field.create_editor_ui !== undefined) {
+				rule_field.create_editor_ui(tf.value, tf.form);
 			}
 		}
 	}
@@ -144,7 +146,7 @@ TypeField.prototype.enable = function(){
         tf.form.enable();
     }
 
-    Field.prototype.enable.call(this);
+    FVField.prototype.enable.call(this);
 }
 
 TypeField.prototype.disable = function(){
@@ -156,5 +158,5 @@ TypeField.prototype.disable = function(){
         tf.form.disable();
     }
 
-    Field.prototype.disable.call(this);
+    FVField.prototype.disable.call(this);
 }

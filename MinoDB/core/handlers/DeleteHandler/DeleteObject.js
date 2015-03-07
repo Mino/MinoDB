@@ -2,8 +2,8 @@ var Constants = require('../../../../common_classes/Constants');
 var Common = require('../../../../common_classes/Common')
 var Path = require('../../../../common_classes/Path');
 var logger = require('tracer').console();
-var Validator = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 var validators = require('../../validators');
 
 function DeleteObject(address, handler, index, options){
@@ -74,8 +74,8 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
     			return;
     		}
 
-    		var old_path = new Path();
-    		old_path.init(res.path);//Could throw an error, but it's already been delete successfully
+    		var old_full_path = new Path();
+    		old_full_path.init(res.full_path);//Could throw an error, but it's already been delete successfully
     		del_obj.id = res._id;
 
     		var have_permission = function(){
@@ -136,13 +136,15 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
 			    );
     		}
 
-    		var username_for_permission = old_path.username_for_permission(del_obj.handler.user.username);
+    		logger.log(old_full_path.username_for_permission);
+    		var username_for_permission = old_full_path.username_for_permission(del_obj.handler.user.username, true);
+    		logger.log("DELETING username_for_permission",username_for_permission);
 			if(username_for_permission===del_obj.handler.user.username){
 				have_permission();
 			} else {
 
-				logger.log("old_path ",old_path);
-	    		del_obj.handler.path_permission_checker.check_permissions_for_path(old_path,function(status){
+				logger.log("old_full_path ",old_full_path);
+	    		del_obj.handler.path_permission_checker.check_permissions_for_path(old_full_path,function(status){
 	    			logger.log("status ",status);
 	    			logger.log("FAILED OLD PATH: "+del_obj.index);
 					if(status!=Constants.WRITE_PERMISSION){

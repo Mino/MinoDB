@@ -93,7 +93,26 @@ function AddressBar(browser){
 	);
 }
 
-AddressBar.prototype.populate_path_buttons = function(path){
+AddressBar.prototype.populate_special_path_button = function(text, link, address){
+	var address_bar = this;
+
+	address_bar.path_buttons.empty();
+
+	var pathbutton = new PathButton(
+		text,
+		link,
+		address_bar.browser,
+		{
+			encode: false
+		}
+	);
+
+	address_bar.path_buttons.append(pathbutton.element);
+
+	address_bar.set_address(address);
+}
+
+AddressBar.prototype.populate_path_buttons = function(path, address /*optional*/){
 	var address_bar = this;
 
 	address_bar.path_buttons.empty();
@@ -101,7 +120,7 @@ AddressBar.prototype.populate_path_buttons = function(path){
 	if(typeof path === 'string'){
 		var pathbutton = new PathButton(
 			path,
-			path,
+			address!==undefined ? address : path,
 			address_bar.browser
 		);
 

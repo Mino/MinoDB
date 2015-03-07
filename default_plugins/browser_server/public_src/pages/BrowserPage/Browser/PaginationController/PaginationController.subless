@@ -23,7 +23,7 @@
 			}
 		}
 
-		.page_number{
+		.page_status{
 			position: absolute;
 			top: 0px;
 			left: 50px;
