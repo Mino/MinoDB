@@ -216,10 +216,7 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 
 					    		if(err){
 					    			logger.log(err);
-					    			so.validator.invalid("name",{
-					    				error: -1,
-					    				error_message: "FULL PATH ALREADY EXISTS OR VERSION ERROR"
-					    			})
+					    			so.validator.invalid("name",errors.FULL_PATH_EXISTS);
 					    			on_save_callback(so,so.validator.end());
 					    		} else {
 					    			on_save_callback(so,null,{

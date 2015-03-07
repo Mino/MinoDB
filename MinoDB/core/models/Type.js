@@ -2,6 +2,7 @@ var logger = require('tracer').console();
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 var FVRule = require('fieldval-rules');
+var Path = require('../../../common_classes/Path');
 
 function Type(item) {
     var type = this;
@@ -21,6 +22,13 @@ Type.rule_definition = {
     any: true
 }
 Type.rule.init(Type.rule_definition)
+
+Type.NAME_CHECKS = [
+    BasicVal.string(true),
+    BasicVal.start_with_letter(),
+    BasicVal.no_whitespace(),
+    Path.object_name_check(false)
+];
 
 Type.prototype.init = function(type_data){
     var type = this;
@@ -42,7 +50,10 @@ Type.validate = function(data, creation){
 
     //Perform an extra check on the name
     var validator = new FieldVal(data, type_error);
-    validator.get("name", BasicVal.string(true), BasicVal.start_with_letter(), BasicVal.no_whitespace());
+    validator.get(
+        "name", 
+        Type.NAME_CHECKS
+    );
 
     return validator.end();
 }
