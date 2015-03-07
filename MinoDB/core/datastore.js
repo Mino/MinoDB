@@ -62,9 +62,20 @@ DataStore.prototype.connect = function(callback) {
 	    ds.object_collection.ensureIndex( { name: 1 }, function(err,res){
 	    	logger.log(err, res);
 	    })
-		
-	    ds.connected = true;
-	    ds.call_connect_callbacks();
+
+	    ds.object_collection.ensureIndex(
+	    	{ 
+	    		"$**": "text"
+	    	},
+	    	{
+	    		name: "AllTextIndex"
+	    	},
+	    	function(){
+	    		logger.log(arguments);
+			    ds.connected = true;
+			    ds.call_connect_callbacks();
+			}
+		);
 
 	    // mongo.runCommand({shardCollection:"minods.objects", key: { full_path: 1 }}, function(err,res){
 	    // 	logger.log(err);

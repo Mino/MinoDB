@@ -4,6 +4,7 @@ var BasicVal = FieldVal.BasicVal;
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var Path = require('../../../../common_classes/Path');
 var Constants = require('../../../../common_classes/Constants');
+var validators = require('../../validators');
 var logger = require('tracer').console();
 
 function SearchHandler(api, user, parameters, callback){
@@ -17,6 +18,9 @@ function SearchHandler(api, user, parameters, callback){
     sh.path_permission_checker = new PathPermissionChecker(sh);
 
     sh.validator = new FieldVal(parameters);
+
+    sh.mongo_query = {}
+    sh.query_and = [];
 
     sh.paths = sh.validator.get("paths", BasicVal.array(true));
     sh.skip = sh.validator.get("skip", BasicVal.integer(false), BasicVal.minimum(0));
@@ -32,8 +36,13 @@ function SearchHandler(api, user, parameters, callback){
         sh.include_subfolders = false;
     }
     sh.query = sh.validator.get("query", BasicVal.object(false));
-    if(sh.query===undefined){
-        sh.query = {};
+    if(sh.query){
+        sh.query_and.push(sh.query);
+    }
+
+    sh.text_search = sh.validator.get("text_search", BasicVal.string(false));
+    if(sh.text_search){
+        sh.query_and.push({"$text":{"$search":sh.text_search}});
     }
 
     var error = sh.validator.end();
@@ -60,17 +69,23 @@ SearchHandler.prototype.do_search = function(callback){
         (function(i){
             var sh = this;
 
-            var path = new Path();
-            var path_error = path.init(sh.paths[i]);
+            var path;
+            var path_error = validators.folder_path(sh.paths[i], function(emit_path){
+                path = emit_path
+            })
             logger.log(path_error);
 
-            sh.path_permission_checker.check_permissions_for_path(path,function(status){
-                if(status===Constants.WRITE_PERMISSION || status===Constants.READ_PERMISSION){
-                    //All good
-                } else {
-                    path_validator.invalid(i, errors.NOT_FOUND_OR_NO_PERMISSION_TO_ACCESS);
-                }
-            });
+            if(path_error){
+                path_validator.invalid(i, path_error);
+            } else {
+                sh.path_permission_checker.check_permissions_for_path(path,function(status){
+                    if(status===Constants.WRITE_PERMISSION || status===Constants.READ_PERMISSION){
+                        //All good
+                    } else {
+                        path_validator.invalid(i, errors.NOT_FOUND_OR_NO_PERMISSION_TO_ACCESS);
+                    }
+                });
+            }
         }).call(sh,i);
     }
 
@@ -83,9 +98,23 @@ SearchHandler.prototype.do_search = function(callback){
             return;
         }
 
-        sh.query.path = {
-            "$in": sh.paths
-        };
+        if(sh.include_subfolders){
+            var path_prefixes = [];
+            for(var i = 0; i < sh.paths.length; i++){
+                var path = sh.paths[i];
+
+                path_prefixes.push({
+                    "path":{
+                        "$regex": "^"+path
+                    }
+                })
+            }
+            sh.mongo_query["$or"] = path_prefixes;
+        } else {
+            sh.mongo_query.path = {
+                "$in": sh.paths
+            };
+        }
 
         var error;
         var results;
@@ -114,11 +143,16 @@ SearchHandler.prototype.do_search = function(callback){
             limit: sh.limit
         };
 
+        if(sh.query_and.length>0){
+            sh.mongo_query["$and"] = sh.query_and;
+        }
+
+        logger.log(JSON.stringify(sh.mongo_query,null,4));
         logger.log(options);
 
-        var mongo_query = db.object_collection.find(sh.query,options);
+        var mongo_cursor = db.object_collection.find(sh.mongo_query,options);
 
-        mongo_query.toArray(function(search_err, search_res){
+        mongo_cursor.toArray(function(search_err, search_res){
             logger.log(search_err, search_res);
             if(search_err){
                 error = search_err;
@@ -129,7 +163,7 @@ SearchHandler.prototype.do_search = function(callback){
             done();
         });
 
-        mongo_query.count(function(err, res_count){
+        mongo_cursor.count(function(err, res_count){
             logger.log(err, res_count);
             if(err){
                 error = err;

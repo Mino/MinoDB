@@ -103,6 +103,14 @@ Browser.prototype.load = function(address, options){
 		return;
 	}
 
+	if(options['search']!==undefined){
+		browser.view = new SearchView(browser);
+		browser.view_container.empty().append(browser.view.element);
+		browser.view.init();
+		browser.view.resize(Site.resize_obj);
+		return;
+	}
+
 	if(options['new_type']!==undefined){
 		browser.view = new TypeView(
 	    	"",
