@@ -94,7 +94,7 @@ SaveObject.prototype.create_saving_json = function(){
 	}
 }
 
-SaveObject.prototype.got_type = function(name, error, type){
+SaveObject.prototype.got_type = function(name, error, type, callback){
 	var so = this;
 
 	logger.log(error);
@@ -110,6 +110,7 @@ SaveObject.prototype.got_type = function(name, error, type){
 		if(error!=null){
 			so.validator.invalid(name, error);
 		}
+		callback();
 	});	
 }
 
@@ -215,10 +216,7 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 
 					    		if(err){
 					    			logger.log(err);
-					    			so.validator.invalid("name",{
-					    				error: -1,
-					    				error_message: "FULL PATH ALREADY EXISTS OR VERSION ERROR"
-					    			})
+					    			so.validator.invalid("name",errors.FULL_PATH_EXISTS);
 					    			on_save_callback(so,so.validator.end());
 					    		} else {
 					    			on_save_callback(so,null,{

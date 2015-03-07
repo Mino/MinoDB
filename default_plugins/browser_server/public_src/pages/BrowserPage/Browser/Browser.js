@@ -89,6 +89,8 @@ Browser.prototype.load = function(address, options){
 		return;
 	}
 
+	browser.current_address = address;
+
 	if(browser.view){
 		browser.view.remove();
 	}
@@ -256,4 +258,9 @@ Browser.prototype.iconCapacity = function(element,verticalPadding){
 		}
 		return 3;
 	// }
+}
+
+Browser.prototype.reload_current_address = function() {
+	var browser = this;
+	browser.load_address(browser.current_address);
 }

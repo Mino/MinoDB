@@ -23,9 +23,9 @@ var errors = {
 		error: 11,
 		error_message: "Invalid format for address."
 	},
-	SOME_ERROR: {	
+	DELETE_TYPE_FAILED: {	
 		error: 12,
-		error_message: "One or more addresses could not be retrieved."
+		error_message: "Deleting type failed."
 	},
 	SOME_ERROR: {	
 		error: 13,

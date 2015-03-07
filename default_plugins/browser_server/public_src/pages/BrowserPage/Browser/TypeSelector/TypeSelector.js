@@ -15,7 +15,7 @@ function TypeSelector(selection_callback){
 		]);
 		ts.query_field.error(error);
 		console.log(error);
-		if(query && !error){
+		if(!error){
 			ts.do_search(query);
 		}
 	})
@@ -118,10 +118,17 @@ TypeSelector.prototype.show = function(){
 TypeSelector.prototype.do_search = function(query){
 	var ts = this;
 
+	query = query || '';
+
 	var this_request = ts.current_request = api_request({
 		"function": "search",
 		"parameters": {
-			"paths": ["/Mino/types/"]
+			"paths": ["/Mino/types/"],
+			"query": {
+				"name": {
+					"$regex": "^" + query + ".*"
+				}
+			}
 		}
 	},function(err, res){
 		if(this_request===ts.current_request){

@@ -157,6 +157,16 @@ SaveHandler.prototype.retrieve_types = function(){
             throw new Error("Unexpected error");
         }
 
+        var waiting_for = 0;
+        var finished_one = function() {
+            waiting_for--;
+            if (waiting_for <= 0) {
+                sh.types_retrived = true;
+                sh.check_ready_to_save();
+            }
+        }
+
+        var validating = false;
         for(var i = 0; i < sh.types_to_retrieve.length; i++){
             var type_name = sh.types_to_retrieve[i];
             var res = get_res.objects[i];
@@ -169,15 +179,20 @@ SaveHandler.prototype.retrieve_types = function(){
                 var type_init = validation_type.init(res['mino_type']);
                 logger.log(validation_type);
                 logger.log(type_init);
+                
+                validating = true;
+                waiting_for+=save_objects.length;
                 for(var k = 0; k < save_objects.length; k++){
                     var save_object = save_objects[k];
-                    save_object.got_type(type_name, null, validation_type);
+                    save_object.got_type(type_name, null, validation_type, finished_one);
                 }
             }
         }
+
+        if (!validating) {
+            finished_one();
+        }
         
-        sh.types_retrived = true;
-        sh.check_ready_to_save();
     });
 }
 

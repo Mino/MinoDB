@@ -6,7 +6,8 @@
     "safe": "0.1.6",
     "jquery-autosize": "1.18.13",
     "font-awesome": "4.2.0",
-    "extend": "MarcusLongmuir/extend"
+    "extend": "MarcusLongmuir/extend",
+    "fieldval-ui": "FieldVal/fieldval-ui#develop"
   },
   "private": true
 }

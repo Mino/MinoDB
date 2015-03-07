@@ -16,9 +16,10 @@ function Core(minodb, db_address){
     core.handlers = {
         "get": require('./handlers/GetHandler/GetHandler'),
         "save": require('./handlers/SaveHandler/SaveHandler'),
+        "delete": require('./handlers/DeleteHandler/DeleteHandler'),
         "search": require('./handlers/SearchHandler/SearchHandler'),
         "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler'),
-        "delete": require('./handlers/DeleteHandler/DeleteHandler'),
+        "delete_type": require('./handlers/DeleteTypeHandler/DeleteTypeHandler'),
         "add_permissions": require('./handlers/AddPermissionsHandler/AddPermissionsHandler'),
         "create_user": require('./handlers/CreateUserHandler/CreateUserHandler')
     }
