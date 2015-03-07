@@ -2,7 +2,7 @@
 @import("../../../bower_components/jquery-autosize/jquery.autosize.js");
 @import("../../../bower_components/safe/safe.js");
 @import("../../../node_modules/fieldval/fieldval.js");
-@import("../../../bower_components/fieldval-ui/fieldval-ui.js");
+@import("../../../node_modules/fieldval-ui/fieldval-ui.js");
 @import("../../../node_modules/fieldval-rules/fieldval-rules.js");
 @import("../../../bower_components/extend/extend.js");
 @import("../../../errors.js");

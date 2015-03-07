@@ -22,6 +22,7 @@ function SearchView(browser){
 	}
 	sv.form.add_field("paths",paths_field);
 	sv.form.add_field("include_subfolders", new FVBooleanField("Include Subfolders"));
+	sv.form.add_field("text_search",new FVTextField("Text Search"));
 	sv.form.element.append(
 		$("<button />").addClass("mino_button").text("Search")
 	)
@@ -55,6 +56,8 @@ SearchView.prototype.init = function(){
 SearchView.prototype.do_search = function(query){
 	var sv = this;
 
+	sv.results.empty();
+
 	var this_request = sv.current_request = api_request({
 		"function": "search",
 		"parameters": query
@@ -62,10 +65,18 @@ SearchView.prototype.do_search = function(query){
 		if(this_request===sv.current_request){
 			console.log(err,res);
 
-			sv.results.empty();
-
-			if(res.objects){
-				sv.populate({},res);
+			if(err){
+				console.log("ERROR A");
+				sv.form.error(FieldVal.get_error("parameters",err));
+			} else {
+				if(res.error){
+					console.log("ERROR B");
+					sv.form.error(FieldVal.get_error("parameters",res));
+				} else {
+					if(res.objects){
+						sv.populate({},res);
+					}
+				}
 			}
 		}
 	})
@@ -110,4 +121,7 @@ SearchView.prototype.remove = function(){
 SearchView.prototype.resize = function(resize_obj){
 	var sv = this;
 
+	resize_obj = resize_obj || Site.resize_obj;
+
+	sv.form.element.toggleClass("rows", resize_obj.window_width>700)
 }

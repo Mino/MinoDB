@@ -1,3 +1,7 @@
 .search_view{
-	
+	.search_form{
+		background-color: white;
+		border: 1px solid @search_form_border;
+		padding: 5px;
+	}	
 }

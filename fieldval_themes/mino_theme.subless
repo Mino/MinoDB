@@ -1,4 +1,4 @@
-@import "../bower_components/fieldval-ui/themes/minimal.less";
+@import "../node_modules/fieldval-ui/themes/minimal.less";
 
 .fv_form{
 	.fv_field_container{

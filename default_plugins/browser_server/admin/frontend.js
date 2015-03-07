@@ -16837,10 +16837,11 @@ FVObjectField.prototype.val = function(set_val, options) {
     	}
         return compiled;
     } else {
+        options.ignore_parent_change = true;
     	for(var i in set_val){
     		var inner_field = field.fields[i];
             if(inner_field){
-        		inner_field.val(set_val[i], {ignore_parent_change: true});
+        		inner_field.val(set_val[i], options);
             }
     	}
         if (!options.ignore_change) {
@@ -16878,16 +16879,15 @@ FVObjectField.prototype.val = function(set_val, options) {
     })();
 
     var defaults = {
-            listNodeName    : 'ol',
-            itemNodeName    : 'li',
-            rootClass       : 'dd',
-            itemClass       : 'dd-item',
-            dragClass       : 'dd-dragel',
-            handleClass     : 'dd-handle',
-            placeClass      : 'dd-placeholder',
-            group           : 0,
-            threshold       : 20
-        };
+        listNodeName    : 'ol',
+        itemNodeName    : 'li',
+        rootClass       : 'dd',
+        itemClass       : 'dd-item',
+        dragClass       : 'dd-dragel',
+        handleClass     : 'dd-handle',
+        placeClass      : 'dd-placeholder',
+        threshold       : 20
+    };
 
     function Plugin(element, options)
     {
@@ -16904,8 +16904,6 @@ FVObjectField.prototype.val = function(set_val, options) {
             var list = this;
 
             list.reset();
-
-            list.el.data('nestable-group', this.options.group);
 
             list.placeEl = $('<div class="' + list.options.placeClass + '"/>');
 
@@ -17130,8 +17128,8 @@ FVObjectField.prototype.val = function(set_val, options) {
             /**
              * move vertical
              */
-            // check if groups match if dragging over new root
-            if (opt.group !== pointElRoot.data('nestable-group')) {
+            // check that this is the same list element
+            if (this.el[0] !== pointElRoot[0]) {
                 return;
             }
 
@@ -17438,6 +17436,7 @@ FVArrayField.prototype.val = function(set_val, options) {
         return compiled;
     } else {
         if(set_val){
+            options.ignore_parent_change = true;
             for(var i=0; i<set_val.length; i++){
         		var inner_field = field.fields[i];
                 if(!inner_field){
@@ -17455,7 +17454,7 @@ FVArrayField.prototype.val = function(set_val, options) {
                 if(!inner_field){//A field wasn't returned by the new_field function
                     inner_field = field.fields[i];
                 }
-                inner_field.val(set_val[i], {ignore_parent_change: true});
+                inner_field.val(set_val[i], options);
 
         	}
             
@@ -17566,9 +17565,6 @@ FVKeyValueField.prototype.change_key_name = function(old_name,new_name,inner_fie
 
 FVKeyValueField.prototype.remove_field = function(target){
     var field = this;
-
-    console.log(arguments);
-    console.trace();
 
     var inner_field;
     var index;
@@ -17737,6 +17733,7 @@ FVKeyValueField.prototype.val = function(set_val, options) {
         }
         return compiled;
     } else {
+        options.ignore_parent_change = true;
         if(set_val){
             for(var i in field.keys){
                 if(field.keys.hasOwnProperty(i)){
@@ -17761,7 +17758,7 @@ FVKeyValueField.prototype.val = function(set_val, options) {
                              }
                          }
 	                }
-	                inner_field.val(set_val[i], {ignore_parent_change: true});
+	                inner_field.val(set_val[i], options);
 	                inner_field.name_val(i);
 				}
         	}
@@ -17942,7 +17939,7 @@ function FVForm(fields){
 }
 FVForm.button_event = 'click';
 FVForm.is_mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|nokia|series40|x11|opera mini/i.test(navigator.userAgent.toLowerCase());
-if($.tap){
+if($.fn.tap || $.tap){
 	FVForm.button_event = 'tap';
 }
 //Used to subclass Javascript classes
@@ -19304,9 +19301,9 @@ var errors = {
 		error: 11,
 		error_message: "Invalid format for address."
 	},
-	SOME_ERROR: {	
+	DELETE_TYPE_FAILED: {	
 		error: 12,
-		error_message: "One or more addresses could not be retrieved."
+		error_message: "Deleting type failed."
 	},
 	SOME_ERROR: {	
 		error: 13,

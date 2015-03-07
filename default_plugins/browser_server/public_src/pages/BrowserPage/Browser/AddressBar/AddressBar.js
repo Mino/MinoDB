@@ -76,7 +76,19 @@ function AddressBar(browser){
 				event.preventDefault();
 			}	
 		}).append(
-			$("<button />").addClass("mino_button").text("Home")
+			$("<button />").addClass("mino_button fa fa-home")
+		)
+		,
+		address_bar.search_button = $("<a />")
+		.attr({
+			"href": Site.path+"?search"
+		}).ajax_url(function(event){
+			if(!address_bar.browser instanceof MainBrowser){
+				address_bar.browser.load(address);
+				event.preventDefault();
+			}	
+		}).append(
+			$("<button />").addClass("mino_button fa fa-search")
 		)
 		,
 		address_bar.types_button = $("<a />")

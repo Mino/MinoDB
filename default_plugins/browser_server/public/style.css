@@ -1764,6 +1764,12 @@ a {
 .fv_form.rows .fv_field > .fv_error_message {
   margin-left: 20%;
 }
+.fv_form.rows .fv_field.fv_in_array > .fv_input_holder {
+  width: 100%;
+}
+.fv_form.rows .fv_field.fv_in_key_value > .fv_key_value_name_input > .fv_input_holder {
+  width: 100%;
+}
 .fv_field {
   position: relative;
   padding-top: 5px;
@@ -2569,6 +2575,11 @@ a {
 .browser_page .browser .view_container .item_view .item_section > .fv_error_message {
   width: 100%;
   margin-left: 0px;
+}
+.browser_page .browser .view_container .search_view .search_form {
+  background-color: white;
+  border: 1px solid #5a3a77;
+  padding: 5px;
 }
 .browser_page .browser .view_container .type_view .type_field {
   border: 1px solid #800080;

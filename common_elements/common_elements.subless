@@ -3,8 +3,12 @@
 @mino_button_color: #5a3a77;
 @mino_button_color_active: #9d4479;
 
+@pane_border: @mino_button_color;
+
 @item_section_title: #66AA99;
-@item_section_border: @mino_button_color;
+@item_section_border: @pane_border;
+
+@search_form_border: @pane_border;
 
 @popout_background: #EEE;
 @popout_title: #66AA99;
