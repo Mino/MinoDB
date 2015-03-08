@@ -50,6 +50,12 @@
 .fv_form.rows .fv_field > .fv_error_message {
   margin-left: 20%;
 }
+.fv_form.rows .fv_field.fv_in_array > .fv_input_holder {
+  width: 100%;
+}
+.fv_form.rows .fv_field.fv_in_key_value > .fv_key_value_name_input > .fv_input_holder {
+  width: 100%;
+}
 .fv_field {
   position: relative;
   padding-top: 5px;
@@ -422,6 +428,10 @@
 }
 .fv_key_value_field > .fv_input_holder > .fv_add_field_button:active {
   background-color: #007700;
+}
+.fv_proxy_field .fv_input_holder .loading_label {
+  line-height: 30px;
+  padding-left: 5px;
 }
 .fv_form .fv_field_container {
   padding-top: 0px;

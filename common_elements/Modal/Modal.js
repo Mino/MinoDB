@@ -1,8 +1,6 @@
 function Modal(props){
 	var modal = this;
 
-	console.log(props);
-
 	if(!props){
 		props = {};
 	}

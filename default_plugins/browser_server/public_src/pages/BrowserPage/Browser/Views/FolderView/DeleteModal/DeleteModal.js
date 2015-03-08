@@ -12,9 +12,6 @@ function DeleteModal(icon_list, callback){
 		modal.element
 	)
 	dm.modal = modal;
-	dm.modal.ok_callback = function(){
-		dm.perform_delete();
-	}
 
 	dm.form = new FVForm();
 

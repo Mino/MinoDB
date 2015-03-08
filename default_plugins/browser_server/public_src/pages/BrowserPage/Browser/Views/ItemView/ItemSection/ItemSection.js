@@ -90,7 +90,8 @@ ItemSection.prototype.populate_type = function(type){
 	section.field = section.vr.create_form();
 
     //TODO implement proper callback when form is loaded
-    setTimeout(function() {
+    // setTimeout(function() {
+
         section.item_view.form.add_field(section.name, section.field);
         section.field.element.addClass("item_section");
 
@@ -124,7 +125,8 @@ ItemSection.prototype.populate_type = function(type){
 
         //TODO refactor set value asynchronously
         section.field.val(section.value);
-    }, 500);
+        
+    // }, 500);
     
 
 }

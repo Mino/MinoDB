@@ -20898,8 +20898,6 @@ FVField.prototype.layout = function(){
 function Modal(props){
 	var modal = this;
 
-	console.log(props);
-
 	if(!props){
 		props = {};
 	}
@@ -21502,9 +21500,6 @@ function DeleteModal(icon_list, callback){
 		modal.element
 	)
 	dm.modal = modal;
-	dm.modal.ok_callback = function(){
-		dm.perform_delete();
-	}
 
 	dm.form = new FVForm();
 
@@ -21861,7 +21856,8 @@ ItemSection.prototype.populate_type = function(type){
 	section.field = section.vr.create_form();
 
     //TODO implement proper callback when form is loaded
-    setTimeout(function() {
+    // setTimeout(function() {
+
         section.item_view.form.add_field(section.name, section.field);
         section.field.element.addClass("item_section");
 
@@ -21895,7 +21891,8 @@ ItemSection.prototype.populate_type = function(type){
 
         //TODO refactor set value asynchronously
         section.field.val(section.value);
-    }, 500);
+        
+    // }, 500);
     
 
 }
@@ -22491,14 +22488,17 @@ function TypeView(name, data, browser, options){
 
 	type_view.toolbar_element = $("<div />").append(
 		type_view.edit_button = $("<button />").addClass("mino_button").text("Edit").on('tap',function(){
-			type_view.edit();
+			type_view.edit_press();
 		}).hide(),
 		type_view.save_button = $("<button />").addClass("mino_button").text("Save").on('tap',function(){
-			type_view.save();
+			type_view.save_press();
 		}).hide(),
 		type_view.cancel_button = $("<button />").addClass("mino_button").text("Cancel").on('tap',function(){
-			type_view.cancel();
-		}).hide()
+			type_view.cancel_press();
+		}).hide(),
+		type_view.delete_button = $("<button />").addClass("mino_button").text("Delete").on('tap',function(){
+			type_view.delete_press();
+		})
 	)
 	type_view.edit_button.show();
 
@@ -22512,6 +22512,7 @@ TypeView.prototype.populate = function(data){
 	var type_view = this;
 
 	type_view.type_data = data;
+	console.log("type_view.type_data",type_view.type_data);
 	type_view.base_data = JSON.parse(JSON.stringify(type_view.type_data));
 
 	type_view.browser.address_bar.populate_path_buttons(type_view.name);
@@ -22529,7 +22530,40 @@ TypeView.prototype.populate = function(data){
 
 }
 
-TypeView.prototype.edit = function(){
+TypeView.prototype.delete_press = function(){
+	var type_view = this;
+
+	var modal = new Modal({
+		title: "Delete Type?"
+	});
+
+	modal.bottom_bar.append(
+		$("<button />").addClass("mino_button").text("Delete").on('tap',function(event){
+			type_view.perform_delete(function(err, res){
+				SAFE.load_url(SAFE.path+"?types", true);
+				modal.close();
+			})
+		})
+	)
+}
+
+TypeView.prototype.perform_delete = function(callback){
+	var type_view = this;
+
+	api_request({
+		"function" : "delete_type",
+		"parameters" : {
+			"type_name" : type_view.type_data.name
+		}
+	},function(err, response){
+		console.log("err ",err);
+		console.log("response ",response);
+
+		callback(err, response);
+	})
+}
+
+TypeView.prototype.edit_press = function(){
 	var type_view = this;
 
 	type_view.enable();
@@ -22589,7 +22623,7 @@ TypeView.prototype.remove = function(){
 	type_view.type_field.remove();
 }
 
-TypeView.prototype.save = function(){
+TypeView.prototype.save_press = function(){
 	var type_view = this;
 
 	var value = type_view.val();
@@ -22620,7 +22654,7 @@ TypeView.prototype.save = function(){
 }
 
 
-TypeView.prototype.cancel = function(){
+TypeView.prototype.cancel_press = function(){
 	var type_view = this;
 
 	if(type_view.options.create){
