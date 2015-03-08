@@ -4,7 +4,7 @@ var User = require('./models/User');
 var Session = require('../ui_server/models/Session');
 var Permission = require('./handlers/AddPermissionsHandler/Permission');
 var Type = require('./models/Type');
-var Signal = require('./models/Signal');
+var DynamicSignal = require('./models/DynamicSignal');
 
 module.exports = function(api, callback){
 
@@ -87,7 +87,7 @@ module.exports = function(api, callback){
                             api.handlers.save_type(api, {
                                 "username": "Mino"
                             }, {
-                                type: Signal.rule_definition
+                                type: DynamicSignal.rule_definition
                             }, function(signal_type_err, signal_type_res){
                                 logger.log(JSON.stringify(signal_type_err,null,4), signal_type_res);
                                 

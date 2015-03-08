@@ -10,5 +10,6 @@ describe('MinoDB', function() {
 	require('./models/models.js');
 	require('./api/api.js');
     require('./plugins/plugins.js')
+    require('./signals/signals.js')
     require('./utils/class_to_string');
 });

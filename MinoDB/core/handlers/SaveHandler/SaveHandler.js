@@ -7,7 +7,6 @@ var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var FolderChecker = require('../../models/FolderChecker');
 var SaveObject = require('./SaveObject')
 var logger = require('tracer').console();
-var Signal = require('../../models/Signal');
 
 function SaveHandler(api, user, parameters, options, callback){
     var sh = this;
@@ -230,7 +229,7 @@ SaveHandler.prototype.do_saving = function(callback){
                 sh.finished_saving();
             }
 
-            Signal.trigger(sh.api, sh.user, "save", save_object.saving_json, function(err, res) {
+            sh.api.minodb.signal_manager.trigger(sh.user, "save", save_object.saving_json, function(err, res) {
                 logger.log(err,res);
             })
         });

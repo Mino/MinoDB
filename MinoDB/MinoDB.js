@@ -4,6 +4,7 @@ var express = require('express');
 var errorHandler = require('errorhandler');
 
 var PluginManager = require('./PluginManager');
+var SignalManager = require('./SignalManager');
 
 var Core = require('./core/Core');
 var AdminServer = require('../default_plugins/admin_server/AdminServer');
@@ -55,6 +56,8 @@ function MinoDB(config, username /*optional*/){
         new APIServer({}),
         new BrowserServer({})
     );
+
+    mdb.signal_manager = new SignalManager(mdb);
 }
 
 MinoDB.prototype.add_plugin = function(){
@@ -145,5 +148,8 @@ MinoDB.prototype.get_plugin_scripts = function(mino_path) {
     logger.log("SCRIPTS", scripts);
     return scripts;
 }
+
+MinoDB.StaticSignal = require('./core/models/StaticSignal');
+MinoDB.DynamicSignal = require('./core/models/DynamicSignal');
 
 module.exports = MinoDB;
