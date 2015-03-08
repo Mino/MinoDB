@@ -56,35 +56,37 @@ SignalManager.prototype.trigger = function(user, handler, object, callback) {
 
 
 	//Triggering dynamic signals
-	//TODO disable from settings
-
-	var query = {
-		"$or": [
-		    {
-		        "path": "/" + user.username + "/signals/",
-		        "mino_signal.handlers": handler,
-		        "mino_signal.paths": {
-		            "$in": path.sub_paths
-		        },
-		        "mino_signal.include_subfolders": true
-		    },
-		    {
-		        "path": "/" + user.username + "/signals/",
-		        "mino_signal.handlers": handler,
-		        "mino_signal.paths": path.toString()
-		    }
-		]
-	}
-
-	logger.log(JSON.stringify(query, null, 4));
-
-	sm.mino_db.api.ds.object_collection.find(query).toArray(function(err, res) {
-		logger.log(err,res);
-		for (var i=0; i<res.length; i++) {
-			var signal = new DynamicSignal(res[i]);
-			signal.trigger(object, sm);
+	
+	if (sm.mino_db.dynamic_signals_enabled) {
+		var query = {
+			"$or": [
+			    {
+			        "path": "/" + user.username + "/signals/",
+			        "mino_signal.handlers": handler,
+			        "mino_signal.paths": {
+			            "$in": path.sub_paths
+			        },
+			        "mino_signal.include_subfolders": true
+			    },
+			    {
+			        "path": "/" + user.username + "/signals/",
+			        "mino_signal.handlers": handler,
+			        "mino_signal.paths": path.toString()
+			    }
+			]
 		}
-	})
+
+		logger.log(JSON.stringify(query, null, 4));
+
+		sm.mino_db.api.ds.object_collection.find(query).toArray(function(err, res) {
+			logger.log(err,res);
+			for (var i=0; i<res.length; i++) {
+				var signal = new DynamicSignal(res[i]);
+				signal.trigger(object, sm);
+			}
+		})
+	}
+	
 }
 
 module.exports = SignalManager;

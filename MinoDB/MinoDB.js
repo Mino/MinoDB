@@ -57,6 +57,7 @@ function MinoDB(config, username /*optional*/){
         new BrowserServer({})
     );
 
+    mdb.dynamic_signals_enabled = config.dynamic_signals_enabled || true;
     mdb.signal_manager = new SignalManager(mdb);
 }
 
