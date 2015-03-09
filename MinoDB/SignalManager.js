@@ -59,10 +59,10 @@ SignalManager.prototype.trigger = function(user, handler, object, callback) {
 	
 	if (sm.mino_db.dynamic_signals_enabled) {
 		var query = {
+	        "path": "/" + user.username + "/signals/",
+	        "mino_signal.handlers": handler,
 			"$or": [
 			    {
-			        "path": "/" + user.username + "/signals/",
-			        "mino_signal.handlers": handler,
 			        "mino_signal.paths": {
 			            "$in": path.sub_paths
 			        },
@@ -70,7 +70,6 @@ SignalManager.prototype.trigger = function(user, handler, object, callback) {
 			    },
 			    {
 			        "path": "/" + user.username + "/signals/",
-			        "mino_signal.handlers": handler,
 			        "mino_signal.paths": path.toString()
 			    }
 			]
