@@ -50,6 +50,7 @@ server.listen(5001);
 
 You also need [MongoDB](http://www.mongodb.org/) for running the example.
 
+[Other examples](#examples).
 
 Documentation
 ======
@@ -175,4 +176,5 @@ If MinoDB was mounted under ```/mino/``` (i.e. ```server.use('/mino/', mino.serv
 ##Signals
 
 ##Examples
-
+* [Mino Calendar example](https://github.com/bestan/mino-calendar-example)
+* [Mino CMS example](https://github.com/bestan/mino-cms-example)
