@@ -55,11 +55,57 @@ Documentation
 ======
 ##General concepts
 
-###Paths
-###Types
 ###Objects
+Both the [items](#items) that store data and the [folders](#folders) that create hierarchy are objects.
+
+Every object has the following fields:
+* _id - The ID of the object.
+* name - The name of the object. It must be unique to the object's path.
+* path - The [path](#paths) of the object. It is the ```full_path``` of the parent [folders](#folders).
+* folder - A boolean indicating whether or not the object is a [folder](#folders).
+
 ###Items
+Items are [objects](#objects) and as such have an ```_id```, ```name``` and ```path```. Their ```folder``` key is set to false.
+
+Items are used to hold data defined by [types](#types). 
+
 ###Folders
+Folders are used to organize your data. Creating a folder with the full path ```/my_app/orders/``` allows you to save other [objects](#objects) into this path (e.g. ```/my_app/orders/order_1234```).
+
+Folders are [objects](#objects) and as such have an ```_id```, ```name``` and ```path```. Their ```folder``` value is set to true.
+
+Folders can contain both other folders and [items](#items). Unlike [items](#items), folders cannot be used to store data using [types](#types).
+
+###Paths
+Paths are built from the forward-slash (```/```) delimited [folder](#folders) names of an [object](objects)'s ancestors.
+
+A ```full_path``` is the concatenation (joining) of the ```path``` and the ```name``` of the [object](objects). An example is shown below using an [item](#items) named ```John Smith```:
+
+```javascript
+{
+    "name" : "John Smith",
+    "path" : "/my_app/people/",
+    "full_path" : "/my_app/people/John Smith"
+    ...
+}
+```
+
+###Types
+Type defines a JSON schema for the data that is stored by [item](#items). Each [item](#items) can contain several types.
+
+[Item](#items) implementing a type will have type's name as a key that stores type's data. For example, if name of the type is ```custom_type```, then an item would look like this:
+```javascript
+{
+    "_id": 123,
+    "name" : "Some item",
+    "path" : "/my_app/",
+    "full_path" : "/my_app/Some item",
+    "folder": false,
+    "custom_type": <CUSTOM_TYPE_DATA>
+}
+```
+
+Types are powered by [fieldval-rules](https://github.com/FieldVal/fieldval-rules-js).
 
 ##MinoDB
 
