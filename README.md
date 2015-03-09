@@ -6,7 +6,7 @@ MinoDB is an extensible database layer for web apps. Utilizing [MongoDB](http://
 Main features:
 * Familiar folder structure - easy to organise and view your data.
 * Reusable database schema. Create forms and validate JSON objects with a few lines of code.
-* UI for your data - administrate all your data without writing any code. 
+* UI for your data - an admin interface that your non-technical colleagues can use without having to building one from scratch.
 * Users and permissions out of the box
 * Plugins - customise and add functionality with plugins. Building one is as easy as building an express app.
 * Signals - listen to data changes within a folder. Extremely useful for integrating with Slack, Trello, Zapier and others.
