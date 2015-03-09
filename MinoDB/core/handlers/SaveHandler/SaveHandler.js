@@ -228,6 +228,10 @@ SaveHandler.prototype.do_saving = function(callback){
             if(sh.completed===sh.total){
                 sh.finished_saving();
             }
+
+            sh.api.minodb.signal_manager.trigger(sh.user, "save", save_object.saving_json, function(err, res) {
+                logger.log(err,res);
+            })
         });
     }    
 }
