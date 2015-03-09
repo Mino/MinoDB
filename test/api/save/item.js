@@ -153,14 +153,14 @@ it('should throw an error if I save an object with a non-existant type', functio
         }
     }, function(error, response) {
         logger.log(JSON.stringify(error, null, 4), error);
-        assert.deepEqual(error,{
+        assert.deepEqual(error, {
             "invalid": {
                 "parameters": {
                     "invalid": {
                         "objects": {
                             "invalid": {
                                 "0": {
-                                    "unrecognized": {
+                                    "invalid": {
                                         "non-existant_type": {
                                             "error_message": "Unrecognized field.",
                                             "error": 3
