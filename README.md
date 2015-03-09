@@ -1,7 +1,21 @@
 MinoDB
 ======
 
-MinoDB is an extensible database layer for web apps. MinoDB is for startups and projects that need the freedom of MongoDB combined with an intuitive interface designed for both developers and non-developers. It’s modular and designed to be extended with plugins - both your own and from third-parties.
+MinoDB is an extensible database layer for web apps. Utilizing [MongoDB](http://www.mongodb.org/)'s freedom, MinoDB adds well-designed structure providing power of building apps extremely faster.
+
+Main features:
+* Familiar folder structure - easy to organise and view your data.
+* Reusable database schema. Create forms and validate JSON objects with a few lines of code.
+* UI for your data - administrate all your data without writing any code. 
+* Users and permissions out of the box
+* Plugins - customise and add functionality with plugins. Building one is as easy as building an express app.
+* Signals - listen to data changes within a folder. Extremely useful for integrating with Slack, Trello, Zapier and others.
+
+MinoDB is for startups and developers who need to build high quality web apps extremely fast. It doesn't get in your way - it's completely up to you to structure your code. When MinoDB APIs aren't good enough - you can call MongoDB in any way you're used too.
+
+Use cases:
+* Primary data storage
+* Secondary data storage (i.e. CMS)
 
 Installation
 =====
