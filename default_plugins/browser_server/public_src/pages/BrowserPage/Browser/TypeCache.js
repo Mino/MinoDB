@@ -43,5 +43,6 @@ TypeCache.prototype.load = function(name, callback) {
 
 			callback(null,type);
 		}
+		delete rc.loading[name];
 	})
 };

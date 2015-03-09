@@ -96,7 +96,9 @@ ItemView.prototype.populate = function(data){
 	}
 
 	for(var i in item_view.sections){
-		item_view.remove_section(i);
+		if(item_view.sections.hasOwnProperty(i)){
+			item_view.remove_section(i);
+		}
 	}
 
 	for(var key in data){
