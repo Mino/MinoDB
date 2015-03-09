@@ -1,7 +1,7 @@
 MinoDB
 ======
 
-MinoDB is an extensible database layer for web apps. Utilizing [MongoDB](http://www.mongodb.org/)'s freedom, MinoDB adds well-designed structure providing power of building apps extremely faster.
+MinoDB is an extensible database layer for web apps. Utilizing [MongoDB](http://www.mongodb.org/)'s freedom, MinoDB adds well-designed structure - providing power of building apps extremely faster.
 
 Main features:
 * Familiar folder structure - easy to organise and view your data.
@@ -147,7 +147,7 @@ Types are powered by [fieldval-rules](https://github.com/FieldVal/fieldval-rules
 ###search()
 
 ##Plugins
-MinoDB is designed to be extended with plugins. In fact, most of the core functionality is implemented as distinct plugins, which are added by default. Default plugins include:
+MinoDB is designed to be extended with plugins. In fact, most of the out-of-the-box functionality is implemented as distinct plugins, which are added by default. Default plugins include:
 * AdminServer - server used for plugin configuration
 * ApiServer - server that exposes MinoDB calls as an API
 * BrowserServer - server that is used for viewing and modifying the data
