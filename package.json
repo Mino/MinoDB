@@ -16,7 +16,7 @@
     "minosdk" : "MarcusLongmuir/MinoSDK",
     "tracer": "*",
     "fieldval" : "0.4.0",
-    "fieldval-rules" : "0.4.0",
+    "fieldval-rules" : "FieldVal/fieldval-rules-js#develop",
     "extend": "MarcusLongmuir/extend"
   },
   "devDependencies": {
