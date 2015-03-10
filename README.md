@@ -272,6 +272,9 @@ BrowserServer.prototype.init = function(minodb){
 ```
 If MinoDB was mounted under ```/mino/``` (i.e. ```server.use('/mino/', mino.server())```) and ```bs.path = 'browser'```, then URL of the mounted plugin server ```bs.express_server``` will be ```/mino/browser/```
 
+####get_scripts()
+Should return a list of script URLs that should be loaded in the browser when a specific page integrates with the plugin.
+
 ##Signals
 
 ##Examples
