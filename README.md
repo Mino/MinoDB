@@ -6,16 +6,19 @@ MinoDB is an extensible database layer for web apps. Utilizing [MongoDB](http://
 Main features:
 * Familiar folder structure - easy to organise and view your data.
 * Reusable database schema. Create forms and validate JSON objects with a few lines of code.
-* UI for your data - an admin interface that your non-technical colleagues can use without having to building one from scratch.
 * Users and permissions out of the box
+* UI for your data - an admin interface that your non-technical colleagues can use without having to building one from scratch.
 * Plugins - customise and add functionality with plugins. Building one is as easy as building an express app.
 * Signals - listen to data changes within a folder. Extremely useful for integrating with Slack, Trello, Zapier and others.
+* Built-in validation powered by [FieldVal](https://github.com/FieldVal/fieldval-js)
 
 MinoDB is for startups and developers who need to build high quality web apps extremely fast. It doesn't get in your way - it's completely up to you to structure your code. When MinoDB APIs aren't good enough - you can call MongoDB in any way you're used too.
 
 Use cases:
 * Primary data storage
-* Secondary data storage (i.e. CMS)
+* Secondary data storage (i.e. CMS or storage for calendar)
+
+###Notice: ALPHA release - use at your own risk.
 
 Installation
 =====
@@ -124,27 +127,109 @@ Types are powered by [fieldval-rules](https://github.com/FieldVal/fieldval-rules
 
 ##MinoDB
 
-###add_plugin()
+###add_plugin([plugins..])
+Adds plugins to a MinoDB instance. Read [plugins](#plugins) for more info.
 
-###add_field_type()
+###add_field_type(rule_field)
+Adds a custom validation rule. Read fieldval-rules docs for more info.
 
 ###server()
+Returns main express server used by MinoDB instance.
 
-###internal_server()
+###get_plugin_scripts(mino_path)
+Returns a list of script URLs that were registered by plugins as browser dependencies. Usually scripts are served by a plugin server. Read [plugins](#plugins) for more info.
 
-###get_plugin_scripts()
+###call(parameters, callback)
+Calls MinoDB API. Parameters should be in a following format:
+```javascript
+{
+    "function": <FUNCTION_NAME>,
+    "parameters": <API_CALL_PARAMETERS>
+}
+```
 
-###call()
+Available functions:
+* get
+* save
+* delete
+* search
+* save_type
+* delete_type
+* add_permissions
+* create_user
 
-###get()
+###get(addresses, callback)
+Helper function for the ```get``` API function. ```addresses``` is a list of objects to return.
 
-###save()
+```call``` alternative:
+```javascript
+minodb.call({
+    "function": "get",
+    "parameters": {
+        "addresses": addresses
+    }
+}, callback);
+```
 
-###save_type()
+###save(objects, callback)
+Helper function for the ```save``` API function. ```objects``` is a list of [objects](#objects) to save.
 
-###create_user()
+```call``` alternative:
+```javascript
+minodb.call({
+    "function": "save",
+    "parameters": {
+        "objects": objects
+    }
+}, callback);
+```
 
-###search()
+###save_type(type, callback)
+Helper function for the ```save_type``` API function. ```type``` is a valid fieldval-rule.
+
+```call``` alternative:
+```javascript
+minodb.call({
+    "function": "save_type",
+    "parameters": {
+        "type": type
+    }
+}, callback);
+```
+
+###create_user(user, callback)
+Helper function for the ```create_user``` API function. ```user``` is an object with the following format:
+```javascript
+{
+    "username": <USERNAME>,
+    "email": <EMAIL>,
+    "password": <PASSWORD>
+}
+```
+
+```call``` alternative:
+```javascript
+minodb.call({
+    "function": "create_user",
+    "parameters": {
+        "user": user
+    }
+}, callback);
+```
+
+###search(paths, callback)
+Helper function for the ```search``` API function that returns all objects within specified paths. ```paths``` is a list of folder paths.
+
+```call``` alternative:
+```javascript
+minodb.call({
+    "function": "search",
+    "parameters": {
+        "paths": paths
+    }
+}, callback);
+```
+
 
 ##Plugins
 MinoDB is designed to be extended with plugins. In fact, most of the out-of-the-box functionality is implemented as distinct plugins, which are added by default. Default plugins include:
