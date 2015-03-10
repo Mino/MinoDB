@@ -127,18 +127,6 @@ Types are powered by [fieldval-rules](https://github.com/FieldVal/fieldval-rules
 
 ##MinoDB
 
-###add_plugin([plugins..])
-Adds plugins to a MinoDB instance. Read [plugins](#plugins) for more info.
-
-###add_field_type(rule_field)
-Adds a custom validation rule. Read fieldval-rules docs for more info.
-
-###server()
-Returns main express server used by MinoDB instance.
-
-###get_plugin_scripts(mino_path)
-Returns a list of script URLs that were registered by plugins as browser dependencies. Usually scripts are served by a plugin server. Read [plugins](#plugins) for more info.
-
 ###call(parameters, callback)
 Calls MinoDB API. Parameters should be in a following format:
 ```javascript
@@ -229,6 +217,18 @@ minodb.call({
     }
 }, callback);
 ```
+
+###add_plugin([plugins..])
+Adds plugins to a MinoDB instance. Read [plugins](#plugins) for more info.
+
+###add_field_type(rule_field)
+Adds a custom validation rule. Read fieldval-rules docs for more info.
+
+###get_plugin_scripts(mino_path)
+Returns a list of script URLs that were registered by plugins as browser dependencies. Usually scripts are served by a plugin server. Read [plugins](#plugins) for more info.
+
+###server()
+Returns main express server used by MinoDB instance.
 
 
 ##Plugins
