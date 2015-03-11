@@ -136,6 +136,13 @@ var mino = new MinoDB(config, [username]);
 
 ```username``` specifies which user should be making API calls when running ```call()``` or its helper functions.
 
+###server()
+Returns main express server used by MinoDB instance. You should mount this into your express server:
+
+```javascript
+server.use('/mino/', mino.server())
+```
+
 ###call(parameters, callback)
 Calls MinoDB API. Parameters should be in a following format:
 ```javascript
@@ -158,6 +165,10 @@ Available functions:
 ###get(addresses, callback)
 Helper function for the ```get``` API function. ```addresses``` is a list of objects to return.
 
+```javascript
+mino.get(['/my_app/item'], callback);
+```
+
 ```call``` alternative:
 ```javascript
 mino.call({
@@ -170,6 +181,15 @@ mino.call({
 
 ###save(objects, callback)
 Helper function for the ```save``` API function. ```objects``` is a list of [objects](#objects) to save.
+
+```javascript
+mino.save([{
+    "name" : "item",
+    "path" : "/my_app/",
+    "full_path" : "/my_app/item",
+    "folder": false
+}], callback);
+```
 
 ```call``` alternative:
 ```javascript
@@ -217,6 +237,10 @@ mino.call({
 ###search(paths, callback)
 Helper function for the ```search``` API function that returns all objects within specified paths. ```paths``` is a list of folder paths.
 
+```javascript
+mino.search(['/my_app/item'], callback);
+```
+
 ```call``` alternative:
 ```javascript
 mino.call({
@@ -241,9 +265,6 @@ Adds a custom validation rule.
 
 ###get_plugin_scripts(mino_path)
 Returns a list of script URLs that were registered by plugins as browser dependencies. Usually scripts are served by a plugin server. Read [plugins](#plugins) for more info.
-
-###server()
-Returns main express server used by MinoDB instance.
 
 
 ##Plugins
