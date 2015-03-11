@@ -22,7 +22,7 @@ describe('Dynamic signals', function() {
 				path: "/testuser/folder/",
 			}
 
-			globals.mino.signal_manager.add_dynamic_signal_callback("signal_no_subfolders", function(object) {
+			globals.mino.add_dynamic_signal_callback("signal_no_subfolders", function(object) {
 				assert.equal(object.name, save_object.name);
 				assert.equal(object.path, save_object.path);
 				done();
@@ -53,7 +53,7 @@ describe('Dynamic signals', function() {
 				path: "/testuser/folder/inner_folder/",
 			}
 
-			globals.mino.signal_manager.add_dynamic_signal_callback("signal_with_subfolders", function(object) {
+			globals.mino.add_dynamic_signal_callback("signal_with_subfolders", function(object) {
 				assert.equal(object.name, save_object.name);
 				assert.equal(object.path, save_object.path);
 				done();

@@ -23,7 +23,7 @@ describe("Static signal", function() {
 			}
 		})
 
-		globals.mino.signal_manager.add_static_signal(signal);
+		globals.mino.add_static_signal(signal);
 
 		globals.sdk.with_user("testuser").save([save_object], function(err, res) {
 			assert.equal(err, null);
@@ -50,7 +50,7 @@ describe("Static signal", function() {
 			}
 		})
 			
-		globals.mino.signal_manager.add_static_signal(signal);
+		globals.mino.add_static_signal(signal);
 
 		globals.sdk.with_user("testuser").save([save_object], function(err, res) {
 			assert.equal(err, null);
