@@ -130,7 +130,7 @@ Types are powered by [fieldval-rules](https://github.com/FieldVal/fieldval-rules
 var mino = new MinoDB(config, [username]);
 ```
 
-```config``` is a JSON object that could have following keys:
+```config``` is a JSON object with following keys:
 * ```db_address``` - MongoDB URL (i.e. ```mongodb://127.0.0.1:27017/minodb```)
 * ```dynamic_signals_enabled``` - boolean specifying whether dynamic signals should be enabled. Default is ```true```. Read [signals](#signals) for more info.
 
@@ -160,7 +160,7 @@ Helper function for the ```get``` API function. ```addresses``` is a list of obj
 
 ```call``` alternative:
 ```javascript
-minodb.call({
+mino.call({
     "function": "get",
     "parameters": {
         "addresses": addresses
@@ -173,7 +173,7 @@ Helper function for the ```save``` API function. ```objects``` is a list of [obj
 
 ```call``` alternative:
 ```javascript
-minodb.call({
+mino.call({
     "function": "save",
     "parameters": {
         "objects": objects
@@ -186,7 +186,7 @@ Helper function for the ```save_type``` API function. ```type``` is a valid fiel
 
 ```call``` alternative:
 ```javascript
-minodb.call({
+mino.call({
     "function": "save_type",
     "parameters": {
         "type": type
@@ -206,7 +206,7 @@ Helper function for the ```create_user``` API function. ```user``` is an object 
 
 ```call``` alternative:
 ```javascript
-minodb.call({
+mino.call({
     "function": "create_user",
     "parameters": {
         "user": user
@@ -219,7 +219,7 @@ Helper function for the ```search``` API function that returns all objects withi
 
 ```call``` alternative:
 ```javascript
-minodb.call({
+mino.call({
     "function": "search",
     "parameters": {
         "paths": paths
@@ -227,11 +227,17 @@ minodb.call({
 }, callback);
 ```
 
+###add_static_signal(static_signal)
+Adds a static signal. Read [signals](#signals) for more info.
+
+###add_dynamic_signal_callback(name, callback)
+Adds a dynamic signal. Read [signals](#signals) for more info.
+
 ###add_plugin([plugins..])
 Adds plugins to a MinoDB instance. Read [plugins](#plugins) for more info.
 
 ###add_field_type(rule_field)
-Adds a custom validation rule. Read fieldval-rules docs for more info.
+Adds a custom validation rule.
 
 ###get_plugin_scripts(mino_path)
 Returns a list of script URLs that were registered by plugins as browser dependencies. Usually scripts are served by a plugin server. Read [plugins](#plugins) for more info.
@@ -249,6 +255,7 @@ MinoDB is designed to be extended with plugins. In fact, most of the out-of-the-
 ###Mino plugins
 * [MinoVal](https://github.com/MarcusLongmuir/MinoVal)
 * [MinoCMS](https://github.com/bestan/MinoCMS)
+* MinoWebhooks
 
 ###Custom plugins
 Custom plugin is an object that implements following methods:
@@ -270,7 +277,7 @@ BrowserServer.prototype.info = function(){
 ```
 
 ####init(minodb)
-Should initialise the pluign. First argument is an instance of MinoDB. It is common to store minodb instance for future use and mount any additoinal servers if necessary. For example:
+Should initialise the plugin. First argument is an instance of MinoDB. It is common to store minodb instance for future use and mount any additoinal servers if necessary. For example:
 ```javascript
 BrowserServer.prototype.init = function(minodb){
     var bs = this;
@@ -285,6 +292,49 @@ If MinoDB was mounted under ```/mino/``` (i.e. ```server.use('/mino/', mino.serv
 Should return a list of script URLs that should be loaded in the browser when a specific page integrates with the plugin.
 
 ##Signals
+Signals allow listening to changes within specific paths. Due to having several places where your data can be modified (i.e. Browser, your code and plugins), signals are incredibly useful for performing actions such as sending notifications when the data has changed. 
+
+There are two types of signals - static and dynamic.
+
+###Static signals
+Static signals are defined in the code.
+```javascript
+var signal = new StaticSignal({
+	paths: ["/my_app/events/"],
+	include_subfolders: false,
+	handlers: ["save"],
+	callback: function(object) {
+		//Executed code
+	}
+});
+mino.add_static_signal(signal);
+```
+
+* ```paths``` specifies which folder should be watched (i.e. new item in this folder would trigger the signal).
+* ```include_subfolders``` specifies whether subfolders within ```paths``` should be watched as well.
+* ```handlers``` specify which actions should trigger the signal (i.e. ```save```, ```delete```)
+* ```callback``` is a function that will be called when the signal is triggered. ```object``` is a MinoDB [object](#objects).
+
+###Dynamic signals
+Dynamic signals are MinoDB [items](#items) that are stored in ```/<USERNAME>/signals/``` folder. They can be added and removed without re-deploying the code - simply navigate to ```signals``` folder in the browser and make your changes. Alternatively, you can create and modify dynamic signals in your code with Mino API calls (again, it's just an item).
+
+Dynamic signals need to include ```mino_signal``` type.
+
+```javascript
+{
+	name: "signal_with_subfolders",
+	path: "/testuser/signals/",
+	mino_signal: {
+		paths: ["/testuser/folder/"],
+		include_subfolders: true,
+		handlers: ["save"],
+	}
+}
+```
+
+Dynamic signals work great with MinoWebhooks plugin, which makes it easy to integrate services like Slack, Trello, Zapier without re-deploying code.
+
+**Note**: dynamic signals are great for rapid development, but they make additional database calls on every API call, which might impact performance of the application. When this becomes an issue, it is possible to disable them by passing ```dynamic_signals_enabled: false``` to MinoDB config.
 
 ##Examples
 * [Mino Calendar example](https://github.com/bestan/mino-calendar-example)
