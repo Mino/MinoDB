@@ -126,6 +126,15 @@ Type defines a JSON schema for the data that is stored by [item](#items). Each [
 Types are powered by [fieldval-rules](https://github.com/FieldVal/fieldval-rules-js).
 
 ##MinoDB
+```javascript
+var mino = new MinoDB(config, [username]);
+```
+
+```config``` is a JSON object that could have following keys:
+* ```db_address``` - MongoDB URL (i.e. ```mongodb://127.0.0.1:27017/minodb```)
+* ```dynamic_signals_enabled``` - boolean specifying whether dynamic signals should be enabled. Default is ```true```. Read [signals](#signals) for more info.
+
+```username``` specifies which user should be making API calls when running ```call()``` or its helper functions.
 
 ###call(parameters, callback)
 Calls MinoDB API. Parameters should be in a following format:
