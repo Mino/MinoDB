@@ -5,7 +5,7 @@ MinoDB is an extensible database layer for web apps. Utilizing [MongoDB](http://
 
 Main features:
 * Familiar folder structure - easy to organise and view your data.
-* Reusable database schema. Create forms and validate JSON objects with a few lines of code.
+* Reusable database schema, which can be used for creating forms and validating JSON objects with a few lines of code.
 * Users and permissions out of the box
 * UI for your data - an admin interface that your non-technical colleagues can use without having to building one from scratch.
 * Plugins - customise and add functionality with plugins. Building one is as easy as building an express app.
@@ -13,10 +13,6 @@ Main features:
 * Built-in validation powered by [FieldVal](https://github.com/FieldVal/fieldval-js)
 
 MinoDB is for startups and developers who need to build high quality web apps extremely fast. It doesn't get in your way - it's completely up to you to structure your code. When MinoDB APIs aren't good enough - you can call MongoDB in any way you're used too.
-
-Use cases:
-* Primary data storage
-* Secondary data storage (i.e. CMS or storage for calendar)
 
 ###Notice: ALPHA release - use at your own risk.
 
@@ -271,7 +267,7 @@ Returns a list of script URLs that were registered by plugins as browser depende
 MinoDB is designed to be extended with plugins. In fact, most of the out-of-the-box functionality is implemented as distinct plugins, which are added by default. Default plugins include:
 * AdminServer - server used for plugin configuration
 * ApiServer - server that exposes MinoDB calls as an API
-* BrowserServer - server that is used for viewing and modifying the data
+* BrowserServer - server that is used for viewing and modifying the data. Accessible on ```http://<SERVER_URL>/<MINO_PATH>/browser/``` (i.e. ```http://localhost:5002/mino/browser/```).
 
 ###Mino plugins
 * [MinoVal](https://github.com/MarcusLongmuir/MinoVal)
