@@ -4,7 +4,7 @@
 
 	padding-top: 0px;
 	padding-bottom: 0px;
-	margin-bottom: 10px;
+	margin-top: 10px;
 
 	>.fv_field_title{
 		background-color: @item_section_title;
@@ -16,6 +16,11 @@
 
 		a{
 			color: white;
+			word-wrap: break-word;
+		}
+
+		.mino_button{
+			float: right;
 		}
 	}
 
@@ -40,6 +45,15 @@
 	&.fv_object_field{
 		>.fv_input_holder{
 			padding-right: 10px;
+
+			>.fv_field{
+				&:first-child{
+					border-top: 0px;
+				}
+				&:last-child{
+					border-bottom: 0px;
+				}
+			}
 		}
 	}
 
