@@ -15700,7 +15700,7 @@ function FVField(name, options) {
     } else {
         field.element = $("<div />").addClass("fv_field").data("field",field);
     }
-    field.title = $("<div />").addClass("fv_field_title").text(field.name)
+    field.title = $("<div />").addClass("fv_field_title").text(field.name?field.name:"")
     if(!field.name){
         //Field name is empty
         field.title.hide();
@@ -18086,15 +18086,14 @@ FVProxyField.prototype.init = function(){
         field.inner_field.init();
     }
 }
-FVProxyField.prototype.replace = function(inner_field, options){
+FVProxyField.prototype.replace = function(inner_field){
     var field = this;
-
-    options = options || {};
 
     field.inner_field = inner_field;
     if(field.init_called){
         field.inner_field.init();
     }
+
 
     //Carry any pre/appended elements into the new field
     var before = [];
@@ -18189,9 +18188,7 @@ FVProxyField.prototype.replace = function(inner_field, options){
         field.on_replace_callbacks[i]();
     }
 
-    if (!options.ignore_change) {
-        field.did_change(options);
-    }
+    field.did_change();
 }
 
 FVProxyField.prototype.on_replace = function(callback){
@@ -18228,8 +18225,6 @@ function FVForm(fields){
 	});
 
 	form.element.addClass("fv_form");
-
-	form.fields_element = form.element;
 }
 FVForm.button_event = 'click';
 FVForm.is_mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|nokia|series40|x11|opera mini/i.test(navigator.userAgent.toLowerCase());
@@ -21837,7 +21832,10 @@ ItemSection.prototype.enable = function(){
 
     if(section.field){
         section.field.enable();
+    }
+    if(section.remove_button){
         section.remove_button.show();
+        section.remove_button_padding.show();
     }
 }
 
@@ -21848,7 +21846,10 @@ ItemSection.prototype.disable = function(){
 
     if(section.field){
         section.field.disable();
+    }
+    if(section.remove_button){
         section.remove_button.hide();
+        section.remove_button_padding.hide();
     }
 }
 
@@ -21872,18 +21873,20 @@ ItemSection.prototype.style_section_form = function() {
     section.field.element.addClass("item_section");
 
     var title_text;
-    if(section.field.display_name){
+    if(section.type.display_name){
         title_text = section.type.display_name + " ("+section.type.name+")";
     } else {
         title_text = section.type.name;
     }
 
     section.field.title.empty().append(
+        section.remove_button_padding = $("<div />").addClass("remove_button_padding")
+        ,
         $("<a />",{
              "href": Site.path + section.type.name
         }).ajax_url().text(title_text)
         ,
-        section.remove_button = $("<button />").addClass("mino_button").text("Remove").on('tap',function(event){
+        section.remove_button = $("<button />").addClass("mino_button remove_button").text("Remove").on('tap',function(event){
             event.preventDefault();
             section.remove_press();
         }).hide()
@@ -21922,6 +21925,7 @@ ItemSection.prototype.populate_type = function(type){
     }
 
 }
+
 
 var object_keys = [
 	"_id",

@@ -52,7 +52,10 @@ ItemSection.prototype.enable = function(){
 
     if(section.field){
         section.field.enable();
+    }
+    if(section.remove_button){
         section.remove_button.show();
+        section.remove_button_padding.show();
     }
 }
 
@@ -63,7 +66,10 @@ ItemSection.prototype.disable = function(){
 
     if(section.field){
         section.field.disable();
+    }
+    if(section.remove_button){
         section.remove_button.hide();
+        section.remove_button_padding.hide();
     }
 }
 
@@ -87,18 +93,20 @@ ItemSection.prototype.style_section_form = function() {
     section.field.element.addClass("item_section");
 
     var title_text;
-    if(section.field.display_name){
+    if(section.type.display_name){
         title_text = section.type.display_name + " ("+section.type.name+")";
     } else {
         title_text = section.type.name;
     }
 
     section.field.title.empty().append(
+        section.remove_button_padding = $("<div />").addClass("remove_button_padding")
+        ,
         $("<a />",{
              "href": Site.path + section.type.name
         }).ajax_url().text(title_text)
         ,
-        section.remove_button = $("<button />").addClass("mino_button").text("Remove").on('tap',function(event){
+        section.remove_button = $("<button />").addClass("mino_button remove_button").text("Remove").on('tap',function(event){
             event.preventDefault();
             section.remove_press();
         }).hide()

@@ -5,7 +5,7 @@
 
 @pane_border: @mino_button_color;
 
-@item_section_title: #66AA99;
+@item_section_title: @mino_button_color_active;
 @item_section_border: @pane_border;
 
 @search_form_border: @pane_border;

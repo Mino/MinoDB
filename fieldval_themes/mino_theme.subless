@@ -1,18 +1,11 @@
 @import "../node_modules/fieldval-ui/themes/minimal.less";
 
-.fv_form{
-	.fv_field_container{
-		padding-top: 0px;
-		padding-bottom: 0px;
-
-		>.fv_field_title{
-			font-size: 14px;
-			.bold;
-		}
-
-		>.fv_field{
-			margin-top: 0px;
-			margin-bottom: 5px;
-		}
+.fv_field{
+	>.fv_field_title{
+		font-size: 14px;
+		.bold;
 	}
+
+	margin-top: 0px;
+	margin-bottom: 0px;
 }

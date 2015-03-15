@@ -15425,7 +15425,7 @@ function FVField(name, options) {
     } else {
         field.element = $("<div />").addClass("fv_field").data("field",field);
     }
-    field.title = $("<div />").addClass("fv_field_title").text(field.name)
+    field.title = $("<div />").addClass("fv_field_title").text(field.name?field.name:"")
     if(!field.name){
         //Field name is empty
         field.title.hide();
@@ -17811,15 +17811,14 @@ FVProxyField.prototype.init = function(){
         field.inner_field.init();
     }
 }
-FVProxyField.prototype.replace = function(inner_field, options){
+FVProxyField.prototype.replace = function(inner_field){
     var field = this;
-
-    options = options || {};
 
     field.inner_field = inner_field;
     if(field.init_called){
         field.inner_field.init();
     }
+
 
     //Carry any pre/appended elements into the new field
     var before = [];
@@ -17914,9 +17913,7 @@ FVProxyField.prototype.replace = function(inner_field, options){
         field.on_replace_callbacks[i]();
     }
 
-    if (!options.ignore_change) {
-        field.did_change(options);
-    }
+    field.did_change();
 }
 
 FVProxyField.prototype.on_replace = function(callback){
@@ -17953,8 +17950,6 @@ function FVForm(fields){
 	});
 
 	form.element.addClass("fv_form");
-
-	form.fields_element = form.element;
 }
 FVForm.button_event = 'click';
 FVForm.is_mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|nokia|series40|x11|opera mini/i.test(navigator.userAgent.toLowerCase());

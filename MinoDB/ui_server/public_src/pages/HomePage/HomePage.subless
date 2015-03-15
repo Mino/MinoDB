@@ -3,14 +3,40 @@
 	display: inline-block;
 	text-align: center;
 	width: 100%;
-	padding: 10px;
+
+	.header{
+		height: 40px;
+		width: 100%;
+		top: 0px;
+		z-index: 1000;
+		background-color: white;
+		box-sizing: border-box;
+		outline: 3px solid rgba(0,0,0,0.2);
+
+		.brand_name{
+			font-size: 30px;
+			line-height: 40px;
+			letter-spacing: -2px;
+			.bold;
+			color: #5a3a77;
+		}
+	}
+
+
+
 	form{
 		display: inline-block;
 		box-sizing: border-box;
 		width: 100%;
 		padding: 10px;
+		margin-top: 20px;
 		text-align: left;
 		background-color: white;
-		max-width: 700px;
+		max-width: 500px;
+
+		button{
+			display: inline-block;
+			text-align: center;
+		}
 	}
 }
