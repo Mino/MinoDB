@@ -43,7 +43,7 @@ gulp.task('docs', function() {
 
 gulp.task('watch', function(){
     gulp.watch('docs_src/**/**.*', ['docs']);
-    gulp.watch('fieldval_themes/**/**.*', ['default']);
+    gulp.watch(['fieldval_themes/**/**.*','common_elements/**/**.*','common_classes/**/**.*'], ['default']);
     gulp.start('browser_watch');
     gulp.start('admin_watch');
     gulp.start('ui_watch');
