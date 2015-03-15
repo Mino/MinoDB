@@ -7,20 +7,33 @@
 	margin-top: 10px;
 
 	>.fv_field_title{
-		background-color: @item_section_title;
+		background-color: white;
 		.bold;
-		color: white;
 		padding: 5px;
 		width: 100%;
 		box-sizing: border-box;
+		border-bottom: 1px solid @item_section_border;
 
 		a{
-			color: white;
+			color: @item_section_title;
 			word-wrap: break-word;
 		}
 
-		.mino_button{
+		.remove_button{
+			position: absolute;
+			right: 0px;
+			top: 0px;
+			min-height: 20px;
+			height: 30px;
+			line-height: 30px;
+			padding-top: 0px;
+			padding-bottom: 0px;
+		}
+
+		.remove_button_padding{
+			width: 60px;
 			float: right;
+			height: 19px;
 		}
 	}
 

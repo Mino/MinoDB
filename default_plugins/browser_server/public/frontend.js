@@ -21833,6 +21833,7 @@ ItemSection.prototype.enable = function(){
     if(section.field){
         section.field.enable();
         section.remove_button.show();
+        section.remove_button_padding.show();
     }
 }
 
@@ -21844,6 +21845,7 @@ ItemSection.prototype.disable = function(){
     if(section.field){
         section.field.disable();
         section.remove_button.hide();
+        section.remove_button_padding.hide();
     }
 }
 
@@ -21876,18 +21878,20 @@ ItemSection.prototype.populate_type = function(type){
         section.field.element.addClass("item_section");
 
         var title_text;
-        if(section.field.display_name){
+        if(type.display_name){
             title_text = type.display_name + " ("+type.name+")";
         } else {
             title_text = type.name;
         }
 
         section.field.title.empty().append(
+            section.remove_button_padding = $("<div />").addClass("remove_button_padding")
+            ,
             $("<a />",{
                  "href": Site.path + type.name
             }).ajax_url().text(title_text)
             ,
-            section.remove_button = $("<button />").addClass("mino_button").text("Remove").on('tap',function(event){
+            section.remove_button = $("<button />").addClass("mino_button remove_button").text("Remove").on('tap',function(event){
                 event.preventDefault();
                 section.remove_press();
             }).hide()

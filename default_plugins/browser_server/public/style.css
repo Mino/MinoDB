@@ -2289,14 +2289,14 @@ a {
   border: none;
   outline: none;
   min-height: 30px;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: bold;
   color: white;
   background-color: #5a3a77;
   cursor: pointer;
   margin: 0px;
 }
-.mino_button:active {
+.mino_button:hover {
   background-color: #9d4479;
 }
 .browser_page .browser .address_bar {
@@ -2337,12 +2337,12 @@ a {
   margin: 0px;
 }
 .browser_page .browser .address_bar .path_buttons .pathbutton {
-  cursor: pointer;
   display: inline-block;
   position: relative;
   height: 32px;
   vertical-align: top;
   white-space: nowrap;
+  cursor: pointer;
   -webkit-user-select: none;
   -khtml-user-select: none;
   -moz-user-select: none;
@@ -2359,9 +2359,11 @@ a {
   text-align: center;
   box-sizing: border-box;
   position: relative;
+  font-size: 12px;
   margin-right: 5px;
   text-decoration: none;
   color: #fff;
+  font-weight: bold;
 }
 .browser_page .browser .address_bar .path_buttons .pathbutton a:after {
   content: "";
@@ -2382,10 +2384,10 @@ a {
   left: 0;
   top: 0;
 }
-.browser_page .browser .address_bar .path_buttons .pathbutton a:active {
+.browser_page .browser .address_bar .path_buttons .pathbutton a:hover {
   background: #9d4479;
 }
-.browser_page .browser .address_bar .path_buttons .pathbutton a:active:after {
+.browser_page .browser .address_bar .path_buttons .pathbutton a:hover:after {
   border-left-color: #9d4479;
 }
 .browser_page .browser .address_bar .path_buttons :first-child a {
@@ -2553,19 +2555,31 @@ a {
   margin-top: 10px;
 }
 .browser_page .browser .view_container .item_view .item_section > .fv_field_title {
-  background-color: #9d4479;
+  background-color: white;
   font-weight: bold;
-  color: white;
   padding: 5px;
   width: 100%;
   box-sizing: border-box;
+  border-bottom: 1px solid #5a3a77;
 }
 .browser_page .browser .view_container .item_view .item_section > .fv_field_title a {
-  color: white;
+  color: #9d4479;
   word-wrap: break-word;
 }
-.browser_page .browser .view_container .item_view .item_section > .fv_field_title .mino_button {
+.browser_page .browser .view_container .item_view .item_section > .fv_field_title .remove_button {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  min-height: 20px;
+  height: 30px;
+  line-height: 30px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+.browser_page .browser .view_container .item_view .item_section > .fv_field_title .remove_button_padding {
+  width: 60px;
   float: right;
+  height: 19px;
 }
 .browser_page .browser .view_container .item_view .item_section > .fv_input_holder {
   width: 100%;
