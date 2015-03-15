@@ -26,13 +26,19 @@ var onError = function (err) {
 };
 
 gulp.task('test', function(cb){
-    gulp.src( [ 'test/test.js' ] )
-    .pipe( mocha( {
-        reporter: 'spec'
-    }))
+    gulp.src( [ 'MinoDB/**/*.js', '!MinoDB/ui_server/**/*' ] )
+    .pipe(istanbul())
+    .pipe(istanbul.hookRequire())
+    .on( 'finish', function () {
+        gulp.src( [ 'test/test.js' ] )
+        .pipe( mocha( {
+            // reporter: 'spec'
+        }))
+        .pipe(istanbul.writeReports())
+        .on('end', cb)
+        .on('error', gutil.log)
+    })
     .on('error', gutil.log)
-    .pipe(istanbul.writeReports())
-    .on('end', cb);
 });
 
 gulp.task('docs', function() {
