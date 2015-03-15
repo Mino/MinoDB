@@ -270,9 +270,8 @@ MinoDB is designed to be extended with plugins. In fact, most of the out-of-the-
 * BrowserServer - server that is used for viewing and modifying the data. Accessible on ```http://<SERVER_URL>/<MINO_PATH>/browser/``` (i.e. ```http://localhost:5002/mino/browser/```).
 
 ###Mino plugins
-* [MinoVal](https://github.com/MarcusLongmuir/MinoVal)
-* [MinoCMS](https://github.com/bestan/MinoCMS)
-* MinoWebhooks
+* [MinoVal](https://github.com/MarcusLongmuir/MinoVal) - validation and form creation with Mino types, custom validation rules and more.
+* [MinoCMS](https://github.com/bestan/MinoCMS) - basic CMS functionality. 
 
 ###Custom plugins
 Custom plugin is an object that implements following methods:
@@ -348,8 +347,6 @@ Dynamic signals need to include ```mino_signal``` type.
 	}
 }
 ```
-
-Dynamic signals work great with MinoWebhooks plugin, which makes it easy to integrate services like Slack, Trello, Zapier without re-deploying code.
 
 **Note**: dynamic signals are great for rapid development, but they make additional database calls on every API call, which might impact performance of the application. When this becomes an issue, it is possible to disable them by passing ```dynamic_signals_enabled: false``` to MinoDB config.
 
