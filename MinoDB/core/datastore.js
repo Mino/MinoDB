@@ -40,16 +40,18 @@ DataStore.prototype.connect = function(callback) {
 	}
 	ds.connecting = true;
 
-	MongoClient.connect(ds.config.address, function(err, mongo) {
+	MongoClient.connect(ds.config.address, function(err, mongo_connection) {
 	    if (err){
 	    	logger.log(err);
 	    	throw err;
 	    }
 
-	    ds.object_collection = mongo.collection('objects');
-	    ds.config_collection = mongo.collection('config');
-	    ds.type_collection = mongo.collection('types');
-	    ds.users_collection = mongo.collection('users');
+	    ds.mongo_connection = mongo_connection;
+
+	    ds.object_collection = ds.mongo_connection.collection('objects');
+	    ds.config_collection = ds.mongo_connection.collection('config');
+	    ds.type_collection = ds.mongo_connection.collection('types');
+	    ds.users_collection = ds.mongo_connection.collection('users');
 
 	    ds.object_collection.ensureIndex( { full_path: 1 }, { unique: true }, function(err,res){
 	    	logger.log(err, res);
@@ -77,12 +79,24 @@ DataStore.prototype.connect = function(callback) {
 			}
 		);
 
-	    // mongo.runCommand({shardCollection:"minods.objects", key: { full_path: 1 }}, function(err,res){
+	    // mongo_connection.runCommand({shardCollection:"minods.objects", key: { full_path: 1 }}, function(err,res){
 	    // 	logger.log(err);
 	    // 	logger.log(res);
 	    // })
 	});
 };
+
+DataStore.prototype.close = function(callback){
+	var ds = this;
+
+	if(ds.mongo_connection){
+		ds.mongo_connection.close(callback);
+	} else {
+		if(callback){
+			callback();
+		}
+	}
+}
 
 DataStore.prototype.get_id = function(callback){
 	var ds = this;

@@ -61,6 +61,12 @@ Core.prototype.connect = function(callback){
     })
 }
 
+Core.prototype.close = function(callback){
+    var core = this;
+
+    core.ds.close(callback);
+}
+
 Core.prototype.on_connected = function(callback){
     var core = this;
 
