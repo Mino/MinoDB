@@ -22734,13 +22734,21 @@ TypeView.prototype.resize = function(resize_obj){
 
 	type_view.type_field.form.element.toggleClass("rows", resize_obj.window_width>700)
 }
-function TypeSearchView(browser){
+function TypeSearchView(browser, options){
 	var tsv = this;
 
 	tsv.browser = browser;
 
+	console.log("TypeSearchView", options);
+
+	tsv.options = options || {};
+
+	tsv.pagination_controller = new PaginationController(tsv);
+
 	tsv.element = $("<div />").addClass("type_search_view").append(
-		tsv.results = $("<div />")
+		tsv.contents = $("<div />")
+		,
+		tsv.pagination_controller.element
 	);
 
 	browser.toolbar.element.empty().append(
@@ -22753,12 +22761,28 @@ function TypeSearchView(browser){
 	
 	browser.address_bar.populate_special_path_button("Types","?types","");
 
-	tsv.do_search();
+	tsv.load({});
 }
 
 TypeSearchView.prototype.init = function(){
 	var tsv = this;
 
+}
+
+TypeSearchView.prototype.link_with_skip_and_limit = function(skip, limit){
+	var tsv = this;
+
+	var query = {
+		"types":""
+	};
+	if(skip!==undefined){
+		query.skip = skip;
+	}
+	if(limit!==undefined){
+		query.limit = limit;
+	}
+
+	return Site.path+SAFE.build_query_string(query);
 }
 
 TypeSearchView.prototype.create_type = function(){
@@ -22767,33 +22791,50 @@ TypeSearchView.prototype.create_type = function(){
 	tsv.browser.load_address("",{new_type:""});
 }
 
-TypeSearchView.prototype.do_search = function(){
+TypeSearchView.prototype.load = function(options){
 	var tsv = this;
 
-	var this_request = tsv.current_request = api_request({
-		"function": "search",
-		"parameters": {
-			"paths": ["/Mino/types/"]
+	var request = {
+		"function" : "search",
+		"parameters" : {
+			"paths": ["/Mino/types/"],
+			"skip": parseInt(tsv.options.skip),
+			"limit": parseInt(tsv.options.limit)
 		}
-	},function(err, res){
-		if(this_request===tsv.current_request){
-			console.log(err,res);
+	};
 
-			tsv.results.empty();
+	tsv.pagination_controller.hide();
+	
+	api_request(request,function(err, response){
+		console.log(err, response);
+		tsv.populate(options, response);
+	});
+}
 
-			if(res.objects){
-				for(var i = 0; i < res.objects.length; i++){
-					(function(object){
-						var type_data = object.mino_type;
-						icon = new TypeIcon(object, tsv);
-						tsv.results.append(
-							icon.element
-						)
-					}(res.objects[i]));
-				}
-			}
-		}
-	})
+TypeSearchView.prototype.populate = function(options, data){
+	var tsv = this;
+
+	var objects = data.objects;
+
+	if(objects.length===0){
+		tsv.contents.append(
+			$("<div />").addClass("empty_folder").append(
+				$("<div />").addClass("fa_icon fa fa-warning"),
+				$("<div />").text("No types found.")
+			)
+		)
+		tsv.pagination_controller.hide();
+	} else {
+		tsv.pagination_controller.show();
+	}
+
+	for(var i = 0; i < objects.length; i++){
+		var object = objects[i];
+		var icon = new TypeIcon(object, tsv);
+		tsv.contents.append(icon.element);
+	}
+
+	tsv.pagination_controller.populate(data);
 }
 
 TypeSearchView.prototype.remove = function(){
@@ -23253,7 +23294,10 @@ Browser.prototype.load = function(address, options){
 	}
 
 	if(options['types']!==undefined){
-		browser.view = new TypeSearchView(browser);
+		browser.view = new TypeSearchView(
+		    browser,
+		    options
+		);
 		browser.view_container.empty().append(browser.view.element);
 		browser.view.init();
 		browser.view.resize(Site.resize_obj);
