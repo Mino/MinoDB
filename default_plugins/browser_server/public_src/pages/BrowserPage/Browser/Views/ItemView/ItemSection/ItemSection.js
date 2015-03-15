@@ -52,6 +52,8 @@ ItemSection.prototype.enable = function(){
 
     if(section.field){
         section.field.enable();
+    }
+    if(section.remove_button){
         section.remove_button.show();
         section.remove_button_padding.show();
     }
@@ -64,6 +66,8 @@ ItemSection.prototype.disable = function(){
 
     if(section.field){
         section.field.disable();
+    }
+    if(section.remove_button){
         section.remove_button.hide();
         section.remove_button_padding.hide();
     }
@@ -82,6 +86,47 @@ ItemSection.prototype.remove_press = function(){
     section.item_view.form.remove_field(section.name);
 }
 
+ItemSection.prototype.style_section_form = function() {
+    var section = this;
+
+    section.item_view.form.add_field(section.name, section.field);
+    section.field.element.addClass("item_section");
+
+    var title_text;
+    if(section.type.display_name){
+        title_text = section.type.display_name + " ("+section.type.name+")";
+    } else {
+        title_text = section.type.name;
+    }
+
+    section.field.title.empty().append(
+        section.remove_button_padding = $("<div />").addClass("remove_button_padding")
+        ,
+        $("<a />",{
+             "href": Site.path + section.type.name
+        }).ajax_url().text(title_text)
+        ,
+        section.remove_button = $("<button />").addClass("mino_button remove_button").text("Remove").on('tap',function(event){
+            event.preventDefault();
+            section.remove_press();
+        }).hide()
+    )
+
+    if(section.init_called){
+        section.field.init();
+    }
+
+    if(section.is_enable){
+        section.enable();
+    } else {
+        section.disable();
+    }
+
+    //TODO refactor set value asynchronously
+    section.field.val(section.value);
+
+}
+
 ItemSection.prototype.populate_type = function(type){
 	var section = this;
 
@@ -91,46 +136,12 @@ ItemSection.prototype.populate_type = function(type){
 
 	section.field = section.vr.create_form();
 
-    //TODO implement proper callback when form is loaded
-    // setTimeout(function() {
-
-        section.item_view.form.add_field(section.name, section.field);
-        section.field.element.addClass("item_section");
-
-        var title_text;
-        if(type.display_name){
-            title_text = type.display_name + " ("+type.name+")";
-        } else {
-            title_text = type.name;
-        }
-
-        section.field.title.empty().append(
-            section.remove_button_padding = $("<div />").addClass("remove_button_padding")
-            ,
-            $("<a />",{
-                 "href": Site.path + type.name
-            }).ajax_url().text(title_text)
-            ,
-            section.remove_button = $("<button />").addClass("mino_button remove_button").text("Remove").on('tap',function(event){
-                event.preventDefault();
-                section.remove_press();
-            }).hide()
-        )
-
-        if(section.init_called){
-            section.field.init();
-        }
-
-        if(section.is_enable){
-            section.enable();
-        } else {
-            section.disable();
-        }
-
-        //TODO refactor set value asynchronously
-        section.field.val(section.value);
-        
-    // }, 500);
-    
+    if (section.field instanceof FVProxyField) {
+        section.field.on_replace(function() {
+            section.style_section_form();
+        })
+    } else {
+        section.style_section_form();
+    }
 
 }
