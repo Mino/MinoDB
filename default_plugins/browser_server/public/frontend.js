@@ -15700,7 +15700,7 @@ function FVField(name, options) {
     } else {
         field.element = $("<div />").addClass("fv_field").data("field",field);
     }
-    field.title = $("<div />").addClass("fv_field_title").text(field.name)
+    field.title = $("<div />").addClass("fv_field_title").text(field.name?field.name:"")
     if(!field.name){
         //Field name is empty
         field.title.hide();
@@ -18074,6 +18074,8 @@ function FVProxyField(name, options) {
     field.init_called = false;
     field.last_val = undefined;
     field.inner_field = null;
+
+    field.on_replace_callbacks = [];
 }
 FVProxyField.prototype.init = function(){
     var field = this;
@@ -18181,6 +18183,20 @@ FVProxyField.prototype.replace = function(inner_field){
     if(field.is_disabled){
         field.disable();
     }
+
+    for(var i=0; i<field.on_replace_callbacks.length; i++){
+        field.on_replace_callbacks[i]();
+    }
+
+    field.did_change();
+}
+
+FVProxyField.prototype.on_replace = function(callback){
+    var field = this;
+
+    field.on_replace_callbacks.push(callback);
+
+    return field;
 }
 
 //Captures calls to val
@@ -18209,8 +18225,6 @@ function FVForm(fields){
 	});
 
 	form.element.addClass("fv_form");
-
-	form.fields_element = form.element;
 }
 FVForm.button_event = 'click';
 FVForm.is_mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|nokia|series40|x11|opera mini/i.test(navigator.userAgent.toLowerCase());
@@ -21765,16 +21779,16 @@ FolderView.prototype.resize = function(resize_obj){
 
 }
 function ItemSection(name, value, item_view){
-	var section = this
+    var section = this
 
-	section.name = name;
-	section.item_view = item_view;
+    section.name = name;
+    section.item_view = item_view;
     section.value = value;
 
-	item_view.browser.type_cache.load(name, function(err, data){
-        section.populate_type(data);
+    item_view.browser.type_cache.load(name, function(err, type){
+        section.populate_type(type);
         section.populate(value);
-	})
+    })
 
     section.init_called = false;
 }
@@ -21793,6 +21807,7 @@ ItemSection.prototype.remove = function(){
     var section = this;
 
     if(section.field){
+        console.log("REMOVING");
         section.field.remove();
     }
 }
@@ -21800,7 +21815,7 @@ ItemSection.prototype.remove = function(){
 ItemSection.prototype.val = function(argument){
     var section = this;
 
-    return section.vr.field.val(argument);
+    return section.field.val(argument);
 }
 
 ItemSection.prototype.error = function(argument){
@@ -21814,22 +21829,28 @@ ItemSection.prototype.error = function(argument){
 ItemSection.prototype.enable = function(){
     var section = this;
     
-    section.is_enable = true;
+    section.is_enabled = true;
 
     if(section.field){
         section.field.enable();
+    }
+    if(section.remove_button){
         section.remove_button.show();
+        section.remove_button_padding.show();
     }
 }
 
 ItemSection.prototype.disable = function(){
     var section = this;
  
-    section.is_enable = false;
+    section.is_enabled = false;
 
     if(section.field){
         section.field.disable();
+    }
+    if(section.remove_button){
         section.remove_button.hide();
+        section.remove_button_padding.hide();
     }
 }
 
@@ -21846,54 +21867,93 @@ ItemSection.prototype.remove_press = function(){
     section.item_view.form.remove_field(section.name);
 }
 
+ItemSection.prototype.style_section_form = function() {
+    var section = this;
+
+    section.item_view.form.add_field(section.name, section.field);
+    section.field.element.addClass("item_section");
+
+    var title_text;
+    if(section.type){
+        if(section.type.display_name){
+            title_text = section.type.display_name + " ("+section.type.name+")";
+        } else {
+            title_text = section.type.name;
+        }
+    } else {
+        title_text = section.name +  " (MISSING TYPE)";
+    }
+
+    section.field.title.empty().append(
+        section.remove_button_padding = $("<div />").addClass("remove_button_padding")
+        ,
+        $("<a />",{
+             "href": Site.path + section.name
+        }).ajax_url().text(title_text)
+        ,
+        section.remove_button = $("<button />").addClass("mino_button remove_button").text("Remove").on('tap',function(event){
+            event.preventDefault();
+            section.remove_press();
+        }).hide()
+    )
+
+    if(section.init_called){
+        section.field.init();
+    }
+
+    if(section.is_enabled){
+        section.enable();
+    } else {
+        section.disable();
+    }
+
+    //TODO refactor set value asynchronously
+    section.field.val(section.value);
+
+}
+
 ItemSection.prototype.populate_type = function(type){
-	var section = this;
+    var section = this;
 
-	section.type = type;
-    section.vr = new FVRule();
-	section.vr.init(type);
+    section.type = type;
 
-	section.field = section.vr.create_form();
-
-    //TODO implement proper callback when form is loaded
-    // setTimeout(function() {
-
+    if(!section.type){
+        //Type is missing
+        section.field = new FVTextField(section.name, {"type": 'textarea'});
+        section.field.val = function(set_val){//Override the .val function
+            var ui_field = this;
+            if (arguments.length===0) {
+                var value = ui_field.input.val();
+                if(value.length===0){
+                    return null;
+                }
+                try{
+                    return JSON.parse(value);
+                } catch (e){
+                    console.error("FAILED TO PARSE: ",value);
+                }
+                return value;
+            } else {
+                ui_field.input.val(JSON.stringify(set_val,null,4));
+                return ui_field;
+            }
+        }
         section.item_view.form.add_field(section.name, section.field);
-        section.field.element.addClass("item_section");
+    } else {
 
-        var title_text;
-        if(section.field.display_name){
-            title_text = type.display_name + " ("+type.name+")";
-        } else {
-            title_text = type.name;
-        }
+        section.vr = new FVRule();
+        section.vr.init(type);
 
-        section.field.title.empty().append(
-            $("<a />",{
-                 "href": Site.path + type.name
-            }).ajax_url().text(title_text)
-            ,
-            section.remove_button = $("<button />").addClass("mino_button").text("Remove").on('tap',function(event){
-                event.preventDefault();
-                section.remove_press();
-            }).hide()
-        )
+        section.field = section.vr.create_form();
+    }
 
-        if(section.init_called){
-            section.field.init();
-        }
-
-        if(section.is_enable){
-            section.enable();
-        } else {
-            section.disable();
-        }
-
-        //TODO refactor set value asynchronously
-        section.field.val(section.value);
-        
-    // }, 500);
-    
+    if (section.field instanceof FVProxyField) {
+        section.field.on_replace(function() {
+            section.style_section_form();
+        })
+    } else {
+        section.style_section_form();
+    }
 
 }
 
@@ -21993,7 +22053,9 @@ ItemView.prototype.populate = function(data){
 	}
 
 	for(var i in item_view.sections){
-		item_view.remove_section(i);
+		if(item_view.sections.hasOwnProperty(i)){
+			item_view.remove_section(i);
+		}
 	}
 
 	for(var key in data){
@@ -22810,6 +22872,7 @@ TypeCache.prototype.load = function(name, callback) {
 
 			callback(null,type);
 		}
+		delete rc.loading[name];
 	})
 };
 extend(MainBrowser, Browser);
@@ -22897,7 +22960,6 @@ function TypeSelector(selection_callback){
 			BasicVal.max_length(4)
 		]);
 		ts.query_field.error(error);
-		console.log(error);
 		if(!error){
 			ts.do_search(query);
 		}
@@ -22934,10 +22996,8 @@ TypeSelector.prototype.init = function(){
 	var ts = this;
 
 	$('html').on('click.type_selector.'+ts.id,function(event){
-		console.log(ts.visible, ts.can_close);
 		if(ts.visible && ts.can_close){
 			if (!$(event.target).closest(ts.element).length){
-				console.log("HIDING FROM TAP OFF");
 				ts.hide();
 			}
 		}
@@ -22947,7 +23007,6 @@ TypeSelector.prototype.init = function(){
 		if(!jQuery.contains(document.documentElement, ts.element[0])){
 			ts.remove();
 		} else {
-			console.log("Resizing");
 			ts.reposition();
 		}
 	})
@@ -22956,13 +23015,11 @@ TypeSelector.prototype.init = function(){
 TypeSelector.prototype.reposition = function(){
 	var ts = this;
 
-	console.log("reposition");
 	var button = ts.element.prev();
 	if(button){
 		ts.element.css({
 			"left": "0px"
 		});
-		console.log(ts.element.offset().left, button.offset().left,ts.element.offset().left - button.offset().left);
 		var button_width = button.outerWidth();
 		var diff = ts.element.offset().left - (button.offset().left + button.outerWidth());
 		var offset = -(diff + button.outerWidth()/2);
@@ -22974,8 +23031,6 @@ TypeSelector.prototype.reposition = function(){
 
 TypeSelector.prototype.remove = function(){
 	var ts = this;
-
-	console.log("removing");
 
 	$(window).off('resize.type_selector.'+ts.id);
 	$('html').off('tap.type_selector.'+ts.id);

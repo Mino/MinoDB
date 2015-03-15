@@ -218,6 +218,11 @@ User.create = function(data, api, callback){
                             "name": "permissions",
                             "path": "/"+user.username+"/",
                             "folder": true
+                        },
+                        {
+                            "name": "signals",
+                            "path": "/"+user.username+"/",
+                            "folder": true
                         }
                     ]
                 }, function(save_err, save_res){

@@ -15700,7 +15700,7 @@ function FVField(name, options) {
     } else {
         field.element = $("<div />").addClass("fv_field").data("field",field);
     }
-    field.title = $("<div />").addClass("fv_field_title").text(field.name)
+    field.title = $("<div />").addClass("fv_field_title").text(field.name?field.name:"")
     if(!field.name){
         //Field name is empty
         field.title.hide();
@@ -18074,6 +18074,8 @@ function FVProxyField(name, options) {
     field.init_called = false;
     field.last_val = undefined;
     field.inner_field = null;
+
+    field.on_replace_callbacks = [];
 }
 FVProxyField.prototype.init = function(){
     var field = this;
@@ -18181,6 +18183,20 @@ FVProxyField.prototype.replace = function(inner_field){
     if(field.is_disabled){
         field.disable();
     }
+
+    for(var i=0; i<field.on_replace_callbacks.length; i++){
+        field.on_replace_callbacks[i]();
+    }
+
+    field.did_change();
+}
+
+FVProxyField.prototype.on_replace = function(callback){
+    var field = this;
+
+    field.on_replace_callbacks.push(callback);
+
+    return field;
 }
 
 //Captures calls to val
@@ -18209,8 +18225,6 @@ function FVForm(fields){
 	});
 
 	form.element.addClass("fv_form");
-
-	form.fields_element = form.element;
 }
 FVForm.button_event = 'click';
 FVForm.is_mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|nokia|series40|x11|opera mini/i.test(navigator.userAgent.toLowerCase());
@@ -20898,8 +20912,6 @@ FVField.prototype.layout = function(){
 function Modal(props){
 	var modal = this;
 
-	console.log(props);
-
 	if(!props){
 		props = {};
 	}
@@ -21485,11 +21497,11 @@ var body_contents_holder;
 
 $(document).ready(function() {
 
-    Site.on_resize = function(resize_obj) {}
+    SAFE.on_resize = function(resize_obj) {}
 
-    Site.element.addClass("page_holder").appendTo("body");
+    SAFE.element.addClass("page_holder").appendTo("body");
 
-    Site.transition_page_callback = function(new_page, old_page) {
+    SAFE.transition_page_callback = function(new_page, old_page) {
         var title = new_page.get_title();
         if (title == null) {
             document.title = page_title_append;
@@ -21501,10 +21513,10 @@ $(document).ready(function() {
             'scrollTop': 0
         }, 500);
 
-        Site.element.append(new_page.element);
+        SAFE.element.append(new_page.element);
 
         //Call resize to make sure the element calculates its height correctly
-        Site.resize();
+        SAFE.resize();
 
         if (old_page != null) {
             old_page.element.css({
@@ -21519,15 +21531,15 @@ $(document).ready(function() {
             new_page.element.hide().fadeIn(500);
         }
 
-        /* Returning true tells the framework that the 
+        /* Returning true tells SAFE that the 
          * transition has been handled. */
         return true;
     }
 
-    Site.path = site_path;
+    SAFE.path = site_path;
 
-    Site.debug = false;
+    SAFE.debug = false;
 
-    Site.init();
+    SAFE.init();
 
 });

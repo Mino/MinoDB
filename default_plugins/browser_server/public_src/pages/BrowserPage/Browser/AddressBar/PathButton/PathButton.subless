@@ -9,6 +9,7 @@
 	height: 32px;
 	vertical-align: top;
 	white-space: nowrap;
+	cursor: pointer;
 	
 	.no_select;
 
@@ -22,10 +23,12 @@
 		text-align: center;
 		box-sizing: border-box;
 		position: relative;
+		font-size: 12px;
 		margin-right: 5px;
 		
 		text-decoration: none;
-		color: #fff;	
+		color: #fff;
+		.bold;
 
 		&:after{
 			content: "";  
@@ -44,11 +47,11 @@
 			position: absolute; left: 0; top: 0;
 		}
 
-		&:active {
+		&:hover {
 			background: @pathbutton_background_active;
 		}
 
-		&:active:after {
+		&:hover:after {
 			border-left-color: @pathbutton_background_active;
 		}
 	}

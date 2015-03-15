@@ -15700,7 +15700,7 @@ function FVField(name, options) {
     } else {
         field.element = $("<div />").addClass("fv_field").data("field",field);
     }
-    field.title = $("<div />").addClass("fv_field_title").text(field.name)
+    field.title = $("<div />").addClass("fv_field_title").text(field.name?field.name:"")
     if(!field.name){
         //Field name is empty
         field.title.hide();
@@ -18074,6 +18074,8 @@ function FVProxyField(name, options) {
     field.init_called = false;
     field.last_val = undefined;
     field.inner_field = null;
+
+    field.on_replace_callbacks = [];
 }
 FVProxyField.prototype.init = function(){
     var field = this;
@@ -18181,6 +18183,20 @@ FVProxyField.prototype.replace = function(inner_field){
     if(field.is_disabled){
         field.disable();
     }
+
+    for(var i=0; i<field.on_replace_callbacks.length; i++){
+        field.on_replace_callbacks[i]();
+    }
+
+    field.did_change();
+}
+
+FVProxyField.prototype.on_replace = function(callback){
+    var field = this;
+
+    field.on_replace_callbacks.push(callback);
+
+    return field;
 }
 
 //Captures calls to val
@@ -18209,8 +18225,6 @@ function FVForm(fields){
 	});
 
 	form.element.addClass("fv_form");
-
-	form.fields_element = form.element;
 }
 FVForm.button_event = 'click';
 FVForm.is_mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|nokia|series40|x11|opera mini/i.test(navigator.userAgent.toLowerCase());
@@ -20898,8 +20912,6 @@ FVField.prototype.layout = function(){
 function Modal(props){
 	var modal = this;
 
-	console.log(props);
-
 	if(!props){
 		props = {};
 	}
@@ -21159,8 +21171,15 @@ function HomePage(req) {
 
     page.title = null;
 
+    var username_field = new FVTextField("Username or Email*");
+
+    username_field.input.attr({
+        "autocapitalize": "off",
+        "autocorrect": "off"
+    })
+
     page.form = new FVForm()
-    .add_field("username_or_email",new FVTextField("Username or Email*"))
+    .add_field("username_or_email",username_field)
     .add_field("password",new FVPasswordField("Password*"))
     .on_submit(function(object){
         page.login_press(object);
@@ -21172,6 +21191,9 @@ function HomePage(req) {
     page.element
     .addClass("home_page")
     .append(
+        $("<div />").addClass("header").append(
+            $("<div />").addClass("brand_name").text("MinoDB")
+        ),
         page.form.element,
         page.loading_overlay = $("<div />").addClass("loading_overlay").hide()
     )
