@@ -58,12 +58,22 @@ TypeSearchView.prototype.create_type = function(){
 TypeSearchView.prototype.load = function(options){
 	var tsv = this;
 
+	var limit = tsv.options.limit;
+	if(limit===undefined){
+		limit = 10;
+	}
+
+	var skip = tsv.options.skip;
+	if(skip===undefined){
+		skip = 0;
+	}
+
 	var request = {
 		"function" : "search",
 		"parameters" : {
 			"paths": ["/Mino/types/"],
-			"skip": parseInt(tsv.options.skip),
-			"limit": parseInt(tsv.options.limit)
+			"skip": parseInt(skip),
+			"limit": parseInt(limit)
 		}
 	};
 

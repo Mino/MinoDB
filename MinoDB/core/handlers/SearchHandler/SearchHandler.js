@@ -27,10 +27,7 @@ function SearchHandler(api, user, parameters, callback){
     if(sh.skip===undefined){
         sh.skip = 0;
     }
-    sh.limit = sh.validator.get("limit", BasicVal.integer(false), BasicVal.minimum(1), BasicVal.maximum(1000));
-    if(sh.limit===undefined){
-        sh.limit = 10;
-    }
+    sh.limit = sh.validator.get("limit", BasicVal.integer(false), BasicVal.minimum(1));
     sh.include_subfolders = sh.validator.get("include_subfolders", BasicVal.boolean(false));
     if(sh.include_subfolders===undefined){
         sh.include_subfolders = false;

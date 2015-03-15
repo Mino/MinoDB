@@ -21726,12 +21726,22 @@ FolderView.prototype.link_with_skip_and_limit = function(skip, limit){
 FolderView.prototype.load = function(options){
 	var folder_view = this;
 
+	var limit = folder_view.options.limit;
+	if(limit===undefined){
+		limit = 10;
+	}
+
+	var skip = folder_view.options.skip;
+	if(skip===undefined){
+		skip = 0;
+	}
+
 	var request = {
 		"function" : "search",
 		"parameters" : {
 			"paths" : [folder_view.path.toString()],
-			"skip": parseInt(folder_view.options.skip),
-			"limit": parseInt(folder_view.options.limit)
+			"skip": parseInt(skip),
+			"limit": parseInt(limit)
 		}
 	};
 
@@ -22794,12 +22804,22 @@ TypeSearchView.prototype.create_type = function(){
 TypeSearchView.prototype.load = function(options){
 	var tsv = this;
 
+	var limit = tsv.options.limit;
+	if(limit===undefined){
+		limit = 10;
+	}
+
+	var skip = tsv.options.skip;
+	if(skip===undefined){
+		skip = 0;
+	}
+
 	var request = {
 		"function" : "search",
 		"parameters" : {
 			"paths": ["/Mino/types/"],
-			"skip": parseInt(tsv.options.skip),
-			"limit": parseInt(tsv.options.limit)
+			"skip": parseInt(skip),
+			"limit": parseInt(limit)
 		}
 	};
 
