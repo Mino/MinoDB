@@ -1,12 +1,15 @@
 (function(window){
 
-	@import("../../../bower_components/fieldval-ui/fieldval-ui.js");
+	@import("../../../node_modules/fieldval-ui/fieldval-ui.js");
 
 	var mino_path = "{{&mino_path}}";
 	var user = {{&user}};
 
 	var toolbar_visible = false;
 	var toolbar_element;
+
+
+	var DOMAIN_VALUE = {};
 
 	window.show_toolbar = function(){
 		if(!toolbar_visible){
@@ -21,8 +24,9 @@
 					"type":"text/css"
 				}).appendTo("head");
 
-				var choice_field = new ChoiceField("Apps", {
+				var choice_field = new FVChoiceField("Apps", {
 					"choices": [
+						[DOMAIN_VALUE, "Domain"],
 						["admin","Admin"],
 						["browser","Browser"]
 					]
@@ -30,8 +34,15 @@
 				choice_field.add_option = function(choice_value, display_name, initial){
 				    var field = this;
 
+				    var href;
+				    if(choice_value===DOMAIN_VALUE){
+				    	href = "/";
+				    } else {
+				    	href = "/mino/"+choice_value;
+				    }
+
 				    var option_element = $("<a />",{
-				    	"href": "/mino/"+choice_value
+				    	"href": href
 				    }).addClass("fv_choice_option").on('tap',function(e){
 				    	field.default_click(e, choice_value);
 				    })
@@ -40,24 +51,20 @@
 
 				    field.finalize_option(option_element, choice_value, initial);
 				}
-				choice_field.select_option = function(value){
+				choice_field.select_option = function(choice_option){
 					var field = this;
-
-					window.location = "/mino/"+value;
+					var value = choice_option.get_value();
+					if(value===DOMAIN_VALUE){
+						window.location = "/";
+					} else {
+						window.location = "/mino/"+value;
+					}
 				}
 
 				toolbar_element = $("<div />").addClass("mino_toolbar")
 				.prependTo("body")
 				.append(
 					choice_field.element.addClass("apps_dropdown")
-				// ,
-				// 	$("<a />",{
-				// 		"href": mino_path+"admin/"
-				// 	}).append($("<button/>").text("Admin"))
-				// ,
-				// 	$("<a />",{
-				// 		"href": mino_path+"browser/"
-				// 	}).append($("<button/>").text("Browser"))
 				,
 					$("<a />",{
 						"href": mino_path+"sign_out/"

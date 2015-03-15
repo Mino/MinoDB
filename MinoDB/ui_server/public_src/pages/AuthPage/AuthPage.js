@@ -8,8 +8,8 @@ function AuthPage(req) {
     page.title = null;
 
     page.form = new FVForm()
-    .add_field("username_or_email",new TextField("Username or Email*"))
-    .add_field("password",new PasswordField("Password*"))
+    .add_field("username_or_email",new FVTextField("Username or Email*"))
+    .add_field("password",new FVPasswordField("Password*"))
     .on_submit(function(object){
         page.login_press(object);
     })

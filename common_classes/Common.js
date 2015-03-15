@@ -43,7 +43,7 @@ Common.get_resource_type = function(this_address){
             //First char is slash - must be pat
 
             var path = new Path();
-            var path_error = path.init(this_address);
+            var path_error = path.init(this_address, true/*allow tilde*/);
             if (!path_error) {
                 return ["path",path];
             }

@@ -1,7 +1,8 @@
 var logger = require('tracer').console();
 var FieldVal = require('fieldval');
-var BasicVal = require('fieldval-basicval');
-var ValidationRule = require('fieldval-rules');
+var BasicVal = FieldVal.BasicVal;
+var FVRule = require('fieldval-rules');
+var Path = require('../../../common_classes/Path');
 
 function Type(item) {
     var type = this;
@@ -13,7 +14,7 @@ function Type(item) {
     type.rule = item['mino_type'];
 }
 
-Type.rule = new ValidationRule();
+Type.rule = new FVRule();
 Type.rule_definition = {
     name: "mino_type",
     display_name: "Type",
@@ -21,6 +22,13 @@ Type.rule_definition = {
     any: true
 }
 Type.rule.init(Type.rule_definition)
+
+Type.NAME_CHECKS = [
+    BasicVal.string(true),
+    BasicVal.start_with_letter(),
+    BasicVal.no_whitespace(),
+    Path.object_name_check(false)
+];
 
 Type.prototype.init = function(type_data){
     var type = this;
@@ -31,17 +39,21 @@ Type.prototype.init = function(type_data){
 }
 
 Type.validate = function(data, creation){
-    var rule = new ValidationRule();
+    var rule = new FVRule();
     var type_error = rule.init(
         data,
         {
-            need_name: true
+            need_name: true,
+            allow_dots: false
         }
     );
 
     //Perform an extra check on the name
     var validator = new FieldVal(data, type_error);
-    validator.get("name", BasicVal.string(true), BasicVal.start_with_letter(), BasicVal.no_whitespace());
+    validator.get(
+        "name", 
+        Type.NAME_CHECKS
+    );
 
     return validator.end();
 }

@@ -3,20 +3,42 @@
 	background-color: white;
 
 	padding-top: 0px;
-	margin-bottom: 10px;
+	padding-bottom: 0px;
+	margin-top: 10px;
 
 	>.fv_field_title{
-		background-color: @item_section_title;
+		background-color: white;
 		.bold;
-		color: white;
 		padding: 5px;
 		width: 100%;
 		box-sizing: border-box;
+		border-bottom: 1px solid @item_section_border;
+
+		a{
+			color: @item_section_title;
+			word-wrap: break-word;
+		}
+
+		.remove_button{
+			position: absolute;
+			right: 0px;
+			top: 0px;
+			min-height: 20px;
+			height: 30px;
+			line-height: 30px;
+			padding-top: 0px;
+			padding-bottom: 0px;
+		}
+
+		.remove_button_padding{
+			width: 60px;
+			float: right;
+			height: 19px;
+		}
 	}
 
 	>.fv_input_holder{
 		width: 100%;
-		padding-right: 10px;
 
 		>.fv_field{
 			width: 100%;
@@ -31,5 +53,25 @@
 				padding-right: 5px;
 			}
 		}
+	}
+
+	&.fv_object_field{
+		>.fv_input_holder{
+			padding-right: 10px;
+
+			>.fv_field{
+				&:first-child{
+					border-top: 0px;
+				}
+				&:last-child{
+					border-bottom: 0px;
+				}
+			}
+		}
+	}
+
+	>.fv_error_message{
+		width: 100%;
+		margin-left: 0px;
 	}
 }

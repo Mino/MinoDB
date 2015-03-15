@@ -1,6 +1,7 @@
 var logger = require('tracer').console();
 var FieldVal = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var BasicVal = FieldVal.BasicVal;
+var FVRule = require('fieldval-rules');
 
 var security = require('../security');
 
@@ -19,6 +20,7 @@ function User(obj) {
 
     user.username = data.username;
     user.email = data.email;
+    user.password = data.password;
     user.salted_password = data.salted_password;
     user.password_salt = data.password_salt;
 }
@@ -49,7 +51,7 @@ User.rule_definition = {
         min_length: 8
     }]
 };
-User.rule = new ValidationRule();
+User.rule = new FVRule();
 User.rule.init(User.rule_definition);
 
 
@@ -73,22 +75,26 @@ User.sign_in_rule_definition = {
         type: "string"
     }]
 };
-User.sign_in_rule = new ValidationRule();
+User.sign_in_rule = new FVRule();
+logger.log(FVRule.prototype.validate+"");
 User.sign_in_rule.init(User.sign_in_rule_definition);
 
+//TODO add more checks for tilde, slashes, etc
 User.username_validator = [
+    BasicVal.string(true),
     BasicVal.no_whitespace(),
     BasicVal.start_with_letter()
 ]
 
-User.validate = function(data, creation){
-    var user_error = User.sign_in_rule.validate(data);
-    logger.log(user_error);
+User.validate = function(data, creation, callback){
+    logger.log("User.validate");
+    User.sign_in_rule.validate(data, function(user_error) {
+        logger.log(user_error);
 
-    var validator = new FieldVal(data, user_error);
-    validator.get("username", User.username_validator);
-
-    return validator.end();
+        var validator = new FieldVal(data, user_error);
+        validator.get("username", User.username_validator);
+        callback(validator.end());
+    });
 }
 
 User.prototype.create_save_data = function(callback){
@@ -120,6 +126,8 @@ User.prototype.save = function(api, callback){
     var user = this;
 
     user.create_save_data(function(err, to_save){
+
+        logger.log(to_save);
 
         new api.handlers.save(api, {
             "username": "Mino"
@@ -173,32 +181,77 @@ User.get = function(username, api, callback){
 
 User.create = function(data, api, callback){
     
-    var error = User.validate(data, true);
-    if(error){
-        callback(error,null);
-        return;
-    }
+    logger.log("User.create");
 
-    var user = new User({
-        mino_user: data
-    });
-    user.save(api, function(err, res){
-        new api.handlers.save(api, {
-            "username": "Mino"
-        }, {
-            "objects": [
-                {
-                    "name": user.username,
-                    "path": "/",
-                    "folder": true
-                }
-            ]
-        }, function(save_err, save_res){
-            logger.log(JSON.stringify(save_err,null,4), save_res);
+    User.validate(data, true, function(error) {
+        logger.log(error);
+        if(error){
+            callback(error,null);
+            return;
+        }
 
-            callback(err, res);
+        var user = new User({
+            mino_user: data
+        });
+        user.save(api, function(err, res){
+
+            logger.log(JSON.stringify(err,null,4), res);
+
+            new api.handlers.save(api, {
+                "username": "Mino"
+            }, {
+                "objects": [
+                    {
+                        "name": user.username,
+                        "path": "/",
+                        "folder": true
+                    }
+                ]
+            }, function(save_err, save_res){
+                logger.log(JSON.stringify(save_err,null,4), save_res);
+
+                new api.handlers.save(api, {
+                    "username": user.username
+                }, {
+                    "objects": [
+                        {
+                            "name": "permissions",
+                            "path": "/"+user.username+"/",
+                            "folder": true
+                        },
+                        {
+                            "name": "signals",
+                            "path": "/"+user.username+"/",
+                            "folder": true
+                        }
+                    ]
+                }, function(save_err, save_res){
+                    logger.log(JSON.stringify(save_err,null,4), save_res);
+
+
+                    new api.handlers.save(api, {
+                        "username": user.username
+                    }, {
+                        "objects": [
+                            {
+                                "name": "sent",
+                                "path": "/"+user.username+"/permissions/",
+                                "folder": true
+                            },{
+                                "name": "received",
+                                "path": "/"+user.username+"/permissions/",
+                                "folder": true
+                            }
+                        ]
+                    }, function(save_err, save_res){
+                        logger.log(JSON.stringify(save_err,null,4), save_res);
+                        callback(err, res);
+                    })
+                });
+            });
         });
     });
+
 }
 
 module.exports = User;

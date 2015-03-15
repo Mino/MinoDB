@@ -3,18 +3,24 @@ var button_type_child = 1;
 var button_type_item = 2;
 var button_type_type = 3;
 
-function PathButton(text,address,browser){
+function PathButton(text,address,browser,options){
 	var pb = this;
 
 	pb.text = text;
 	pb.address = address;
 	pb.browser = browser;
+	pb.options = options || {};
 
-	console.log(arguments);
+	var href;
+	if(pb.options.encode!==undefined && pb.options.encode===false){
+		href = Site.path+address;
+	} else {
+		href = Site.path+encode_path(address);
+	}
 
 	pb.element = $("<div />").addClass("pathbutton")
 	.append(
-		$("<a />")
+		$("<a />", {"href": href})
 		.ajax_url(function(){
 			if(browser instanceof MainBrowser){
 				return true;
@@ -23,7 +29,6 @@ function PathButton(text,address,browser){
 				return false;
 			}
 		})
-		.attr("href", Site.path+encode_path(address))
 		.text(pb.text)
 	)
 }

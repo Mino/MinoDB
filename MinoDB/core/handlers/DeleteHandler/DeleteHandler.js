@@ -1,8 +1,8 @@
 var errors = require('../../../../errors')
-var Validator = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 var Path = require('../../../../common_classes/Path')
-var ValidationRule = require('fieldval-rules');
+var FVRule = require('fieldval-rules');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var DeleteObject = require('./DeleteObject')
 var logger = require('tracer').console();
@@ -19,11 +19,13 @@ function DeleteHandler(api, user, parameters, callback){
     
     dh.permissions_checked = false;
 
-    dh.path_permission_checker = new PathPermissionChecker(dh);
+    dh.path_permission_checker = new PathPermissionChecker(dh,{
+        for_write: true
+    });
 
-    dh.validator = new Validator(parameters);
+    dh.validator = new FieldVal(parameters);
 
-    dh.objects_validator = new Validator(null);//No object to validate
+    dh.objects_validator = new FieldVal(null);//No object to validate
 
     var objects = dh.validator.get("addresses", BasicVal.array(true), BasicVal.each(function(address, index){
         dh.delete_objects.push(new DeleteObject(address, dh,index));

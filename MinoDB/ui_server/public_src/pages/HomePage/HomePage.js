@@ -7,9 +7,16 @@ function HomePage(req) {
 
     page.title = null;
 
+    var username_field = new FVTextField("Username or Email*");
+
+    username_field.input.attr({
+        "autocapitalize": "off",
+        "autocorrect": "off"
+    })
+
     page.form = new FVForm()
-    .add_field("username_or_email",new TextField("Username or Email*"))
-    .add_field("password",new PasswordField("Password*"))
+    .add_field("username_or_email",username_field)
+    .add_field("password",new FVPasswordField("Password*"))
     .on_submit(function(object){
         page.login_press(object);
     })
@@ -20,6 +27,9 @@ function HomePage(req) {
     page.element
     .addClass("home_page")
     .append(
+        $("<div />").addClass("header").append(
+            $("<div />").addClass("brand_name").text("MinoDB")
+        ),
         page.form.element,
         page.loading_overlay = $("<div />").addClass("loading_overlay").hide()
     )

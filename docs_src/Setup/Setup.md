@@ -1,0 +1,1 @@
+Give it a MongoDB address, attach it to an express endpoint and immediately you have a validated, structured document store, an intuitive hierachical browser for your data and an admin interface designed to be extended with plugins.

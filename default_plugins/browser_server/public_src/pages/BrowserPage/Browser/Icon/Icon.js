@@ -37,13 +37,16 @@ Icon.prototype.select = function(){
 	icon.view.add_selected(icon);
 }
 
-Icon.prototype.deselect = function(remove_from_view){
+/* from_view indicates whether this call was made from the view this
+ * icon is in. If it is, it shouldn't call remove_selected on the 
+ * view. */
+Icon.prototype.deselect = function(from_view){
 	var icon = this;
 
 	icon.selected = false;
 	icon.element.removeClass("selected");
 
-	if((typeof remove_from_view)==='boolean' && remove_from_view!==false){
+	if(!from_view){
 		icon.view.remove_selected(icon);
 	}
 }

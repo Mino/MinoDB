@@ -1,0 +1,33 @@
+var express = require('express');
+var MinoDB = require('minodb');
+var crypto = require('crypto');
+
+//Create an express server
+var server = express();
+
+//Create a MinoDB instance with the mongodb address
+var mino = new MinoDB({
+    db_address: 'mongodb://127.0.0.1:27017/minodb'
+});
+
+var exampleuser_password = crypto.randomBytes(16).toString('hex');
+
+//Create a user
+mino.create_user({
+    "username": "exampleuser",
+    "email": "user@example.com",
+    "password": exampleuser_password
+}, function(err, res){
+    console.log(err, res);
+    if(err){
+        console.log("exampleuser already exists");
+    } else {
+        console.log("exampleuser password: "+exampleuser_password);
+    }
+});
+
+//Attach the MinoDB server to an endpoint
+server.use('/mino/', mino.server())
+
+//Start the express server listening in port 5001
+server.listen(5001);

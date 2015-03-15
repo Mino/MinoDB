@@ -3,7 +3,7 @@ var errors = require('../../../../errors');
 var User = require('../../../core/models/User')
 
 var FieldVal = require("fieldval");
-var bval = require("fieldval-basicval");
+var bval = FieldVal.BasicVal;
 var check_password_hash = require('../check_password_hash');
 
 var Session = require('../../models/Session');
@@ -32,7 +32,7 @@ module.exports = function(ui_server){
 		validator.get("password", bval.string(true), bval.min_length(8));
 	    var error = validator.end();
 	    if(error){
-	        res.send(JSON.stringify(error));
+	        res.json(error);
 	        return;
 	    }
 
@@ -43,7 +43,7 @@ module.exports = function(ui_server){
 		    	logger.log(user_record);
 		        if(!user_record){
 		            validator.invalid("username_or_email",errors.USER_DOES_NOT_EXIST);
-		            res.send(JSON.stringify(validator.end()));
+		            res.json(validator.end());
 		            return;
 		        } else {
 		        	check_password_hash(

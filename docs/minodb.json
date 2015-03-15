@@ -1,0 +1,15 @@
+{
+    "name": "MinoDB",
+    "text": "<p>MinoDB is an extensible database layer for web apps. MinoDB is for startups and projects that need the freedom of MongoDB combined with an intuitive interface designed for both developers and non-developers. It’s modular and designed to be extended with plugins - both your own and from third-parties.</p>\n<p>[Animation of a simple flow] - Calendar example?\nCreate data either from a form/calendar and then sign in, edit the record and return to observe the change.</p>\n",
+    "sections": [
+        {
+            "name": "Setup",
+            "code": [
+                {
+                    "contents": "var express = require('express');\nvar MinoDB = require('minodb');\nvar crypto = require('crypto');\n\n//Create an express server\nvar server = express();\n\n//Create a MinoDB instance with the mongodb address\nvar mino = new MinoDB({\n    db_address: 'mongodb://127.0.0.1:27017/minodb'\n});\n\nvar exampleuser_password = crypto.randomBytes(16).toString('hex');\n\n//Create a user\nmino.create_user({\n    \"username\": \"exampleuser\",\n    \"email\": \"user@example.com\",\n    \"password\": exampleuser_password\n}, function(err, res){\n    console.log(err, res);\n    if(err){\n        console.log(\"exampleuser already exists\");\n    } else {\n        console.log(\"exampleuser password: \"+exampleuser_password);\n    }\n});\n\n//Attach the MinoDB server to an endpoint\nserver.use('/mino/', mino.server())\n\n//Start the express server listening in port 5001\nserver.listen(5001);"
+                }
+            ],
+            "text": "<p>Give it a MongoDB address, attach it to an express endpoint and immediately you have a validated, structured document store, an intuitive hierachical browser for your data and an admin interface designed to be extended with plugins.</p>\n"
+        }
+    ]
+}

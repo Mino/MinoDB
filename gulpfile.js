@@ -11,6 +11,11 @@ var gulpImports = require('gulp-imports');
 var nodemon = require('gulp-nodemon');
 var path = require('path');
 
+var docs_to_json = require('sa-docs-to-json');
+
+var mocha = require('gulp-mocha');
+var istanbul = require('gulp-istanbul');
+
 require('./default_plugins/admin_server/gulpfile')(gulp);
 require('./default_plugins/browser_server/gulpfile')(gulp);
 require('./MinoDB/ui_server/gulpfile')(gulp);
@@ -20,7 +25,25 @@ var onError = function (err) {
   console.log(err);
 };
 
+gulp.task('test', function(cb){
+    gulp.src( [ 'test/test.js' ] )
+    .pipe( mocha( {
+        reporter: 'spec'
+    }))
+    .on('error', gutil.log)
+    .pipe(istanbul.writeReports())
+    .on('end', cb);
+});
+
+gulp.task('docs', function() {
+    return gulp.src('./docs_src/*.json')
+    .pipe(docs_to_json())
+    .pipe(gulp.dest('./docs/'))
+});
+
 gulp.task('watch', function(){
+    gulp.watch('docs_src/**/**.*', ['docs']);
+    gulp.watch(['fieldval_themes/**/**.*','common_elements/**/**.*','common_classes/**/**.*'], ['default']);
     gulp.start('browser_watch');
     gulp.start('admin_watch');
     gulp.start('ui_watch');

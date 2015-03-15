@@ -69,16 +69,16 @@ ItemView.prototype.populate = function(data){
 	item_view.browser.address_bar.populate_path_buttons(item_view.path);
 
 	item_view.form = new FVForm();
-	item_view.form.add_field("_id", new TextField("ID"));
-	item_view.form.add_field("name", new TextField("Name"));
+	item_view.form.add_field("_id", new FVTextField("ID"));
+	item_view.form.add_field("name", new FVTextField("Name"));
 	item_view.form.fields.name.on_change(function(){
 		item_view.update_full_path();
 	})
-	item_view.form.add_field("path", new TextField("Path"));
+	item_view.form.add_field("path", new FVTextField("Path"));
 	item_view.form.fields.path.on_change(function(){
 		item_view.update_full_path();
 	})
-	item_view.form.add_field("full_path", new TextField("Full Path"));
+	item_view.form.add_field("full_path", new FVTextField("Full Path"));
 	item_view.form.on_submit(function(form_val){
 		item_view.save();
 	})
@@ -96,7 +96,9 @@ ItemView.prototype.populate = function(data){
 	}
 
 	for(var i in item_view.sections){
-		item_view.remove_section(i);
+		if(item_view.sections.hasOwnProperty(i)){
+			item_view.remove_section(i);
+		}
 	}
 
 	for(var key in data){
@@ -141,11 +143,20 @@ ItemView.prototype.init = function(){
 	}
 
 	item_view.resize(Site.resize_obj);
+
+	item_view.toolbar_type_selector.init();
 }
 
 ItemView.prototype.remove = function(){
 	var item_view = this;
 	item_view.form.remove();
+
+	for(var i in item_view.sections){
+		var section = item_view.sections[i];
+		section.remove();
+	}
+
+	item_view.toolbar_type_selector.remove();
 }
 
 ItemView.prototype.edit = function(){
@@ -232,9 +243,6 @@ ItemView.prototype.save = function(){
 			item_view.error(response.invalid.parameters.invalid.objects.invalid[0]);
 		} else {
 
-			if(item_view.options.create){
-				item_view.options.create = false;
-			}
 
 			item_view.item_data = value;
 			item_view.item_data._id = response.objects[0]._id;
@@ -250,6 +258,11 @@ ItemView.prototype.save = function(){
 			item_view.base_data = JSON.parse(JSON.stringify(item_view.item_data));
 
 			item_view.disable();
+
+			if(item_view.options.create){
+				item_view.options.create = false;
+				item_view.browser.load_address(item_view.path);
+			}
 		}
 	})
 

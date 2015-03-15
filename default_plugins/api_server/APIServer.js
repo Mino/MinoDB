@@ -8,8 +8,8 @@ var errorHandler = require('errorhandler');
 var http = require('http');
 var path = require('path');
 
-var Validator = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 var logger = require('tracer').console();
 var crypt = require("./crypt");
 var process_api_request = require('./process_api_request');

@@ -3,7 +3,7 @@ var logger = require('tracer').console();
 var errors = require('../errors');
 
 var FieldVal = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var BasicVal = FieldVal.BasicVal;
 
 function PluginManager(mdb){
 	var pm = this;

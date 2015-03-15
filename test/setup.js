@@ -3,12 +3,13 @@ var globals = require('./globals');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 
+
 module.exports = function(done) {
+	this.timeout(200000);
 	MongoClient.connect(globals.db_address, function(err, db) {
 		db.dropDatabase(function(err, res) {
 			assert.equal(err, null);
 			assert.equal(res, true);
-
 			var MinoDB = require('../minodb');
 			var mino = new MinoDB({
 			    api: true,
@@ -17,15 +18,31 @@ module.exports = function(done) {
 			})
 
 			var MinoSDK = require('minosdk');
-			var sdk = new MinoSDK("testuser");
+			var sdk = new MinoSDK("Mino");
 			sdk.set_local_api(mino.api);
 
-			setTimeout(function() {
-				globals.sdk = sdk;			
-				logger.log("finished");
-				done();
-			}, 1000);
+			globals.sdk = sdk;
+			globals.mino = mino;
 			
+			mino.api.connect_callbacks.push(function() {
+				mino.create_user({
+	                username: "testuser",
+	                email: "test@minocloud.com",
+	                password: "my_password"
+				}, function(user_err, user_res){
+	                logger.log(JSON.stringify(user_err, null, 4), user_res);
+
+					mino.create_user({
+		                username: "otheruser",
+		                email: "test@minocloud.com",
+		                password: "my_password"
+					}, function(user_err, user_res){
+					    logger.log(JSON.stringify(user_err, null, 4), user_res);
+						done();
+					})
+	            })
+			});
+
 		});
 	});
 

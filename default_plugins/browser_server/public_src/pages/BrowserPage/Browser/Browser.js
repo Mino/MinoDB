@@ -6,6 +6,7 @@
 @import("MainBrowser/MainBrowser.js");
 @import("Toolbar/Toolbar.js");
 @import("TypeSelector/TypeSelector.js");
+@import("PaginationController/PaginationController.js");
 
 function Browser(parent){
 	var browser = this;
@@ -88,12 +89,22 @@ Browser.prototype.load = function(address, options){
 		return;
 	}
 
+	browser.current_address = address;
+
 	if(browser.view){
 		browser.view.remove();
 	}
 
 	if(options['types']!==undefined){
 		browser.view = new TypeSearchView(browser);
+		browser.view_container.empty().append(browser.view.element);
+		browser.view.init();
+		browser.view.resize(Site.resize_obj);
+		return;
+	}
+
+	if(options['search']!==undefined){
+		browser.view = new SearchView(browser);
 		browser.view_container.empty().append(browser.view.element);
 		browser.view.init();
 		browser.view.resize(Site.resize_obj);
@@ -129,6 +140,7 @@ Browser.prototype.load = function(address, options){
 
 	api_request(request,function(err, response){
 		console.log(err);
+		console.log("response ",response);
 
 		browser.view.remove();//Will be the LoadingView
 
@@ -154,7 +166,8 @@ Browser.prototype.load = function(address, options){
 					browser.view = new FolderView(
 				    	path,
 				    	object,
-					    browser
+					    browser,
+					    options
 				    );
 				}
 			} else {
@@ -245,4 +258,9 @@ Browser.prototype.iconCapacity = function(element,verticalPadding){
 		}
 		return 3;
 	// }
+}
+
+Browser.prototype.reload_current_address = function() {
+	var browser = this;
+	browser.load_address(browser.current_address);
 }

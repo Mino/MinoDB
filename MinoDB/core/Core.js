@@ -1,6 +1,6 @@
 var logger = require('tracer').console();
-var Validator = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 
 var DataStore = require('./datastore');
 
@@ -13,16 +13,31 @@ function Core(minodb, db_address){
         address: db_address
     })
 
+    core.handlers = {
+        "get": require('./handlers/GetHandler/GetHandler'),
+        "save": require('./handlers/SaveHandler/SaveHandler'),
+        "delete": require('./handlers/DeleteHandler/DeleteHandler'),
+        "search": require('./handlers/SearchHandler/SearchHandler'),
+        "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler'),
+        "delete_type": require('./handlers/DeleteTypeHandler/DeleteTypeHandler'),
+        "add_permissions": require('./handlers/AddPermissionsHandler/AddPermissionsHandler'),
+        "create_user": require('./handlers/CreateUserHandler/CreateUserHandler')
+    }
+
+    core.connected = false;
+    core.connect_callbacks = [];
+
     core.connect(function(){
         logger.log("API CONNECTED");
     })
+}
 
-    core.handlers = {
-        "get": require('./handlers/GetHandler/GetHandler.js'),
-        "save": require('./handlers/SaveHandler/SaveHandler.js'),
-        "search": require('./handlers/SearchHandler/SearchHandler.js'),
-        "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler.js'),
-        "delete": require('./handlers/DeleteHandler/DeleteHandler.js')
+Core.prototype.call_connect_callbacks = function(){
+    var core = this;
+
+    logger.log("CALLING CORE CONNECT CALLBACKS");
+    for(var i = 0; i < core.connect_callbacks.length; i++){
+        core.connect_callbacks[i]();
     }
 }
 
@@ -35,63 +50,63 @@ Core.prototype.connect = function(callback){
         logger.log("CORE CONNECTED");
 
         require('./initial_setup')(core.minodb.api, function(){
+            core.connected = true;
+            for(var i = 0; i < core.connect_callbacks.length; i++){
+                logger.log("CALLING CONNECTED CALLBACK ",i);
+                core.connect_callbacks[i]();
+            }
 
-            var User = require('./models/User');
-            User.get("testuser", core.minodb.api, function(get_err, get_user){
-                logger.log(get_err, get_user);
-            })
-
-            User.create({
-                username: "testuser",
-                email: "test@minocloud.com",
-                password: "my_password"
-            }, core.minodb.api, function(user_err, user_res){
-                logger.log(user_err, user_res);
-            })
-
-            new core.handlers.delete(core.minodb.api, {
-                "username": "testuser"
-            }, {
-                "addresses": [
-                    // "795"
-                    "/testuser/test/My Blank Item"
-                ]
-            }, function(save_err, save_res){
-                logger.log(JSON.stringify(save_err,null,4), save_res);
-            })
             callback();
         })
     })
 }
 
+Core.prototype.on_connected = function(callback){
+    var core = this;
+
+    if(core.connected){
+        callback();
+        return;
+    }
+    core.connect_callbacks.push(callback);
+}
+
 Core.prototype.call = function(user, request, callback){
 	var core = this;
 
-    var api_val = new FieldVal(request);
+    logger.log("Core.call");
 
-    var function_name = api_val.get("function", BasicVal.string(true), BasicVal.one_of(core.handlers));
-    var parameters = api_val.get("parameters", BasicVal.object(true));
+    core.on_connected(function(){
 
-    var handler = core.handlers[function_name];
+        logger.log("Core.call connected");
 
-    var error = api_val.end();
-    if(error){
-        callback(error);
-        return;
-    }
+        var api_val = new FieldVal(request);
 
-    if (handler != null) {
-        var handler_callback = function(error, response) {
-            // logger.log(JSON.stringify(error, null, 4));
-            // logger.log(JSON.stringify(response, null, 4));
-            if (error != null) {
-                return callback(api_val.invalid("parameters", error).end());
-            } else {
-                callback(null, response);
-            }
-        };
-        new handler(core, user, parameters, handler_callback)
-    }
+        var function_name = api_val.get("function", BasicVal.string(true), BasicVal.one_of(core.handlers));
+        var parameters = api_val.get("parameters", BasicVal.object(true));
+
+        var handler = core.handlers[function_name];
+
+        var error = api_val.end();
+        if(error){
+            callback(error);
+            return;
+        }
+
+        if (handler != null) {
+            logger.log("Calling handler",handler);
+            var handler_callback = function(error, response) {
+                logger.log(JSON.stringify(error, null, 4));
+                logger.log(JSON.stringify(response, null, 4));
+                if (error != null) {
+                    return callback(api_val.invalid("parameters", error).end());
+                } else {
+                    callback(null, response);
+                }
+            };
+            new handler(core, user, parameters, handler_callback)
+        }
+    });
 }
 
 module.exports = Core;
