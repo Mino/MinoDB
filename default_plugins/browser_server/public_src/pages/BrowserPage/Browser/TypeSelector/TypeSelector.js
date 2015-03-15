@@ -14,7 +14,6 @@ function TypeSelector(selection_callback){
 			BasicVal.max_length(4)
 		]);
 		ts.query_field.error(error);
-		console.log(error);
 		if(!error){
 			ts.do_search(query);
 		}
@@ -51,10 +50,8 @@ TypeSelector.prototype.init = function(){
 	var ts = this;
 
 	$('html').on('click.type_selector.'+ts.id,function(event){
-		console.log(ts.visible, ts.can_close);
 		if(ts.visible && ts.can_close){
 			if (!$(event.target).closest(ts.element).length){
-				console.log("HIDING FROM TAP OFF");
 				ts.hide();
 			}
 		}
@@ -64,7 +61,6 @@ TypeSelector.prototype.init = function(){
 		if(!jQuery.contains(document.documentElement, ts.element[0])){
 			ts.remove();
 		} else {
-			console.log("Resizing");
 			ts.reposition();
 		}
 	})
@@ -73,13 +69,11 @@ TypeSelector.prototype.init = function(){
 TypeSelector.prototype.reposition = function(){
 	var ts = this;
 
-	console.log("reposition");
 	var button = ts.element.prev();
 	if(button){
 		ts.element.css({
 			"left": "0px"
 		});
-		console.log(ts.element.offset().left, button.offset().left,ts.element.offset().left - button.offset().left);
 		var button_width = button.outerWidth();
 		var diff = ts.element.offset().left - (button.offset().left + button.outerWidth());
 		var offset = -(diff + button.outerWidth()/2);
@@ -91,8 +85,6 @@ TypeSelector.prototype.reposition = function(){
 
 TypeSelector.prototype.remove = function(){
 	var ts = this;
-
-	console.log("removing");
 
 	$(window).off('resize.type_selector.'+ts.id);
 	$('html').off('tap.type_selector.'+ts.id);
