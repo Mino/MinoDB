@@ -17799,6 +17799,8 @@ function FVProxyField(name, options) {
     field.init_called = false;
     field.last_val = undefined;
     field.inner_field = null;
+
+    field.on_replace_callbacks = [];
 }
 FVProxyField.prototype.init = function(){
     var field = this;
@@ -17809,14 +17811,15 @@ FVProxyField.prototype.init = function(){
         field.inner_field.init();
     }
 }
-FVProxyField.prototype.replace = function(inner_field){
+FVProxyField.prototype.replace = function(inner_field, options){
     var field = this;
+
+    options = options || {};
 
     field.inner_field = inner_field;
     if(field.init_called){
         field.inner_field.init();
     }
-
 
     //Carry any pre/appended elements into the new field
     var before = [];
@@ -17906,6 +17909,22 @@ FVProxyField.prototype.replace = function(inner_field){
     if(field.is_disabled){
         field.disable();
     }
+
+    for(var i=0; i<field.on_replace_callbacks.length; i++){
+        field.on_replace_callbacks[i]();
+    }
+
+    if (!options.ignore_change) {
+        field.did_change(options);
+    }
+}
+
+FVProxyField.prototype.on_replace = function(callback){
+    var field = this;
+
+    field.on_replace_callbacks.push(callback);
+
+    return field;
 }
 
 //Captures calls to val
@@ -20607,8 +20626,6 @@ function ajax_request(endpoint, params, callback){
 
 function Modal(props){
 	var modal = this;
-
-	console.log(props);
 
 	if(!props){
 		props = {};

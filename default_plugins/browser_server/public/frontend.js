@@ -18074,6 +18074,8 @@ function FVProxyField(name, options) {
     field.init_called = false;
     field.last_val = undefined;
     field.inner_field = null;
+
+    field.on_replace_callbacks = [];
 }
 FVProxyField.prototype.init = function(){
     var field = this;
@@ -18084,14 +18086,15 @@ FVProxyField.prototype.init = function(){
         field.inner_field.init();
     }
 }
-FVProxyField.prototype.replace = function(inner_field){
+FVProxyField.prototype.replace = function(inner_field, options){
     var field = this;
+
+    options = options || {};
 
     field.inner_field = inner_field;
     if(field.init_called){
         field.inner_field.init();
     }
-
 
     //Carry any pre/appended elements into the new field
     var before = [];
@@ -18181,6 +18184,22 @@ FVProxyField.prototype.replace = function(inner_field){
     if(field.is_disabled){
         field.disable();
     }
+
+    for(var i=0; i<field.on_replace_callbacks.length; i++){
+        field.on_replace_callbacks[i]();
+    }
+
+    if (!options.ignore_change) {
+        field.did_change(options);
+    }
+}
+
+FVProxyField.prototype.on_replace = function(callback){
+    var field = this;
+
+    field.on_replace_callbacks.push(callback);
+
+    return field;
 }
 
 //Captures calls to val
@@ -21846,6 +21865,45 @@ ItemSection.prototype.remove_press = function(){
     section.item_view.form.remove_field(section.name);
 }
 
+ItemSection.prototype.style_section_form = function() {
+    var section = this;
+
+    section.item_view.form.add_field(section.name, section.field);
+    section.field.element.addClass("item_section");
+
+    var title_text;
+    if(section.field.display_name){
+        title_text = section.type.display_name + " ("+section.type.name+")";
+    } else {
+        title_text = section.type.name;
+    }
+
+    section.field.title.empty().append(
+        $("<a />",{
+             "href": Site.path + section.type.name
+        }).ajax_url().text(title_text)
+        ,
+        section.remove_button = $("<button />").addClass("mino_button").text("Remove").on('tap',function(event){
+            event.preventDefault();
+            section.remove_press();
+        }).hide()
+    )
+
+    if(section.init_called){
+        section.field.init();
+    }
+
+    if(section.is_enable){
+        section.enable();
+    } else {
+        section.disable();
+    }
+
+    //TODO refactor set value asynchronously
+    section.field.val(section.value);
+
+}
+
 ItemSection.prototype.populate_type = function(type){
 	var section = this;
 
@@ -21855,45 +21913,13 @@ ItemSection.prototype.populate_type = function(type){
 
 	section.field = section.vr.create_form();
 
-    //TODO implement proper callback when form is loaded
-    // setTimeout(function() {
-
-        section.item_view.form.add_field(section.name, section.field);
-        section.field.element.addClass("item_section");
-
-        var title_text;
-        if(section.field.display_name){
-            title_text = type.display_name + " ("+type.name+")";
-        } else {
-            title_text = type.name;
-        }
-
-        section.field.title.empty().append(
-            $("<a />",{
-                 "href": Site.path + type.name
-            }).ajax_url().text(title_text)
-            ,
-            section.remove_button = $("<button />").addClass("mino_button").text("Remove").on('tap',function(event){
-                event.preventDefault();
-                section.remove_press();
-            }).hide()
-        )
-
-        if(section.init_called){
-            section.field.init();
-        }
-
-        if(section.is_enable){
-            section.enable();
-        } else {
-            section.disable();
-        }
-
-        //TODO refactor set value asynchronously
-        section.field.val(section.value);
-        
-    // }, 500);
-    
+    if (section.field instanceof FVProxyField) {
+        section.field.on_replace(function() {
+            section.style_section_form();
+        })
+    } else {
+        section.style_section_form();
+    }
 
 }
 
