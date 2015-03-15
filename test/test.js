@@ -12,4 +12,8 @@ describe('MinoDB', function() {
     require('./plugins/plugins.js')
     require('./signals/signals.js')
     require('./utils/class_to_string');
+
+    after(function(){
+		globals.mino.close();
+    })
 });
