@@ -29,7 +29,9 @@ function MinoDB(config, username /*optional*/){
 
     mdb.custom_fields = [];
 
-    mdb.api = new Core(mdb, mdb.config.db_address);
+    mdb.core = new Core(mdb, mdb.config.db_address);
+
+    mdb.api = mdb.core;//.api is a more intuitive name for external references
 
     mdb.internal_express_server = express();
     mdb.internal_express_server.disable('etag');//Prevents 304s
@@ -102,6 +104,12 @@ MinoDB.prototype.add_plugin = function(){
     next();
 
     return mdb;
+}
+
+MinoDB.prototype.close = function(callback){
+    var mdb = this;
+
+    mdb.core.close(callback);
 }
 
 MinoDB.prototype.server = function(){
