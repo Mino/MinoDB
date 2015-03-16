@@ -3,7 +3,15 @@ MinoDB
 
 MinoDB is an extensible database layer for web apps. Utilizing [MongoDB](http://www.mongodb.org/)'s freedom, MinoDB adds well-designed structure - allowing you to build apps much faster.
 
-##Main features
+##Table of Contents
+* [Main features](#main-features)
+* [Installation](#installation)
+* [Example usage](#example-usage)
+* [Documentation](#documentation)
+
+Main features
+======
+
 ###Powerful schema validation
 
 MinoDB validates all your objects according to the schema defined either in the code or dynamically in the UI. Validation errors are readable and parseable, i.e.
