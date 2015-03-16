@@ -56,10 +56,13 @@ Schema definition supports implementing custom validation (both sync and async).
 ###UI for your data
 MinoDB includes a default Browser plugin for viewing the data.
 
-####Familiar folder structure, intutiative for both technical and non-technical colleagues. Increadibly easy to view and organise absolutely anything. 
 
-####Items are always validated based on the defined schema. It also uses custom rules defined in your backend.
+#####Familiar folder structure, intutiative for both technical and non-technical colleagues. Increadibly easy to view and organise absolutely anything. 
+![Folder structure](https://raw.githubusercontent.com/MarcusLongmuir/MinoDB/develop/docs/folder_structure.png)
 
+
+#####Items are always validated based on the defined schema. It also uses custom rules defined in your backend.
+![Item validation](https://raw.githubusercontent.com/MarcusLongmuir/MinoDB/develop/docs/item_validation.png)
 
 ###Other features
 * Users, authentication and permissions out of the box (work in progress)
