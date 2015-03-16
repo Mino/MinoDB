@@ -1,7 +1,7 @@
 MinoDB
 ======
 
-MinoDB is an extensible database layer for web apps. Utilizing [MongoDB](http://www.mongodb.org/)'s freedom, MinoDB adds well-designed structure - providing power of building apps extremely faster.
+MinoDB is an extensible database layer for web apps. Utilizing [MongoDB](http://www.mongodb.org/)'s freedom, MinoDB adds well-designed structure - allowing you to build apps much faster.
 
 Main features:
 * Familiar folder structure - easy to organise and view your data.
@@ -9,10 +9,10 @@ Main features:
 * Users and permissions out of the box
 * UI for your data - an admin interface that your non-technical colleagues can use without having to building one from scratch.
 * Plugins - customise and add functionality with plugins. Building one is as easy as building an express app.
-* Signals - listen to data changes within a folder. Extremely useful for integrating with Slack, Trello, Zapier and others.
+* Signals - listen to data changes. Extremely useful for integrating with Slack, Trello, Zapier and others.
 * Built-in validation powered by [FieldVal](https://github.com/FieldVal/fieldval-js)
 
-MinoDB is for startups and developers who need to build high quality web apps extremely fast. It doesn't get in your way - it's completely up to you to structure your code. When MinoDB APIs aren't good enough - you can call MongoDB in any way you're used too.
+MinoDB is for startups and developers who need to build high quality web apps extremely fast. It doesn't get in your way - it's completely up to you to structure your code. MinoDB doesn't get in your way - you can still call MongoDB directly in any way you're used too.
 
 ###Notice: ALPHA release - use at your own risk.
 
@@ -69,7 +69,7 @@ server.use('/mino/', mino.server())
 server.listen(5001);
 ```
 
-You also need [MongoDB](http://www.mongodb.org/) for running the example.
+You also need [MongoDB](http://www.mongodb.org/) running locally to run the example.
 
 [Other examples](#examples).
 
@@ -115,7 +115,7 @@ A ```full_path``` is the concatenation (joining) of the ```path``` and the ```na
 ###Types
 Type defines a JSON schema for the data that is stored by [item](#items). Each [item](#items) can contain several types.
 
-[Item](#items) implementing a type will have type's name as a key that stores type's data. For example, if name of the type is ```custom_type```, then an item would look like this:
+[Item](#items) implementing a type will have type's name as a key that stores the type's data. For example, if name of the type is ```custom_type```, then an item would look like this:
 ```javascript
 {
     "_id": 123,
@@ -148,7 +148,7 @@ server.use('/mino/', mino.server())
 ```
 
 ###call(parameters, callback)
-Calls MinoDB API. Parameters should be in a following format:
+Calls MinoDB API. Parameters should be in the following format:
 ```javascript
 {
     "function": <FUNCTION_NAME>,
@@ -272,7 +272,7 @@ Returns a list of script URLs that were registered by plugins as browser depende
 
 
 ##Plugins
-MinoDB is designed to be extended with plugins. In fact, most of the out-of-the-box functionality is implemented as distinct plugins, which are added by default. Default plugins include:
+MinoDB is designed to be extended with plugins. In fact, most of the out-of-the-box functionality is separated into distinct plugins, which are added by default. Default plugins include:
 * AdminServer - server used for plugin configuration
 * ApiServer - server that exposes MinoDB calls as an API
 * BrowserServer - server that is used for viewing and modifying the data. Accessible on ```http://<SERVER_URL>/<MINO_PATH>/browser/``` (i.e. ```http://localhost:5002/mino/browser/```).
@@ -297,7 +297,7 @@ BrowserServer.prototype.info = function(){
 ```
 
 ####init(minodb)
-Should initialise the plugin. First argument is an instance of MinoDB. It is common to store minodb instance for future use and mount any additoinal servers if necessary. For example:
+Should initialise the plugin. First argument is an instance of MinoDB. It is common to store minodb instance for future use and mount any additional servers if necessary. For example:
 ```javascript
 BrowserServer.prototype.init = function(minodb){
     var bs = this;
