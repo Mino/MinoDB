@@ -31,6 +31,9 @@ function DeleteHandler(api, user, parameters, callback){
         dh.delete_objects.push(new DeleteObject(address, dh,index));
     }));
 
+    logger.log("parameters", parameters);
+    logger.log("objects", objects);
+
 
     dh.result = {};
     dh.result_object_array = new Array(dh.delete_objects.length);
@@ -127,6 +130,13 @@ DeleteHandler.prototype.do_deleting = function(callback){
             if(dh.completed===dh.total){
                 dh.finished_deleting();
             }
+
+            if (!error) {
+                dh.api.minodb.signal_manager.trigger(dh.user, "delete", delete_object.deleting_json, function(err, res) {
+                    logger.log(err,res);
+                })    
+            }
+            
         });
     }    
 }

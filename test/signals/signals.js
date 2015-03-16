@@ -24,7 +24,7 @@ describe("Signals", function() {
 		})
 	})
 
-	it("should trigger when path and handler match", function(done) {
+	it("should trigger save handler when path and handler match", function(done) {
 
 		var save_object = {
 			name: "signal_object",
@@ -51,7 +51,7 @@ describe("Signals", function() {
 
 	})
 
-	it("should trigger when include_subfolders=true and path is a child of signal path", function(done) {
+	it("should trigger save handler when include_subfolders=true and path is a child of signal path", function(done) {
 
 		var save_object = {
 			name: "signal_object_in_subfolder",
@@ -78,7 +78,7 @@ describe("Signals", function() {
 
 	})
 
-	it("should trigger when no path specified", function(done) {
+	it("should trigger save handler when no path specified", function(done) {
 		var save_object = {
 			name: "signal_object_no_path",
 			path: "/testuser/folder/inner_folder/",
@@ -97,6 +97,26 @@ describe("Signals", function() {
 		globals.mino.add_signal(signal);
 
 		globals.sdk.with_user("testuser").save([save_object], function(err, res) {
+			assert.equal(err, null);
+		})
+
+	});
+
+	it("should trigger delete handler", function(done) {
+		var path = "/testuser/folder/inner_folder/";
+
+		var signal = new Signal({
+			handlers: ["delete"],
+			callback: function(object, handler) {
+				assert.equal(object.full_path, path);
+				assert.equal(handler, "delete");
+				done();
+			}
+		})
+			
+		globals.mino.add_signal(signal);
+
+		globals.sdk.with_user("testuser").delete([path], function(err, res) {
 			assert.equal(err, null);
 		})
 
