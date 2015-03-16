@@ -7,9 +7,13 @@ describe('MinoDB', function() {
 	before(require("./setup.js"));
 
 	require('./initial_setup.js');
-	require('./models/models.js');
+	require('./Models/models.js');
 	require('./api/api.js');
     require('./plugins/plugins.js')
     require('./signals/signals.js')
     require('./utils/class_to_string');
+
+    after(function(){
+		globals.mino.close();
+    })
 });

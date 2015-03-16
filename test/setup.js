@@ -38,11 +38,11 @@ module.exports = function(done) {
 		                password: "my_password"
 					}, function(user_err, user_res){
 					    logger.log(JSON.stringify(user_err, null, 4), user_res);
+					    db.close();
 						done();
 					})
 	            })
 			});
-
 		});
 	});
 

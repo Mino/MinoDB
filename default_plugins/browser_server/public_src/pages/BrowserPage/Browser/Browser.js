@@ -96,7 +96,10 @@ Browser.prototype.load = function(address, options){
 	}
 
 	if(options['types']!==undefined){
-		browser.view = new TypeSearchView(browser);
+		browser.view = new TypeSearchView(
+		    browser,
+		    options
+		);
 		browser.view_container.empty().append(browser.view.element);
 		browser.view.init();
 		browser.view.resize(Site.resize_obj);

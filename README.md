@@ -1,18 +1,83 @@
 MinoDB
 ======
 
-MinoDB is an extensible database layer for web apps. Utilizing [MongoDB](http://www.mongodb.org/)'s freedom, MinoDB adds well-designed structure - providing power of building apps extremely faster.
+MinoDB is an extensible database layer for web apps. Utilizing [MongoDB](http://www.mongodb.org/)'s freedom, MinoDB adds well-designed structure - allowing you to build apps much faster.
 
-Main features:
-* Familiar folder structure - easy to organise and view your data.
-* Reusable database schema, which can be used for creating forms and validating JSON objects with a few lines of code.
-* Users and permissions out of the box
-* UI for your data - an admin interface that your non-technical colleagues can use without having to building one from scratch.
-* Plugins - customise and add functionality with plugins. Building one is as easy as building an express app.
-* Signals - listen to data changes within a folder. Extremely useful for integrating with Slack, Trello, Zapier and others.
-* Built-in validation powered by [FieldVal](https://github.com/FieldVal/fieldval-js)
+##Table of Contents
+* [Main features](#main-features)
+* [Installation](#installation)
+* [Example usage](#example-usage)
+* [Documentation](#documentation)
 
-MinoDB is for startups and developers who need to build high quality web apps extremely fast. It doesn't get in your way - it's completely up to you to structure your code. When MinoDB APIs aren't good enough - you can call MongoDB in any way you're used too.
+Main features
+======
+
+###Powerful schema validation
+
+MinoDB validates all your objects according to the schema defined either in the code or dynamically in the UI. Validation errors are readable and parseable, i.e.
+
+Schema example:
+```javascript
+{
+    "name": "product",
+    "type": "object",
+    "fields":[{
+        "name": "title",
+        "type": "text",
+        "min_length": 5,
+    },{
+        "name": "quantity",
+        "type": "number",
+        "minimum": 0
+    },{
+        "name": "date_created",
+        "type": "date",
+        "format": "yyyy-MM-dd hh:mm:ss"
+    }]
+}
+```
+
+Error example:
+```javascript
+{
+    "invalid": {
+        "title": {
+            "error": 100,
+            "error_message": "Length is less than 5"
+        },
+        "quantity": {
+            "error_message": "Field missing.",
+            "error": 1
+        },
+        "date_created": {
+            "error": 111,
+            "error_message": "Invalid date format."
+        }
+    },
+    "error_message": "One or more errors.",
+    "error": 5
+}
+```
+
+Schema definition supports implementing custom validation (both sync and async). Check [FieldVal](https://github.com/FieldVal/fieldval-js) and [FieldVal rules](https://github.com/FieldVal/fieldval-rules-js) to learn more about errors and validation.
+
+###UI for your data
+MinoDB includes a default Browser plugin for viewing the data.
+
+
+#####Familiar folder structure, intutiative for both technical and non-technical colleagues. Increadibly easy to view and organise absolutely anything. 
+![Folder structure](https://raw.githubusercontent.com/MarcusLongmuir/MinoDB/develop/docs/folder_structure.png)
+
+
+#####Items are always validated based on the defined schema. It also uses custom rules defined in your backend.
+![Item validation](https://raw.githubusercontent.com/MarcusLongmuir/MinoDB/develop/docs/item_validation.png)
+
+###Other features
+* Users, authentication and permissions out of the box (work in progress)
+* Customise and add functionality with plugins. Writing one is as easy as building an express app.
+* Signals - listen to data changes. Extremely useful for integrating with Slack, Trello, Zapier and others.
+
+MinoDB is for startups and developers who need to build high quality web apps extremely fast. It doesn't get in your way - it's completely up to you to structure your code. MinoDB doesn't get in your way - you can still call MongoDB directly in any way you're used too.
 
 ###Notice: ALPHA release - use at your own risk.
 
@@ -69,7 +134,7 @@ server.use('/mino/', mino.server())
 server.listen(5001);
 ```
 
-You also need [MongoDB](http://www.mongodb.org/) for running the example.
+You also need [MongoDB](http://www.mongodb.org/) running locally to run the example.
 
 [Other examples](#examples).
 
@@ -115,7 +180,7 @@ A ```full_path``` is the concatenation (joining) of the ```path``` and the ```na
 ###Types
 Type defines a JSON schema for the data that is stored by [item](#items). Each [item](#items) can contain several types.
 
-[Item](#items) implementing a type will have type's name as a key that stores type's data. For example, if name of the type is ```custom_type```, then an item would look like this:
+[Item](#items) implementing a type will have type's name as a key that stores the type's data. For example, if name of the type is ```custom_type```, then an item would look like this:
 ```javascript
 {
     "_id": 123,
@@ -148,7 +213,7 @@ server.use('/mino/', mino.server())
 ```
 
 ###call(parameters, callback)
-Calls MinoDB API. Parameters should be in a following format:
+Calls MinoDB API. Parameters should be in the following format:
 ```javascript
 {
     "function": <FUNCTION_NAME>,
@@ -272,7 +337,7 @@ Returns a list of script URLs that were registered by plugins as browser depende
 
 
 ##Plugins
-MinoDB is designed to be extended with plugins. In fact, most of the out-of-the-box functionality is implemented as distinct plugins, which are added by default. Default plugins include:
+MinoDB is designed to be extended with plugins. In fact, most of the out-of-the-box functionality is separated into distinct plugins, which are added by default. Default plugins include:
 * AdminServer - server used for plugin configuration
 * ApiServer - server that exposes MinoDB calls as an API
 * BrowserServer - server that is used for viewing and modifying the data. Accessible on ```http://<SERVER_URL>/<MINO_PATH>/browser/``` (i.e. ```http://localhost:5002/mino/browser/```).
@@ -297,7 +362,7 @@ BrowserServer.prototype.info = function(){
 ```
 
 ####init(minodb)
-Should initialise the plugin. First argument is an instance of MinoDB. It is common to store minodb instance for future use and mount any additoinal servers if necessary. For example:
+Should initialise the plugin. First argument is an instance of MinoDB. It is common to store minodb instance for future use and mount any additional servers if necessary. For example:
 ```javascript
 BrowserServer.prototype.init = function(minodb){
     var bs = this;

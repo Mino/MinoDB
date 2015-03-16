@@ -25,20 +25,24 @@
 		}
 
 		>.fv_form{
-			>.fv_field{
-				padding: 0px;
-				margin: 0px;
-				>.fv_field_title{
-					display: none;
-				}
-				>.fv_input_holder{
-					input{
-						border: none;
-						border-bottom: 1px solid @fv_border_color;
+			padding-top: 0px;
+			padding-bottom: 0px;
+			>.fv_input_holder{
+				>.fv_field{
+					padding: 0px;
+					margin: 0px;
+					>.fv_field_title{
+						display: none;
 					}
-				}
-				>.fv_error_message{
-					position: absolute;
+					>.fv_input_holder{
+						input{
+							border: none;
+							border-bottom: 1px solid @fv_border_color;
+						}
+					}
+					>.fv_error_message{
+						position: absolute;
+					}
 				}
 			}
 		}
