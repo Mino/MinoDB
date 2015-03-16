@@ -379,42 +379,20 @@ Should return a list of script URLs that should be loaded in the browser when a 
 ##Signals
 Signals allow listening to changes within specific paths. Due to having several places where your data can be modified (i.e. Browser, your code and plugins), signals are incredibly useful for performing actions such as sending notifications when the data has changed. 
 
-There are two types of signals - static and dynamic.
-
-###Static signals
-Static signals are defined in the code.
 ```javascript
-var signal = new StaticSignal({
-	paths: ["/my_app/events/"],
-	include_subfolders: false,
-	handlers: ["save"],
-	callback: function(object) {
-		//Executed code
+var signal = new Signal({
+    paths: ["/my_app/events/"],
+    include_subfolders: false,
+    handlers: ["save"],
+    callback: function(object, handler) {
+	    //Execute code
 	}
 });
-mino.add_static_signal(signal);
+mino.add_signal(signal);
 ```
 
-* ```paths``` specifies which folder should be watched (i.e. new item in this folder would trigger the signal).
+* ```paths``` specifies which folders should be watched (i.e. created item in this folder would trigger the signal). If paths are not specified, then signal is triggered for all paths.
 * ```include_subfolders``` specifies whether subfolders within ```paths``` should be watched as well.
-* ```handlers``` specify which actions should trigger the signal (i.e. ```save```, ```delete```)
+* ```handlers``` specify which actions should trigger the signal (i.e. ```save```, ```delete```).
 * ```callback``` is a function that will be called when the signal is triggered. ```object``` is a MinoDB [object](#objects).
 
-###Dynamic signals
-Dynamic signals are MinoDB [items](#items) that are stored in ```/<USERNAME>/signals/``` folder. They can be added and removed without re-deploying the code - simply navigate to ```signals``` folder in the browser and make your changes. Alternatively, you can create and modify dynamic signals in your code with Mino API calls (again, it's just an item).
-
-Dynamic signals need to include ```mino_signal``` type.
-
-```javascript
-{
-	name: "signal_with_subfolders",
-	path: "/testuser/signals/",
-	mino_signal: {
-		paths: ["/testuser/folder/"],
-		include_subfolders: true,
-		handlers: ["save"],
-	}
-}
-```
-
-**Note**: dynamic signals are great for rapid development, but they make additional database calls on every API call, which might impact performance of the application. When this becomes an issue, it is possible to disable them by passing ```dynamic_signals_enabled: false``` to MinoDB config.
