@@ -39,7 +39,7 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
 	var db = del_obj.handler.api.ds;
 
 	if(del_obj.error){//Already have an error
-		on_delete_callback(del_obj.error);
+		on_delete_callback(del_obj, del_obj.error);
 		return;
 	}
 
