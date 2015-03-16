@@ -35,9 +35,10 @@ describe("Signals", function() {
 			paths: ["/testuser/folder/"],
 			include_subfolders: false,
 			handlers: ["save"],
-			callback: function(object) {
+			callback: function(object, handler) {
 				assert.equal(object.name, save_object.name);
 				assert.equal(object.path, save_object.path);
+				assert.equal(handler, "save");
 				done();
 			}
 		})
@@ -61,9 +62,10 @@ describe("Signals", function() {
 			paths: ["/testuser/folder/"],
 			include_subfolders: true,
 			handlers: ["save"],
-			callback: function(object) {
+			callback: function(object, handler) {
 				assert.equal(object.name, save_object.name);
 				assert.equal(object.path, save_object.path);
+				assert.equal(handler, "save");
 				done();
 			}
 		})
@@ -84,9 +86,10 @@ describe("Signals", function() {
 
 		var signal = new Signal({
 			handlers: ["save"],
-			callback: function(object) {
+			callback: function(object, handler) {
 				assert.equal(object.name, save_object.name);
 				assert.equal(object.path, save_object.path);
+				assert.equal(handler, "save");
 				done();
 			}
 		})
