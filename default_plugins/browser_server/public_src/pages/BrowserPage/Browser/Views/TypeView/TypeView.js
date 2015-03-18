@@ -40,7 +40,8 @@ TypeView.prototype.populate = function(data){
 
 	type_view.browser.address_bar.populate_path_buttons(type_view.name);
 
-	type_view.type_field = new TypeField(type_view.type_data, type_view);
+	type_view.type_field = new TypeField();
+	type_view.type_field.val(data);
 	type_view.element.empty().append(
 		type_view.type_field.element
 	)
@@ -137,7 +138,7 @@ TypeView.prototype.init = function(){
 	type_view.type_field.init();
 
 	if(type_view.options.create){
-		type_view.type_field.form.fields.name.focus();
+		type_view.type_field.fields.name.focus();
 	}
 }
 
@@ -193,5 +194,5 @@ TypeView.prototype.resize = function(resize_obj){
 
 	resize_obj = resize_obj || Site.resize_obj;
 
-	type_view.type_field.form.element.toggleClass("rows", resize_obj.window_width>700)
+	type_view.type_field.element.toggleClass("rows", resize_obj.window_width>700)
 }
