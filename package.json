@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MarcusLongmuir/MinoDB.git"
+    "url": "https://github.com/Mino/MinoDB.git"
   },
   "dependencies": {
     "express": "*",
@@ -20,7 +20,7 @@
     "morgan" : "*",
     "errorhandler": "*",
     "mongodb" : "*",
-    "minosdk" : "MarcusLongmuir/MinoSDK",
+    "minosdk" : "Mino/MinoSDK",
     "tracer": "*",
     "fieldval" : "0.4.0",
     "fieldval-rules" : "FieldVal/fieldval-rules-js#develop",
