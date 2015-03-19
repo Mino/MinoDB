@@ -1,4 +1,4 @@
-function StaticSignal(data) {
+function Signal(data) {
 	var signal = this;
 	signal.data = data;
 	signal.callback = data.callback;
@@ -8,9 +8,9 @@ function StaticSignal(data) {
 	signal.handlers = signal.data.handlers;
 }
 
-StaticSignal.prototype.trigger = function(object, signal_manager) {
+Signal.prototype.trigger = function(object, handler) {
 	var signal = this;
-	signal.callback(object)
+	signal.callback(object, handler);
 }
 
-module.exports = StaticSignal;
+module.exports = Signal;

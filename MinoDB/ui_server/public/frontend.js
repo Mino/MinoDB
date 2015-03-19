@@ -15688,7 +15688,9 @@ function FVField(name, options) {
     field.on_change_callbacks = [];
 
     if(field.options.form){
-        field.element = $("<form />")
+        field.element = $("<form />",{
+            "novalidate": "novalidate"//Disable browser-based validation
+        })
         .addClass("fv_field")
         .data("field",field)
         .on("submit",function(event){
@@ -16668,6 +16670,9 @@ function FVDateField(name, options) {//format is currently unused
     }
 }
 
+FVDateField.character_width = 14;
+FVDateField.padding_width = 4;
+
 FVDateField.prototype.add_element_from_component = function(component, component_value){
     var field = this;
 
@@ -16685,6 +16690,9 @@ FVDateField.prototype.add_element_from_component = function(component, component
             "maxlength": component_max_length
         })
         .addClass("fv_date_input")
+        .css({
+            "width": (component_max_length * FVDateField.character_width) + FVDateField.padding_width
+        })
         .on("keyup",function(){
             field.did_change()
         })
@@ -18086,14 +18094,15 @@ FVProxyField.prototype.init = function(){
         field.inner_field.init();
     }
 }
-FVProxyField.prototype.replace = function(inner_field){
+FVProxyField.prototype.replace = function(inner_field, options){
     var field = this;
+
+    options = options || {};
 
     field.inner_field = inner_field;
     if(field.init_called){
         field.inner_field.init();
     }
-
 
     //Carry any pre/appended elements into the new field
     var before = [];
@@ -18188,7 +18197,9 @@ FVProxyField.prototype.replace = function(inner_field){
         field.on_replace_callbacks[i]();
     }
 
-    field.did_change();
+    if (!options.ignore_change) {
+        field.did_change(options);
+    }
 }
 
 FVProxyField.prototype.on_replace = function(callback){
@@ -18560,13 +18571,21 @@ var FVTextRuleField = (function(){
         return field.validator.end();
     }
 
-    FVTextRuleField.create_editor_ui = function(value, form) {
+    FVTextRuleField.add_editor_params = function(editor) {
         var field = this;
 
-        form.add_field("min_length", new FVTextField("Minimum Length", {type: "number"}));
-        form.add_field("max_length", new FVTextField("Maximum Length", {type: "number"}));
-        form.fields.min_length.val(value.min_length);
-        form.fields.max_length.val(value.max_length);
+        editor.add_field("min_length", new FVTextField("Minimum Length", {type: "number"}));
+        editor.add_field("max_length", new FVTextField("Maximum Length", {type: "number"}));
+
+        var ui_type = new FVChoiceField("UI Type", {
+            choices: ["text", "textarea", "password"]
+        })
+        editor.add_field("ui_type", ui_type);
+
+        var value = editor.val();
+        editor.fields.min_length.val(value.min_length);
+        editor.fields.max_length.val(value.max_length);
+        editor.fields.ui_type.val(value.ui_type);
     }
 
     return FVTextRuleField;
@@ -18655,6 +18674,19 @@ var FVNumberRuleField = (function(){
         }
 
         return field.validator.end();
+    }
+
+    FVNumberRuleField.add_editor_params = function(editor) {
+        var field = this;
+
+        editor.add_field("minimum", new FVTextField("Minimum", {type: "number"}));
+        editor.add_field("maximum", new FVTextField("Maximum", {type: "number"}));
+        editor.add_field("integer", new FVBooleanField("Integer"));
+
+        var value = editor.val();
+        editor.fields.minimum.val(value.minimum);
+        editor.fields.maximum.val(value.maximum);
+        editor.fields.integer.val(value.integer);
     }
 
     return FVNumberRuleField;
@@ -18764,7 +18796,7 @@ var FVObjectRuleField = (function(){
 
             for(var i in field.fields){
                 var inner_field = field.fields[i];
-                var inner_ui_field = inner_field.create_ui(field.ui_field);
+                var inner_ui_field = inner_field.create_ui();
                 field.ui_field.add_field(inner_field.name, inner_ui_field);
             }
 
@@ -18774,6 +18806,37 @@ var FVObjectRuleField = (function(){
         return field.ui_field;
     }
 
+    FVObjectRuleField.add_editor_params = function(editor) {
+        var fields_field = new FVArrayField("Fields");
+        fields_field.new_field = function(index){
+            var inner_field = new editor.constructor(null, editor);
+            fields_field.add_field(null, inner_field);
+        }
+
+        var any = new FVBooleanField("Any");
+        any.on_change(function(value) {
+            if (value) {
+                editor.remove_field("fields");
+            } else {
+                editor.add_field("fields", fields_field);
+            }
+        })
+
+        editor.add_field("any", any);
+
+        var value = editor.val();
+        any.val(value.any);
+        var inner_fields = value.fields;
+        if(inner_fields){
+            for(var i = 0; i < value.fields.length; i++){
+                var field_data = value.fields[i];
+
+                var inner_field = new editor.constructor(field_data, editor);
+                fields_field.add_field(null, inner_field);
+            }
+        }
+    }
+
     FVObjectRuleField.prototype.new_field = function(index){
         var field = this;
 
@@ -18781,7 +18844,7 @@ var FVObjectRuleField = (function(){
         var err = field_creation[0];
         var rule = field_creation[1];
         
-        return rule.create_ui(field.ui_field);
+        return rule.create_ui();
     }
 
     FVObjectRuleField.prototype.init = function() {
@@ -18957,7 +19020,7 @@ var FVArrayRuleField = (function(){
 
         var rule = field.rule_for_index(index);
         
-        return rule.create_ui(field.ui_field);
+        return rule.create_ui();
     }
 
     FVArrayRuleField.prototype.rule_for_index = function(index){
@@ -19079,6 +19142,21 @@ var FVArrayRuleField = (function(){
         return field.validator.end();
     }
 
+    FVArrayRuleField.add_editor_params = function(editor) {
+        var field = this;
+
+        var value = editor.val();
+
+        var indices = new FVKeyValueField("Indices");
+        indices.new_field = function() {
+            return new editor.constructor(null, editor);
+        }
+        indices.val(value.indices);
+
+        editor.add_field("indices", indices);
+
+    }
+
     return FVArrayRuleField;
 }).call((typeof window !== 'undefined')?window:null);
 
@@ -19160,6 +19238,129 @@ var FVChoiceRuleField = (function(){
         return field.validator.end();
     }
 
+    FVChoiceRuleField.add_editor_params = function(editor) {
+        var field = this;
+
+        var value = editor.val();
+
+        var choices_field = new FVObjectField("Choices");
+
+        var id = 0;
+
+        var create_choices_editor_array  =function () {
+            id+=1;
+            var choices = new FVArrayField();
+            choices.id = id;
+            choices.new_field = function() {
+                var choices = this;
+                if (mode_field.val() == "simple") { 
+                    return new FVTextField("Value");
+                } else {
+                    var tuple = new FVArrayField("", {
+                        hide_remove_button: true, 
+                        hide_add_button: true,
+                        sortable: false
+                    })
+                    tuple.add_field(new FVTextField("Value"));
+                    tuple.add_field(new FVTextField("Display name"));
+                    return tuple;
+                }
+            }
+            choices.val = function(set_val, options) {
+                var choices = this;
+                if (set_val) {
+                    var transformed_choices = [];
+                    for (var i=0; i<set_val.length; i++) {
+                        var old_choice = set_val[i];
+                        if (mode_field.val() == "simple") {
+                            if (Array.isArray(old_choice)) {
+                                transformed_choices.push(old_choice[0])
+                            } else {
+                                transformed_choices.push(old_choice);
+                            }
+                        } else {
+                            if (Array.isArray(old_choice)) {
+                                transformed_choices.push(old_choice)
+                            } else {
+                                transformed_choices.push([old_choice, old_choice]);
+                            }
+                        }
+                    }
+                    return FVArrayField.prototype.val.call(choices, transformed_choices, options);
+
+                } else {
+                    var original_choices = FVArrayField.prototype.val.apply(choices, arguments);
+                    var transformed_choices = [];
+                    for (var i=0; i<original_choices.length; i++) {
+                        var choice = original_choices[i];
+                        if (Array.isArray(choice) && choice[0] == choice[1]) {
+                            transformed_choices.push(choice[0])
+                        } else {
+                            transformed_choices.push(choice);
+                        }
+                    }
+                    return transformed_choices;
+                }
+
+            }
+            return choices;
+        }
+
+        
+        var mode_field = new FVChoiceField("Mode", {choices: ["simple", "advanced"]}).on_change(function(val) {
+            var old_choices = [];
+            if (choices_field.fields.choices) {
+                old_choices = choices_field.fields.choices.val();
+            }
+            choices_field.remove_field("choices");
+            
+            var choices = create_choices_editor_array();
+            choices_field.add_field("choices", choices);
+            choices.val(old_choices);
+        })
+
+        choices_field.add_field("mode", mode_field);
+
+        choices_field.update_mode = function(choices) {
+            var is_simple = true;
+            if (choices) {
+                for (var i=0; i<choices.length; i++) {
+                    if (Array.isArray(choices[i])) {
+                        is_simple = false;
+                        break;
+                    }
+                }
+            }
+
+            if (is_simple) {
+                mode_field.val("simple");
+            } else {
+                mode_field.val("advanced");
+            }
+        }
+
+        choices_field.val = function() {
+            if (arguments.length >0 && arguments[0]) {
+                choices_field.update_mode(arguments[0]);
+            }
+
+            var choices = choices_field.fields.choices;
+            return choices.val.apply(choices, arguments);
+        }
+
+        choices_field.update_mode(value.choices);
+        choices_field.val(value.choices);
+
+        editor.add_field("choices", choices_field);
+
+        editor.add_field("allow_empty", new FVBooleanField("Allow empty"));
+        editor.add_field("empty_message", new FVTextField("Empty message"));
+
+        editor.fields.allow_empty.val(value.allow_empty);
+        editor.fields.empty_message.val(value.empty_message);
+
+    }
+
     return FVChoiceRuleField;
 
 }).call((typeof window !== 'undefined')?window:null);
@@ -19237,6 +19438,15 @@ var FVBooleanRuleField = (function(){
         }
         
         return field.validator.end();
+    }
+
+    FVBooleanRuleField.add_editor_params = function(editor) {
+        var field = this;
+
+        editor.add_field("equal_to", new FVChoiceField("Equal to", {choices: [true, false]} ));
+        
+        var value = editor.val();
+        editor.fields.equal_to.val(value.equal_to);
     }
 
     return FVBooleanRuleField;
@@ -19392,11 +19602,13 @@ var FVDateRuleField = (function(){
         return field.validator.end();
     }
 
-    FVDateRuleField.create_editor_ui = function(value, form) {
+    FVDateRuleField.add_editor_params = function(editor) {
         var field = this;
 
-        form.add_field("format", new FVTextField("Date format"));
-        form.fields.format.val(value.format);
+        editor.add_field("format", new FVTextField("Date format"));
+        
+        var value = editor.val();
+        editor.fields.format.val(value.format);
     }
 
     return FVDateRuleField;
@@ -19551,6 +19763,67 @@ var FVRule = (function(){
 
 if (typeof module != 'undefined') {
     module.exports = FVRule;
+}
+fieldval_ui_extend(FVRuleEditor, FVObjectField);
+
+function FVRuleEditor(name, options){
+	var editor = this;
+
+    editor.base_fields = {};
+
+	FVRuleEditor.superConstructor.call(this, name, options);
+
+	var field_type_choices = [];
+	var types = FVRule.FVRuleField.types;
+	for(var i in types){
+		if (types.hasOwnProperty(i)) {
+			var field_type_class = types[i];
+
+			var name = i;
+			var display_name = field_type_class.display_name;
+			if(display_name){
+				field_type_choices.push([name, display_name])
+			} else {
+				field_type_choices.push(name);
+			}
+		}
+
+	}
+
+	editor.add_field("name", new FVTextField("Name"));
+	editor.add_field("display_name", new FVTextField("Display Name"));
+	editor.add_field("type", new FVChoiceField("Type", {
+		choices: field_type_choices
+	}).on_change(function(){
+		editor.update_type_fields();
+	}));
+
+	for(var name in editor.fields){
+		if (editor.fields.hasOwnProperty(name)) {
+	    	editor.base_fields[name] = true;
+		}
+    }
+
+    editor.update_type_fields();
+}
+
+FVRuleEditor.prototype.update_type_fields = function(){
+	var editor = this;
+
+	var type = editor.fields.type.val();
+	for(var name in editor.fields){
+		if(!editor.base_fields[name]){
+			editor.fields[name].remove();
+		}
+	}
+
+	if (type) {
+		var rule_field = FVRule.FVRuleField.types[type].class;
+		console.log(rule_field.add_editor_params);
+		if (rule_field.add_editor_params !== undefined) {
+			rule_field.add_editor_params(editor);
+		}
+	}
 }
 //Used to subclass Javascript classes
 function extend(sub, sup) {

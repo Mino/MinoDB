@@ -1920,6 +1920,9 @@ textarea {
 .fv_date_field > .fv_input_holder > .fv_date_input {
   font-size: 14px;
   display: inline-block;
+  text-align: center;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 .fv_date_field > .fv_input_holder > .fv_date_separator {
   display: inline-block;

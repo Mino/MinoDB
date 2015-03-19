@@ -39,7 +39,7 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
 	var db = del_obj.handler.api.ds;
 
 	if(del_obj.error){//Already have an error
-		on_delete_callback(del_obj.error);
+		on_delete_callback(del_obj, del_obj.error);
 		return;
 	}
 
@@ -77,6 +77,7 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
     		var old_full_path = new Path();
     		old_full_path.init(res.full_path);//Could throw an error, but it's already been delete successfully
     		del_obj.id = res._id;
+    		del_obj.deleting_json = res;
 
     		var have_permission = function(){
 

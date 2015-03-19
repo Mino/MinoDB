@@ -158,17 +158,11 @@ MinoDB.prototype.get_plugin_scripts = function(mino_path) {
     return scripts;
 }
 
-MinoDB.prototype.add_static_signal = function(signal) {
+MinoDB.prototype.add_signal = function(signal) {
     var mdb = this;
-    mdb.signal_manager.add_static_signal(signal);
+    mdb.signal_manager.add_signal(signal);
 }
 
-MinoDB.prototype.add_dynamic_signal_callback = function(name, callback) {
-    var mdb = this;
-    mdb.signal_manager.add_dynamic_signal_callback(name, callback);
-}
-
-MinoDB.StaticSignal = require('./core/models/StaticSignal');
-MinoDB.DynamicSignal = require('./core/models/DynamicSignal');
+MinoDB.Signal = require('./core/models/Signal');
 
 module.exports = MinoDB;
