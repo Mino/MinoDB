@@ -66,11 +66,11 @@ MinoDB includes a default Browser plugin for viewing the data.
 
 
 #####Familiar folder structure, intutiative for both technical and non-technical colleagues. Increadibly easy to view and organise absolutely anything. 
-![Folder structure](https://raw.githubusercontent.com/MarcusLongmuir/MinoDB/develop/docs/folder_structure.png)
+![Folder structure](https://raw.githubusercontent.com/Mino/MinoDB/develop/docs/folder_structure.png)
 
 
 #####Items are always validated based on the defined schema. It also uses custom rules defined in your backend.
-![Item validation](https://raw.githubusercontent.com/MarcusLongmuir/MinoDB/develop/docs/item_validation.png)
+![Item validation](https://raw.githubusercontent.com/Mino/MinoDB/develop/docs/item_validation.png)
 
 ###Other features
 * Users, authentication and permissions out of the box (work in progress)
@@ -82,18 +82,18 @@ MinoDB is for startups and developers who need to build high quality web apps ex
 ###Notice: ALPHA release - use at your own risk.
 
 ###Plugins
-* [MinoVal](https://github.com/MarcusLongmuir/MinoVal) - validation and form creation with Mino types, custom validation rules and more.
-* [MinoCMS](https://github.com/bestan/MinoCMS) - basic CMS functionality. 
+* [MinoVal](https://github.com/Mino/MinoVal) - validation and form creation with Mino types, custom validation rules and more.
+* [MinoCMS](https://github.com/Mino/MinoCMS) - basic CMS functionality. 
 
 ###Examples
-* [Mino Calendar example](https://github.com/bestan/mino-calendar-example)
-* [Mino CMS example](https://github.com/bestan/mino-cms-example)
+* [Mino Calendar example](https://github.com/Mino/mino-calendar-example)
+* [Mino CMS example](https://github.com/Mino/mino-cms-example)
 
 Installation
 =====
 Install via NPM
 ```
-npm install MarcusLongmuir/MinoDB
+npm install Mino/MinoDB
 ```
 
 Example usage
