@@ -122,21 +122,21 @@ describe('Path', function() {
             done();
         });
 
-        it('should return "Mino" for the "permissions" folder if requested by "Mino"', function(done) {
+        it('should return "MinoDB" for the "permissions" folder if requested by "MinoDB"', function(done) {
             var path = new Path();
             path.init("/Test/permissions/");
-            assert.equal(path.username_for_permission("Mino", true),"Mino");
+            assert.equal(path.username_for_permission("MinoDB", true),"MinoDB");
             done();
         });
 
-        it('should return the owner of the permissions folder if requested by anyone other than "Mino" and not for write', function(done) {
+        it('should return the owner of the permissions folder if requested by anyone other than "MinoDB" and not for write', function(done) {
             var path = new Path();
             path.init("/Test/permissions/");
             assert.equal(path.username_for_permission("AnotherUser", false),"Test");
             done();
         });
 
-        it('should return null for the "permissions" folder if requested by anyone other than "Mino" for write', function(done) {
+        it('should return null for the "permissions" folder if requested by anyone other than "MinoDB" for write', function(done) {
             var path = new Path();
             path.init("/Test/permissions/");
             assert.equal(path.username_for_permission("AnotherUser", true),null);

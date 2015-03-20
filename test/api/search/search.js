@@ -7,7 +7,7 @@ it('should perform a basic search', function(done) {
         "function": "search",
         "parameters": {
             "paths": [
-                "/Mino/users/"
+                "/MinoDB/users/"
             ],
             "include_subfolders": true,
             "query" : {

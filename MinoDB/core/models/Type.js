@@ -68,10 +68,10 @@ Type.prototype.create_save_data = function(callback){
 Type.prototype.save = function(api, callback){
     var type = this;
 
-    type.item.path = "/Mino/types/";
+    type.item.path = "/" + api.minodb.root_username + "/types/";
 
     new api.handlers.save(api, {
-        "username": "Mino"
+        "username": api.minodb.root_username
     }, {
         "objects": [
             type.item
@@ -85,13 +85,13 @@ Type.prototype.save = function(api, callback){
 
 Type.get = function(typename, api, callback){
     new api.handlers.get(api, {
-        "username": "Mino"
+        "username": api.minodb.root_username
     }, {
         "addresses": [
-            "/Mino/types/"+typename
+            "/" + api.minodb.root_username + "/types/"+typename
         ]
     }, function(get_err, get_res){
-        logger.log(get_err, get_res);
+        logger.log(typename, get_err, get_res);
 
         if(get_err){
             throw new Error("Unexpected API error");

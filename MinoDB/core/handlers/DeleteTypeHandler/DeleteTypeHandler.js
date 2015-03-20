@@ -27,7 +27,7 @@ function DeleteTypeHandler(api, user, parameters, callback){
 
     db.object_collection.remove(
         {
-            "full_path": "/Mino/types/"+type_name
+            "full_path": "/" + api.minodb.root_username + "/types/"+type_name
         },
         function(err,response){
 

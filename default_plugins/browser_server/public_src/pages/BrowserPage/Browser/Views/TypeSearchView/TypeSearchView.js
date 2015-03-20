@@ -71,7 +71,7 @@ TypeSearchView.prototype.load = function(options){
 	var request = {
 		"function" : "search",
 		"parameters" : {
-			"paths": ["/Mino/types/"],
+			"paths": ["/" + Common.ROOT_USERNAME + "/types/"],
 			"skip": parseInt(skip),
 			"limit": parseInt(limit)
 		}

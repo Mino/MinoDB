@@ -2,7 +2,7 @@ var logger = require('tracer').console();
 var globals = require('./globals');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
-
+var Common = require('../common_classes/Common');
 
 module.exports = function(done) {
 	this.timeout(200000);
@@ -18,7 +18,7 @@ module.exports = function(done) {
 			})
 
 			var MinoSDK = require('minosdk');
-			var sdk = new MinoSDK("Mino");
+			var sdk = new MinoSDK(Common.ROOT_USERNAME);
 			sdk.set_local_api(mino.api);
 
 			globals.sdk = sdk;
