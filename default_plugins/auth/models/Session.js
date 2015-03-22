@@ -41,42 +41,70 @@ Session.prototype.create_save_data = function(callback){
         username: session.username,
         key: session.key
     }
+    logger.log("to_save", to_save);
     callback(null, to_save);
 }
 
-Session.prototype.save = function(api, callback){
+Session.prototype.save = function(api, options, callback){
     var session = this;
+    logger.log(arguments);
+
+    if (arguments.length == 2) {
+        callback = options;
+        options = undefined;
+    }
+    
+    options = options || {};
+    var path = options.path || "/" + api.minodb.root_username + "/sessions/";
+    var mino_username = options.mino_username || api.minodb.root_username;
 
     session.create_save_data(function(err, to_save){
 
         logger.log(err, to_save);
 
+        var session_object = {  
+            "_id": session.id,
+            "name": "~id~",
+            "path": path,
+            "mino_session": to_save
+        }
+
         new api.handlers.save(api, {
-            "username": api.minodb.root_username
+            "username": mino_username
         }, {
             "objects": [
-                {  
-                    "_id": session.id,
-                    "name": "~id~",
-                    "path": "/" + api.minodb.root_username + "/sessions/",
-                    "mino_session": to_save
-                }
+                session_object
             ]
         }, function(save_err, save_res){
             logger.log(save_err, save_res);
-
-            callback(save_err, save_res);
+            if (save_err) {
+                callback(save_err);
+            } else {
+                session_object._id = save_res.objects[0]._id;
+                session_object.name = save_res.objects[0].name;
+                callback(null, session_object);
+            }
         })
     });
 }
 
-Session.get = function(username, api, callback){
-    logger.log("username ",username);
+Session.get = function(username, api, options, callback){
+    logger.log(arguments);
+
+    if (arguments.length == 3) {
+        callback = options;
+        options = undefined;
+    }
+
+    optinos = options || {};
+    var path = options.path || "/" + api.minodb.root_username + "/sessions/";
+    var mino_username = options.mino_username || api.minodb.root_username;
+
     new api.handlers.get(api, {
-        "username": api.minodb.root_username
+        "username": mino_username
     }, {
         "addresses": [
-            "/" + api.minodb.root_username + "/sessions/"+username
+            path+username
         ]
     }, function(get_err, get_res){
         logger.log(get_err, get_res);
@@ -92,12 +120,17 @@ Session.get = function(username, api, callback){
     })
 }
 
-Session.create = function(data, api, callback){
-
+Session.create = function(data, api, options, callback){
+    logger.log(arguments);
+    if (arguments.length == 3) {
+        callback = options;
+        options = {};
+    }
+    console.trace();
     var session = new Session({
         mino_session: data
     });
-    session.save(api, callback);
+    session.save(api, options, callback);
 }
 
 module.exports = Session;

@@ -17,13 +17,30 @@ describe("UI plugin", function() {
 		})
 	})
 
-	it("should return user object if credentials are correct", function(done) {
+	it("should return user object if username and password are correct", function(done) {
 		var server = express();
 		server.use('/mino/', globals.mino.server());
 		var agent = request.agent(server);
 		agent
 			.post('/mino/ajax/login')
 			.send({username_or_email: 'testuser', password: 'my_password'})
+			.expect(200)
+			.end(function(err, res) {
+				logger.log(JSON.stringify(res.body, null, 4));
+				assert.equal(err, null);
+				assert.notEqual(res.body.user, undefined);
+				assert.equal(res.body.user.username, 'testuser');
+				done();
+			});
+	})
+
+	it("should return user object if email and password are correct", function(done) {
+		var server = express();
+		server.use('/mino/', globals.mino.server());
+		var agent = request.agent(server);
+		agent
+			.post('/mino/ajax/login')
+			.send({username_or_email: 'test@minocloud.com', password: 'my_password'})
 			.expect(200)
 			.end(function(err, res) {
 				logger.log(JSON.stringify(res.body, null, 4));

@@ -10,8 +10,6 @@ var errorHandler = require('errorhandler');
 var http = require('http');
 var path = require('path');
 
-var process_session = require('./process_session');
-
 function UIServer(options){
 	var us = this;
 
@@ -29,23 +27,7 @@ function UIServer(options){
     us.express_server.use(express.static(path.join(__dirname, 'public')));
     require('./ajax/routes').add_routes(us);
 
-    us.express_server.get('/toolbar.js', process_session(us,false), function(req, res) {
-        logger.log("req.mino_path",req.mino_path);
-        res.render('toolbar', {
-            mino_path: req.mino_path,
-            user: JSON.stringify(req.user || null)
-        });
-    })
-
-    us.express_server.get('/*', process_session(us,false), function(req, res) {
-        var site_path = req.mino_path;
-        res.render('index', {
-            custom_fields: JSON.stringify(us.minodb.custom_fields),
-            site_path: site_path,
-            user: JSON.stringify(req.user || null),
-            plugins: JSON.stringify(us.minodb.plugin_manager.list_plugins())
-        });
-    })
+   
 
     us.config_server = express();
     us.config_server.get('*', function(req, res){
@@ -74,6 +56,27 @@ UIServer.prototype.init = function(minodb){
     var us = this;
 
     us.minodb = minodb;
+
+    us.auth = us.minodb.get_plugin('mino_auth');
+
+    us.express_server.get('/toolbar.js', us.auth.process_session({required:false}), function(req, res) {
+        logger.log("req.mino_path",req.mino_path);
+        res.render('toolbar', {
+            mino_path: req.mino_path,
+            user: JSON.stringify(req.user || null)
+        });
+    })
+
+    us.express_server.get('/*', us.auth.process_session({required:false}), function(req, res) {
+        var site_path = req.mino_path;
+        res.render('index', {
+            custom_fields: JSON.stringify(us.minodb.custom_fields),
+            site_path: site_path,
+            user: JSON.stringify(req.user || null),
+            plugins: JSON.stringify(us.minodb.plugin_manager.list_plugins())
+        });
+    })
+
 }
 
 module.exports = UIServer;

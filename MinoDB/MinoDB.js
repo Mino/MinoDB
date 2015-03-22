@@ -11,6 +11,7 @@ var AdminServer = require('../default_plugins/admin_server/AdminServer');
 var APIServer = require('../default_plugins/api_server/APIServer');
 var BrowserServer = require('../default_plugins/browser_server/BrowserServer');
 var UIServer = require('./ui_server/UIServer');
+var AuthPlugin = require('../default_plugins/auth/Auth');
 
 var MinoSDK = require('minosdk');
 var extend = require('extend');
@@ -55,7 +56,27 @@ function MinoDB(config, username /*optional*/){
     });
 
     mdb.ui_server = new UIServer({});
+
+    var auth = new AuthPlugin({
+        name: "mino_auth",
+        display_name: "Mino Auth",
+        user_path: "/MinoDB/users/",
+        session_path: "/MinoDB/sessions/",
+        cookie_name: "mino_token",
+        username: "MinoDB"
+    })
+
+    auth.process_session_failed = function(req, res, next, options) {
+        if(options.required){
+            logger.log(req.mino_path+"?redirect="+req.originalUrl);
+            res.redirect(req.mino_path+"?redirect="+req.originalUrl);
+            return;
+        }
+        next();
+    }
+
     mdb.add_plugin(
+        auth,
         mdb.ui_server,
         new AdminServer({}),
         new APIServer({}),
@@ -166,6 +187,12 @@ MinoDB.prototype.add_signal = function(signal) {
     mdb.signal_manager.add_signal(signal);
 }
 
+MinoDB.prototype.get_plugin = function(name) {
+    var mdb = this;
+    return mdb.plugin_manager.plugins[name].plugin;
+}
+
 MinoDB.Signal = require('./core/models/Signal');
+MinoDB.Auth = require('../default_plugins/auth/Auth');
 
 module.exports = MinoDB;
