@@ -20,8 +20,11 @@ describe("simple_login", function() {
 			logger.log(JSON.stringify(session, null, 4));
 			assert.equal(err, null);
 			assert.equal(user.username, "otheruser");
-			assert.equal(session.mino_session.username, "otheruser");
-			done();
+
+			auth.get_user('mino_user.username', 'otheruser', function(err, user) {
+				assert.equal(session.mino_session.user_id, user._id);
+				done();	
+			})
 		});
 	})
 

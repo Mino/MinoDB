@@ -105,7 +105,8 @@ Auth.prototype.simple_login = function(object, options, callback) {
     		function(is_correct){
     			logger.log("PASSWORD IS: ",is_correct);
                 if(is_correct){
-                	auth.create_session(user_record.username, function(session_err,session_res){
+                    logger.log(user_object);
+                	auth.create_session(user_object._id, function(session_err,session_res){
                 		logger.log(
                 			JSON.stringify(session_err,null,4),
                 			session_res
@@ -161,14 +162,14 @@ Auth.prototype.get_user = function(identifier, value, callback) {
 
 }
 
-Auth.prototype.create_session = function(value, callback) {
+Auth.prototype.create_session = function(user_id, callback) {
 	var auth = this;
-	
-	var data = {}
-	data["username"] = value;
 
-	//TODO improve key generation
-	data.key = ""+Math.random()+Math.random()+Math.random()+Math.random();
+    //TODO improve key generation
+	var data = {
+        user_id : user_id,
+        key: ""+Math.random()+Math.random()+Math.random()+Math.random()
+    }
 
     var options = {
         path: auth.session_path, 
@@ -237,17 +238,17 @@ Auth.prototype.process_session = function(options) {
     	auth.get_session(id, function(err, session) {
     		logger.log(err, session);
         	if(session && session.key && session.key===key){
-        		req.user = {
-        			username: session.username
-        		}
-        		logger.log("SIGNED IN AS ",req.user)
-        		logger.log("C");
-        		next();
-        		return;
-			}
+        		
+                auth.get_user("_id", session.user_id, function(err, user) {
+                    req.user = user;
+                    logger.log("SIGNED IN AS ",req.user)
+                    logger.log("C");
+                    next();
+                })
 
-			auth.process_session_failed(req, res, next, options);
-			return;
+			} else {
+                auth.process_session_failed(req, res, next, options);
+            }
 
     	})
 	}

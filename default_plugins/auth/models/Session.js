@@ -10,7 +10,7 @@ function Session(obj) {
 
     var data = obj.mino_session;
 
-    session.username = data.username;
+    session.user_id = data.user_id;
     session.key = data.key;
 }
 
@@ -19,11 +19,9 @@ Session.rule_definition = {
     display_name: "Session",
     type: "object",
     fields: [{
-        name: "username",
-        display_name: "Username",
-        type: "string",
-        min_length: 3,
-        max_length: 20
+        name: "user_id",
+        display_name: "User id",
+        type: "string"
     },{
         name: "key",
         display_name: "Key",
@@ -38,7 +36,7 @@ Session.prototype.create_save_data = function(callback){
     var session = this;
 
     var to_save = {
-        username: session.username,
+        user_id: session.user_id,
         key: session.key
     }
     logger.log("to_save", to_save);
@@ -88,7 +86,7 @@ Session.prototype.save = function(api, options, callback){
     });
 }
 
-Session.get = function(username, api, options, callback){
+Session.get = function(session_id, api, options, callback){
     logger.log(arguments);
 
     if (arguments.length == 3) {
@@ -104,7 +102,7 @@ Session.get = function(username, api, options, callback){
         "username": mino_username
     }, {
         "addresses": [
-            path+username
+            path+session_id
         ]
     }, function(get_err, get_res){
         logger.log(get_err, get_res);

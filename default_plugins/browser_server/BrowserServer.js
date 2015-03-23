@@ -53,12 +53,16 @@ BrowserServer.prototype.init = function(minodb){
 
     bs.express_server.get('*', bs.auth.process_session({required:true}), function(req, res) {
         var site_path = path.join(req.mino_path,bs.path);
+        var mino_user = null;
+        if (req.user) {
+            mino_user = req.user.mino_user;
+        }
         res.render('public', {
             custom_fields: JSON.stringify(bs.minodb.custom_fields),
             plugin_scripts: JSON.stringify(bs.minodb.get_plugin_scripts(req.mino_path)),
             site_path: site_path,
             mino_path: req.mino_path,
-            user: JSON.stringify(req.user || null)
+            user: JSON.stringify(mino_user)
         });
     })
 
@@ -73,11 +77,15 @@ BrowserServer.prototype.init = function(minodb){
     require('./admin_ajax/routes').add_routes(bs);
     bs.config_server.get('*', bs.auth.process_session({required: true}), function(req, res) {
         var site_path = path.join(req.mino_path,"/admin/plugin_config/",bs.info().name+"/");
+        var mino_user = null;
+        if (req.user) {
+            mino_user = req.user.mino_user;
+        }
         res.render('admin', {
             custom_fields: JSON.stringify(bs.minodb.custom_fields),
             site_path: site_path,
             mino_path: req.mino_path,
-            user: JSON.stringify(req.user || null)
+            user: JSON.stringify(mino_user)
         });
     })
 
