@@ -14,7 +14,7 @@ function AuthPage(req) {
         page.login_press(object);
     })
     page.form.element.append(
-        $("<button />").addClass("mino_button").text("Login")
+        $("<button />").addClass("mino_button").text("Sign in")
     );
 
     page.element

@@ -4,7 +4,7 @@ var express = require('express');
 var globals = require('../../globals');
 var errors = require('../../../errors');
 
-describe("simple_login", function() {
+describe("basic_sign_in()", function() {
 
 	it("should return a user and a session when password matches", function(done) {
 		var auth = globals.mino.get_plugin('mino_auth');
@@ -14,7 +14,7 @@ describe("simple_login", function() {
 			password: "my_password"
 		}
 
-		auth.login(object, function(err, user, session) {
+		auth.sign_in(object, function(err, user, session) {
 			logger.log(JSON.stringify(err, null, 4));
 			logger.log(JSON.stringify(user, null, 4));
 			logger.log(JSON.stringify(session, null, 4));
@@ -36,7 +36,7 @@ describe("simple_login", function() {
 			password: "my_password"
 		}
 
-		auth.login(object, function(err, res) {
+		auth.sign_in(object, function(err, res) {
 			logger.log(JSON.stringify(err, null, 4));
 			logger.log(JSON.stringify(res, null, 4));
 			assert.equal(err, errors.USER_DOES_NOT_EXIST);
@@ -52,7 +52,7 @@ describe("simple_login", function() {
 			password: "incorrect_password"
 		}
 
-		auth.login(object, function(err, res) {
+		auth.sign_in(object, function(err, res) {
 			logger.log(JSON.stringify(err, null, 4));
 			logger.log(JSON.stringify(res, null, 4));
 			assert.deepEqual(err, errors.INCORRECT_PASSWORD);

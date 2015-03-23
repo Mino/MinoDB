@@ -47,7 +47,7 @@ module.exports = function(ui_server){
     	login_body[identifier] = value;
     	login_body.password = body.password;
 
-    	mino_auth.login(login_body, options, function(err, user_record, session) {
+    	mino_auth.sign_in(login_body, options, function(err, user_record, session) {
     		if (err) {
     			if (err == errors.INCORRECT_PASSWORD) {
     				validator.invalid("password", err);

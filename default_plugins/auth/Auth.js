@@ -69,7 +69,7 @@ Auth.prototype.check_password_hash = function(password,salt,correct_hash_64,call
     });
 }
 
-Auth.prototype.simple_login = function(object, options, callback) {
+Auth.prototype.basic_sign_in = function(object, options, callback) {
 	var auth = this;
 
     if (arguments.length == 2) {
@@ -87,12 +87,6 @@ Auth.prototype.simple_login = function(object, options, callback) {
 
     auth.get_user(minodb_identifier, identifier_value, function(error,user_object){
     	
-        //TODO handle error
-        // if (!user_object || !user_object.mino_user) {
-        //     callback(null, null, null);
-        //     return;
-        // }
-
         if (error) {
             callback(error);
             return;
@@ -125,7 +119,7 @@ Auth.prototype.simple_login = function(object, options, callback) {
     });
 }
 
-Auth.prototype.login = Auth.prototype.simple_login;
+Auth.prototype.sign_in = Auth.prototype.basic_sign_in;
 
 Auth.prototype.create_user = function(object, callback) {
 	var auth = this;
