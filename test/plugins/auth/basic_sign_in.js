@@ -22,7 +22,7 @@ describe("basic_sign_in()", function() {
 			assert.equal(user.username, "otheruser");
 
 			auth.get_user('mino_user.username', 'otheruser', function(err, user) {
-				assert.equal(session.mino_session.user_id, user._id);
+				assert.equal(session.user_id, user._id);
 				done();	
 			})
 		});

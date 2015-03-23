@@ -188,7 +188,7 @@ Auth.prototype.persist_session = function(res, session) {
 
 	//mino_token, id-key
 	logger.log(session);
-    res.cookie(auth.cookie_name, session._id+"-"+session.mino_session.key, {
+    res.cookie(auth.cookie_name, session.id+"-"+session.key, {
         maxAge: 60 * 60 * 24 * 365,
         httpOnly: false
     });

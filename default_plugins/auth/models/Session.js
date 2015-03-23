@@ -78,9 +78,8 @@ Session.prototype.save = function(api, options, callback){
             if (save_err) {
                 callback(save_err);
             } else {
-                session_object._id = save_res.objects[0]._id;
-                session_object.name = save_res.objects[0].name;
-                callback(null, session_object);
+                session.id = save_res.objects[0]._id;
+                callback(null, session);
             }
         })
     });

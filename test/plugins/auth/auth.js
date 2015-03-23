@@ -17,6 +17,7 @@ describe("Auth", function() {
 		})
 	})
 
-	require('./simple_sign_in');
+	require('./basic_sign_in');
+	require('./session');
 
 });
