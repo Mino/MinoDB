@@ -19,5 +19,6 @@ describe("Auth", function() {
 
 	require('./basic_sign_in');
 	require('./session');
+	require('./custom_auth/custom_auth');
 
 });
