@@ -115,7 +115,7 @@ TypeSelector.prototype.do_search = function(query){
 	var this_request = ts.current_request = api_request({
 		"function": "search",
 		"parameters": {
-			"paths": ["/Mino/types/"],
+			"paths": ["/" + Common.ROOT_USERNAME + "/types/"],
 			"query": {
 				"name": {
 					"$regex": "^" + query + ".*"

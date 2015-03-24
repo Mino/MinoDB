@@ -35,10 +35,10 @@ module.exports = function(ui_server, require_session) {
 
     	var api = ui_server.minodb.api;
     	new api.handlers.get(api, {
-	        "username": "Mino"
+	        "username": api.minodb.root_username
 	    }, {
 	        "addresses": [
-	            "/Mino/sessions/"+id
+	            "/" + api.minodb.root_username + "/sessions/"+id
 	        ]
 	    }, function(get_err, get_res){
 	        logger.log(get_err, get_res);

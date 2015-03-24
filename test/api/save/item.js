@@ -91,7 +91,7 @@ it('should not save an object if access denied', function(done) {
         "parameters": {
             "objects" : [{
                 "name": "TestSave",
-                "path":"/Mino/",
+                "path":"/MinoDB/",
                 "person":{
                     "first_name":"Marcus",
                     "last_name":"Longmuir",
@@ -130,7 +130,7 @@ it('should not save an object if access denied', function(done) {
             "error": 5
         });
         
-        globals.sdk.get(["/Mino/TestSave"], function(err, res) {
+        globals.sdk.get(["/MinoDB/TestSave"], function(err, res) {
             assert.equal(err, null);
             var object = res.objects[0];
             assert.equal(object, null);

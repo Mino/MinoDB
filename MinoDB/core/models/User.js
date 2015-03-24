@@ -130,13 +130,13 @@ User.prototype.save = function(api, callback){
         logger.log(to_save);
 
         new api.handlers.save(api, {
-            "username": "Mino"
+            "username": api.minodb.root_username
         }, {
             "objects": [
                 {  
                     "_id": user.id,
                     "name": user.username,
-                    "path": "/Mino/users/",
+                    "path": "/" + api.minodb.root_username + "/users/",
                     "mino_user": to_save
                 }
             ]
@@ -160,10 +160,10 @@ User.prototype.is_system_user = function(toCheck) {
 User.get = function(username, api, callback){
     logger.log("username ",username);
     new api.handlers.get(api, {
-        "username": "Mino"
+        "username": api.minodb.root_username
     }, {
         "addresses": [
-            "/Mino/users/"+username
+            "/" + api.minodb.root_username + "/users/"+username
         ]
     }, function(get_err, get_res){
         logger.log(get_err, get_res);
@@ -198,7 +198,7 @@ User.create = function(data, api, callback){
             logger.log(JSON.stringify(err,null,4), res);
 
             new api.handlers.save(api, {
-                "username": "Mino"
+                "username": api.minodb.root_username
             }, {
                 "objects": [
                     {

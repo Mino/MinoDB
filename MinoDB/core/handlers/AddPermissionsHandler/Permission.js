@@ -77,7 +77,7 @@ Permission.prototype.save = function(on_save_callback){
     logger.log(tilde_path);
 
     new perm.handler.api.handlers.save(perm.handler.api, {
-        "username": "Mino"
+        "username": perm.handler.api.minodb.root_username
     }, {
         "objects": [
             {  

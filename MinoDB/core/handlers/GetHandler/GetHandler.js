@@ -155,7 +155,7 @@ GetHandler.prototype.get_type = function(type_object){
     var response_index = type_object[1];
     
     gh.db.object_collection.findOne({
-        "full_path": "/Mino/types/"+type_name
+        "full_path": "/" + gh.api.minodb.root_username + "/types/"+type_name
     }, function(err, res){
         // logger.log(err);
         // logger.log(res);

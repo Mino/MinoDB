@@ -17,6 +17,8 @@ var extend = require('extend');
 
 var class_to_string = require('./class_to_string');
 
+var Common = require('../common_classes/Common');
+
 extend(MinoDB, MinoSDK);
 function MinoDB(config, username /*optional*/){
     var mdb = this;
@@ -24,6 +26,7 @@ function MinoDB(config, username /*optional*/){
     MinoDB.superConstructor.call(this, username);
 
     mdb.config = config;
+    mdb.root_username = Common.ROOT_USERNAME;
 
     mdb.plugin_manager = new PluginManager(mdb);
 

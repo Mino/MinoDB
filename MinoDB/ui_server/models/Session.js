@@ -52,13 +52,13 @@ Session.prototype.save = function(api, callback){
         logger.log(err, to_save);
 
         new api.handlers.save(api, {
-            "username": "Mino"
+            "username": api.minodb.root_username
         }, {
             "objects": [
                 {  
                     "_id": session.id,
                     "name": "~id~",
-                    "path": "/Mino/sessions/",
+                    "path": "/" + api.minodb.root_username + "/sessions/",
                     "mino_session": to_save
                 }
             ]
@@ -73,10 +73,10 @@ Session.prototype.save = function(api, callback){
 Session.get = function(username, api, callback){
     logger.log("username ",username);
     new api.handlers.get(api, {
-        "username": "Mino"
+        "username": api.minodb.root_username
     }, {
         "addresses": [
-            "/Mino/sessions/"+username
+            "/" + api.minodb.root_username + "/sessions/"+username
         ]
     }, function(get_err, get_res){
         logger.log(get_err, get_res);

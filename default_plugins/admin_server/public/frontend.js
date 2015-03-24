@@ -19764,7 +19764,7 @@ var FVRule = (function(){
 if (typeof module != 'undefined') {
     module.exports = FVRule;
 }
-fieldval_ui_extend(FVRuleEditor, FVObjectField);
+fieldval_ui_extend(FVRuleEditor, FVForm);
 
 function FVRuleEditor(name, options){
 	var editor = this;
@@ -19807,7 +19807,7 @@ function FVRuleEditor(name, options){
     editor.update_type_fields();
 }
 
-FVRuleEditor.prototype.update_type_fields = function(){
+FVRuleEditor.prototype.update_type_fields = function(value){
 	var editor = this;
 
 	var type = editor.fields.type.val();
@@ -19819,11 +19819,21 @@ FVRuleEditor.prototype.update_type_fields = function(){
 
 	if (type) {
 		var rule_field = FVRule.FVRuleField.types[type].class;
-		console.log(rule_field.add_editor_params);
 		if (rule_field.add_editor_params !== undefined) {
-			rule_field.add_editor_params(editor);
+			rule_field.add_editor_params(editor, value);
 		}
 	}
+}
+
+FVRuleEditor.prototype.val = function(set_val, options) {
+	var editor = this;
+
+	if (set_val) {
+		editor.fields.type.val(set_val.type, {ignore_change: true});
+		editor.update_type_fields(set_val);
+		delete set_val.type;
+	}
+	return FVForm.prototype.val.apply(editor, arguments);
 }
 //Used to subclass Javascript classes
 function extend(sub, sup) {
@@ -20522,7 +20532,8 @@ String.prototype.replaceAll = function(re, replace) {
     minimumTypeMiddleName : 3,
     maximumTypeMiddleName : 20,
     minimumShortTypeMiddleName : 3,
-    maximumShortTypeMiddleName : 20
+    maximumShortTypeMiddleName : 20,
+    ROOT_USERNAME: "MinoDB"
 }
 
 
@@ -21048,9 +21059,9 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
             return path.object_names[0];
         }
 
-        //Allows "Mino" user to write
-        if(requesting_username==="Mino"){
-            return "Mino";
+        //Allows "MinoDB" user to write
+        if(requesting_username===Common.ROOT_USERNAME){
+            return Common.ROOT_USERNAME;
         }
 
         return null;
@@ -21058,14 +21069,14 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
 
 
     //Allow all users to read the types folder
-    if (path.object_names.length > 1 && path.object_names[0] === "Mino" && path.object_names[1] === "types"){
+    if (path.object_names.length > 1 && path.object_names[0] === Common.ROOT_USERNAME && path.object_names[1] === "types"){
         if(for_write===false){
             return requesting_username;
         }
     }
 
     if(path.object_names.length===0){
-        return "Mino";
+        return Common.ROOT_USERNAME;
     }
 
     return path.object_names[0];
