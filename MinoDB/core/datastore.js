@@ -130,9 +130,8 @@ DataStore.prototype.get_id = function(callback){
 				{$inc:{"index":DataStore.id_group_size}},
 				{},
 			function(error,response){
-
-	    		ds.id_last_index = response.index;
-				ds.id_index = response.index - DataStore.id_group_size;
+	    		ds.id_last_index = response.value.index;
+				ds.id_index = response.value.index - DataStore.id_group_size;
 
 				var current_callbacks = ds.id_callbacks;
 				ds.id_callbacks = [];//Reset the callbacks - get_id might add to it
