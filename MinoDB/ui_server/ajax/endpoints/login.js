@@ -48,13 +48,20 @@ module.exports = function(ui_server){
     	login_body.password = body.password;
 
     	mino_auth.sign_in(login_body, options, function(err, user_record, session) {
+    		logger.log('FERROR', err);
     		if (err) {
-    			if (err == errors.INCORRECT_PASSWORD) {
-    				validator.invalid("password", err);
-    			} else {
-    				validator.invalid("username_or_email", err);
+    			if (err.invalid) {
+    				if (err.invalid.username) {
+	    				var key_error = err.invalid.username;
+	    				delete err.invalid.username;
+	    				err.invalid.username_or_email = key_error;
+	    			} else if (err.invalid.email) {
+	    				var key_error = err.invalid.email;
+	    				delete err.invalid.email;
+	    				err.invalid.username_or_email = key_error;
+	    			}
     			}
-    			return res.json(validator.end());
+    			return res.json(err);
     		} else if (!user_record) {
     			return res.json(validator.end());
     		} else {

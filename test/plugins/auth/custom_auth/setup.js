@@ -1,7 +1,6 @@
 var logger = require('tracer').console();
 var assert = require('assert');
 var MinoDB = require('../../../../MinoDB/MinoDB');
-var errors = require('../../../../errors');
 var my_user_rule = require('./my_user_rule');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');

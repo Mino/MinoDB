@@ -2,7 +2,6 @@ var logger = require('tracer').console();
 var assert = require('assert');
 var express = require('express');
 var globals = require('../../globals');
-var errors = require('../../../errors');
 
 describe("basic_sign_in()", function() {
 
@@ -39,7 +38,16 @@ describe("basic_sign_in()", function() {
 		auth.sign_in(object, function(err, res) {
 			logger.log(JSON.stringify(err, null, 4));
 			logger.log(JSON.stringify(res, null, 4));
-			assert.equal(err, errors.USER_DOES_NOT_EXIST);
+			assert.deepEqual(err, {
+				invalid: {
+					username: {
+						error: 76,
+						error_message: "User does not exist."
+					}
+				},
+				error: 5,
+				error_message: "One or more errors."
+			});
 			done();
 		});
 	})
@@ -55,7 +63,16 @@ describe("basic_sign_in()", function() {
 		auth.sign_in(object, function(err, res) {
 			logger.log(JSON.stringify(err, null, 4));
 			logger.log(JSON.stringify(res, null, 4));
-			assert.deepEqual(err, errors.INCORRECT_PASSWORD);
+			assert.deepEqual(err, {
+				invalid: {
+					password: {
+						error: 177,
+						error_message: "Incorrect password."
+					}	
+				},
+				error: 5,
+				error_message: "One or more errors."
+			});
 			done();
 		});
 	})

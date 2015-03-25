@@ -2,7 +2,6 @@ var logger = require('tracer').console();
 var assert = require('assert');
 var express = require('express');
 var globals = require('../../globals');
-var errors = require('../../../errors');
 var request = require('supertest');
 var cookieParser = require('cookie-parser');
 

@@ -88,16 +88,17 @@ Auth.prototype.basic_sign_in = function(object, options, callback) {
     auth.get_user(minodb_identifier, identifier_value, function(error,user_object){
     	
         if (error) {
-            callback(error);
+            var object_error = new FieldVal(null).invalid(identifier, error).end();
+            callback(object_error);
             return;
         }
+
         var user_record = user_object.mino_user;
     	auth.check_password_hash(
     		password,
     		user_record.password_salt,
     		user_record.salted_password,
     		function(is_correct){
-    			logger.log("PASSWORD IS: ",is_correct);
                 if(is_correct){
                     logger.log(user_object);
                 	auth.create_session(user_object._id, function(session_err,session_res){
@@ -109,7 +110,8 @@ Auth.prototype.basic_sign_in = function(object, options, callback) {
 
                 	})
                 } else {
-                    callback(errors.INCORRECT_PASSWORD);
+                    var error = new FieldVal(null).invalid("password", errors.INCORRECT_PASSWORD).end()
+                    callback(error);
                     return;
                 }
 
