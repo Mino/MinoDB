@@ -19,7 +19,7 @@
     "serve-favicon": "*",
     "morgan" : "*",
     "errorhandler": "*",
-    "mongodb" : "*",
+    "mongodb" : "^2.0.14",
     "minosdk" : "Mino/MinoSDK",
     "tracer": "*",
     "fieldval" : "0.4.0",
