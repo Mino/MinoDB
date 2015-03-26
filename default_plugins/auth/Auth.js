@@ -1,10 +1,17 @@
 var logger = require('tracer').console();
 var crypto = require('crypto');
 var express = require('express');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 var FieldVal = require('fieldval');
 var errors = require('../../errors');
 
+var mustacheExpress = require('mustache-express');
+
 var cookie = require('cookie');
+var errorHandler = require('errorhandler');
+var http = require('http');
+var path = require('path');
 
 
 var User = require('../../MinoDB/core/models/User');
@@ -36,11 +43,6 @@ function Auth(options) {
 
 	auth.name = options.name || "auth";
 	auth.display_name = options.display_name || "Auth";
-
-	auth.config_server = express();
-	auth.config_server.get("/", function(req, res) {
-		res.send(auth.display_name + " config server");
-	})
 }
 
 Auth.prototype.get_config_server = function(){
@@ -60,6 +62,31 @@ Auth.prototype.info = function(){
 Auth.prototype.init = function(minodb){
     var auth = this;
     auth.minodb = minodb;
+
+    auth.minodb_auth = minodb.get_plugin("mino_auth");
+
+    auth.config_server = express();
+    auth.config_server.disable('etag');//Prevents 304s
+    auth.config_server.engine('mustache', mustacheExpress());
+    auth.config_server.set('views', path.join(__dirname, 'views'));
+    auth.config_server.set('view engine', 'mustache');
+    auth.config_server.use(cookieParser());
+    auth.config_server.use(bodyParser());
+    auth.config_server.use(express.static(path.join(__dirname, 'admin')));
+    require('./admin_ajax/routes').add_routes(auth);
+    auth.config_server.get('*', auth.minodb_auth.process_session({required: true}), function(req, res) {
+        var site_path = path.join(req.mino_path,"/admin/plugin_config/",auth.info().name+"/");
+        var mino_user = null;
+        if (req.user) {
+            mino_user = req.user.mino_user;
+        }
+        res.render('auth_admin', {
+            custom_fields: JSON.stringify(auth.minodb.custom_fields),
+            site_path: site_path,
+            mino_path: req.mino_path,
+            user: JSON.stringify(mino_user)
+        });
+    })
 }
 
 Auth.prototype.check_password_hash = function(password,salt,correct_hash_64,callback){
