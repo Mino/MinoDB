@@ -4,6 +4,8 @@ var express = require('express');
 var FieldVal = require('fieldval');
 var errors = require('../../errors');
 
+var cookie = require('cookie');
+
 
 var User = require('../../MinoDB/core/models/User');
 var Session = require('./models/Session');
@@ -212,9 +214,8 @@ Auth.prototype.process_session = function(options) {
 
 	return function(req, res, next) {
 
-    	logger.log("PROCESSING SESSION",req.originalUrl);
-    	var current_token = req.cookies[auth.cookie_name];
-    	logger.log("current_token ",current_token);
+        var cookies = cookie.parse(req.headers.cookie);
+    	var current_token = cookies[auth.cookie_name];
     	if(!current_token){
     		logger.log("A");
     		auth.process_session_failed(req, res, next, options);
