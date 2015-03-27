@@ -241,6 +241,11 @@ Auth.prototype.process_session = function(options) {
 
 	return function(req, res, next) {
 
+        if (!req.headers.cookie) {
+            auth.process_session_failed(req, res, next, options);
+            return;
+        }
+
         var cookies = cookie.parse(req.headers.cookie);
     	var current_token = cookies[auth.cookie_name];
     	if(!current_token){
