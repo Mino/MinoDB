@@ -148,7 +148,6 @@ SearchHandler.prototype.do_search = function(callback){
         logger.log(options);
 
         var mongo_cursor = db.object_collection.find(sh.mongo_query,options);
-
         mongo_cursor.toArray(function(search_err, search_res){
             logger.log(search_err, search_res);
             if(search_err){
@@ -160,7 +159,8 @@ SearchHandler.prototype.do_search = function(callback){
             done();
         });
 
-        mongo_cursor.count(function(err, res_count){
+        var mongo_count_cursor = db.object_collection.find(sh.mongo_query);
+        mongo_count_cursor.count(function(err, res_count){
             logger.log(err, res_count);
             if(err){
                 error = err;
