@@ -12,7 +12,6 @@ describe("Auth", function() {
 		request_plugin_config("mino_auth", test_server, function(err, res) {
 			logger.log(err, res);
 			assert.equal(err, null);
-			assert.equal(res, "Mino Auth config server");
 			done();
 		})
 	})
