@@ -19,6 +19,7 @@ var istanbul = require('gulp-istanbul');
 require('./default_plugins/admin_server/gulpfile')(gulp);
 require('./default_plugins/browser_server/gulpfile')(gulp);
 require('./default_plugins/auth/gulpfile')(gulp);
+require('./default_plugins/permissions/gulpfile')(gulp);
 require('./MinoDB/ui_server/gulpfile')(gulp);
 
 var onError = function (err) {  
@@ -27,19 +28,19 @@ var onError = function (err) {
 };
 
 gulp.task('test', function(cb){
-    gulp.src( [ 'MinoDB/**/*.js', '!MinoDB/ui_server/**/*' ] )
-    .pipe(istanbul())
-    .pipe(istanbul.hookRequire())
-    .on( 'finish', function () {
+    // gulp.src( [ 'MinoDB/**/*.js', '!MinoDB/ui_server/**/*' ] )
+    // .pipe(istanbul())
+    // .pipe(istanbul.hookRequire())
+    // .on( 'finish', function () {
         gulp.src( [ 'test/test.js' ] )
         .pipe( mocha( {
             // reporter: 'spec'
         }))
-        .pipe(istanbul.writeReports())
+        // .pipe(istanbul.writeReports())
         .on('end', cb)
         .on('error', gutil.log)
-    })
-    .on('error', gutil.log)
+    // })
+    // .on('error', gutil.log)
 });
 
 gulp.task('docs', function() {
@@ -55,6 +56,7 @@ gulp.task('watch', function(){
     gulp.start('auth_watch');
     gulp.start('admin_watch');
     gulp.start('ui_watch');
+    gulp.start('permissions_watch');
 });
 
 gulp.task('default', function(){
@@ -62,6 +64,7 @@ gulp.task('default', function(){
     gulp.start('auth_default');
     gulp.start('admin_default');
     gulp.start('ui_default');
+    gulp.start('permissions_default');
 })
 
 gulp.task('dev', function(){

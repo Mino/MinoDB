@@ -12,6 +12,7 @@ var APIServer = require('../default_plugins/api_server/APIServer');
 var BrowserServer = require('../default_plugins/browser_server/BrowserServer');
 var UIServer = require('./ui_server/UIServer');
 var AuthPlugin = require('../default_plugins/auth/Auth');
+var MinoDBPermissions = require('../default_plugins/permissions/minodb-permissions');
 
 var MinoSDK = require('minosdk');
 var extend = require('extend');
@@ -55,6 +56,8 @@ function MinoDB(config, username /*optional*/){
         });
     });
 
+    mdb.signal_manager = new SignalManager(mdb);
+
     mdb.ui_server = new UIServer({});
 
     var auth = new AuthPlugin({
@@ -63,6 +66,11 @@ function MinoDB(config, username /*optional*/){
         user_path: "/MinoDB/users/",
         session_path: "/MinoDB/sessions/",
         cookie_name: "mino_token",
+        username: "MinoDB"
+    })
+
+    var permissions = new MinoDBPermissions({
+        path: "/MinoDB/minodb_permissions/",
         username: "MinoDB"
     })
 
@@ -77,14 +85,12 @@ function MinoDB(config, username /*optional*/){
 
     mdb.add_plugin(
         auth,
+        permissions,
         mdb.ui_server,
         new AdminServer({}),
         new APIServer({}),
         new BrowserServer({})
     );
-
-    mdb.dynamic_signals_enabled = config.dynamic_signals_enabled || true;
-    mdb.signal_manager = new SignalManager(mdb);
 }
 
 MinoDB.prototype.add_plugin = function(){
