@@ -30,7 +30,7 @@ PathPermissionChecker.prototype.check_permissions_for_path = function(path, call
 	var ppc = this;
 
 	var username_for_permission = path.username_for_permission(ppc.handler.user.username, ppc.for_write);
-
+	logger.log(username_for_permission, ppc.handler.user.username);
 	if(username_for_permission===ppc.handler.user.username){
 		callback(Constants.WRITE_PERMISSION);
 		return;
@@ -52,12 +52,11 @@ PathPermissionChecker.prototype.check_permissions_for_path = function(path, call
 
 	var sub_path = path;
 	do{
-
-		var permission_path = sub_path.permission_path(ppc.handler.user.username);
-
+		logger.log(sub_path);
+		var permission_path = (ppc.for_write ? "write:" : "read:") + sub_path;
 		var existing_permission = ppc.retrieved_permissions[permission_path];
 		if(existing_permission){
-			
+			//TODO
 			if(ppc.immediate_mode){
 				callback();
 				return;
@@ -119,20 +118,34 @@ PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths,
 		return;
 	}
 
-	ppc.handler.api.ds.object_collection.find({
-		"full_path" : {"$in" : keys}
-	}).toArray(function(array_err, array){
-		logger.log(array_err);
-		logger.log(array);
+	var perms = ppc.handler.api.minodb.get_plugin('minodb-permissions');
+	perms.has_permissions(keys, ppc.handler.user.username, function(err, res) {
+		logger.log(err, res);
 
-		//TODO USE FOUND PERMISSIONS
+		for (var i=0; i<keys.length; i++) {
+			var permission = keys[i];
+			logger.log(permission);
+			logger.log(callback_objects);
+			if (res[i] === true) {
+				for (var j=0; j<paths[permission].length; j++) {
+					var callback_object = paths[permission][j];
+					if (ppc.for_write) {
+						callback_object.has_write = true;
+					} else {
+						callback_object.has_read = true;
+					}	
+				}
+			}
+		}
 
 		ppc.resolve_callbacks(callback_objects);
-
-		if(callback){
+		
+		if (callback) {
 			callback();
-		}
-	});
+		}	
+		
+	})
+
 }
 
 module.exports = PathPermissionChecker;

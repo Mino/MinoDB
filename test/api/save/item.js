@@ -186,3 +186,63 @@ it('should throw an error if I save an object with a non-existant type', functio
     });
 });
 
+it('should save an object if access is granted', function(done) {
+
+    globals.minodb.with_user('otheruser').save([{
+        name: "inner_folder",
+        path: "/otheruser/",
+        folder: true
+    }], function(err, res) {
+        assert.equal(err, null);
+
+        var object = {
+            name: 'saved_object_granted_access',
+            path: '/otheruser/inner_folder/'
+        }
+        globals.minodb.save([object], function(err, res) {
+            logger.log(res);
+            assert.deepEqual(err, { 
+                "invalid": {
+                    "parameters": {
+                        "invalid": {
+                            "objects": {
+                                "invalid": {
+                                    "0": {
+                                        "invalid": {
+                                            "path": {
+                                                "error": 19,
+                                                "error_message": "You do not have permission to write to this path."
+                                            }
+                                        },
+                                        "error_message": "One or more errors.",
+                                        "error": 5
+                                    }
+                                },
+                                "error_message": "One or more errors.",
+                                "error": 5
+                            }
+                        },
+                        "error_message": "One or more errors.",
+                        "error": 5
+                    }
+                },
+                "error_message": "One or more errors.",
+                "error": 5
+            });
+
+            var perms = globals.minodb.get_plugin('minodb-permissions');
+            perms.assign_permission_to_id('write:/otheruser/', 'testuser', function(err, res) {
+                assert.equal(err, null);
+
+                globals.minodb.save([object], function(err, res) {
+                    logger.log(res)
+                    assert.equal(err, null);
+                    assert.notEqual(res.objects[0], null);
+                    assert.equal(res.objects[0].full_path, '/otheruser/inner_folder/saved_object_granted_access');
+                    done();
+                });
+            })
+        });
+    })
+
+})

@@ -1,6 +1,7 @@
 var logger = require('tracer').console();
 var express = require('express');
 var ConfigServer = require('./config_server/ConfigServer');
+var Path = require('../../common_classes/Path');
 
 function MinoDBPermissions(options) {
 	var plugin = this;
@@ -41,6 +42,7 @@ MinoDBPermissions.prototype.info = function(){
 MinoDBPermissions.prototype.init = function(minodb, callback){
     var plugin = this;
     plugin.minodb = minodb;
+    plugin.sdk = minodb.with_user(plugin.username);
 
     var waiting_for = 2;
     var finished_one = function() {
@@ -57,17 +59,31 @@ MinoDBPermissions.prototype.init = function(minodb, callback){
 MinoDBPermissions.prototype.create_folders = function(callback) {
     var plugin = this;
 
-    plugin.minodb.save([{
-        name: 'permissions',
-        path: plugin.path,
-        folder: true
-    },{
-        name: 'groups',
-        path: plugin.path,
+    var path = new Path();
+    path.init(plugin.path);
+
+    var parent_path = path.parent_path();
+
+    plugin.sdk.save([{
+        name: path.object_names[path.length-1],
+        path: parent_path.toString(),
         folder: true
     }], function(err, res) {
-        logger.log(err,res);
-        callback(err,res);
+
+        logger.log(JSON.stringify(err, null, 4),res);
+        plugin.sdk.save([{
+            name: 'permissions',
+            path: plugin.path,
+            folder: true
+        },{
+            name: 'groups',
+            path: plugin.path,
+            folder: true
+        }], function(err, res) {
+            logger.log(err,res);
+            callback(err,res);
+        });
+
     });
 }
 
@@ -164,14 +180,14 @@ MinoDBPermissions.prototype.assign_permission_to_id = function(permission, id, c
     var escaped_id = plugin.encode_text(id);
     var escaped_permission = plugin.encode_text(permission);
 
-    plugin.minodb.save([{
+    plugin.sdk.save([{
         name: escaped_permission,
         path: plugin.permission_path,
         folder: true
     }], function(err, res) {
         logger.log(err, res);
 
-        plugin.minodb.save([{
+        plugin.sdk.save([{
             name: "id:"+escaped_id,
             path: plugin.permission_path + escaped_permission + '/',
             minodb_identifier_permission: {
@@ -196,7 +212,7 @@ MinoDBPermissions.prototype.remove_permission_from_id = function(permission, id,
     var escaped_permission = plugin.encode_text(permission);
     var path = plugin.permission_path + escaped_permission + '/id:'+escaped_id;
 
-    plugin.minodb.delete([path], function(err, res) {
+    plugin.sdk.delete([path], function(err, res) {
         if (err) {
             callback(err);
         } else {
@@ -228,7 +244,7 @@ MinoDBPermissions.prototype.has_permissions = function(permissions, id, callback
     }
 
     var check_individual_permissions = function(callback) {
-        plugin.minodb.call({
+        plugin.sdk.call({
             "function": "search",
             "parameters": {
                 "paths": [plugin.permission_path],
@@ -253,7 +269,7 @@ MinoDBPermissions.prototype.has_permissions = function(permissions, id, callback
     }
 
     var check_group_permissions = function(callback) {
-        plugin.minodb.call({
+        plugin.sdk.call({
             "function": "search",
             "parameters": {
                 "paths": [plugin.permission_path],
@@ -283,7 +299,7 @@ MinoDBPermissions.prototype.has_permissions = function(permissions, id, callback
             }
             logger.log(groups);
 
-            plugin.minodb.call({
+            plugin.sdk.call({
                 "function": "search",
                 "parameters": {
                     "paths": [plugin.group_path],
@@ -336,14 +352,14 @@ MinoDBPermissions.prototype.assign_group_to_id = function(group, id, callback) {
     var escaped_id = plugin.encode_text(id);
     var escaped_group = plugin.encode_text(group);
 
-    plugin.minodb.save([{
+    plugin.sdk.save([{
         name: escaped_group,
         path: plugin.group_path,
         folder: true
     }], function(err, res) {
         logger.log(err, res);
 
-        plugin.minodb.save([{
+        plugin.sdk.save([{
             name: "id:"+escaped_id,
             path: plugin.group_path + escaped_group + '/',
             minodb_identifier_group: {
@@ -368,7 +384,7 @@ MinoDBPermissions.prototype.remove_group_from_id = function(group, id, callback)
     var escaped_group = plugin.encode_text(group);
     var path = plugin.group_path + escaped_group + '/id:'+escaped_id;
 
-    plugin.minodb.delete([path], function(err, res) {
+    plugin.sdk.delete([path], function(err, res) {
         if (err) {
             callback(err);
         } else {
@@ -383,14 +399,14 @@ MinoDBPermissions.prototype.assign_permission_to_group = function(permission, gr
     var escaped_group = plugin.encode_text(group);
     var escaped_permission = plugin.encode_text(permission);
 
-    plugin.minodb.save([{
+    plugin.sdk.save([{
         name: escaped_permission,
         path: plugin.permission_path,
         folder: true
     }], function(err, res) {
         logger.log(err, res);
 
-        plugin.minodb.save([{
+        plugin.sdk.save([{
             name: "group:"+escaped_group,
             path: plugin.permission_path + escaped_permission + '/',
             minodb_group_permission: {
@@ -415,7 +431,7 @@ MinoDBPermissions.prototype.remove_permission_from_group = function(permission, 
     var escaped_group = plugin.encode_text(group);
     var path = plugin.permission_path + escaped_permission + '/group:'+escaped_group;
 
-    plugin.minodb.delete([path], function(err, res) {
+    plugin.sdk.delete([path], function(err, res) {
         if (err) {
             callback(err);
         } else {
