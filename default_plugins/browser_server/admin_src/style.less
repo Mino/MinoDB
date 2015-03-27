@@ -1,10 +1,10 @@
 @fa-font-path: "/fonts/";
-@import "../../../../bower_components/font-awesome/less/font-awesome.less";
+@import "../../../bower_components/font-awesome/less/font-awesome.less";
 
 body{
 	margin: 0px;
 	background-color: @background_color;
-	font-family: Arial, sans-serif;
+	font-family: Arial, Helmet, Freesans, sans-serif;
 	-webkit-font-smoothing: antialiased;
 	font-size: 14px;
 	line-height: 18px;
@@ -14,6 +14,11 @@ a{
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
     -webkit-touch-callout: none;
     text-decoration: none;
+}
+
+input,textarea{
+	.bold;
+	outline: none;
 }
 
 .bold{
@@ -51,5 +56,5 @@ a{
 	overflow-x: hidden;
 }
 
-@import "../../../../common_elements/common_elements.subless";
-@import "../pages/pages.subless";
+@import "../../../common_elements/common_elements.subless";
+@import "pages/pages.subless";

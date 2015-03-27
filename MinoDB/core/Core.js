@@ -100,7 +100,7 @@ Core.prototype.call = function(user, request, callback){
         }
 
         if (handler != null) {
-            logger.log("Calling handler",handler);
+            logger.log("Calling handler as user", user, handler);
             var handler_callback = function(error, response) {
                 logger.log(JSON.stringify(error, null, 4));
                 logger.log(JSON.stringify(response, null, 4));

@@ -1,7 +1,7 @@
 var logger = require('tracer').console();
 var SaveObject = require('./handlers/SaveHandler/SaveObject');
 var User = require('./models/User');
-var Session = require('../ui_server/models/Session');
+var Session = require('../../default_plugins/auth/models/Session');
 var Permission = require('./handlers/AddPermissionsHandler/Permission');
 var Type = require('./models/Type');
 

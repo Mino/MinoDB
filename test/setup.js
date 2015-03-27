@@ -15,7 +15,7 @@ module.exports = function(done) {
 			    api: true,
 			    ui: true,
 			    db_address: globals.db_address
-			})
+			}, "testuser");
 
 			var MinoSDK = require('minosdk');
 			var sdk = new MinoSDK(Common.ROOT_USERNAME);

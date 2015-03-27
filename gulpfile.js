@@ -18,6 +18,7 @@ var istanbul = require('gulp-istanbul');
 
 require('./default_plugins/admin_server/gulpfile')(gulp);
 require('./default_plugins/browser_server/gulpfile')(gulp);
+require('./default_plugins/auth/gulpfile')(gulp);
 require('./MinoDB/ui_server/gulpfile')(gulp);
 
 var onError = function (err) {  
@@ -51,12 +52,14 @@ gulp.task('watch', function(){
     gulp.watch('docs_src/**/**.*', ['docs']);
     gulp.watch(['fieldval_themes/**/**.*','common_elements/**/**.*','common_classes/**/**.*'], ['default']);
     gulp.start('browser_watch');
+    gulp.start('auth_watch');
     gulp.start('admin_watch');
     gulp.start('ui_watch');
 });
 
 gulp.task('default', function(){
     gulp.start('browser_default');
+    gulp.start('auth_default');
     gulp.start('admin_default');
     gulp.start('ui_default');
 })

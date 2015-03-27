@@ -122,21 +122,32 @@ User.prototype.create_save_data = function(callback){
     }
 }
 
-User.prototype.save = function(api, callback){
+User.prototype.save = function(api, options, callback){
     var user = this;
+
+    logger.log(arguments);
+    console.trace();
+    if (arguments.length == 2) {
+        callback = options;
+        options = undefined;
+    }
+
+    options = options || {};
+    var mino_username = options.mino_username || api.minodb.root_username;
+    var path = options.path || "/" + api.minodb.root_username + "/users/";
 
     user.create_save_data(function(err, to_save){
 
         logger.log(to_save);
-
+        logger.log(user);
         new api.handlers.save(api, {
-            "username": api.minodb.root_username
+            "username": mino_username
         }, {
             "objects": [
                 {  
                     "_id": user.id,
                     "name": user.username,
-                    "path": "/" + api.minodb.root_username + "/users/",
+                    "path": path,
                     "mino_user": to_save
                 }
             ]
@@ -157,14 +168,31 @@ User.prototype.is_system_user = function(toCheck) {
     return false;
 }
 
-User.get = function(username, api, callback){
-    logger.log("username ",username);
-    new api.handlers.get(api, {
-        "username": api.minodb.root_username
+User.get = function(value, api, options, callback){
+    logger.log(arguments);
+    console.trace();
+    if (arguments.length == 3) {
+        callback = options;
+        options = undefined;
+    }
+
+    options = options || {};
+    var mino_username = options.mino_username || api.minodb.root_username;
+    var identifier = options.identifier || "username";
+    var path = options.path || "/" + api.minodb.root_username + "/users/";
+
+    logger.log(mino_username, identifier, path)
+
+    var query = {}
+    query["mino_user."+identifier] = value;
+
+    new api.handlers.search(api, {
+        "username": mino_username
     }, {
-        "addresses": [
-            "/" + api.minodb.root_username + "/users/"+username
-        ]
+        "paths": [
+            path
+        ],
+        query: query
     }, function(get_err, get_res){
         logger.log(get_err, get_res);
 
@@ -179,8 +207,14 @@ User.get = function(username, api, callback){
     })
 }
 
-User.create = function(data, api, callback){
+User.create = function(data, api, options, callback){
     
+    logger.log(arguments);
+    if (arguments.length == 3) {
+        callback = options;
+        options = undefined;
+    }
+
     logger.log("User.create");
 
     User.validate(data, true, function(error) {
@@ -193,62 +227,11 @@ User.create = function(data, api, callback){
         var user = new User({
             mino_user: data
         });
-        user.save(api, function(err, res){
+        user.save(api, options, function(err, res){
 
             logger.log(JSON.stringify(err,null,4), res);
+            callback(err, res);
 
-            new api.handlers.save(api, {
-                "username": api.minodb.root_username
-            }, {
-                "objects": [
-                    {
-                        "name": user.username,
-                        "path": "/",
-                        "folder": true
-                    }
-                ]
-            }, function(save_err, save_res){
-                logger.log(JSON.stringify(save_err,null,4), save_res);
-
-                new api.handlers.save(api, {
-                    "username": user.username
-                }, {
-                    "objects": [
-                        {
-                            "name": "permissions",
-                            "path": "/"+user.username+"/",
-                            "folder": true
-                        },
-                        {
-                            "name": "signals",
-                            "path": "/"+user.username+"/",
-                            "folder": true
-                        }
-                    ]
-                }, function(save_err, save_res){
-                    logger.log(JSON.stringify(save_err,null,4), save_res);
-
-
-                    new api.handlers.save(api, {
-                        "username": user.username
-                    }, {
-                        "objects": [
-                            {
-                                "name": "sent",
-                                "path": "/"+user.username+"/permissions/",
-                                "folder": true
-                            },{
-                                "name": "received",
-                                "path": "/"+user.username+"/permissions/",
-                                "folder": true
-                            }
-                        ]
-                    }, function(save_err, save_res){
-                        logger.log(JSON.stringify(save_err,null,4), save_res);
-                        callback(err, res);
-                    })
-                });
-            });
         });
     });
 

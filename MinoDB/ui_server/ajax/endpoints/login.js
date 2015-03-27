@@ -4,9 +4,6 @@ var User = require('../../../core/models/User')
 
 var FieldVal = require("fieldval");
 var bval = FieldVal.BasicVal;
-var check_password_hash = require('../check_password_hash');
-
-var Session = require('../../models/Session');
 
 module.exports = function(ui_server){
 	
@@ -36,56 +33,47 @@ module.exports = function(ui_server){
 	        return;
 	    }
 
+    	var mino_auth = api.minodb.get_plugin("mino_auth");
+    	
+    	var identifier = username ? "username" : "email";
+    	var minodb_identifier = username ? "mino_user.username" : "mino_user.email";
+    	var options = {
+    		identifier: identifier,
+    		minodb_identifier: minodb_identifier
+    	}
 
-	    if(username){
-		    User.get(username, api, function(error,user_record){
-		    	logger.log(error);
-		    	logger.log(user_record);
-		        if(!user_record){
-		            validator.invalid("username_or_email",errors.USER_DOES_NOT_EXIST);
-		            res.json(validator.end());
-		            return;
-		        } else {
-		        	check_password_hash(
-		        		body.password,
-		        		user_record.password_salt,
-		        		user_record.salted_password,
-		        		function(is_correct){
-		        			logger.log("PASSWORD IS: ",is_correct);
-		                    if(is_correct){
-		                    	//TODO: KEY GENERATION
-		                    	var key = ""+Math.random()+Math.random()+Math.random()+Math.random();
-		                    	Session.create({
-		                    		username: username,
-		                    		key: key
-		                    	}, api, function(session_err,session_res){
-		                    		logger.log(
-		                    			JSON.stringify(session_err,null,4),
-		                    			session_res
-		                    		);
+    	var value = username ? username : email;
+    	var login_body = {}
+    	login_body[identifier] = value;
+    	login_body.password = body.password;
 
-		                    		var response_object = {
-			                            user: user_record,
-			                            success: true
-			                        }
-
-			                        res.cookie('mino_token', session_res.objects[0]._id+"-"+key, {
-							            maxAge: 60 * 60 * 24 * 365,
-							            httpOnly: false
-							        });
-
-			                        res.json(response_object);
-		                    	})
-		                        return;
-		                    } else {
-		                        validator.invalid("password",errors.INCORRECT_PASSWORD);
-		                        res.json(validator.end());
-		                        return;
-		                    }
-		        		}
-		        	)
+    	mino_auth.sign_in(login_body, options, function(err, user_record, session) {
+    		logger.log('FERROR', err);
+    		if (err) {
+    			if (err.invalid) {
+    				if (err.invalid.username) {
+	    				var key_error = err.invalid.username;
+	    				delete err.invalid.username;
+	    				err.invalid.username_or_email = key_error;
+	    			} else if (err.invalid.email) {
+	    				var key_error = err.invalid.email;
+	    				delete err.invalid.email;
+	    				err.invalid.username_or_email = key_error;
+	    			}
+    			}
+    			return res.json(err);
+    		} else if (!user_record) {
+    			return res.json(validator.end());
+    		} else {
+				var response_object = {
+		            user: user_record,
+		            success: true
 		        }
-		    })
-		}
+
+		        mino_auth.persist_session(res, session, 'mino_token');
+		        res.json(response_object);
+    		}
+	        				
+    	})
 	}
 }
