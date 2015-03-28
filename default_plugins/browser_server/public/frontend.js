@@ -12707,6 +12707,7 @@ return jQuery;
 (function($) {
     $.fn.ajax_url = function(custom_trigger, on_trigger) {
         var element = this;
+        element.off('tap');
         element.on('tap',function(event) {
             var custom_trigger_return = null;
             if (custom_trigger != null) {
@@ -12717,6 +12718,7 @@ return jQuery;
                 if (on_trigger != null) {
                     on_trigger(event);
                 }
+                console.log("event.originalEvent.metaKey",event.originalEvent.metaKey);
                 if (event.originalEvent.metaKey === true) {
                     //Being opened in another tab
                 } else {
@@ -13204,7 +13206,7 @@ SAFEClass.prototype.on_resize = function(resize_obj) {
     
 };
 
-SAFEClass.prototype.pre_load = function(class_name, parameters, url, wildcard_contents) {
+SAFEClass.prototype.pre_load = function(class_obj, details, old_page) {
     var sf = this;
 
     //Must return undefined (null shows 404)
@@ -13509,6 +13511,20 @@ SAFEClass.prototype.replace_current_url = function(new_url, call_url_changed) {
             false
         );
     }
+}
+
+SAFEClass.prototype.add_history_state = function(url){
+    var sf = this;
+
+    var full_url;
+    if(url.substring(0,Site.origin.length)===Site.origin){
+        full_url = url;
+    } else {
+        full_url = Site.origin + url;
+    }
+
+    sf.ignore_next_url = true;
+    History.pushState(null, "", full_url);
 }
 
 SAFEClass.prototype.add_url = function(url, class_name) {
@@ -15685,11 +15701,20 @@ function FVField(name, options) {
         })
         .addClass("fv_field fv_form")
         .data("field",field)
-        .on("submit",function(event){
+        
+        var submit_function = function(event){
             event.preventDefault();
             field.submit();
             return false;
-        });
+        };
+
+        var field_dom_element = field.element[0];
+        if (field_dom_element.addEventListener) {// For all major browsers, except IE 8 and earlier
+            field_dom_element.addEventListener("submit", submit_function);
+        } else if (field_dom_element.attachEvent) {// For IE 8 and earlier versions
+            field_dom_element.attachEvent("submit", submit_function);
+        }
+
         field.on_submit_callbacks = [];
     } else {
         field.element = $("<div />").addClass("fv_field").data("field",field);
@@ -21727,6 +21752,79 @@ TypeIcon.prototype.get_address = function(){
 
 	return Site.path+icon.data.name;
 }
+function ObjectsView(browser, options){
+	var objects_view = this;
+
+	objects_view.browser = browser;
+
+    objects_view.pagination_controller = new PaginationController(objects_view);
+
+    objects_view.select_mode = false;
+    objects_view.selected = [];
+
+	objects_view.element = $("<div />").addClass("objects_view").append(
+		objects_view.contents = $("<div />").addClass("contents")
+	,
+		objects_view.pagination_controller.element
+	)
+
+	browser.view_container.empty().append(objects_view.element);
+
+	browser.toolbar.element.empty();
+
+	objects_view.no_result_text = "No results...";
+}
+
+ObjectsView.prototype.init = function(){
+	var objects_view = this;
+}
+
+ObjectsView.prototype.remove = function(){
+	var objects_view = this;
+}
+
+ObjectsView.prototype.start_load = function(){
+	var objects_view = this;
+
+	objects_view.contents.empty();
+
+	objects_view.contents.addClass("loading");
+	objects_view.pagination_controller.hide();
+}
+
+ObjectsView.prototype.populate = function(options, data){
+	var objects_view = this;
+
+	objects_view.contents.removeClass("loading");
+
+	var objects = data.objects;
+
+	if(objects.length===0){
+		objects_view.contents.append(
+			$("<div />").addClass("empty_folder").append(
+				$("<div />").addClass("fa_icon fa fa-warning"),
+				$("<div />").text(objects_view.no_result_text)
+			)
+		)
+		objects_view.pagination_controller.hide();
+	} else {
+		objects_view.pagination_controller.show();
+	}
+
+	for(var i = 0; i < objects.length; i++){
+		var object = objects[i];
+		var icon;
+		if(object.folder){
+			icon = new FolderIcon(object,objects_view);
+		} else {
+			icon = new ItemIcon(object, objects_view);
+		}
+		objects_view.contents.append(icon.element);
+	}
+
+	objects_view.pagination_controller.populate(data);
+}
+
 function CreateFolderModal(parent_folder, callback){
 	var cfm = this;
 
@@ -21878,26 +21976,22 @@ DeleteModal.prototype.perform_delete = function(){
 	})
 }
 
+extend(FolderView, ObjectsView);
 function FolderView(path, data, browser, options){
 	var folder_view = this;
 
-	folder_view.browser = browser;
-	folder_view.path = path;
-	folder_view.item_data = data;
-	folder_view.options = options || {};
+	FolderView.superConstructor.call(this, browser);
 
-    folder_view.pagination_controller = new PaginationController(folder_view);
+	folder_view.element.addClass("folder_view");
+
+	folder_view.path = path;
+	folder_view.folder_object_data = data;
+	folder_view.options = options || {};
 
     folder_view.select_mode = false;
     folder_view.selected = [];
 
-	folder_view.element = $("<div />").addClass("folder_view").append(
-		folder_view.contents = $("<div />").addClass("contents")
-	,
-		folder_view.pagination_controller.element
-	)
-
-	browser.view_container.empty().append(folder_view.element);
+    folder_view.no_result_text = "Empty folder. Create some items..."
 
 	browser.toolbar.element.empty().append(
 		folder_view.toolbar_element = $("<div />").append(
@@ -21925,15 +22019,7 @@ function FolderView(path, data, browser, options){
 	
 	browser.address_bar.populate_path_buttons(folder_view.path);
 
-	folder_view.load({});
-}
-
-FolderView.prototype.init = function(){
-	var folder_view = this;
-}
-
-FolderView.prototype.remove = function(){
-	var folder_view = this;
+	folder_view.load(folder_view.options);
 }
 
 FolderView.prototype.add_selected = function(icon){
@@ -22020,26 +22106,35 @@ FolderView.prototype.create_item = function(){
 FolderView.prototype.link_with_skip_and_limit = function(skip, limit){
 	var folder_view = this;
 
-	var query = {};
+	var options = {};
 	if(skip!==undefined){
-		query.skip = skip;
+		options.skip = skip;
 	}
 	if(limit!==undefined){
-		query.limit = limit;
+		options.limit = limit;
 	}
 
-	return Site.path+folder_view.path.toString()+SAFE.build_query_string(query);
+	var link_address = Site.path+folder_view.path.toString()+SAFE.build_query_string(options);
+
+	return [link_address, function(e){
+		e.preventDefault();
+		SAFE.add_history_state(link_address);
+		folder_view.load(options);
+	}]
 }
 
 FolderView.prototype.load = function(options){
 	var folder_view = this;
 
-	var limit = folder_view.options.limit;
+	folder_view.start_load();
+	folder_view.selected = [];
+
+	var limit = options.limit;
 	if(limit===undefined){
 		limit = 10;
 	}
 
-	var skip = folder_view.options.skip;
+	var skip = options.skip;
 	if(skip===undefined){
 		skip = 0;
 	}
@@ -22052,44 +22147,11 @@ FolderView.prototype.load = function(options){
 			"limit": parseInt(limit)
 		}
 	};
-
-	folder_view.pagination_controller.hide();
 	
 	api_request(request,function(err, response){
 		console.log(err, response);
 		folder_view.populate(options, response);
 	});
-}
-
-FolderView.prototype.populate = function(options, data){
-	var folder_view = this;
-
-	var objects = data.objects;
-
-	if(objects.length===0){
-		folder_view.contents.append(
-			$("<div />").addClass("empty_folder").append(
-				$("<div />").addClass("fa_icon fa fa-warning"),
-				$("<div />").text("Empty folder. Create some items...")
-			)
-		)
-		folder_view.pagination_controller.hide();
-	} else {
-		folder_view.pagination_controller.show();
-	}
-
-	for(var i = 0; i < objects.length; i++){
-		var object = objects[i];
-		var icon;
-		if(object.folder){
-			icon = new FolderIcon(object,folder_view);
-		} else {
-			icon = new ItemIcon(object, folder_view);
-		}
-		folder_view.contents.append(icon.element);
-	}
-
-	folder_view.pagination_controller.populate(data);
 }
 
 FolderView.prototype.resize = function(resize_obj){
@@ -22567,20 +22629,25 @@ ItemView.prototype.resize = function(resize_obj){
 
 	item_view.form.element.toggleClass("rows", resize_obj.window_width>700)
 }
-function SearchView(browser){
+extend(SearchView, ObjectsView);
+function SearchView(browser, options){
 	var sv = this;
 
-	sv.browser = browser;
+	SearchView.superConstructor.call(this, browser);
 
-	sv.pagination_controller = new PaginationController(sv);
-
-	sv.element = $("<div />").addClass("search_view").append(
-		sv.search_form = $("<div />").addClass("search_form"),
-		sv.results = $("<div />").addClass("search_results"),
-		sv.pagination_controller.element
+	sv.element.addClass("search_view").prepend(
+		sv.search_form = $("<div />").addClass("search_form")
 	);
 
-	sv.form = new FVForm();
+	try{
+		sv.query = JSON.parse(options.query);
+	} catch (e){
+		//failed to parse query
+	}
+
+	console.log("SearchView",sv.query);
+
+	sv.form = new FVObjectField("Search",{use_form:true});
 	var paths_field = new FVArrayField("Paths",{
 		sortable: false
 	});
@@ -22593,15 +22660,23 @@ function SearchView(browser){
 	sv.form.add_field("include_subfolders", new FVBooleanField("Include Subfolders"));
 	sv.form.add_field("text_search",new FVTextField("Text Search"));
 	sv.form.element.append(
-		$("<button />").addClass("mino_button").text("Search")
+		sv.search_button = $("<button />").addClass("mino_button").text("Search")
 	)
-	sv.form.val({
-		"paths": ["/"+user.username+"/"]
+
+	sv.search_button.click(function(event){
+		sv.form.submit();
 	});
+
+	if(!sv.query){
+		sv.query = {
+			"paths": ["/"+user.username+"/"]
+		}
+	}
+	sv.form.val(sv.query);
 
 	sv.form.on_submit(function(val){
 		console.log(val);
-		sv.do_search(val);
+		sv.do_search(val, true);
 	});
 
 	sv.search_form.append(sv.form.element);
@@ -22614,23 +22689,58 @@ function SearchView(browser){
 	
 	browser.address_bar.populate_special_path_button("Search","?search","");
 
-	sv.do_search(sv.form.val());
+	sv.do_search(sv.query, false);
 }
 
-SearchView.prototype.init = function(){
+SearchView.prototype.link_with_skip_and_limit = function(skip, limit){
 	var sv = this;
 
+	var link_obj = {
+		"search":""
+	};
+	var link_query = JSON.parse(JSON.stringify(sv.query));
+	if(skip!==undefined){
+		link_query.skip = skip;
+	}
+	if(limit!==undefined){
+		link_query.limit = limit;
+	}
+	link_obj.query = JSON.stringify(link_query);
+	var link_address = Site.path+SAFE.build_query_string(link_obj);
+
+	return [link_address, function(e){
+		if(!e.originalEvent.metaKey && SAFE.history_state_supported){
+			SAFE.add_history_state(link_address);
+			sv.do_search(JSON.parse(link_obj.query), false);
+		}
+	}];
 }
 
-SearchView.prototype.do_search = function(query){
+SearchView.prototype.do_search = function(query, add_state){
 	var sv = this;
 
-	sv.results.empty();
+	sv.start_load();
+
+	if(query.limit===undefined){
+		query.limit = 10;
+	}
+
+	if(query.skip===undefined){
+		query.skip = 0;
+	}
+
+	sv.query = query;
+
+	if(add_state){
+		var link_address = Site.path+SAFE.build_query_string(sv.query);
+		SAFE.add_history_state(link_address);
+	}
 
 	var this_request = sv.current_request = api_request({
 		"function": "search",
 		"parameters": query
 	},function(err, res){
+
 		if(this_request===sv.current_request){
 			console.log(err,res);
 
@@ -22638,6 +22748,7 @@ SearchView.prototype.do_search = function(query){
 				console.log("ERROR A");
 				sv.form.error(FieldVal.get_error("parameters",err));
 			} else {
+
 				if(res.error){
 					console.log("ERROR B");
 					sv.form.error(FieldVal.get_error("parameters",res));
@@ -22649,42 +22760,6 @@ SearchView.prototype.do_search = function(query){
 			}
 		}
 	})
-}
-
-SearchView.prototype.populate = function(options, data){
-	var sv = this;
-
-	var objects = data.objects;
-
-	if(objects.length===0){
-		sv.results.append(
-			$("<div />").addClass("empty_folder").append(
-				$("<div />").addClass("fa_icon fa fa-warning"),
-				$("<div />").text("No results...")
-			)
-		)
-		sv.pagination_controller.hide();
-	} else {
-		sv.pagination_controller.show();
-	}
-
-	for(var i = 0; i < objects.length; i++){
-		var object = objects[i];
-		var icon;
-		if(object.folder){
-			icon = new FolderIcon(object,sv);
-		} else {
-			icon = new ItemIcon(object, sv);
-		}
-		sv.results.append(icon.element);
-	}
-
-	sv.pagination_controller.populate(data);
-}
-
-SearchView.prototype.remove = function(){
-	var sv = this;
-
 }
 
 SearchView.prototype.resize = function(resize_obj){
@@ -23380,7 +23455,15 @@ PaginationController.prototype.populate = function(response){
 	    if(prev_skip<0){
 	        prev_skip = 0;
 	    }
-        pc.previous_button.attr("href",pc.parent.link_with_skip_and_limit(prev_skip,pc.limit)).ajax_url();
+	    var prev_link_and_function = pc.parent.link_with_skip_and_limit(prev_skip,pc.limit);
+	    var prev_link, prev_function;
+	    if(Array.isArray(prev_link_and_function)){
+	    	prev_link = prev_link_and_function[0];
+	    	prev_function = prev_link_and_function[1];
+	    } else {
+	    	prev_link = prev_link_and_function;
+	    }
+        pc.previous_button.attr("href",prev_link).ajax_url(prev_function);
 	} else {
 	    pc.previous_button.hide();
 	}
@@ -23393,7 +23476,15 @@ PaginationController.prototype.populate = function(response){
 	    //There is a next page
 	    pc.next_button.show();
 	    var next_skip = response.skip+results.length;
-        pc.next_button.attr("href",pc.parent.link_with_skip_and_limit(next_skip,pc.limit)).ajax_url();
+	    var next_link_and_function = pc.parent.link_with_skip_and_limit(next_skip,pc.limit);
+	    var next_link, next_function;
+	    if(Array.isArray(next_link_and_function)){
+	    	next_link = next_link_and_function[0];
+	    	next_function = next_link_and_function[1];
+	    } else {
+	    	next_link = next_link_and_function;
+	    }
+        pc.next_button.attr("href",next_link).ajax_url(next_function);
 	} else {
 	    pc.next_button.hide();
 	}
@@ -23508,7 +23599,7 @@ Browser.prototype.load = function(address, options){
 	}
 
 	if(options['search']!==undefined){
-		browser.view = new SearchView(browser);
+		browser.view = new SearchView(browser, options);
 		browser.view_container.empty().append(browser.view.element);
 		browser.view.init();
 		browser.view.resize(Site.resize_obj);
