@@ -12,6 +12,7 @@ describe('MinoDB', function() {
     require('./plugins/plugins.js')
     require('./signals/signals.js')
     require('./utils/class_to_string');
+    require('./permissions/PathPermissionChecker');
 
     after(function(){
 		globals.mino.close();

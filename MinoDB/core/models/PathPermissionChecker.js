@@ -5,8 +5,7 @@ function CallbackObject(callback){
 	var co = this;
 
 	co.callback = callback;
-	co.has_read = false;
-	co.has_write = false;
+	co.permission = Constants.NO_PERMISSION;
 }
 
 function PathPermissionChecker(handler, options){
@@ -58,16 +57,16 @@ PathPermissionChecker.prototype.check_permissions_for_path = function(path, call
 		if(existing_permission){
 			//TODO
 			if(ppc.immediate_mode){
-				callback();
+				callback(existing_permission);
 				return;
 			}
 
 		} else if(existing_permission===undefined){
 
-			var existing = ppc.paths[permission_path];
+			var existing = paths[permission_path];
 		    if(existing===undefined){
 		        existing = [];
-		        ppc.paths[permission_path] = existing;
+		        paths[permission_path] = existing;
 		    }
 		    existing.push(callback_object);
 	   }
@@ -87,14 +86,7 @@ PathPermissionChecker.prototype.resolve_callbacks = function(callback_objects){
 
 	for(var i = 0; i < callback_objects.length; i++){
 		var co = callback_objects[i];
-
-		if(co.has_write){
-			co.callback(Constants.WRITE_PERMISSION);
-		} else if(co.has_read){
-			co.callback(Constants.READ_PERMISSION);
-		} else {
-			co.callback(Constants.NO_PERMISSION);
-		}
+		co.callback(co.permission);
 	}
 }
 
@@ -109,7 +101,7 @@ PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths,
 	}
 
 	var keys = Object.keys(paths);
-
+	logger.log(paths);
 	if(keys.length===0){
 		ppc.resolve_callbacks(callback_objects);
 		if(callback){
@@ -130,9 +122,11 @@ PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths,
 				for (var j=0; j<paths[permission].length; j++) {
 					var callback_object = paths[permission][j];
 					if (ppc.for_write) {
-						callback_object.has_write = true;
+						callback_object.permission = Constants.WRITE_PERMISSION;
+						ppc.retrieved_permissions[permission] = Constants.WRITE_PERMISSION;
 					} else {
-						callback_object.has_read = true;
+						callback_object.permission = Constants.READ_PERMISSION;
+						ppc.retrieved_permissions[permission] = Constants.READ_PERMISSION;
 					}	
 				}
 			}
