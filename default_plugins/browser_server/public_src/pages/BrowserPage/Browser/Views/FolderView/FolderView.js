@@ -142,9 +142,11 @@ FolderView.prototype.link_with_skip_and_limit = function(skip, limit){
 	var link_address = Site.path+folder_view.path.toString()+SAFE.build_query_string(options);
 
 	return [link_address, function(e){
-		e.preventDefault();
-		SAFE.add_history_state(link_address);
-		folder_view.load(options);
+		if(!e.originalEvent.metaKey && SAFE.history_state_supported){
+			e.preventDefault();
+			SAFE.add_history_state(link_address);
+			folder_view.load(options);
+		}
 	}]
 }
 

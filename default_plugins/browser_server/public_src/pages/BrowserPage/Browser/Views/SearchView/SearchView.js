@@ -4,17 +4,19 @@ function SearchView(browser, options){
 
 	SearchView.superConstructor.call(this, browser);
 
-	sv.element.addClass("search_view").prepend(
-		sv.search_form = $("<div />").addClass("search_form")
-	);
-
 	try{
 		sv.query = JSON.parse(options.query);
 	} catch (e){
 		//failed to parse query
 	}
+}
 
-	console.log("SearchView",sv.query);
+SearchView.prototype.init = function(){
+	var sv = this;
+
+	sv.element.addClass("search_view").prepend(
+		sv.search_form = $("<div />").addClass("search_form")
+	);
 
 	sv.form = new FVObjectField("Search",{use_form:true});
 	var paths_field = new FVArrayField("Paths",{
@@ -48,17 +50,17 @@ function SearchView(browser, options){
 		sv.do_search(val, true);
 	});
 
-	sv.search_form.append(sv.form.element);
-
-	browser.toolbar.element.empty().append(
+	sv.browser.toolbar.element.empty().append(
 		sv.toolbar_element = $("<div />").append(
 			
 		)
-	)
-	
-	browser.address_bar.populate_special_path_button("Search","?search","");
+	);
+
+	sv.browser.address_bar.populate_special_path_button("Search","?search","");
 
 	sv.do_search(sv.query, false);
+
+	sv.form.element.appendTo(sv.search_form);
 }
 
 SearchView.prototype.link_with_skip_and_limit = function(skip, limit){
@@ -79,6 +81,7 @@ SearchView.prototype.link_with_skip_and_limit = function(skip, limit){
 
 	return [link_address, function(e){
 		if(!e.originalEvent.metaKey && SAFE.history_state_supported){
+			e.preventDefault();
 			SAFE.add_history_state(link_address);
 			sv.do_search(JSON.parse(link_obj.query), false);
 		}
@@ -101,7 +104,11 @@ SearchView.prototype.do_search = function(query, add_state){
 	sv.query = query;
 
 	if(add_state){
-		var link_address = Site.path+SAFE.build_query_string(sv.query);
+		var link_obj = {
+			"search":"",
+			"query": JSON.stringify(sv.query)
+		};
+		var link_address = Site.path+SAFE.build_query_string(link_obj);
 		SAFE.add_history_state(link_address);
 	}
 

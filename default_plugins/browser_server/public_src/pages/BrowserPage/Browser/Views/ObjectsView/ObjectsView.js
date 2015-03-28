@@ -38,10 +38,16 @@ ObjectsView.prototype.start_load = function(){
 	objects_view.pagination_controller.hide();
 }
 
-ObjectsView.prototype.populate = function(options, data){
+ObjectsView.prototype.finish_load = function(){
 	var objects_view = this;
 
 	objects_view.contents.removeClass("loading");
+}
+
+ObjectsView.prototype.populate = function(options, data){
+	var objects_view = this;
+
+	objects_view.finish_load();
 
 	var objects = data.objects;
 
