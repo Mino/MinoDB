@@ -1,32 +1,4 @@
 .folder_view{
 	@import "CreateFolderModal/CreateFolderModal.subless";
 	@import "DeleteModal/DeleteModal.subless";
-
-	.contents{
-
-		margin-left: -5px;
-		margin-right: -5px;
-
-		margin-bottom: 20px;
-
-		.empty_folder{
-			text-align: center;
-			vertical-align: middle;
-			.bold;	
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			width: 300px;
-			margin-left: -150px;
-			margin-top: -17px;
-			>.fa_icon{
-				font-size: 40px;
-				line-height: 40px;
-			}
-			>.text{
-				line-height: 35px;
-			}
-		}
-	}
-
 }

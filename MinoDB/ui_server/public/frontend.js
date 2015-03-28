@@ -12707,6 +12707,7 @@ return jQuery;
 (function($) {
     $.fn.ajax_url = function(custom_trigger, on_trigger) {
         var element = this;
+        element.off('tap');
         element.on('tap',function(event) {
             var custom_trigger_return = null;
             if (custom_trigger != null) {
@@ -12717,6 +12718,7 @@ return jQuery;
                 if (on_trigger != null) {
                     on_trigger(event);
                 }
+                console.log("event.originalEvent.metaKey",event.originalEvent.metaKey);
                 if (event.originalEvent.metaKey === true) {
                     //Being opened in another tab
                 } else {
@@ -13204,7 +13206,7 @@ SAFEClass.prototype.on_resize = function(resize_obj) {
     
 };
 
-SAFEClass.prototype.pre_load = function(class_name, parameters, url, wildcard_contents) {
+SAFEClass.prototype.pre_load = function(class_obj, details, old_page) {
     var sf = this;
 
     //Must return undefined (null shows 404)
@@ -13509,6 +13511,20 @@ SAFEClass.prototype.replace_current_url = function(new_url, call_url_changed) {
             false
         );
     }
+}
+
+SAFEClass.prototype.add_history_state = function(url){
+    var sf = this;
+
+    var full_url;
+    if(url.substring(0,Site.origin.length)===Site.origin){
+        full_url = url;
+    } else {
+        full_url = Site.origin + url;
+    }
+
+    sf.ignore_next_url = true;
+    History.pushState(null, "", full_url);
 }
 
 SAFEClass.prototype.add_url = function(url, class_name) {
@@ -15685,11 +15701,20 @@ function FVField(name, options) {
         })
         .addClass("fv_field fv_form")
         .data("field",field)
-        .on("submit",function(event){
+        
+        var submit_function = function(event){
             event.preventDefault();
             field.submit();
             return false;
-        });
+        };
+
+        var field_dom_element = field.element[0];
+        if (field_dom_element.addEventListener) {// For all major browsers, except IE 8 and earlier
+            field_dom_element.addEventListener("submit", submit_function);
+        } else if (field_dom_element.attachEvent) {// For IE 8 and earlier versions
+            field_dom_element.attachEvent("submit", submit_function);
+        }
+
         field.on_submit_callbacks = [];
     } else {
         field.element = $("<div />").addClass("fv_field").data("field",field);
@@ -21135,7 +21160,7 @@ Path.prototype.path_for_child_with_name = function(child_name, child_is_folder) 
 Path.prototype.parent_path = function() {
     var path = this;
 
-    if (path.length == 1) {
+    if (path.length <= 1) {
         return null;
     }
 

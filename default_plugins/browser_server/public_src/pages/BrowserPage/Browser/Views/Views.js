@@ -1,3 +1,5 @@
+@import("ObjectsView/ObjectsView.js");
+
 @import("FolderView/FolderView.js");
 @import("ItemView/ItemView.js");
 @import("SearchView/SearchView.js");

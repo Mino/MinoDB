@@ -107,7 +107,7 @@ Browser.prototype.load = function(address, options){
 	}
 
 	if(options['search']!==undefined){
-		browser.view = new SearchView(browser);
+		browser.view = new SearchView(browser, options);
 		browser.view_container.empty().append(browser.view.element);
 		browser.view.init();
 		browser.view.resize(Site.resize_obj);
