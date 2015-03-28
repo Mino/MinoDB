@@ -82,6 +82,23 @@ describe('PathPermissionChecker', function() {
 		})
 	})
 
+	it('should return NO_PERMISSION to root path', function(done) {
+		var ppc = new PathPermissionChecker(handler);
+		ppc.immediate_mode = true;
+		
+		var path = new Path();
+		path.init('/');
+
+		var perms = globals.minodb.get_plugin('minodb-permissions');
+		perms.assign_permission_to_id('read:/', 'testuser', function(err, res) {
+			assert.equal(err, null);
+			ppc.check_permissions_for_path(path, function(status){
+				assert.equal(status, Constants.NO_PERMISSION);
+				done();
+			});
+		})
+	})
+
 	it('should reuse fetched permissions', function(done) {
 		var ppc = new PathPermissionChecker(handler);
 		

@@ -35,6 +35,11 @@ PathPermissionChecker.prototype.check_permissions_for_path = function(path, call
 		return;
 	}
 
+	if (path.length == 0) {
+		callback(Constants.NO_PERMISSION);
+		return;
+	}
+
 	var paths,callback_objects;	
 
 	if(ppc.immediate_mode){
