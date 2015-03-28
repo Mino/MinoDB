@@ -1,19 +1,12 @@
+extend(TypeSearchView, ObjectsView);
 function TypeSearchView(browser, options){
 	var tsv = this;
 
-	tsv.browser = browser;
-
-	console.log("TypeSearchView", options);
+	TypeSearchView.superConstructor.call(this, browser);
 
 	tsv.options = options || {};
 
-	tsv.pagination_controller = new PaginationController(tsv);
-
-	tsv.element = $("<div />").addClass("type_search_view").append(
-		tsv.contents = $("<div />")
-		,
-		tsv.pagination_controller.element
-	);
+	tsv.element.addClass("type_search_view")
 
 	browser.toolbar.element.empty().append(
 		tsv.toolbar_element = $("<div />").append(
@@ -25,28 +18,31 @@ function TypeSearchView(browser, options){
 	
 	browser.address_bar.populate_special_path_button("Types","?types","");
 
-	tsv.load({});
-}
-
-TypeSearchView.prototype.init = function(){
-	var tsv = this;
-
+	tsv.load(tsv.options);
 }
 
 TypeSearchView.prototype.link_with_skip_and_limit = function(skip, limit){
 	var tsv = this;
 
-	var query = {
+	var options = {
 		"types":""
 	};
 	if(skip!==undefined){
-		query.skip = skip;
+		options.skip = skip;
 	}
 	if(limit!==undefined){
-		query.limit = limit;
+		options.limit = limit;
 	}
 
-	return Site.path+SAFE.build_query_string(query);
+	var link_address = Site.path+SAFE.build_query_string(options);
+
+	return [link_address, function(e){
+		if(!e.originalEvent.metaKey && SAFE.history_state_supported){
+			e.preventDefault();
+			SAFE.add_history_state(link_address);
+			tsv.load(options);
+		}
+	}]
 }
 
 TypeSearchView.prototype.create_type = function(){
@@ -58,12 +54,14 @@ TypeSearchView.prototype.create_type = function(){
 TypeSearchView.prototype.load = function(options){
 	var tsv = this;
 
-	var limit = tsv.options.limit;
+	tsv.start_load();
+
+	var limit = options.limit;
 	if(limit===undefined){
 		limit = 10;
 	}
 
-	var skip = tsv.options.skip;
+	var skip = options.skip;
 	if(skip===undefined){
 		skip = 0;
 	}
@@ -87,6 +85,8 @@ TypeSearchView.prototype.load = function(options){
 
 TypeSearchView.prototype.populate = function(options, data){
 	var tsv = this;
+
+	tsv.finish_load();
 
 	var objects = data.objects;
 

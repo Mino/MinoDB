@@ -12718,7 +12718,6 @@ return jQuery;
                 if (on_trigger != null) {
                     on_trigger(event);
                 }
-                console.log("event.originalEvent.metaKey",event.originalEvent.metaKey);
                 if (event.originalEvent.metaKey === true) {
                     //Being opened in another tab
                 } else {
@@ -13333,6 +13332,29 @@ SAFEClass.prototype.use_page_class = function(details){
         sf.current_page.remove();
         old_page = sf.current_page;
     }
+
+    var redirect_response;
+    if(typeof class_obj.redirect === 'function'){
+        redirect_response = class_obj.redirect(details);
+    } else if(typeof class_obj.prototype.redirect === 'function'){
+        console.log(class_obj.prototype.redirect);
+        redirect_response = class_obj.prototype.redirect(details);
+    }
+    if (redirect_response !== undefined) {
+        if((typeof redirect_response) === 'function'){
+            //Given a class
+        } else if(redirect_response===null){
+            //Load the 404 page
+            details.class_name = null;
+            sf.use_page_class(details);
+            return;
+        } else {
+            //Load as URL
+            sf.load_url(redirect_response, false);
+        }
+        return;
+    }
+
 
     var pre_load_response = sf.pre_load(class_obj, details, old_page);
 
@@ -21792,10 +21814,16 @@ ObjectsView.prototype.start_load = function(){
 	objects_view.pagination_controller.hide();
 }
 
-ObjectsView.prototype.populate = function(options, data){
+ObjectsView.prototype.finish_load = function(){
 	var objects_view = this;
 
 	objects_view.contents.removeClass("loading");
+}
+
+ObjectsView.prototype.populate = function(options, data){
+	var objects_view = this;
+
+	objects_view.finish_load();
 
 	var objects = data.objects;
 
@@ -22117,9 +22145,11 @@ FolderView.prototype.link_with_skip_and_limit = function(skip, limit){
 	var link_address = Site.path+folder_view.path.toString()+SAFE.build_query_string(options);
 
 	return [link_address, function(e){
-		e.preventDefault();
-		SAFE.add_history_state(link_address);
-		folder_view.load(options);
+		if(!e.originalEvent.metaKey && SAFE.history_state_supported){
+			e.preventDefault();
+			SAFE.add_history_state(link_address);
+			folder_view.load(options);
+		}
 	}]
 }
 
@@ -22635,17 +22665,19 @@ function SearchView(browser, options){
 
 	SearchView.superConstructor.call(this, browser);
 
-	sv.element.addClass("search_view").prepend(
-		sv.search_form = $("<div />").addClass("search_form")
-	);
-
 	try{
 		sv.query = JSON.parse(options.query);
 	} catch (e){
 		//failed to parse query
 	}
+}
 
-	console.log("SearchView",sv.query);
+SearchView.prototype.init = function(){
+	var sv = this;
+
+	sv.element.addClass("search_view").prepend(
+		sv.search_form = $("<div />").addClass("search_form")
+	);
 
 	sv.form = new FVObjectField("Search",{use_form:true});
 	var paths_field = new FVArrayField("Paths",{
@@ -22679,17 +22711,17 @@ function SearchView(browser, options){
 		sv.do_search(val, true);
 	});
 
-	sv.search_form.append(sv.form.element);
-
-	browser.toolbar.element.empty().append(
+	sv.browser.toolbar.element.empty().append(
 		sv.toolbar_element = $("<div />").append(
 			
 		)
-	)
-	
-	browser.address_bar.populate_special_path_button("Search","?search","");
+	);
+
+	sv.browser.address_bar.populate_special_path_button("Search","?search","");
 
 	sv.do_search(sv.query, false);
+
+	sv.form.element.appendTo(sv.search_form);
 }
 
 SearchView.prototype.link_with_skip_and_limit = function(skip, limit){
@@ -22710,6 +22742,7 @@ SearchView.prototype.link_with_skip_and_limit = function(skip, limit){
 
 	return [link_address, function(e){
 		if(!e.originalEvent.metaKey && SAFE.history_state_supported){
+			e.preventDefault();
 			SAFE.add_history_state(link_address);
 			sv.do_search(JSON.parse(link_obj.query), false);
 		}
@@ -22732,7 +22765,11 @@ SearchView.prototype.do_search = function(query, add_state){
 	sv.query = query;
 
 	if(add_state){
-		var link_address = Site.path+SAFE.build_query_string(sv.query);
+		var link_obj = {
+			"search":"",
+			"query": JSON.stringify(sv.query)
+		};
+		var link_address = Site.path+SAFE.build_query_string(link_obj);
 		SAFE.add_history_state(link_address);
 	}
 
@@ -23002,22 +23039,15 @@ TypeView.prototype.resize = function(resize_obj){
 
 	type_view.type_field.element.toggleClass("rows", resize_obj.window_width>700)
 }
+extend(TypeSearchView, ObjectsView);
 function TypeSearchView(browser, options){
 	var tsv = this;
 
-	tsv.browser = browser;
-
-	console.log("TypeSearchView", options);
+	TypeSearchView.superConstructor.call(this, browser);
 
 	tsv.options = options || {};
 
-	tsv.pagination_controller = new PaginationController(tsv);
-
-	tsv.element = $("<div />").addClass("type_search_view").append(
-		tsv.contents = $("<div />")
-		,
-		tsv.pagination_controller.element
-	);
+	tsv.element.addClass("type_search_view")
 
 	browser.toolbar.element.empty().append(
 		tsv.toolbar_element = $("<div />").append(
@@ -23029,28 +23059,31 @@ function TypeSearchView(browser, options){
 	
 	browser.address_bar.populate_special_path_button("Types","?types","");
 
-	tsv.load({});
-}
-
-TypeSearchView.prototype.init = function(){
-	var tsv = this;
-
+	tsv.load(tsv.options);
 }
 
 TypeSearchView.prototype.link_with_skip_and_limit = function(skip, limit){
 	var tsv = this;
 
-	var query = {
+	var options = {
 		"types":""
 	};
 	if(skip!==undefined){
-		query.skip = skip;
+		options.skip = skip;
 	}
 	if(limit!==undefined){
-		query.limit = limit;
+		options.limit = limit;
 	}
 
-	return Site.path+SAFE.build_query_string(query);
+	var link_address = Site.path+SAFE.build_query_string(options);
+
+	return [link_address, function(e){
+		if(!e.originalEvent.metaKey && SAFE.history_state_supported){
+			e.preventDefault();
+			SAFE.add_history_state(link_address);
+			tsv.load(options);
+		}
+	}]
 }
 
 TypeSearchView.prototype.create_type = function(){
@@ -23062,12 +23095,14 @@ TypeSearchView.prototype.create_type = function(){
 TypeSearchView.prototype.load = function(options){
 	var tsv = this;
 
-	var limit = tsv.options.limit;
+	tsv.start_load();
+
+	var limit = options.limit;
 	if(limit===undefined){
 		limit = 10;
 	}
 
-	var skip = tsv.options.skip;
+	var skip = options.skip;
 	if(skip===undefined){
 		skip = 0;
 	}
@@ -23091,6 +23126,8 @@ TypeSearchView.prototype.load = function(options){
 
 TypeSearchView.prototype.populate = function(options, data){
 	var tsv = this;
+
+	tsv.finish_load();
 
 	var objects = data.objects;
 
