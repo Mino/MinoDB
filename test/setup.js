@@ -23,6 +23,7 @@ module.exports = function(done) {
 
 			globals.sdk = sdk;
 			globals.mino = mino;
+			globals.minodb = mino;
 			
 			mino.api.connect_callbacks.push(function() {
 				mino.create_user({

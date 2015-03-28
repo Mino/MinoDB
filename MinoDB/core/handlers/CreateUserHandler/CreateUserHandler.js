@@ -21,40 +21,7 @@ function create_user_folders(user, api, callback) {
         ]
     }, function(save_err, save_res){
         logger.log(JSON.stringify(save_err,null,4), save_res);
-
-        new api.handlers.save(api, {
-            "username": user.username
-        }, {
-            "objects": [
-                {
-                    "name": "permissions",
-                    "path": "/"+user.username+"/",
-                    "folder": true
-                }
-            ]
-        }, function(save_err, save_res){
-            logger.log(JSON.stringify(save_err,null,4), save_res);
-
-
-            new api.handlers.save(api, {
-                "username": user.username
-            }, {
-                "objects": [
-                    {
-                        "name": "sent",
-                        "path": "/"+user.username+"/permissions/",
-                        "folder": true
-                    },{
-                        "name": "received",
-                        "path": "/"+user.username+"/permissions/",
-                        "folder": true
-                    }
-                ]
-            }, function(save_err, save_res){
-                logger.log(JSON.stringify(save_err,null,4), save_res);
-                callback(save_err, save_res);
-            })
-        });
+        callback(save_err, save_res);
     });
 }
 

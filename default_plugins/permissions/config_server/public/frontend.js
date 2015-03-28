@@ -10307,6 +10307,7 @@ return jQuery;
 
 }));
 
+
 /**
  * History.js jQuery Adapter
  * @author Benjamin Arthur Lupton <contact@balupton.com>
@@ -13468,6 +13469,7 @@ SAFEClass.prototype.load_url = function(url_with_query, push_state) {
 var Site;
 var SAFE;
 new SAFEClass();
+
 var FieldVal = (function(){
     "use strict";
 
@@ -13502,8 +13504,6 @@ var FieldVal = (function(){
             //Provided a (potentially undefined) existing error
 
             if(existing_error){
-                //Is not null
-                
                 var key_error;
                 if(existing_error.error===FieldVal.ONE_OR_MORE_ERRORS){
                     //The existing_error is a key error
@@ -14289,11 +14289,10 @@ var FieldVal = (function(){
 
     var DateVal = {
     	errors: {
-            invalid_date_format: function(format) {
+            invalid_date_format: function() {
                 return {
                     error: 111,
-                    error_message: "Invalid date format.",
-                    format: format
+                    error_message: "Invalid date format."
                 };
             },
             invalid_date: function() {
@@ -14506,7 +14505,7 @@ var FieldVal = (function(){
                 }
 
                 if(error || component_index<format_array.length-1){
-                    return FieldVal.create_error(DateVal.errors.invalid_date_format, options, format);
+                    return FieldVal.create_error(DateVal.errors.invalid_date_format, options);
                 }
 
                 if(values.hour!==undefined && (values.hour < 0 || values.hour>23)){
@@ -14684,29 +14683,25 @@ var FieldVal = (function(){
             too_short: function(min_len) {
                 return {
                     error: 100,
-                    error_message: "Length is less than " + min_len,
-                    min_length: min_len
+                    error_message: "Length is less than " + min_len
                 };
             },
             too_long: function(max_len) {
                 return {
                     error: 101,
-                    error_message: "Length is greater than " + max_len,
-                    max_length: max_len
+                    error_message: "Length is greater than " + max_len
                 };
             },
             too_small: function(min_val) {
                 return {
                     error: 102,
-                    error_message: "Value is less than " + min_val,
-                    minimum: min_val
+                    error_message: "Value is less than " + min_val
                 };
             },
             too_large: function(max_val) {
                 return {
                     error: 103,
-                    error_message: "Value is greater than " + max_val,
-                    maximum: max_val
+                    error_message: "Value is greater than " + max_val
                 };
             },
             not_in_list: function() {
@@ -14724,8 +14719,7 @@ var FieldVal = (function(){
             no_prefix: function(prefix) {
                 return {
                     error: 106,
-                    error_message: "Value does not have prefix: " + prefix,
-                    prefix: prefix
+                    error_message: "Value does not have prefix: " + prefix
                 };
             },
             invalid_email: function() {
@@ -14743,15 +14737,13 @@ var FieldVal = (function(){
             incorrect_length: function(len){
                 return {
                     error: 109,
-                    error_message: "Length is not equal to " + len,
-                    length: len
+                    error_message: "Length is not equal to " + len
                 };
             },
             no_suffix: function(suffix) {
                 return {
                     error: 110,
-                    error_message: "Value does not have suffix: " + suffix,
-                    suffix: suffix
+                    error_message: "Value does not have suffix: " + suffix
                 };
             },
             //111 in DateVal
@@ -14760,7 +14752,7 @@ var FieldVal = (function(){
                 return {
                     error: 113,
                     error_message: "Not equal to " + match + ".",
-                    equal: match
+
                 };
             },
             //114 in DateVal
@@ -14792,8 +14784,7 @@ var FieldVal = (function(){
                 var disallowed = characters.join(",");
                 return {
                     error: 105,
-                    error_message: "Cannot contain "+disallowed,
-                    cannot_contain: characters
+                    error_message: "Cannot contain "+disallowed
                 };
             }
         },
@@ -15408,7 +15399,7 @@ function FVField(name, options) {
         field.element = $("<form />",{
             "novalidate": "novalidate"//Disable browser-based validation
         })
-        .addClass("fv_field fv_form")
+        .addClass("fv_field")
         .data("field",field)
         .on("submit",function(event){
             event.preventDefault();
@@ -17953,7 +17944,7 @@ if($.fn.tap || $.tap){
 	FVForm.button_event = 'tap';
 }
 //Used to subclass Javascript classes
-function fieldval_rules_extend(sub, sup) {
+function extend(sub, sup) {
 	function emptyclass() {}
 	emptyclass.prototype = sup.prototype;
 	sub.prototype = new emptyclass();
@@ -17962,8 +17953,8 @@ function fieldval_rules_extend(sub, sup) {
 	sub.superClass = sup.prototype;
 }
 
-if (typeof module != "undefined") {
-    module.exports = fieldval_rules_extend;
+if (typeof module != 'undefined') {
+    module.exports = extend;
 }
 
 var FVRuleField = (function(){
@@ -18040,21 +18031,15 @@ var FVRuleField = (function(){
                 error_message: "'any' can't be used with 'fields'."
             }    
         },
-        key_value_field_without_any: function(){
-            return {
-                error: 506,
-                error_message: "'key_value_field' can't be used without setting any to true."
-            }    
-        },
         max_length_not_greater_than_min_length: function(){
             return {
-                error: 507,
+                error: 506,
                 error_message: "Must be greater than or equal to the minimum length"
             }    
         },
         maximum_not_greater_than_minimum: function(){
             return {
-                error: 508,
+                error: 507,
                 error_message: "Must be greater than or equal to the minimum"
             }    
         }
@@ -18062,15 +18047,12 @@ var FVRuleField = (function(){
 
     FVRuleField.types = {};
 
-    FVRuleField.add_rule_type = function(field_type_data){
+    FVRuleField.add_field_type = function(field_type_data){
         FVRuleField.types[field_type_data.name] = {
             display_name: field_type_data.display_name,
             class: field_type_data.class
         }
     }
-
-    //add_field_type is deprecated
-    FVRuleField.add_field_type = FVRuleField.add_rule_type;
 
     FVRuleField.create_field = function(json, options) {
         var field = null;
@@ -18139,13 +18121,17 @@ var FVRuleField = (function(){
         });
     }
 
-    FVRuleField.prototype.init = function(){
-        if(this.constructor.name){
-            throw new Error(".init not overriden for class: "+this.constructor.name);
-        } else {
-            throw new Error(".init not overriden for class: "+this.constructor);
-        }
-    }
+    FVRuleField.prototype.make_nested = function(){}
+    FVRuleField.prototype.init = function(){}
+    FVRuleField.prototype.remove = function(){}
+    FVRuleField.prototype.view_mode = function(){}
+    FVRuleField.prototype.edit_mode = function(){}
+    FVRuleField.prototype.change_name = function(name) {}
+    FVRuleField.prototype.disable = function() {}
+    FVRuleField.prototype.enable = function() {}
+    FVRuleField.prototype.focus = function() {}
+    FVRuleField.prototype.blur = function() {}
+    FVRuleField.prototype.val = function(set_val) {}
 
     return FVRuleField;
 
@@ -18153,6 +18139,92 @@ var FVRuleField = (function(){
 
 if (typeof module != 'undefined') {
     module.exports = FVRuleField;
+}
+var FVBasicRuleField = (function(){
+
+    var _FVRuleField;
+    if(this.FVRuleField !== undefined){
+        _FVRuleField = this.FVRuleField;
+    } else if((typeof require) === 'function'){
+        _FVRuleField = require('./FVRuleField');    
+    } else {
+        throw new Error("FVRuleField is missing");
+    }
+
+    var _extend;
+    if(this.extend !== undefined){
+        _extend = this.extend;
+    } else if((typeof require) === 'function'){
+        _extend = require('extend');
+    } else {
+        throw new Error("extend() is missing");
+    }
+
+    var extend = _extend;
+    var FVRuleField = _FVRuleField;
+
+    extend(FVBasicRuleField, FVRuleField);
+
+    function FVBasicRuleField(json, validator) {
+        var field = this;
+
+        FVBasicRuleField.superConstructor.call(this, json, validator);
+    }
+
+    FVBasicRuleField.prototype.init = function(){
+        var field = this;
+        return field.ui_field.init.apply(field.ui_field, arguments);    
+    }
+    FVBasicRuleField.prototype.remove = function(){
+        var field = this;
+        return field.ui_field.remove.apply(field.ui_field, arguments);
+    }
+    FVBasicRuleField.prototype.in_array = function(){
+        var field = this;
+        return field.ui_field.in_array.apply(field.ui_field, arguments);
+    }
+    FVBasicRuleField.prototype.in_key_value = function(){
+        var field = this;
+        return field.ui_field.in_key_value.apply(field.ui_field, arguments);
+    }
+    FVBasicRuleField.prototype.change_name = function() {
+        var field = this;
+        return field.ui_field.change_name.apply(field.ui_field, arguments);
+    }
+    FVBasicRuleField.prototype.disable = function() {
+        var field = this;
+        return field.ui_field.disable.apply(field.ui_field, arguments);
+    }
+    FVBasicRuleField.prototype.enable = function() {
+        var field = this;
+        return field.ui_field.enable.apply(field.ui_field, arguments);
+    }
+    FVBasicRuleField.prototype.name_val = function(){
+        var field = this;
+        return field.ui_field.name_val.apply(field.ui_field, arguments);
+    }
+    FVBasicRuleField.prototype.val = function(){
+        var field = this;
+        return field.ui_field.val.apply(field.ui_field, arguments);
+    }
+    FVBasicRuleField.prototype.error = function(){
+        var field = this;
+        return field.ui_field.error.apply(field.ui_field, arguments);
+    }
+    FVBasicRuleField.prototype.blur = function(){
+        var field = this;
+        return field.ui_field.blur.apply(field.ui_field, arguments);
+    }
+    FVBasicRuleField.prototype.focus = function(){
+        var field = this;
+        return field.ui_field.blur.apply(field.ui_field, arguments);
+    }
+
+    return FVBasicRuleField;
+}).call((typeof window !== 'undefined')?window:null);
+
+if (typeof module != 'undefined') {
+    module.exports = FVBasicRuleField;
 }
 
 var FVTextRuleField = (function(){
@@ -18168,6 +18240,16 @@ var FVTextRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
+    var _FVBasicRuleField;
+    if(this.FVRuleField !== undefined){
+        _FVBasicRuleField = this.FVBasicRuleField;
+    } else if((typeof require) === 'function'){
+        _FVBasicRuleField = require('./FVBasicRuleField');    
+    } else {
+        throw new Error("FVBasicRuleField is missing");
+    }
+    var FVBasicRuleField = _FVBasicRuleField;
+
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -18178,17 +18260,17 @@ var FVTextRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _fieldval_rules_extend;
-    if(this.fieldval_rules_extend !== undefined){
-        _fieldval_rules_extend = this.fieldval_rules_extend;
+    var _extend;
+    if(this.extend !== undefined){
+        _extend = this.extend;
     } else if((typeof require) === 'function'){
-        _fieldval_rules_extend = require('../fieldval_rules_extend');
+        _extend = require('extend');
     } else {
-        throw new Error("fieldval_rules_extend() is missing");
+        throw new Error("extend() is missing");
     }
-    var fieldval_rules_extend = _fieldval_rules_extend;
+    var extend = _extend;
 
-    fieldval_rules_extend(FVTextRuleField, FVRuleField);
+    extend(FVTextRuleField, FVBasicRuleField);
 
     function FVTextRuleField(json, validator) {
         var field = this;
@@ -18196,14 +18278,14 @@ var FVTextRuleField = (function(){
         FVTextRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVTextRuleField.prototype.create_ui = function(use_form){
+    FVTextRuleField.prototype.create_ui = function(form){
         var field = this;
 
         field.ui_field = new FVTextField(field.display_name || field.name, {
             name: field.name,
             display_name: field.display_name,
             type: field.ui_type,
-            use_form: use_form
+            form: form
         });
 
         field.element = field.ui_field.element;
@@ -18248,6 +18330,11 @@ var FVTextRuleField = (function(){
             choices: ["text", "textarea", "password"]
         })
         editor.add_field("ui_type", ui_type);
+
+        var value = editor.val();
+        editor.fields.min_length.val(value.min_length);
+        editor.fields.max_length.val(value.max_length);
+        editor.fields.ui_type.val(value.ui_type);
     }
 
     return FVTextRuleField;
@@ -18269,6 +18356,16 @@ var FVNumberRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
+    var _FVBasicRuleField;
+    if(this.FVRuleField !== undefined){
+        _FVBasicRuleField = this.FVBasicRuleField;
+    } else if((typeof require) === 'function'){
+        _FVBasicRuleField = require('./FVBasicRuleField');    
+    } else {
+        throw new Error("FVBasicRuleField is missing");
+    }
+    var FVBasicRuleField = _FVBasicRuleField;
+
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -18279,17 +18376,17 @@ var FVNumberRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _fieldval_rules_extend;
-    if(this.fieldval_rules_extend !== undefined){
-        _fieldval_rules_extend = this.fieldval_rules_extend;
+    var _extend;
+    if(this.extend !== undefined){
+        _extend = this.extend;
     } else if((typeof require) === 'function'){
-        _fieldval_rules_extend = require('../fieldval_rules_extend');
+        _extend = require('extend');
     } else {
-        throw new Error("fieldval_rules_extend() is missing");
+        throw new Error("extend() is missing");
     }
-    var fieldval_rules_extend = _fieldval_rules_extend;
+    var extend = _extend;
 
-    fieldval_rules_extend(FVNumberRuleField, FVRuleField);
+    extend(FVNumberRuleField, FVBasicRuleField);
 
     function FVNumberRuleField(json, validator) {
         var field = this;
@@ -18297,15 +18394,10 @@ var FVNumberRuleField = (function(){
         FVNumberRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVNumberRuleField.prototype.create_ui = function(use_form){
+    FVNumberRuleField.prototype.create_ui = function(parent){
         var field = this;
 
-        field.ui_field = new FVTextField(field.display_name || field.name, {
-            name: field.name,
-            display_name: field.display_name,
-            type: "number",
-            use_form: use_form
-        });
+        field.ui_field = new FVTextField(field.display_name || field.name, field.json);
         field.element = field.ui_field.element;
         return field.ui_field;
     }
@@ -18365,6 +18457,16 @@ var FVObjectRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
+    var _FVBasicRuleField;
+    if(this.FVRuleField !== undefined){
+        _FVBasicRuleField = this.FVBasicRuleField;
+    } else if((typeof require) === 'function'){
+        _FVBasicRuleField = require('./FVBasicRuleField');    
+    } else {
+        throw new Error("FVBasicRuleField is missing");
+    }
+    var FVBasicRuleField = _FVBasicRuleField;
+
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -18375,17 +18477,17 @@ var FVObjectRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _fieldval_rules_extend;
-    if(this.fieldval_rules_extend !== undefined){
-        _fieldval_rules_extend = this.fieldval_rules_extend;
+    var _extend;
+    if(this.extend !== undefined){
+        _extend = this.extend;
     } else if((typeof require) === 'function'){
-        _fieldval_rules_extend = require('../fieldval_rules_extend');
+        _extend = require('extend');
     } else {
-        throw new Error("fieldval_rules_extend() is missing");
+        throw new Error("extend() is missing");
     }
-    var fieldval_rules_extend = _fieldval_rules_extend;
+    var extend = _extend;
 
-    fieldval_rules_extend(FVObjectRuleField, FVRuleField);
+    extend(FVObjectRuleField, FVBasicRuleField);
 
     function FVObjectRuleField(json, validator) {
         var field = this;
@@ -18393,34 +18495,53 @@ var FVObjectRuleField = (function(){
         FVObjectRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVObjectRuleField.prototype.create_ui = function(use_form){
+    FVObjectRuleField.prototype.create_ui = function(form){
         var field = this;
 
         if(field.any){
-            field.ui_field = new FVTextField(field.display_name || field.name, {"type": 'textarea', "use_form": use_form});//Empty options
+            if(field.field_type){
+                field.ui_field = new FVKeyValueField(field.display_name || field.name, {"form": form});
 
-            field.ui_field.val = function(set_val){//Override the .val function
-                var ui_field = this;
-                if (arguments.length===0) {
-                    var value = ui_field.input.val();
-                    if(value.length===0){
-                        return null;
-                    }
-                    try{
-                        return JSON.parse(value);
-                    } catch (e){
-                        console.error("FAILED TO PARSE: ",value);
-                    }
-                    return value;
-                } else {
-                    ui_field.input.val(JSON.stringify(set_val,null,4));
-                    return ui_field;
+                field.element = field.ui_field.element;
+
+                field.ui_field.new_field = function(index){
+                    return field.new_field(index);
                 }
+                var original_remove_field = field.ui_field.remove_field;
+                field.ui_field.remove_field = function(inner_field){
+                    for(var i = 0; i < field.fields.length; i++){
+                        if(field.fields[i]===inner_field){
+                            field.fields.splice(i,1);
+                        }
+                    }
+                    return original_remove_field.call(field.ui_field, inner_field);
+                }
+            } else {
+                field.ui_field = new FVTextField(field.display_name || field.name, {"type": 'textarea', "form": form});//Empty options
+
+                field.ui_field.val = function(set_val){//Override the .val function
+                    var ui_field = this;
+                    if (arguments.length===0) {
+                        var value = ui_field.input.val();
+                        if(value.length===0){
+                            return null;
+                        }
+                        try{
+                            return JSON.parse(value);
+                        } catch (e){
+                            console.error("FAILED TO PARSE: ",value);
+                        }
+                        return value;
+                    } else {
+                        ui_field.input.val(JSON.stringify(set_val,null,4));
+                        return ui_field;
+                    }
+                }
+                field.element = field.ui_field.element;
             }
-            field.element = field.ui_field.element;
         } else {
 
-            field.ui_field = new FVObjectField(field.display_name || field.name, {"use_form": use_form});
+            field.ui_field = new FVObjectField(field.display_name || field.name, {"form": form});
 
             for(var i in field.fields){
                 var inner_field = field.fields[i];
@@ -18451,7 +18572,28 @@ var FVObjectRuleField = (function(){
         })
 
         editor.add_field("any", any);
-        editor.add_field("fields", fields_field);
+
+        var value = editor.val();
+        any.val(value.any);
+        var inner_fields = value.fields;
+        if(inner_fields){
+            for(var i = 0; i < value.fields.length; i++){
+                var field_data = value.fields[i];
+
+                var inner_field = new editor.constructor(field_data, editor);
+                fields_field.add_field(null, inner_field);
+            }
+        }
+    }
+
+    FVObjectRuleField.prototype.new_field = function(index){
+        var field = this;
+
+        var field_creation = FVRuleField.create_field(field.field_type.json);
+        var err = field_creation[0];
+        var rule = field_creation[1];
+        
+        return rule.create_ui();
     }
 
     FVObjectRuleField.prototype.init = function() {
@@ -18508,18 +18650,13 @@ var FVObjectRuleField = (function(){
             }
         }
 
-        field.any = field.validator.get("any", 
-            BasicVal.boolean(false),
-            function(val){
-                if(val){
-                    if(fields_json!==undefined){
-                        return FVRuleField.errors.any_and_fields();
-                    }
-                }
+        field.any = field.validator.get("any", BasicVal.boolean(false));
+        
+        if(field.any){
+            if(fields_json!==undefined){
+                field.validator.invalid("any", FVRuleField.errors.any_and_fields());
             }
-        );
-
-        if(!field.any){
+        } else {
             if(fields_json===undefined){
                 //No fields should be allowed in the object (empty object only)
 
@@ -18541,127 +18678,6 @@ var FVObjectRuleField = (function(){
 if (typeof module != 'undefined') {
     module.exports = FVObjectRuleField;
 }
-var FVKeyValueRuleField = (function(){
-
-    var _FieldVal;
-    if(this.FieldVal !== undefined){
-        _FieldVal = this.FieldVal;
-    } else if((typeof require) === 'function'){
-        _FieldVal = require('fieldval');
-    } else {
-        throw new Error("FieldVal Rules requires FieldVal");
-    }
-    var FieldVal = _FieldVal;
-    var BasicVal = FieldVal.BasicVal;
-
-    var _FVRuleField;
-    if(this.FVRuleField !== undefined){
-        _FVRuleField = this.FVRuleField;
-    } else if((typeof require) === 'function'){
-        _FVRuleField = require('./FVRuleField');    
-    } else {
-        throw new Error("FVRuleField is missing");
-    }
-    var FVRuleField = _FVRuleField;
-
-    var _fieldval_rules_extend;
-    if(this.fieldval_rules_extend !== undefined){
-        _fieldval_rules_extend = this.fieldval_rules_extend;
-    } else if((typeof require) === 'function'){
-        _fieldval_rules_extend = require('../fieldval_rules_extend');
-    } else {
-        throw new Error("fieldval_rules_extend() is missing");
-    }
-    var fieldval_rules_extend = _fieldval_rules_extend;
-
-    fieldval_rules_extend(FVKeyValueRuleField, FVRuleField);
-
-    function FVKeyValueRuleField(json, validator) {
-        var field = this;
-
-        FVKeyValueRuleField.superConstructor.call(this, json, validator);
-    }
-
-    FVKeyValueRuleField.prototype.create_ui = function(use_form){
-        var field = this;
-
-        field.ui_field = new FVKeyValueField(field.display_name || field.name, {"use_form": use_form});
-
-        field.element = field.ui_field.element;
-
-        field.ui_field.new_field = function(index){
-            return field.new_field(index);
-        }
-        var original_remove_field = field.ui_field.remove_field;
-        field.ui_field.remove_field = function(inner_field){
-            for(var i = 0; i < field.fields.length; i++){
-                if(field.fields[i]===inner_field){
-                    field.fields.splice(i,1);
-                }
-            }
-            return original_remove_field.call(field.ui_field, inner_field);
-        }
-         
-        return field.ui_field;
-    }
-
-    FVKeyValueRuleField.add_editor_params = function(editor) {
-        var fields_field = new FVArrayField("Fields");
-
-        editor.add_field("value_field", new editor.constructor("Value Field", editor));
-    }
-
-    FVKeyValueRuleField.prototype.new_field = function(index){
-        var field = this;
-
-        var field_creation = FVRuleField.create_field(field.value_rule.json);
-        var err = field_creation[0];
-        var rule = field_creation[1];
-        
-        return rule.create_ui();
-    }
-
-    FVKeyValueRuleField.prototype.init = function() {
-        var field = this;
-
-        field.checks.push(BasicVal.object(field.required));
-
-        field.fields = {};
-
-        field.validator.get("value_field",
-            BasicVal.object(true),
-            function(val){
-
-                var field_creation = FVRuleField.create_field(val);
-                var err = field_creation[0];
-                field.value_rule = field_creation[1];
-                if(err){
-                    return err;
-                }
-                field.checks.push(function(value){
-
-                    var inner_validator = new FieldVal(value);
-
-                    for(var i in value){
-                        if(value.hasOwnProperty(i)){
-                            field.value_rule.validate_as_field(i, inner_validator);
-                        }
-                    }
-
-                    return inner_validator.end();
-                })
-            }
-        )
-
-        return field.validator.end();
-    }
-
-    return FVKeyValueRuleField;
-}).call((typeof window !== 'undefined')?window:null);
-
-if (typeof module != 'undefined') {
-    module.exports = FVKeyValueRuleField;
-}
 var FVArrayRuleField = (function(){
 
     var _FieldVal;
@@ -18675,6 +18691,16 @@ var FVArrayRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
+    var _FVBasicRuleField;
+    if(this.FVRuleField !== undefined){
+        _FVBasicRuleField = this.FVBasicRuleField;
+    } else if((typeof require) === 'function'){
+        _FVBasicRuleField = require('./FVBasicRuleField');    
+    } else {
+        throw new Error("FVBasicRuleField is missing");
+    }
+    var FVBasicRuleField = _FVBasicRuleField;
+
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -18685,17 +18711,17 @@ var FVArrayRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _fieldval_rules_extend;
-    if(this.fieldval_rules_extend !== undefined){
-        _fieldval_rules_extend = this.fieldval_rules_extend;
+    var _extend;
+    if(this.extend !== undefined){
+        _extend = this.extend;
     } else if((typeof require) === 'function'){
-        _fieldval_rules_extend = require('../fieldval_rules_extend');
+        _extend = require('extend');
     } else {
-        throw new Error("fieldval_rules_extend() is missing");
+        throw new Error("extend() is missing");
     }
-    var fieldval_rules_extend = _fieldval_rules_extend;
+    var extend = _extend;
 
-    fieldval_rules_extend(FVArrayRuleField, FVRuleField);
+    extend(FVArrayRuleField, FVBasicRuleField);
 
     function FVArrayRuleField(json, validator) {
         var field = this;
@@ -18709,14 +18735,10 @@ var FVArrayRuleField = (function(){
         field.interval_offsets = [];
     }
 
-    FVArrayRuleField.prototype.create_ui = function(use_form){
+    FVArrayRuleField.prototype.create_ui = function(parent, form){
         var field = this;
 
-        field.ui_field = new FVArrayField(field.display_name || field.name, {
-            name: field.name,
-            display_name: field.display_name,
-            use_form: use_form
-        });
+        field.ui_field = new FVArrayField(field.display_name || field.name, field.json);
         field.ui_field.new_field = function(index){
             return field.new_field(index);
         }
@@ -18935,6 +18957,16 @@ var FVChoiceRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
+    var _FVBasicRuleField;
+    if(this.FVRuleField !== undefined){
+        _FVBasicRuleField = this.FVBasicRuleField;
+    } else if((typeof require) === 'function'){
+        _FVBasicRuleField = require('./FVBasicRuleField');    
+    } else {
+        throw new Error("FVBasicRuleField is missing");
+    }
+    var FVBasicRuleField = _FVBasicRuleField;
+
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -18945,17 +18977,17 @@ var FVChoiceRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _fieldval_rules_extend;
-    if(this.fieldval_rules_extend !== undefined){
-        _fieldval_rules_extend = this.fieldval_rules_extend;
+    var _extend;
+    if(this.extend !== undefined){
+        _extend = this.extend;
     } else if((typeof require) === 'function'){
-        _fieldval_rules_extend = require('../fieldval_rules_extend');
+        _extend = require('extend');
     } else {
-        throw new Error("fieldval_rules_extend() is missing");
+        throw new Error("extend() is missing");
     }
-    var fieldval_rules_extend = _fieldval_rules_extend;
+    var extend = _extend;
 
-    fieldval_rules_extend(FVChoiceRuleField, FVRuleField);
+    extend(FVChoiceRuleField, FVBasicRuleField);
 
     function FVChoiceRuleField(json, validator) {
         var field = this;
@@ -18963,17 +18995,12 @@ var FVChoiceRuleField = (function(){
         FVChoiceRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVChoiceRuleField.prototype.create_ui = function(use_form){
+    FVChoiceRuleField.prototype.create_ui = function(parent){
         var field = this;
 
         field.json.choices = field.choices;
 
-        field.ui_field = new FVChoiceField(field.display_name || field.name, {
-            name: field.name,
-            display_name: field.display_name,
-            choices: field.choices,
-            use_form: use_form
-        });
+        field.ui_field = new FVChoiceField(field.display_name || field.name, field.json);
         field.element = field.ui_field.element;
         return field.ui_field;
     }
@@ -19135,6 +19162,16 @@ var FVBooleanRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
+    var _FVBasicRuleField;
+    if(this.FVRuleField !== undefined){
+        _FVBasicRuleField = this.FVBasicRuleField;
+    } else if((typeof require) === 'function'){
+        _FVBasicRuleField = require('./FVBasicRuleField');    
+    } else {
+        throw new Error("FVBasicRuleField is missing");
+    }
+    var FVBasicRuleField = _FVBasicRuleField;
+
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -19145,17 +19182,17 @@ var FVBooleanRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _fieldval_rules_extend;
-    if(this.fieldval_rules_extend !== undefined){
-        _fieldval_rules_extend = this.fieldval_rules_extend;
+    var _extend;
+    if(this.extend !== undefined){
+        _extend = this.extend;
     } else if((typeof require) === 'function'){
-        _fieldval_rules_extend = require('../fieldval_rules_extend');
+        _extend = require('extend');
     } else {
-        throw new Error("fieldval_rules_extend() is missing");
+        throw new Error("extend() is missing");
     }
-    var fieldval_rules_extend = _fieldval_rules_extend;
+    var extend = _extend;
 
-    fieldval_rules_extend(FVBooleanRuleField, FVRuleField);
+    extend(FVBooleanRuleField, FVBasicRuleField);
 
     function FVBooleanRuleField(json, validator) {
         var field = this;
@@ -19163,14 +19200,10 @@ var FVBooleanRuleField = (function(){
         FVBooleanRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVBooleanRuleField.prototype.create_ui = function(use_form){
+    FVBooleanRuleField.prototype.create_ui = function(parent){
         var field = this;
 
-        field.ui_field = new FVBooleanField(field.display_name || field.name, {
-            name: field.name,
-            display_name: field.display_name,
-            use_form: use_form
-        });
+        field.ui_field = new FVBooleanField(field.display_name || field.name, field.json);
         field.element = field.ui_field.element;
         return field.ui_field;
     }
@@ -19216,6 +19249,16 @@ var FVEmailRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
+    var _FVBasicRuleField;
+    if(this.FVRuleField !== undefined){
+        _FVBasicRuleField = this.FVBasicRuleField;
+    } else if((typeof require) === 'function'){
+        _FVBasicRuleField = require('./FVBasicRuleField');    
+    } else {
+        throw new Error("FVBasicRuleField is missing");
+    }
+    var FVBasicRuleField = _FVBasicRuleField;
+
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -19226,17 +19269,17 @@ var FVEmailRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _fieldval_rules_extend;
-    if(this.fieldval_rules_extend !== undefined){
-        _fieldval_rules_extend = this.fieldval_rules_extend;
+    var _extend;
+    if(this.extend !== undefined){
+        _extend = this.extend;
     } else if((typeof require) === 'function'){
-        _fieldval_rules_extend = require('../fieldval_rules_extend');
+        _extend = require('extend');
     } else {
-        throw new Error("fieldval_rules_extend() is missing");
+        throw new Error("extend() is missing");
     }
-    var fieldval_rules_extend = _fieldval_rules_extend;
+    var extend = _extend;
 
-    fieldval_rules_extend(FVEmailRuleField, FVRuleField);
+    extend(FVEmailRuleField, FVBasicRuleField);
 
     function FVEmailRuleField(json, validator) {
         var field = this;
@@ -19244,14 +19287,10 @@ var FVEmailRuleField = (function(){
         FVEmailRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVEmailRuleField.prototype.create_ui = function(use_form){
+    FVEmailRuleField.prototype.create_ui = function(parent){
         var field = this;
 
-        field.ui_field = new FVTextField(field.display_name || field.name, {
-            name: field.name,
-            display_name: field.display_name,
-            use_form: use_form
-        });
+        field.ui_field = new FVTextField(field.display_name || field.name, field.json);
         field.element = field.ui_field.element;
         return field.ui_field;
     }
@@ -19283,6 +19322,16 @@ var FVDateRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
+    var _FVBasicRuleField;
+    if(this.FVRuleField !== undefined){
+        _FVBasicRuleField = this.FVBasicRuleField;
+    } else if((typeof require) === 'function'){
+        _FVBasicRuleField = require('./FVBasicRuleField');    
+    } else {
+        throw new Error("FVBasicRuleField is missing");
+    }
+    var FVBasicRuleField = _FVBasicRuleField;
+
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -19293,17 +19342,17 @@ var FVDateRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _fieldval_rules_extend;
-    if(this.fieldval_rules_extend !== undefined){
-        _fieldval_rules_extend = this.fieldval_rules_extend;
+    var _extend;
+    if(this.extend !== undefined){
+        _extend = this.extend;
     } else if((typeof require) === 'function'){
-        _fieldval_rules_extend = require('../fieldval_rules_extend');
+        _extend = require('extend');
     } else {
-        throw new Error("fieldval_rules_extend() is missing");
+        throw new Error("extend() is missing");
     }
-    var fieldval_rules_extend = _fieldval_rules_extend;
+    var extend = _extend;
 
-    fieldval_rules_extend(FVDateRuleField, FVRuleField);
+    extend(FVDateRuleField, FVBasicRuleField);
 
     function FVDateRuleField(json, validator) {
         var field = this;
@@ -19311,13 +19360,12 @@ var FVDateRuleField = (function(){
         FVDateRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVDateRuleField.prototype.create_ui = function(use_form){
+    FVDateRuleField.prototype.create_ui = function(parent){
         var field = this;
 
         field.ui_field = new FVDateField(field.display_name || field.name, {
-            name: field.name,
-            display_name: field.display_name,
-            use_form: use_form,
+            name: field.json.name,
+            display_name: field.json.display_name,
             format: field.date_format
         });
 
@@ -19356,8 +19404,8 @@ var FVRule = (function(){
     var _FieldVal;
     if(this.FieldVal !== undefined){
         _FieldVal = this.FieldVal;
-    } else if((typeof require) === "function"){
-        _FieldVal = require("fieldval");
+    } else if((typeof require) === 'function'){
+        _FieldVal = require('fieldval');
     } else {
         throw new Error("FieldVal Rules requires FieldVal");
     }
@@ -19367,8 +19415,8 @@ var FVRule = (function(){
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
-    } else if((typeof require) === "function"){
-        _FVRuleField = require("./fields/FVRuleField");    
+    } else if((typeof require) === 'function'){
+        _FVRuleField = require('./fields/FVRuleField');    
     } else {
         throw new Error("FVRuleField is missing");
     }
@@ -19396,12 +19444,6 @@ var FVRule = (function(){
         return null;
     }
 
-    FVRule.add_rule_type = function(){
-        var vr = this;
-
-        return FVRule.FVRuleField.add_rule_type.apply(FVRule.FVRuleField, arguments);
-    }
-
     FVRule.prototype.create_form = function(){
         var vr = this;
 
@@ -19427,1780 +19469,230 @@ var FVRule = (function(){
         });
     }
 
-    FVRule.add_rule_type({
-        name: "text",
-        display_name: "Text",
-        class: (typeof FVTextRuleField) !== "undefined" ? FVTextRuleField : require("./fields/FVTextRuleField")
+    FVRuleField.add_field_type({
+        name: 'text',
+        display_name: 'Text',
+        class: (typeof FVTextRuleField) !== 'undefined' ? FVTextRuleField : require('./fields/FVTextRuleField')
     });
-    FVRule.add_rule_type({
-        name: "string",
-        display_name: "String",
-        class: (typeof FVTextRuleField) !== "undefined" ? FVTextRuleField : require("./fields/FVTextRuleField")
+    FVRuleField.add_field_type({
+        name: 'string',
+        display_name: 'String',
+        class: (typeof FVTextRuleField) !== 'undefined' ? FVTextRuleField : require('./fields/FVTextRuleField')
     });
-    FVRule.add_rule_type({
-        name: "boolean",
-        display_name: "Boolean",
-        class: (typeof FVBooleanRuleField) !== "undefined" ? FVBooleanRuleField : require("./fields/FVBooleanRuleField")
+    FVRuleField.add_field_type({
+        name: 'boolean',
+        display_name: 'Boolean',
+        class: (typeof FVBooleanRuleField) !== 'undefined' ? FVBooleanRuleField : require('./fields/FVBooleanRuleField')
     });
-    FVRule.add_rule_type({
-        name: "number",
-        display_name: "Number",
-        class: (typeof FVNumberRuleField) !== "undefined" ? FVNumberRuleField : require("./fields/FVNumberRuleField")
+    FVRuleField.add_field_type({
+        name: 'number',
+        display_name: 'Number',
+        class: (typeof FVNumberRuleField) !== 'undefined' ? FVNumberRuleField : require('./fields/FVNumberRuleField')
     });
-    FVRule.add_rule_type({
-        name: "object",
-        display_name: "Object",
-        class: (typeof FVObjectRuleField) !== "undefined" ? FVObjectRuleField : require("./fields/FVObjectRuleField")
+    FVRuleField.add_field_type({
+        name: 'object',
+        display_name: 'Object',
+        class: (typeof FVObjectRuleField) !== 'undefined' ? FVObjectRuleField : require('./fields/FVObjectRuleField')
     });
-    FVRule.add_rule_type({
-        name: "key_value",
-        display_name: "Key Value",
-        class: (typeof FVKeyValueRuleField) !== "undefined" ? FVKeyValueRuleField : require("./fields/FVKeyValueRuleField")
+    FVRuleField.add_field_type({
+        name: 'array',
+        display_name: 'Array',
+        class: (typeof FVArrayRuleField) !== 'undefined' ? FVArrayRuleField : require('./fields/FVArrayRuleField')
     });
-    FVRule.add_rule_type({
-        name: "array",
-        display_name: "Array",
-        class: (typeof FVArrayRuleField) !== "undefined" ? FVArrayRuleField : require("./fields/FVArrayRuleField")
+    FVRuleField.add_field_type({
+        name: 'choice',
+        display_name: 'Choice',
+        class: (typeof FVChoiceRuleField) !== 'undefined' ? FVChoiceRuleField : require('./fields/FVChoiceRuleField')
     });
-    FVRule.add_rule_type({
-        name: "choice",
-        display_name: "Choice",
-        class: (typeof FVChoiceRuleField) !== "undefined" ? FVChoiceRuleField : require("./fields/FVChoiceRuleField")
+    FVRuleField.add_field_type({
+        name: 'email',
+        display_name: 'Email',
+        class: (typeof FVEmailRuleField) !== 'undefined' ? FVEmailRuleField : require('./fields/FVEmailRuleField')
     });
-    FVRule.add_rule_type({
-        name: "email",
-        display_name: "Email",
-        class: (typeof FVEmailRuleField) !== "undefined" ? FVEmailRuleField : require("./fields/FVEmailRuleField")
-    });
-    FVRule.add_rule_type({
-        name: "date",
-        display_name: "Date",
-        class: (typeof FVDateRuleField) !== "undefined" ? FVDateRuleField : require("./fields/FVDateRuleField")
+    FVRuleField.add_field_type({
+        name: 'date',
+        display_name: 'Date',
+        class: (typeof FVDateRuleField) !== 'undefined' ? FVDateRuleField : require('./fields/FVDateRuleField')
     });
 
     return FVRule;
 
-}).call((typeof window !== "undefined")?window:null);
-
-if (typeof module != "undefined") {
-    module.exports = FVRule;
-}
-var FVRuleEditor = (function(){
-
-    var _FVRuleField;
-    if(this.FVRuleField !== undefined){
-        _FVRuleField = this.FVRuleField;
-    } else if((typeof require) === 'function'){
-        _FVRuleField = require('./FVRuleField');    
-    } else {
-        throw new Error("FVRuleField is missing");
-    }
-    var FVRuleField = _FVRuleField;
-
-    var _fieldval_rules_extend;
-    if(this.fieldval_rules_extend !== undefined){
-        _fieldval_rules_extend = this.fieldval_rules_extend;
-    } else if((typeof require) === 'function'){
-        _fieldval_rules_extend = require('./fieldval_rules_extend');
-    } else {
-        throw new Error("fieldval_rules_extend() is missing");
-    }
-    var fieldval_rules_extend = _fieldval_rules_extend;
-
-    fieldval_rules_extend(FVRuleEditor, FVForm);
-	function FVRuleEditor(name, options){
-		var editor = this;
-
-	    editor.base_fields = {};
-
-		FVRuleEditor.superConstructor.call(this, name, options);
-
-		var field_type_choices = [];
-		var types = FVRuleField.types;
-		for(var i in types){
-			if (types.hasOwnProperty(i)) {
-				var field_type_class = types[i];
-
-				var name = i;
-				var display_name = field_type_class.display_name;
-				if(display_name){
-					field_type_choices.push([name, display_name])
-				} else {
-					field_type_choices.push(name);
-				}
-			}
-
-		}
-
-		editor.add_field("name", new FVTextField("Name"));
-		editor.add_field("display_name", new FVTextField("Display Name"));
-		editor.add_field("type", new FVChoiceField("Type", {
-			choices: field_type_choices
-		}).on_change(function(){
-			editor.update_type_fields();
-		}));
-
-		for(var name in editor.fields){
-			if (editor.fields.hasOwnProperty(name)) {
-		    	editor.base_fields[name] = true;
-			}
-	    }
-
-	    editor.update_type_fields();
-	}
-
-	FVRuleEditor.prototype.update_type_fields = function(value){
-		var editor = this;
-
-		var type = editor.fields.type.val();
-		for(var name in editor.fields){
-			if(!editor.base_fields[name]){
-				editor.fields[name].remove();
-			}
-		}
-
-		if (type) {
-			var rule_field = FVRuleField.types[type].class;
-			if (rule_field.add_editor_params !== undefined) {
-				rule_field.add_editor_params(editor, value);
-			}
-		}
-	}
-
-	FVRuleEditor.prototype.val = function(set_val, options) {
-		var editor = this;
-
-		if (set_val) {
-			editor.fields.type.val(set_val.type, {ignore_change: true});
-			editor.update_type_fields(set_val);
-			delete set_val.type;
-		}
-		return FVForm.prototype.val.apply(editor, arguments);
-	}
-
-	return FVRuleEditor;
 }).call((typeof window !== 'undefined')?window:null);
 
 if (typeof module != 'undefined') {
-    module.exports = FVRuleEditor;
+    module.exports = FVRule;
 }
-//Used to subclass Javascript classes
-function extend(sub, sup) {
-	function emptyclass() {}
-	emptyclass.prototype = sup.prototype;
-	sub.prototype = new emptyclass();
-	sub.prototype.constructor = sub;
-	sub.superConstructor = sup;
-	sub.superClass = sup.prototype;
-}
-
-if (typeof module != 'undefined') {
-    module.exports = extend;
-}
-var errors = {	
-	SOME_ERROR: {	
-		error: 6,
-		error_message: "Unavailable function requested."
-	},
-	INVALID_FOLDER_PATH_FORMAT: {	
-		error: 7,
-		error_message: "Invalid folder path."
-	},
-	INVALID_PATH_FORMAT: {
-		error: 8,
-		error_message: "Invalid format for path."
-	},
-	SOME_ERROR: {	
-		error: 9,
-		error_message: "One or both of the POST values 'username' and 'request' are not present or are empty."
-	},
-	PLUGIN_WITH_SAME_NAME: {	
-		error: 10,
-		error_message: "A plugin with this name is already present."
-	},
-	INVALID_ADDRESS_FORMAT: {	
-		error: 11,
-		error_message: "Invalid format for address."
-	},
-	DELETE_TYPE_FAILED: {	
-		error: 12,
-		error_message: "Deleting type failed."
-	},
-	SOME_ERROR: {	
-		error: 13,
-		error_message: "The request could not be decoded."
-	},
-	SOME_ERROR: {	
-		error: 14,
-		error_message: "Object does not exist or you are not permitted to access it."
-	},
-	SOME_ERROR: {	
-		error: 15,
-		error_message: "Type does not exist or you are not permitted to access it."
-	},
-	SOME_ERROR: {	
-		error: 16,
-		error_message: "One or more of the 'request' fields 'Function', 'Parameters' and 'Time' are invalid or are empty."
-	},
-	SOME_ERROR: {	
-		error: 17,
-		error_message: "Invalid format. Expecting object."
-	},
-	SOME_ERROR: {	
-		error: 18,
-		error_message: "Invalid short type name."
-	},
-	NO_WRITE_PERMISSION: {
-		error: 19,
-		error_message: "You do not have permission to write to this path."
-	},
-	SOME_ERROR: {	
-		error: 20,
-		error_message: "Invalid field type."
-	},
-	SOME_ERROR: {	
-		error: 21,
-		error_message: "Invalid field type so parameters cannot be checked."
-	},
-	SOME_ERROR: {	
-		error: 22,
-		error_message: "One or more fields contain errors."
-	},
-	SOME_ERROR: {	
-		error: 23,
-		error_message: "Invalid type Version name."
-	},
-	SOME_ERROR: {	
-		error: 24,
-		error_message: "Invalid length value."
-	},
-	SOME_ERROR: {	
-		error: 25,
-		error_message: "Folders cannot accept types."
-	},
-	SOME_ERROR: {	
-		error: 26,
-		error_message: "Key is Type Version, but value is not an object."
-	},
-	SOME_ERROR: {	
-		error: 27,
-		error_message: "Value is less than __Minimum__."
-	},
-	SOME_ERROR: {	
-		error: 28,
-		error_message: "Value is greater than __Maximum__."
-	},
-	SOME_ERROR: {	
-		error: 29,
-		error_message: "Value must be an integer."
-	},
-	SOME_ERROR: {	
-		error: 30,
-		error_message: "Length is less than __Minimum Length__."
-	},
-	SOME_ERROR: {	
-		error: 31,
-		error_message: "Length is greater than __Maximum Length__."
-	},
-	FOLDER_NOT_EXIST_OR_NO_PERMISSION: {	
-		error: 32,
-		error_message: "Folder does not exist or you are not permitted to write to it."
-	},
-	SOME_ERROR: {	
-		error: 33,
-		error_message: "Username is already taken."
-	},
-	SOME_ERROR: {	
-		error: 34,
-		error_message: "Path does not exist or you are not permitted to access it."
-	},
-	SOME_ERROR: {	
-		error: 35,
-		error_message: "Key is a type version, but value is not an array."
-	},
-	SOME_ERROR: {	
-		error: 36,
-		error_message: "Multiple nesting is not permitted."
-	},
-	SOME_ERROR: {	
-		error: 37,
-		error_message: "Invalid ID version."
-	},
-	SOME_ERROR: {	
-		error: 38,
-		error_message: "Invalid ID number."
-	},
-	SOME_ERROR: {	
-		error: 39,
-		error_message: "Internal save error 1."
-	},
-	SOME_ERROR: {	
-		error: 40,
-		error_message: "Invalid ID number provided. Only existing objects may be saved with an 'ID' field."
-	},
-	SOME_ERROR: {	
-		error: 41,
-		error_message: "Internal save error 2."
-	},
-	SOME_ERROR: {	
-		error: 42,
-		error_message: "Internal save error 3."
-	},
-	FULL_PATH_EXISTS: {	
-		error: 43,
-		error_message: "An object with this name already exists in this folder."
-	},
-	SOME_ERROR: {	
-		error: 44,
-		error_message: "Internal save error 4."
-	},
-	SOME_ERROR: {	
-		error: 45,
-		error_message: "The POST value 'request' is not present or empty."
-	},
-	SOME_ERROR: {	
-		error: 46,
-		error_message: "Folders cannot be renamed or moved."
-	},
-	SOME_ERROR: {	
-		error: 47,
-		error_message: "Invalid type version or type name."
-	},
-	SOME_ERROR: {	
-		error: 48,
-		error_message: "Invalid type name."
-	},
-	SOME_ERROR: {	
-		error: 49,
-		error_message: "Invalid type name. You may only create types for you own username."
-	},
-	SOME_ERROR: {	
-		error: 50,
-		error_message: "Internal save error 5."
-	},
-	SOME_ERROR: {	
-		error: 51,
-		error_message: "This type is required by __Required By__."
-	},
-	NOT_EMAIL_OR_USERNAME: {	
-		error: 52,
-		error_message: "Invalid email or username."
-	},
-	SOME_ERROR: {	
-		error: 53,
-		error_message: "Invalid format for a username."
-	},
-	SOME_ERROR: {	
-		error: 54,
-		error_message: "Invalid format for an email address."
-	},
-	SOME_ERROR: {	
-		error: 55,
-		error_message: "Invalid format for field name."
-	},
-	SOME_ERROR: {	
-		error: 56,
-		error_message: "Field name already exists."
-	},
-	SOME_ERROR: {	
-		error: 57,
-		error_message: "Invalid search parameter."
-	},
-	INVALID_OBJECT_NAME: {	
-		error: 59,
-		error_message: "Invalid format for an object name."
-	},
-	SOME_ERROR: {	
-		error: 60,
-		error_message: "Invalid format for privilege."
-	},
-	SOME_ERROR: {	
-		error: 61,
-		error_message: "Version number is not current or next version."
-	},
-	SOME_ERROR: {	
-		error: 62,
-		error_message: "Type version does not contain a field with this name."
-	},
-	SOME_ERROR: {	
-		error: 63,
-		error_message: "At least one of 'IDs Allowed' and 'Paths Allowed' must be set."
-	},
-	SOME_ERROR: {	
-		error: 64,
-		error_message: "'Child Of' may only be used if the field accepts paths."
-	},
-	SOME_ERROR: {	
-		error: 65,
-		error_message: "Invalid field parameter."
-	},
-	SOME_ERROR: {	
-		error: 66,
-		error_message: "Invalid path for this field's parameters."
-	},
-	SOME_ERROR: {	
-		error: 67,
-		error_message: "Privleges may only be added for your own user folder."
-	},
-	SOME_ERROR: {	
-		error: 68,
-		error_message: "To set array sizes 'Array' must be set to true."
-	},
-	SOME_ERROR: {	
-		error: 69,
-		error_message: "Invalid array size combination."
-	},
-	SOME_ERROR: {	
-		error: 70,
-		error_message: "Array is smaller than __Minimum Array Size__."
-	},
-	SOME_ERROR: {	
-		error: 71,
-		error_message: "Array is larger than __Maximum Array Size__."
-	},
-	SOME_ERROR: {	
-		error: 72,
-		error_message: "Invalid date format. Valid format is YYYY-MM-DD."
-	},
-	SOME_ERROR: {	
-		error: 73,
-		error_message: "Date is earlier than __Earliest__."
-	},
-	SOME_ERROR: {	
-		error: 74,
-		error_message: "Date is later than __Latest__."
-	},
-	CANT_GRANT_PATH: {
-		error: 75,
-		error_message: "You cannot grant permission to this folder."
-	},
-	USER_DOES_NOT_EXIST: {	
-		error: 76,
-		error_message: "User does not exist."
-	},
-	SOME_ERROR: {	
-		error: 77,
-		error_message: "You cannot grant access to yourself."
-	},
-	SOME_ERROR: {	
-		error: 78,
-		error_message: "Invalid choice."
-	},
-	SOME_ERROR: {	
-		error: 79,
-		error_message: "Multiple objects with this ID."
-	},
-	NOT_FOUND_OR_NO_PERMISSION_TO_MODIFY: {	
-		error: 80,
-		error_message: "Object does not exist or you do not have permission to modify it."
-	},
-	NOT_FOUND_OR_NO_PERMISSION_TO_ACCESS: {	
-		error: 81,
-		error_message: "Object does not exist or you do not have permission to access it."
-	},
-	SOME_ERROR: {	
-		error: 82,
-		error_message: "This object is protected and cannot be modified."
-	},
-	SOME_ERROR: {	
-		error: 84,
-		error_message: "Multiple references to this privilege."
-	},
-	SOME_ERROR: {	
-		error: 86,
-		error_message: "Invalid field name. Must either be an object property or a specific Field in a TypeVersion."
-	},
-	SOME_ERROR: {	
-		error: 87,
-		error_message: "Invalid format for URL."
-	},
-	SOME_ERROR: {	
-		error: 88,
-		error_message: "URL does not have required prefix."
-	},
-	SOME_ERROR: {	
-		error: 89,
-		error_message: "Types require at least 1 field."
-	},
-	SOME_ERROR: {	
-		error: 90,
-		error_message: "You have exceeded the maximum number of messages that may be sent in one request."
-	},
-	SOME_ERROR: {	
-		error: 93,
-		error_message: "Invalid format for item path."
-	},
-	SOME_ERROR: {	
-		error: 97,
-		error_message: "You cannot change an object between an item and a folder."
-	},
-	SOME_ERROR: {	
-		error: 100,
-		error_message: "'Starting Index' must be at least zero."
-	},
-	SOME_ERROR: {	
-		error: 101,
-		error_message: "'Result Size' must be at least 1 and no more than 1000."
-	},
-	SOME_ERROR: {	
-		error: 102,
-		error_message: "Invalid token."
-	},
-	SOME_ERROR: {	
-		error: 103,
-		error_message: "Deleting-related."
-	},
-	SOME_ERROR: {	
-		error: 104,
-		error_message: "A conflicting Item is currently being saved."
-	},
-	SOME_ERROR: {	
-		error: 105,
-		error_message: "This folder contains objects."
-	},
-	SOME_ERROR: {	
-		error: 109,
-		error_message: "Decryption Error."
-	},
-	SOME_ERROR: {	
-		error: 110,
-		error_message: "Counters cannot be used in arrays."
-	},
-	SOME_ERROR: {	
-		error: 111,
-		error_message: "Counters cannot be empty."
-	},
-	SOME_ERROR: {	
-		error: 112,
-		error_message: "Invalid format for counter address."
-	},
-	SOME_ERROR: {	
-		error: 113,
-		error_message: "Invalid format for counter change."
-	},
-	SOME_ERROR: {	
-		error: 114,
-		error_message: "Counter does not exist or you are not permitted to access it."
-	},
-	SOME_ERROR: {	
-		error: 115,
-		error_message: "Counters may only have positive values."
-	},
-	SOME_ERROR: {	
-		error: 116,
-		error_message: "This Object has been moved."
-	},
-	CHILD_FROM_ITEM_PATH: {	
-		error: 117,
-		error_message: "Item paths cannot create child paths."
-	},
-	SOME_ERROR: {	
-		error: 118,
-		error_message: "Privilege does not exist."
-	},
-	SOME_ERROR: {	
-		error: 119,
-		error_message: "This privilege is read only."
-	},
-	SOME_ERROR: {	
-		error: 120,
-		error_message: "You cannot grant access to this TypeVersion."
-	},
-	SOME_ERROR: {	
-		error: 121,
-		error_message: "Type Version does not exist."
-	},
-	SOME_ERROR: {	
-		error: 122,
-		error_message: "Email address does not have required domain name."
-	},
-	SOME_ERROR: {	
-		error: 123,
-		error_message: "Invalid format for a domain."
-	},
-	SOME_ERROR: {	
-		error: 124,
-		error_message: "Session error."
-	},
-	SOME_ERROR: {	
-		error: 125,
-		error_message: "You cannot grant write privileges publicly."
-	},
-	SOME_ERROR: {	
-		error: 127,
-		error_message: "At least one of 'Items Allowed' and 'Folders Allowed' must be set."
-	},
-	SOME_ERROR: {	
-		error: 128,
-		error_message: "Invalid password format."
-	},
-	SOME_ERROR: {	
-		error: 129,
-		error_message: "Old password is not valid."
-	},
-	SOME_ERROR: {	
-		error: 130,
-		error_message: "Array fields cannot be sorted by."
-	},
-	SOME_ERROR: {	
-		error: 131,
-		error_message: "Field does not exist in the specified Type Version."
-	},
-	SOME_ERROR: {	
-		error: 132,
-		error_message: "Email address is already in use."
-	},
-	SOME_ERROR: {	
-		error: 133,
-		error_message: "Invalid latitude. Range is -90 to +90."
-	},
-	SOME_ERROR: {	
-		error: 134,
-		error_message: "Invalid longitude. Range is -180 to +180."
-	},
-	SOME_ERROR: {	
-		error: 135,
-		error_message: "Distance cannot be negative."
-	},
-	SOME_ERROR: {	
-		error: 136,
-		error_message: "Invalid date time format. Valid format is YYYY-MM-DD HH:MM:SS"
-	},
-	SOME_ERROR: {	
-		error: 137,
-		error_message: "To specify 'Allow Subfolders', 'Previous Path' must be set."
-	},
-	SOME_ERROR: {	
-		error: 138,
-		error_message: "Invalid version number."
-	},
-	SOME_ERROR: {	
-		error: 139,
-		error_message: "Conditions cannot be used in object creation."
-	},
-	SOME_ERROR: {	
-		error: 140,
-		error_message: "Condition void as 'Allow move' is set to false."
-	},
-	SOME_ERROR: {	
-		error: 141,
-		error_message: "Path and name modification not permitted in conditions."
-	},
-	SOME_ERROR: {	
-		error: 142,
-		error_message: "Previous path does not meet conditions."
-	},
-	SOME_ERROR: {	
-		error: 143,
-		error_message: "Object may have been modified since specified version."
-	},
-	SOME_ERROR: {	
-		error: 144,
-		error_message: "Invalid numerical value."
-	},
-	SOME_ERROR: {	
-		error: 145,
-		error_message: "Invalid username or email address."
-	},
-	SOME_ERROR: {	
-		error: 147,
-		error_message: "User has not granted privileges for this function."
-	},
-	SOME_ERROR: {	
-		error: 148,
-		error_message: "Descriptions cannot be longer than 200 characters."
-	},
-	SOME_ERROR: {	
-		error: 149,
-		error_message: "Invalid Sort Order. Order can either be 'Ascending' or 'Descending'."
-	},
-	SOME_ERROR: {	
-		error: 150,
-		error_message: "'Starting Version' cannot be greater than the current version (__Current Version__)."
-	},
-	SOME_ERROR: {	
-		error: 151,
-		error_message: "The number of objects to delete exceeds the limit of 1000."
-	},
-	SOME_ERROR: {	
-		error: 152,
-		error_message: "The number of addresses to get exceeds the limit of 1000."
-	},
-	SOME_ERROR: {	
-		error: 153,
-		error_message: "The number of versions to delete exceeds the limit of 1000."
-	},
-	SOME_ERROR: {	
-		error: 154,
-		error_message: "The latest version of an object cannot be deleted until the object has been deleted."
-	},
-	SOME_ERROR: {	
-		error: 155,
-		error_message: "This request has failed the Retransmission Prevention Mechanism which exists to prevent requests being resubmitted by a third party."
-	},
-	SOME_ERROR: {	
-		error: 156,
-		error_message: "The time sent with the request is out by more than 12 hours."
-	},
-	SOME_ERROR: {	
-		error: 157,
-		error_message: "Condition field(s) present alongside search parameters."
-	},
-	SOME_ERROR: {	
-		error: 158,
-		error_message: "Invalid operator."
-	},
-	SOME_ERROR: {	
-		error: 160,
-		error_message: "At least one choice is required."
-	},
-	SOME_ERROR: {	
-		error: 170,
-		error_message: "'Sort Order' cannot be used if 'Sort By' is not set."
-	},
-	SOME_ERROR: {	
-		error: 171,
-		error_message: "Invalid JSON object syntax."
-	},
-	SOME_ERROR: {	
-		error: 173,
-		error_message: "'Conditions' are not present."
-	},
-	SOME_ERROR: {	
-		error: 174,
-		error_message: "Invalid date time."
-	},
-	SOME_ERROR: {	
-		error: 175,
-		error_message: "Path is not a child of __Child Of__."
-	},
-	SOME_ERROR: {	
-		error: 176,
-		error_message: "'Child Of' cannot be used if 'Paths Allowed' is not set to true."
-	},
-	INCORRECT_PASSWORD: {	
-		error: 177,
-		error_message: "Incorrect password."
-	},
-	SOME_ERROR: {	
-		error: 178,
-		error_message: "Invalid Path for a Folder."
-	},
-	SOME_ERROR: {	
-		error: 179,
-		error_message: "Session ID does not exist."
-	},
-	SOME_ERROR: {	
-		error: 180,
-		error_message: "Version number provided is not the next version."
-	},
-	SOME_ERROR: {	
-		error: 181,
-		error_message: "The revised field has a different field type. The existing type is __Existing Field Type__."
-	},
-	SOME_ERROR: {	
-		error: 182,
-		error_message: "The revised field's 'Array' value must match the existing one. The existing value is __Existing Array Value__."
-	},
-	SOME_ERROR: {	
-		error: 183,
-		error_message: "This field is deprecated. It cannot be saved."
-	},
-	SOME_ERROR: {	
-		error: 184,
-		error_message: "The specified Type does not exist."
-	}
-};
-
-
-if (typeof module != 'undefined') {
-    module.exports = errors;
-}
-
-var constant_count = 0;
-
-var Constants = {
-	NO_PERMISSION : constant_count++,
-	READ_PERMISSION : constant_count++,
-	WRITE_PERMISSION : constant_count++,
-	EXISTS : constant_count++
-}
-
-if (typeof module != 'undefined') {
-    module.exports = Constants;
-}
-String.prototype.replaceAll = function(re, replace) {
-    return this.replace(new RegExp(re, "g"), replace);
-}
-
- var Common = {
-    SECONDSDATEFORMAT : "yyyy-MM-dd HH:mm:ss",
-    MINUTESDATEFORMAT : "yyyy-MM-dd HH:mm",
-    HOURSDATEFORMAT : "yyyy-MM-ddHH",
-    DAYDATEFORMAT : "yyyy-MM-dd",
-    secondsInOneDay : 60 * 60 * 24,
-    MINIMUM_USERNAME_LENGTH : 3,
-    MAXIMUM_USERNAME_LENGTH : 15,
-    minimumTypeMiddleName : 3,
-    maximumTypeMiddleName : 20,
-    minimumShortTypeMiddleName : 3,
-    maximumShortTypeMiddleName : 20,
-    ROOT_USERNAME: "MinoDB"
-}
-
-
-
-Common.get_resource_type = function(this_address){
-
-    if((typeof Path)==='undefined' && (typeof require)!=='undefined'){
-        Path = require('./Path');
-    }
-
-    var type_of = typeof this_address;
-
-    if (type_of == 'string') {
-
-        var index_of_slash = this_address.indexOf('/');
-
-        if (index_of_slash == -1) {
-            //Could be a number or type
-            var numeric_value = parseFloat(this_address);
-            var is_integer = numeric_value % 1 == 0;
-            if (isNaN(numeric_value)){
-                return ["type",this_address];
-            } else if(is_integer && numeric_value > 1) {
-                return ["id",""+numeric_value];
-            }
-        } else if (index_of_slash == 0) {
-            //First char is slash - must be pat
-
-            var path = new Path();
-            var path_error = path.init(this_address, true/*allow tilde*/);
-            if (!path_error) {
-                return ["path",path];
-            }
-        } else {
-            //Could be id/version
-            var split_1 = this_address.substring(0, index_of_slash);
-            var num_1 = +split_1;
-            var is_integer_1 = num_1 % 1 == 0;
-            var split_2 = this_address.substring(index_of_slash + 1);
-            var num_2 = +split_2;
-            var is_integer_2 = num_2 % 1 == 0;
-
-            if (isNaN(num_1) || !is_integer_1 || num_1 < 1 || isNaN(num_2) || !is_integer_2 || num_2 < 1) {
-
-            } else {
-                return ["id_version",[num_1,num_2]];
-            }
-        }
-    } else if (type_of == 'number') {
-
-        var is_integer = this_address % 1 === 0;
-        if (is_integer && this_address > 0) {
-            return ["id",""+this_address];
-        }
-
-    }
-
-    return [null,null];
-}
-
-
-Common.isValidPassword = function(pass) {
-    if (pass.length < 8) {
-        return false;
-    }
-    if (pass.length > 32) {
-        return false;
-    }
-    return true;
-}
-
-//Returns true if the string is a valid username (Less than 15 characters, more than 1 and not containing the reserved space replacements (ascii 30 or 31), whitespace, dot or /.)
-Common.is_valid_username = function(string) {
-    var length = string.length;
-    if (length > Common.MAXIMUM_USERNAME_LENGTH || length < Common.MINIMUM_USERNAME_LENGTH) {
-        return false;
-    }
-
-    var letters = /^[a-zA-Z][0-9a-zA-Z]+$/;  
-    if(string.match(letters)){
-        return true;
-    }
-    return false;
-}
-
-Common.isValidNewUsername = function(string) {
-    if (Common.isValidUsername(string)) {
-        for (var i = 0; i < string.length; i++) {
-            var thisChar = string.charCodeAt(i);
-            if (thisChar == '_') {
-                return false;
-            }
-        }
-    }
-    return false;
-}
-
-Common.isValidID = function(string) {
-    if (string.length == 0) {
-        return false;
-    }
-    for (var len = 0; len < string.length; len++) {
-        var thisChar = string.charCodeAt(len);
-        if (thisChar < 48 || thisChar > 57) { //Other than 0 to 9
-            return false;
-        }
-    }
-    return true;
-}
-
-Common.isTypeVersionAutoGranted = function(name, username) {
-    return Common.isValidTypeVersionName(name, username);
-}
-
-Common.splitToIDAndVersion = function(toSplit) {
-    var split = toSplit.split("/");
-    return [
-        Long.parseLong(split[0]), Long.parseLong(split[1])
-    ];
-}
-
-Common.splitToIDAndVersionString = function(toSplit) {
-    return toSplit.split("/");
-}
-
-
-Common.convertObjectToIDString = function(value) {
-
-    if (value instanceof Integer) {
-        if (value < 1) {
-            throw new ValidatorError(38);
-        }
-        return value.toString();
-    } else if (value instanceof Long) {
-        if (value < 1) {
-            throw new ValidatorError(38);
-        }
-        return value.toString();
-    } else if (value instanceof String) {
-        var id = Long.parseLong(value);
-        if (id < 1) {
-            throw new ValidatorError(38);
-        }
-        return value;
-    }
-    throw new ValidatorError(2);
-}
-
-Common.convertObjectToVersionLong = function(value) {
-
-    if (value instanceof Integer) {
-        if (value < 1) {
-            throw new ValidatorError(138);
-        }
-        return new Long(value);
-    } else if (value instanceof Long) {
-        if (value < 1) {
-            throw new ValidatorError(138);
-        }
-        return value;
-    } else if (value instanceof String) {
-        var id = Long.parseLong(value);
-        if (id < 1) {
-            throw new ValidatorError(138);
-        }
-        return id;
-    }
-    throw new ValidatorError(2);
-}
-
-Common.convert_path_to_tilde_path = function(path) {
-    return path.replaceAll('/', '~');
-}
-
-Common.convertTildePathToPath = function(path) {
-    return path.replace('~', '/');
-}
-
-Common.convertPathToStorePath = function(path) {
-    return path.replaceAll('/', String.fromCharCode(30)).replaceAll(' ', String.fromCharCode(31));
-}
-
-Common.convertStorePathToPath = function(path) {
-    return path.replaceAll(String.fromCharCode(31), ' ').replaceAll(String.fromCharCode(30), '/');
-}
-
-Common.getObjectFromID = function(id) {
-
-    // if (idAndVersionAndCreated == null || idAndVersionAndCreated.equals("DELETED")) {
-    //     return null;
-    // }
-
-    // var idVersionAndCreatedSplit = Common.splitIDValueToVersionAndPathAndCreated(idAndVersionAndCreated);
-    // idAndVersion = idVersionAndCreatedSplit[0];
-    // if (idAndVersion == null) {
-    //     return null;
-    // }
-
-    // object = (String) client.get(CouchbasePool.toKVIDVersionKey(idAndVersion));
-
-    // if (object == null) {
-    //     return null;
-    // }
-
-    // try {
-    //     return new JSONObject(objectString);
-    // } catch (JSONException e) {
-    //     ServerDaemon.error(e);
-    // }
-
-    // return null;
-}
-
-Common.getObjectFromPath = function(path) {
-
-    // CouchbaseClient client = CouchbasePool.getInstance().getCache();
-
-    // idAndVersion = (String) client.get(CouchbasePool.toKVPathKey(path));
-
-    // if (idAndVersion == null || idAndVersion.equals("DELETED")) {
-    //     return null;
-    // }
-
-    // object = (String) client.get(CouchbasePool.toKVIDVersionKey(idAndVersion));
-
-    // if (object == null) {
-    //     return null;
-    // }
-
-    // try {
-    //     return new JSONObject(objectString);
-    // } catch (JSONException e) {
-    //     ServerDaemon.error(e);
-    // }
-
-    return null;
-}
-
-Common.getMultipleObjectsFromPaths = function(paths) {
-    return Common.getMultipleObjectsFromPaths(paths.toArray(new String[paths.size()]));
-}
-
-
-//This method will use the parameter to store intermediate values. Don't pass it something you want to keep.
-Common.getMultipleObjectsFromPaths = function(paths) {
-
-    // JSONObject[] returning = new JSONObject[paths.length];
-
-    // GetFuture < Object > [] futures = new GetFuture[paths.length];
-
-    // for (var i = 0; i < paths.length; i++) {
-    //     if (paths[i] != null) {
-    //         futures[i] = client.asyncGet(CouchbasePool.toKVPathKey(paths[i]));
-    //     }
-    // }
-
-    // for (var i = 0; i < paths.length; i++) {
-    //     try {
-    //         if (paths[i] != null) {
-    //             paths[i] = (String) futures[i].get();
-
-    //             if (paths[i] == null || paths[i].equals("DELETED")) {
-    //                 paths[i] = null;
-    //                 futures[i] = null;
-    //             } else {
-    //                 futures[i] = client.asyncGet(CouchbasePool.toKVIDVersionKey(paths[i]));
-    //             }
-    //         }
-    //     } catch (Exception e) {
-    //         paths[i] = null;
-    //         futures[i] = null;
-    //     }
-    // }
-
-    // for (var i = 0; i < paths.length; i++) {
-    //     try {
-    //         if (futures[i] != null) {
-    //             paths[i] = (String) futures[i].get();
-
-    //             if (paths[i].equals("DELETED")) {
-    //                 returning[i] = null;
-    //             } else {
-    //                 returning[i] = new JSONObject(paths[i]);
-    //             }
-    //         }
-    //     } catch (Exception e) {
-    //         returning[i] = null;
-    //     }
-    // }
-    return returning;
-}
-
-//This method will use the parameter to store intermediate values. Don't pass it something you want to keep.
-Common.getMultipleObjectsFromIDs = function(ids) {
-
-    // CouchbaseClient client = CouchbasePool.getInstance().getCache();
-
-    // JSONObject[] returning = new JSONObject[ids.length];
-
-    // GetFuture < Object > [] futures = new GetFuture[ids.length];
-
-    // for (var i = 0; i < ids.length; i++) {
-    //     futures[i] = client.asyncGet(CouchbasePool.toKVIDKey(ids[i]));
-    // }
-
-    // for (var i = 0; i < ids.length; i++) {
-    //     try {
-    //         ids[i] = (String) futures[i].get();
-
-    //         if (ids[i] == null || ids[i].equals("DELETED")) {
-    //             ids[i] = null;
-    //             futures[i] = null;
-    //         } else {
-    //             var idVersionAndCreatedSplit = Common.splitIDValueToVersionAndPathAndCreated(ids[i]);
-    //             idAndVersion = idVersionAndCreatedSplit[0];
-    //             if (idAndVersion == null) {
-    //                 ids[i] = null;
-    //                 futures[i] = null;
-    //             } else {
-    //                 futures[i] = client.asyncGet(CouchbasePool.toKVIDVersionKey(idAndVersion));
-    //             }
-    //         }
-    //     } catch (Exception e) {
-    //         ids[i] = null;
-    //         futures[i] = null;
-    //     }
-    // }
-
-    // for (var i = 0; i < ids.length; i++) {
-    //     try {
-    //         if (futures[i] != null) {
-    //             ids[i] = (String) futures[i].get();
-
-    //             if (ids[i].equals("DELETED")) {
-    //                 returning[i] = null;
-    //             } else {
-    //                 returning[i] = new JSONObject(ids[i]);
-    //             }
-    //         }
-    //     } catch (Exception e) {
-    //         returning[i] = null;
-    //     }
-    // }
-
-
-    return returning;
-}
-
-Common.getDateTimeString = function(format) {
-    // final SimpleDateFormat sdf = new SimpleDateFormat(format);
-    // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-    // final utcTime = sdf.format(new Date());
-    // return utcTime;
-}
-
-Common.buildIDValueFromIDVersionPathAndCreated = function(idVersion, path, created) {
-    return idVersion + " " + Common.convertPathToStorePath(path) + " " + created;
-}
-
-Common.idFromCounterAddress = function(address) {
-    var split = address.split("\\.");
-
-    if (Common.isValidID(split[0]) && Common.isValidTypeVersionName(split[1] + "." + split[2] + "." + split[3]) && Common.isValidFieldName(split[4])) {
-        return split[0];
-    }
-
-    throw new ValidatorError(112);
-}
-
-
-if (typeof module != 'undefined') {
-    module.exports = Common;
-}
-var Constants, Common, FieldVal, errors;
-if (typeof require != 'undefined') {
-    Constants = require('./Constants');
-    Common = require('./Common');
-    FieldVal = require('fieldval');
-    errors = require('../errors')
-}
-
-function Path() {
-    var path = this;
-
-}
-
-//Returns error or null
-Path.prototype.init = function(path_string, allow_tilde) {
-    var path = this;
-
-    allow_tilde = allow_tilde || false;
-
-    path.is_folder = false;
-    path.path_string = path_string;
-    path.object_names = [];
-    path.sub_paths = [];
-
-    path.string_length = path_string.length;
-    if (path.string_length >= Constants.maximumAccessiblePathLength) {
-        return errors.INVALID_PATH_FORMAT
-    }
-    var path_char = path.path_string.charAt(0);
-    if (path_char != "/") { //Equal to forward slash
-        return errors.INVALID_PATH_FORMAT; //First character must be a forward slash in a path
-    }
-
-    var last_char = "/";
-
-    //The total number of objects
-    var total = 0;
-    for (var index = 1; index < path.string_length; index++) {
-        path_char = path.path_string.substring(index, index + 1);
-        if (path_char.charCodeAt(0) == 47) {
-            if (last_char.charCodeAt(0) == 47) {
-                return errors.INVALID_PATH_FORMAT; //There were two forward slashes together
-            }
-            total++;
-        } else {
-            if (!Path.is_valid_character_for_object_name(path_char, allow_tilde)) { //Check that path character is valid for a folder/object name
-                return errors.INVALID_PATH_FORMAT;
-            }
-        }
-        last_char = path_char;
-    }
-
-    if (last_char.charCodeAt(0) == 47) {
-        path.is_folder = true;
-    }
-
-    var current_index = 0;
-    var current_position = 1;
-    var name_start_index = 1;
-    while (current_index < total) {
-        path_char = path.path_string.charAt(current_position);
-        if (path_char.charCodeAt(0) === 47) {
-            path.sub_paths.push(path.path_string.substring(0, current_position + 1));
-            path.object_names.push(path.path_string.substring(name_start_index, current_position));
-            current_index++;
-            name_start_index = current_position + 1;
-        }
-        current_position++;
-    }
-    if (!path.is_folder) {
-        path.sub_paths.push(path.path_string);
-        path.object_names.push(path.path_string.substring(name_start_index, path.string_length));
-    }
-
-    path.length = path.object_names.length;
-
-    return null;
-}
-
-Path.prototype.replace_id_operator = function(id){
-    var path = this;
-
-
-}
-
-Path.object_name_check = function(allowed_tilde){
-
-    return function(val, emit){
-
-        //Remove ~id~ because it will be overwritten (no other tildes are allowed)
-        var value = val.replaceAll("~id~","");
-
-        for(var i = 0; i < value.length; i++){
-            var character = value[i];
-
-            if(!Path.is_valid_character_for_object_name(character, allowed_tilde)){
-                return errors.INVALID_OBJECT_NAME;
-            }
-        }
-    }
-}
-
-Path.is_valid_character_for_object_name = function(path_char, allowed_tilde) {
-
-    var path_char_code = path_char.charCodeAt(0);
-
-    if (
-        path_char_code === 10 /*LINE BREAK*/ || 
-        path_char_code === 30 || /*WHITESPACE*/
-        path_char_code === 31 || /*WHITESPACE*/
-        path_char === '/' || 
-        (allowed_tilde!==true && path_char_code === 126 /*TILDE*/ )
-    ) {
-        return false;
-    }
-    return true;
-}
-
-Path.prototype.to_tilde_path = function(){
-    var path = this;
-
-    return Common.convert_path_to_tilde_path(path.toString())
-}
-
-Path.prototype.permission_path = function(requesting_username,for_write){
-    var path = this;
-
-    var user = path.username_for_permission(requesting_username,for_write);
-
-    return "/"+requesting_username+"/permissions/received/"+Common.convert_path_to_tilde_path(path.toString());
-}
-
-Path.prototype.username_for_permission = function(requesting_username, for_write) {
-    var path = this;
-
-    //Restricts access to the permissions folder in each user's root
-    if (path.object_names.length > 1 && path.object_names[1] == "permissions") {
-
-        console.log("USERNAME FOR PERMISSION ",path.toString(), requesting_username);
-
-        if (path.object_names.length==2 && !path.is_folder) {
-            /* The request is for an item with the same name as one of the restricted folders, not the folder itself
-             * so return the username of the top folder.
-             */
-            return path.object_names[0];
-        }
-
-        //Allows read access of permissions by user
-        if (for_write===false) {
-            return path.object_names[0];
-        }
-
-        //Allows "MinoDB" user to write
-        if(requesting_username===Common.ROOT_USERNAME){
-            return Common.ROOT_USERNAME;
-        }
-
-        return null;
-    }
-
-
-    //Allow all users to read the types folder
-    if (path.object_names.length > 1 && path.object_names[0] === Common.ROOT_USERNAME && path.object_names[1] === "types"){
-        if(for_write===false){
-            return requesting_username;
-        }
-    }
-
-    if(path.object_names.length===0){
-        return Common.ROOT_USERNAME;
-    }
-
-    return path.object_names[0];
-}
-
-Path.prototype.path_for_child_with_name = function(child_name, child_is_folder) {
-    var path = this;
-
-    if (!path.is_folder) {
-        return errors.CHILD_FROM_ITEM_PATH;
-    }
-    var child_path = new Path();
-    child_path.length = path.length + 1;
-    child_path.object_names = [];
-    child_path.sub_paths = [];
-    for (var i = 0; i < child_path.length; i++) {
-        child_path.object_names.push(path.object_names[i]);
-        child_path.sub_paths.push(path.sub_paths[i]);
-    }
-    if (child_is_folder) {
-        child_path.is_folder = true;
-        child_path.path_string = path.path_string + child_name + "/";
-    } else {
-        child_path.is_folder = false;
-        child_path.path_string = path.path_string + child_name;
-    }
-    child_path.object_names[child_path.length - 1] = child_name;
-    child_path.sub_paths[child_path.length - 1] = child_path.path_string;
-    return child_path;
-}
-
-Path.prototype.parent_path = function() {
-    var path = this;
-
-    if (path.length <= 1) {
-        return null;
-    }
-
-    var parent_path = new Path();
-    parent_path.length = path.length - 1;
-    parent_path.object_names = [];
-    parent_path.sub_paths = [];
-    for (var i = 0; i < parent_path.length; i++) {
-        parent_path.object_names.push(path.object_names[i]);
-        parent_path.sub_paths.push(path.sub_paths[i]);
-    }
-    parent_path.is_folder = true;
-    parent_path.path_string = parent_path.sub_paths[parent_path.length - 1];
-    return parent_path;
-}
-
-Path.prototype.toString = function() {
-    var path = this;
-    return path.path_string;
-}
-
-if (typeof module != 'undefined') {
-    module.exports = Path;
-}
-var Constants, Common, FieldVal, BasicVal, errors;
-if (typeof require != 'undefined') {
-    Constants = require('../Constants');
-    Common = require('../Common');
-    FieldVal = require('fieldval');
-    BasicVal = FieldVal.BasicVal;
-    errors = require('../errors')
-}
-
-function ID() {
-    var id = this;
-
-}
-
-//Returns error or null
-ID.prototype.init = function(id_string) {
-    var id = this;
-
-    id.id_string = id_string;
-
-    var error = FieldVal.use_checks(id_string, [
-        BasicVal.integer(true, {parse: true}),
-        BasicVal.minimum(1)
-    ],null,null,function(new_value){
-        //new_value is the integer value
-        console.log(new_value);
-    });
-
-    return error;
-}
-
-ID.prototype.toString = function() {
-    var id = this;
-    return id.id_string;
-}
-
-if (typeof module != 'undefined') {
-    module.exports = ID;
-}
-
-//Based on "minimal"
-//Change the layout function for ObjectFields to place the error at the top
-var layout_function = FVField.prototype.layout;
-FVField.prototype.layout = function(){
-    var field = this;
-
-    if(field instanceof FVObjectField){
-    	field.element.append(
-	        field.title,field.error_message,
-            field.input_holder
-	    )
-    } else {
-	    layout_function.call(field);
-	}
-}
-
-
-var ajax_request_id = 0;
-function ajax_request(endpoint, params, callback){
-    var id = ajax_request_id++;
-    console.log("ajax_request",id, params);
-    $.ajax({
-        type: "POST",
-        url: site_path+"ajax/"+endpoint,
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: JSON.stringify(params),
-        success: function(response) {
-            console.log("ajax_response",id,response);
-            callback(null, response);
-        },
-        error: function(err, response) {
-            console.log(err);
-            callback(err)
-        }
-    })
-    return id;
-}
-
-function Modal(props){
-	var modal = this;
-
-	if(!props){
-		props = {};
-	}
-
-	modal.z_index = props.z_index || 2001;
-
-	modal.initial_position = false;
-
-	modal.close_callback = function(){};
-	modal.ok_callback = function(){};
-	modal.on_finished_loading = function(){};
-
-	modal.title_text = props.title || "";
-
-	modal.shadow = $("<div />")
-	.addClass("modal_shadow")
-	.appendTo("body")
-	.css("z-index",modal.z_index)
-	.hide();
-
-	modal.element = $("<div />")
-	.addClass("modal")
-	.css("z-index",modal.z_index+1)
-	.append(
-		modal.title_holder = $("<div />")
-		.addClass("modal_title_holder")
-		.append(
-			modal.title = $("<div />")
-			.addClass("modal_title_text")
-			.text(modal.title_text)
-		)
-	).append(
-		modal.close_button = $("<button />")
-		.addClass("mino_button modal_close_button")
-		.css("float","right")
-		.text("×")
-		.on('tap',function(){
-			modal.close();
-		})
-	)
-	.append(
-		modal.contents = $("<div />")
-		.addClass("modal_contents")
-	)
-	.append(
-		modal.bottom_bar = $("<div />")
-		.addClass("modal_bottom_bar")
-	)
-	.appendTo("body");
-
-	setTimeout(function(){
-		modal.reposition();
-	},1);
-
-	modal.element.hide();
-
-	$(document).on('keyup.modal',function(e) {
-		if(e.keyCode==27){
-		 	modal.close();
-		} else if(e.keyCode==13){//Enter
-		 	modal.ok_callback();
-			if(modal.ok_closes_modal){
-				modal.close_modal();
+fieldval_ui_extend(FVRuleEditor, FVForm);
+
+function FVRuleEditor(name, options){
+	var editor = this;
+
+    editor.base_fields = {};
+
+	FVRuleEditor.superConstructor.call(this, name, options);
+
+	var field_type_choices = [];
+	var types = FVRule.FVRuleField.types;
+	for(var i in types){
+		if (types.hasOwnProperty(i)) {
+			var field_type_class = types[i];
+
+			var name = i;
+			var display_name = field_type_class.display_name;
+			if(display_name){
+				field_type_choices.push([name, display_name])
+			} else {
+				field_type_choices.push(name);
 			}
 		}
-	});
 
-	modal.shadow.show();
-	modal.element.fadeIn(150, 
-		function(){
-			modal.on_finished_loading();
-			modal.reposition();
+	}
+
+	editor.add_field("name", new FVTextField("Name"));
+	editor.add_field("display_name", new FVTextField("Display Name"));
+	editor.add_field("type", new FVChoiceField("Type", {
+		choices: field_type_choices
+	}).on_change(function(){
+		editor.update_type_fields();
+	}));
+
+	for(var name in editor.fields){
+		if (editor.fields.hasOwnProperty(name)) {
+	    	editor.base_fields[name] = true;
 		}
-	);
-}
-Modal.prototype.reposition = function(){
-	var modal = this;
-
-	var props = {
-		"margin-top":-(modal.element.outerHeight()/2.0)+"px"
-	};
-
-	if(modal.initial_position){
-		modal.element.stop(false,false).animate(props,200);
-	} else {
-		modal.element.css(props);
-		modal.initial_position = true;
-	}
-}
-Modal.prototype.close = function(){
-	var modal = this;
-	modal.element.remove();
-	modal.shadow.remove();
-
-	$(document).off('keyup.modal');
-	if(modal.callback_called==undefined){
-		modal.callback_called = true;
-		modal.close_callback();
-	}
-}
-function LoginBox(on_sign_in){
-    var lb = this;
-
-    lb.on_sign_in = on_sign_in;
-
-    lb.modal = new Modal();
-    lb.modal.element.addClass("login_box_modal")
-
-    lb.form = new FVForm()
-    .add_field("username_or_email",new TextField("Username or Email*"))
-    .add_field("password",new PasswordField("Password*"))
-    .on_submit(function(object){
-        lb.login_press(object);
-    })
-
-    lb.form.element.append(
-        $("<button />").addClass("mino_button").text("Login")
-    );
-
-    lb.modal.contents.append(
-        lb.form.element,
-        lb.loading_overlay = $("<div />").addClass("loading_overlay").hide()
-    )
-
-    lb.modal.closeCallback = function(){
-        lb.on_close();
-    }
-}
-
-//Overriden
-LoginBox.prototype.on_close = function(){}
-
-LoginBox.prototype.login_press = function(object) {
-    var lb = this;
-
-    lb.form.disable();
-    lb.form.clear_errors();
-    lb.modal.reposition();
-
-    lb.loading_overlay.show();
-
-    $.ajax({
-        type: "POST",
-        url: Site.path + "ajax/login",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: JSON.stringify(object),
-        success: function(response) {
-            lb.loading_overlay.hide();
-            lb.form.enable();
-            if (response.success == true) {
-                user = response.user;
-                if(lb.on_sign_in){
-                    lb.on_sign_in(user);
-                }
-                lb.modal.close();
-            } else {
-                lb.form.error(response);
-                lb.modal.reposition();
-            }
-        },
-        error: function(err, response) {
-            lb.loading_overlay.hide();
-            lb.form.enable();
-        }
-    })
-};
-extend(AdminPage, Page);
-
-function AdminPage(req) {
-    var page = this;
-
-    AdminPage.superConstructor.call(this);
-
-    page.element
-    .addClass("admin_page")
-    .append(
-        page.form_holder = $("<div />")
-    )
-
-    ajax_request("get_config",{
-
-    },function(err,res){
-        page.populate(res);
-    })
-
-    page.new_url(req);
-}
-Site.add_url("/", AdminPage);
-
-AdminPage.prototype.populate = function(data){
-    var page = this;
-
-    if(page.form){
-        page.form.remove();
     }
 
-    page.form = new FVForm();
-    page.form.add_field("name", new FVTextField("Name"));
-    page.form.add_field("display_name", new FVTextField("Display Name"));
-
-    page.form_holder.append(
-        page.form.element
-    )
-
-    page.form.val(data).disable();
+    editor.update_type_fields();
 }
 
-AdminPage.prototype.get_title = function() {
+FVRuleEditor.prototype.update_type_fields = function(value){
+	var editor = this;
+
+	var type = editor.fields.type.val();
+	for(var name in editor.fields){
+		if(!editor.base_fields[name]){
+			editor.fields[name].remove();
+		}
+	}
+
+	if (type) {
+		var rule_field = FVRule.FVRuleField.types[type].class;
+		if (rule_field.add_editor_params !== undefined) {
+			rule_field.add_editor_params(editor, value);
+		}
+	}
+}
+
+FVRuleEditor.prototype.val = function(set_val, options) {
+	var editor = this;
+
+	if (set_val) {
+		editor.fields.type.val(set_val.type, {ignore_change: true});
+		editor.update_type_fields(set_val);
+		delete set_val.type;
+	}
+	return FVForm.prototype.val.apply(editor, arguments);
+}
+
+
+SAFE.extend(HomePage, Page);
+
+function HomePage(req) {
+    var page = this;
+
+    HomePage.superConstructor.call(this);
+
+    page.element.addClass("home_page").append(
+        $("<p/>").text("MinoDBPermissions config server (using SAFE)")
+    )
+
+}
+
+HomePage.prototype.get_title = function() {
     var page = this;
     return null;
 }
 
-AdminPage.prototype.init = function() {
+HomePage.prototype.init = function() {
     var page = this;
 
 }
 
-AdminPage.prototype.remove = function() {
+HomePage.prototype.remove = function() {
     var page = this;
 
 }
 
-AdminPage.prototype.resize = function(resize_obj) {
+HomePage.prototype.resize = function(resize_obj) {
+    var page = this;
+}
+SAFE.extend(NotFoundPage, Page);
+
+function NotFoundPage(parameters, url) {
+    var page = this;
+
+    NotFoundPage.superConstructor.call(this);
+
+    page.element.addClass("not_found_page").append(
+        $("<div />")
+        .text("404 - Page not found")
+    )
+}
+//No urls - only accessible when used as a 404 page
+
+NotFoundPage.prototype.get_title = function() {
+    var page = this;
+    return "Page Not Found";
+}
+
+NotFoundPage.prototype.init = function() {
     var page = this;
 
 }
 
-var page_title_append = "MinoDB";
-var body_contents_holder;
+NotFoundPage.prototype.remove = function() {
+    var page = this;
 
-$(document).ready(function() {
+}
 
-    Site.on_resize = function(resize_obj) {}
+NotFoundPage.prototype.resize = function(resize_obj) {
+    var page = this;
 
-    Site.element.addClass("page_holder").appendTo("body");
+}
 
-    Site.transition_page_callback = function(new_page, old_page) {
-        var title = new_page.get_title();
-        if (title == null) {
-            document.title = page_title_append;
-        } else {
-            document.title = new_page.get_title() + " - " + page_title_append;
-        }
+SAFE.add_url('/', HomePage);
 
-        $('html, body').stop().animate({
-            'scrollTop': 0
-        }, 500);
 
-        Site.element.append(new_page.element);
+var page_title_append = "MinoDBPermissions";
 
-        //Call resize to make sure the element calculates its height correctly
-        Site.resize();
+$(document).ready(function(){
 
-        if (old_page != null) {
-            old_page.element.css({
-                "width": old_page.element.width(),
-                "height": old_page.element.height(),
-                "position": "absolute"
-            })
-            .fadeOut(500, function() {
-                old_page.element.remove();
-            })
+	// This callback is called before the current page's resize function is called. Use this callback to resize elements other than the page and set values that pages could make use of.
+	SAFE.on_resize = function(resize_obj){
 
-            new_page.element.hide().fadeIn(500);
-        }
+		//Add properties based on the dimensions of the window
+		resize_obj.large_screen = resize_obj.window_width > 700;
 
-        /* Returning true tells the framework that the 
-         * transition has been handled. */
-        return true;
-    }
-    Site.path = site_path;
-    Site.init();
+	}
+
+	// Append the framework's body_contents element somewhere. This element will contain the page.
+    var page_holder = SAFE.element.addClass("page_holder").appendTo("body");
+
+	SAFE.transition_page = function(new_page,old_page){
+		var title = new_page.get_title();
+		if(title==null){
+			document.title = page_title_append;
+		} else {
+			document.title = new_page.get_title() + " - " + page_title_append;
+		}
+	}
+
+	//Set the 404 page class
+	SAFE.set_404(NotFoundPage);
+
+	SAFE.path = plugin_path;
+
+	// SAFE.init loads the page for the current url.
+	SAFE.init();
 });
+

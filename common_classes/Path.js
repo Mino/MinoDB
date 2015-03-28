@@ -202,7 +202,7 @@ Path.prototype.path_for_child_with_name = function(child_name, child_is_folder) 
 Path.prototype.parent_path = function() {
     var path = this;
 
-    if (path.length == 1) {
+    if (path.length <= 1) {
         return null;
     }
 

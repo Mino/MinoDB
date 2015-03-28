@@ -5,8 +5,7 @@ function CallbackObject(callback){
 	var co = this;
 
 	co.callback = callback;
-	co.has_read = false;
-	co.has_write = false;
+	co.permission = Constants.NO_PERMISSION;
 }
 
 function PathPermissionChecker(handler, options){
@@ -30,9 +29,14 @@ PathPermissionChecker.prototype.check_permissions_for_path = function(path, call
 	var ppc = this;
 
 	var username_for_permission = path.username_for_permission(ppc.handler.user.username, ppc.for_write);
-
+	logger.log(username_for_permission, ppc.handler.user.username);
 	if(username_for_permission===ppc.handler.user.username){
 		callback(Constants.WRITE_PERMISSION);
+		return;
+	}
+
+	if (path.length == 0) {
+		callback(Constants.NO_PERMISSION);
 		return;
 	}
 
@@ -52,23 +56,22 @@ PathPermissionChecker.prototype.check_permissions_for_path = function(path, call
 
 	var sub_path = path;
 	do{
-
-		var permission_path = sub_path.permission_path(ppc.handler.user.username);
-
+		logger.log(sub_path);
+		var permission_path = (ppc.for_write ? "write:" : "read:") + sub_path;
 		var existing_permission = ppc.retrieved_permissions[permission_path];
 		if(existing_permission){
-			
+			//TODO
 			if(ppc.immediate_mode){
-				callback();
+				callback(existing_permission);
 				return;
 			}
 
 		} else if(existing_permission===undefined){
 
-			var existing = ppc.paths[permission_path];
+			var existing = paths[permission_path];
 		    if(existing===undefined){
 		        existing = [];
-		        ppc.paths[permission_path] = existing;
+		        paths[permission_path] = existing;
 		    }
 		    existing.push(callback_object);
 	   }
@@ -88,14 +91,7 @@ PathPermissionChecker.prototype.resolve_callbacks = function(callback_objects){
 
 	for(var i = 0; i < callback_objects.length; i++){
 		var co = callback_objects[i];
-
-		if(co.has_write){
-			co.callback(Constants.WRITE_PERMISSION);
-		} else if(co.has_read){
-			co.callback(Constants.READ_PERMISSION);
-		} else {
-			co.callback(Constants.NO_PERMISSION);
-		}
+		co.callback(co.permission);
 	}
 }
 
@@ -110,7 +106,7 @@ PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths,
 	}
 
 	var keys = Object.keys(paths);
-
+	logger.log(paths);
 	if(keys.length===0){
 		ppc.resolve_callbacks(callback_objects);
 		if(callback){
@@ -119,20 +115,36 @@ PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths,
 		return;
 	}
 
-	ppc.handler.api.ds.object_collection.find({
-		"full_path" : {"$in" : keys}
-	}).toArray(function(array_err, array){
-		logger.log(array_err);
-		logger.log(array);
+	var perms = ppc.handler.api.minodb.get_plugin('minodb-permissions');
+	perms.has_permissions(keys, ppc.handler.user.username, function(err, res) {
+		logger.log(err, res);
 
-		//TODO USE FOUND PERMISSIONS
+		for (var i=0; i<keys.length; i++) {
+			var permission = keys[i];
+			logger.log(permission);
+			logger.log(callback_objects);
+			if (res[i] === true) {
+				for (var j=0; j<paths[permission].length; j++) {
+					var callback_object = paths[permission][j];
+					if (ppc.for_write) {
+						callback_object.permission = Constants.WRITE_PERMISSION;
+						ppc.retrieved_permissions[permission] = Constants.WRITE_PERMISSION;
+					} else {
+						callback_object.permission = Constants.READ_PERMISSION;
+						ppc.retrieved_permissions[permission] = Constants.READ_PERMISSION;
+					}	
+				}
+			}
+		}
 
 		ppc.resolve_callbacks(callback_objects);
-
-		if(callback){
+		
+		if (callback) {
 			callback();
-		}
-	});
+		}	
+		
+	})
+
 }
 
 module.exports = PathPermissionChecker;

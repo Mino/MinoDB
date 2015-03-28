@@ -37,7 +37,7 @@ function Auth(options) {
 	}
 
 	auth.username = options.username;
-	if (!auth.cookie_name) {
+	if (!auth.username) {
 		throw "Plugin requires username to be specified in options"
 	}
 
