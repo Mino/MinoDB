@@ -12,7 +12,7 @@ var APIServer = require('../default_plugins/api_server/APIServer');
 var BrowserServer = require('../default_plugins/browser_server/BrowserServer');
 var UIServer = require('./ui_server/UIServer');
 var AuthPlugin = require('../default_plugins/auth/Auth');
-var MinoDBPermissions = require('../default_plugins/permissions/minodb-permissions');
+var MinoDBPermissions = require('../default_plugins/permissions/MinoDbPermissions');
 
 var MinoSDK = require('minosdk');
 var extend = require('extend');
@@ -62,7 +62,7 @@ function MinoDB(config, username /*optional*/){
 
     var auth = new AuthPlugin({
         name: "mino_auth",
-        display_name: "Mino Auth",
+        display_name: "MinoDB Auth",
         user_path: "/MinoDB/users/",
         session_path: "/MinoDB/sessions/",
         cookie_name: "mino_token",
@@ -71,6 +71,8 @@ function MinoDB(config, username /*optional*/){
 
     var permissions = new MinoDBPermissions({
         path: "/MinoDB/minodb_permissions/",
+        name: "minodb-permissions",
+        display_name: "MinoDB Permissions",
         username: "MinoDB"
     })
 
@@ -200,6 +202,6 @@ MinoDB.prototype.get_plugin = function(name) {
 
 MinoDB.Signal = require('./core/models/Signal');
 MinoDB.Auth = require('../default_plugins/auth/Auth');
-MinoDB.Permissions = require('../default_plugins/permissions/minodb-permissions');
+MinoDB.Permissions = require('../default_plugins/permissions/MinoDbPermissions');
 
 module.exports = MinoDB;

@@ -1,7 +1,7 @@
 var logger = require('tracer').console();
 var globals = require('../../globals');
 var assert = require('assert');
-var MinoDBPermissions = require('../../../default_plugins/permissions/minodb-permissions');
+var MinoDBPermissions = require('../../../default_plugins/permissions/MinoDBPermissions');
 
 globals.db_address = 'mongodb://127.0.0.1:27017/minodb_tests';
 

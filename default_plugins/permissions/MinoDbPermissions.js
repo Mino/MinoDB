@@ -3,7 +3,7 @@ var express = require('express');
 var ConfigServer = require('./config_server/ConfigServer');
 var Path = require('../../common_classes/Path');
 
-function MinoDBPermissions(options) {
+function MinoDbPermissions(options) {
 	var plugin = this;
 
     plugin.path = options.path;
@@ -25,12 +25,12 @@ function MinoDBPermissions(options) {
     plugin.config_server = new ConfigServer();
 }
 
-MinoDBPermissions.prototype.get_config_server = function(){
+MinoDbPermissions.prototype.get_config_server = function(){
     var plugin = this;
     return plugin.config_server.express_server;
 }
 
-MinoDBPermissions.prototype.info = function(){
+MinoDbPermissions.prototype.info = function(){
     var plugin = this;
 
     return {
@@ -39,7 +39,7 @@ MinoDBPermissions.prototype.info = function(){
     };
 }
 
-MinoDBPermissions.prototype.init = function(minodb, callback){
+MinoDbPermissions.prototype.init = function(minodb, callback){
     var plugin = this;
     plugin.minodb = minodb;
     plugin.sdk = minodb.with_user(plugin.username);
@@ -56,7 +56,7 @@ MinoDBPermissions.prototype.init = function(minodb, callback){
     plugin.create_types(finished_one);
 }
 
-MinoDBPermissions.prototype.create_folders = function(callback) {
+MinoDbPermissions.prototype.create_folders = function(callback) {
     var plugin = this;
 
     var path = new Path();
@@ -87,7 +87,7 @@ MinoDBPermissions.prototype.create_folders = function(callback) {
     });
 }
 
-MinoDBPermissions.prototype.create_types = function(callback) {
+MinoDbPermissions.prototype.create_types = function(callback) {
     var plugin = this;
 
     plugin.minodb.save_type({
@@ -174,7 +174,7 @@ MinoDBPermissions.prototype.create_types = function(callback) {
 }
 
 
-MinoDBPermissions.prototype.assign_permission_to_id = function(permission, id, callback) {
+MinoDbPermissions.prototype.assign_permission_to_id = function(permission, id, callback) {
     var plugin = this;
 
     var escaped_id = plugin.encode_text(id);
@@ -205,7 +205,7 @@ MinoDBPermissions.prototype.assign_permission_to_id = function(permission, id, c
     });
 }
 
-MinoDBPermissions.prototype.remove_permission_from_id = function(permission, id, callback) {
+MinoDbPermissions.prototype.remove_permission_from_id = function(permission, id, callback) {
     var plugin = this;
 
     var escaped_id = plugin.encode_text(id);
@@ -221,7 +221,7 @@ MinoDBPermissions.prototype.remove_permission_from_id = function(permission, id,
     });
 }
 
-MinoDBPermissions.prototype.has_permission = function(permission, id, callback) {
+MinoDbPermissions.prototype.has_permission = function(permission, id, callback) {
     var plugin = this;
 
     plugin.has_permissions([permission], id, function(err, has_permissions) {
@@ -234,7 +234,7 @@ MinoDBPermissions.prototype.has_permission = function(permission, id, callback) 
     });
 }
 
-MinoDBPermissions.prototype.has_permissions = function(permissions, id, callback) {
+MinoDbPermissions.prototype.has_permissions = function(permissions, id, callback) {
     var plugin = this;
 
     var permission_results = {}
@@ -346,7 +346,7 @@ MinoDBPermissions.prototype.has_permissions = function(permissions, id, callback
     })
 }
 
-MinoDBPermissions.prototype.assign_group_to_id = function(group, id, callback) {
+MinoDbPermissions.prototype.assign_group_to_id = function(group, id, callback) {
     var plugin = this;
 
     var escaped_id = plugin.encode_text(id);
@@ -377,7 +377,7 @@ MinoDBPermissions.prototype.assign_group_to_id = function(group, id, callback) {
     });
 }
 
-MinoDBPermissions.prototype.remove_group_from_id = function(group, id, callback) {
+MinoDbPermissions.prototype.remove_group_from_id = function(group, id, callback) {
     var plugin = this;
 
     var escaped_id = plugin.encode_text(id);
@@ -393,7 +393,7 @@ MinoDBPermissions.prototype.remove_group_from_id = function(group, id, callback)
     });
 }
 
-MinoDBPermissions.prototype.assign_permission_to_group = function(permission, group, callback) {
+MinoDbPermissions.prototype.assign_permission_to_group = function(permission, group, callback) {
     var plugin = this;
 
     var escaped_group = plugin.encode_text(group);
@@ -424,7 +424,7 @@ MinoDBPermissions.prototype.assign_permission_to_group = function(permission, gr
     });
 }
 
-MinoDBPermissions.prototype.remove_permission_from_group = function(permission, group, callback) {
+MinoDbPermissions.prototype.remove_permission_from_group = function(permission, group, callback) {
     var plugin = this;
 
     var escaped_permission = plugin.encode_text(permission);
@@ -440,12 +440,12 @@ MinoDBPermissions.prototype.remove_permission_from_group = function(permission, 
     });
 }
 
-MinoDBPermissions.prototype.encode_text = function(text) {
+MinoDbPermissions.prototype.encode_text = function(text) {
     return encodeURIComponent(text);
 }
 
-MinoDBPermissions.prototype.decode_text = function(text) {
+MinoDbPermissions.prototype.decode_text = function(text) {
     return decodeURIComponent(text);
 }
 
-module.exports = MinoDBPermissions;
+module.exports = MinoDbPermissions;
