@@ -15723,20 +15723,11 @@ function FVField(name, options) {
         })
         .addClass("fv_field fv_form")
         .data("field",field)
-        
-        var submit_function = function(event){
+        .on("submit",function(event){
             event.preventDefault();
             field.submit();
             return false;
-        };
-
-        var field_dom_element = field.element[0];
-        if (field_dom_element.addEventListener) {// For all major browsers, except IE 8 and earlier
-            field_dom_element.addEventListener("submit", submit_function);
-        } else if (field_dom_element.attachEvent) {// For IE 8 and earlier versions
-            field_dom_element.attachEvent("submit", submit_function);
-        }
-
+        });
         field.on_submit_callbacks = [];
     } else {
         field.element = $("<div />").addClass("fv_field").data("field",field);
@@ -23433,7 +23424,7 @@ TypeSelector.prototype.do_search = function(query){
 			if(res.objects){
 				for(var i = 0; i < res.objects.length; i++){
 					(function(object){
-						var type_data = object.mino_type;
+						var type_data = object.minodb_type;
 						ts.results.append(
 							$("<div />").addClass("result").text(object.name).on('tap',function(){
 								ts.selection_made(object.name);

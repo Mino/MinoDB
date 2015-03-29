@@ -2,7 +2,6 @@ var logger = require('tracer').console();
 var SaveObject = require('./handlers/SaveHandler/SaveObject');
 var User = require('./models/User');
 var Session = require('../../default_plugins/auth/models/Session');
-var Permission = require('./handlers/AddPermissionsHandler/Permission');
 var Type = require('./models/Type');
 
 module.exports = function(api, callback){
@@ -43,11 +42,11 @@ module.exports = function(api, callback){
         }, function(save_err, save_res){
             logger.log(JSON.stringify(save_err,null,4), save_res);
 
-    	    //Save the "mino_type" type definition without checks
+    	    //Save the "minodb_type" type definition without checks
     	    var so = new SaveObject({
-    	        "name": "mino_type",
+    	        "name": "minodb_type",
     	        "path": "/" + api.minodb.root_username + "/types/",
-    	        "mino_type": Type.rule_definition
+    	        "minodb_type": Type.rule_definition
     	    },{//Mocking the SaveHandler
     	        api: api,
     	        user: {
@@ -75,15 +74,7 @@ module.exports = function(api, callback){
                         type: Session.rule_definition
                     }, function(session_type_err, session_type_res){
                         logger.log(JSON.stringify(session_type_err,null,4), session_type_res);
-                        
-                        api.handlers.save_type(api, {
-                            "username": api.minodb.root_username
-                        }, {
-                            type: Permission.rule_definition
-                        }, function(perm_type_err, perm_type_res){
-                            logger.log(JSON.stringify(perm_type_err,null,4), perm_type_res);
-                            callback();
-                        });
+                        callback();
                     })
                 })
     	    })

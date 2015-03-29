@@ -12443,7 +12443,6 @@ return jQuery;
                 if (on_trigger != null) {
                     on_trigger(event);
                 }
-                console.log("event.originalEvent.metaKey",event.originalEvent.metaKey);
                 if (event.originalEvent.metaKey === true) {
                     //Being opened in another tab
                 } else {
@@ -13058,6 +13057,29 @@ SAFEClass.prototype.use_page_class = function(details){
         sf.current_page.remove();
         old_page = sf.current_page;
     }
+
+    var redirect_response;
+    if(typeof class_obj.redirect === 'function'){
+        redirect_response = class_obj.redirect(details);
+    } else if(typeof class_obj.prototype.redirect === 'function'){
+        console.log(class_obj.prototype.redirect);
+        redirect_response = class_obj.prototype.redirect(details);
+    }
+    if (redirect_response !== undefined) {
+        if((typeof redirect_response) === 'function'){
+            //Given a class
+        } else if(redirect_response===null){
+            //Load the 404 page
+            details.class_name = null;
+            sf.use_page_class(details);
+            return;
+        } else {
+            //Load as URL
+            sf.load_url(redirect_response, false);
+        }
+        return;
+    }
+
 
     var pre_load_response = sf.pre_load(class_obj, details, old_page);
 
@@ -15426,20 +15448,11 @@ function FVField(name, options) {
         })
         .addClass("fv_field fv_form")
         .data("field",field)
-        
-        var submit_function = function(event){
+        .on("submit",function(event){
             event.preventDefault();
             field.submit();
             return false;
-        };
-
-        var field_dom_element = field.element[0];
-        if (field_dom_element.addEventListener) {// For all major browsers, except IE 8 and earlier
-            field_dom_element.addEventListener("submit", submit_function);
-        } else if (field_dom_element.attachEvent) {// For IE 8 and earlier versions
-            field_dom_element.attachEvent("submit", submit_function);
-        }
-
+        });
         field.on_submit_callbacks = [];
     } else {
         field.element = $("<div />").addClass("fv_field").data("field",field);

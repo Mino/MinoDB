@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "jquery": "1.11.1",
-    "safe": "0.1.7",
+    "safe": "0.1.8",
     "jquery-autosize": "1.18.13",
     "font-awesome": "4.2.0",
     "extend": "MarcusLongmuir/extend",

@@ -65,7 +65,7 @@ function MinoDB(config, username /*optional*/){
         display_name: "MinoDB Auth",
         user_path: "/MinoDB/users/",
         session_path: "/MinoDB/sessions/",
-        cookie_name: "mino_token",
+        cookie_name: "minodb_token",
         username: "MinoDB"
     })
 

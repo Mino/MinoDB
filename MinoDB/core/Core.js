@@ -20,7 +20,6 @@ function Core(minodb, db_address){
         "search": require('./handlers/SearchHandler/SearchHandler'),
         "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler'),
         "delete_type": require('./handlers/DeleteTypeHandler/DeleteTypeHandler'),
-        "add_permissions": require('./handlers/AddPermissionsHandler/AddPermissionsHandler'),
         "create_user": require('./handlers/CreateUserHandler/CreateUserHandler')
     }
 

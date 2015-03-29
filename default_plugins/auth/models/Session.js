@@ -8,14 +8,14 @@ function Session(obj) {
 
     session.id = obj._id;
 
-    var data = obj.mino_session;
+    var data = obj.minodb_session;
 
     session.user_id = data.user_id;
     session.key = data.key;
 }
 
 Session.rule_definition = {
-    name: "mino_session",
+    name: "minodb_session",
     display_name: "Session",
     type: "object",
     fields: [{
@@ -54,7 +54,7 @@ Session.prototype.save = function(api, options, callback){
     
     options = options || {};
     var path = options.path || "/" + api.minodb.root_username + "/sessions/";
-    var mino_username = options.mino_username || api.minodb.root_username;
+    var minodb_username = options.minodb_username || api.minodb.root_username;
 
     session.create_save_data(function(err, to_save){
 
@@ -64,11 +64,11 @@ Session.prototype.save = function(api, options, callback){
             "_id": session.id,
             "name": "~id~",
             "path": path,
-            "mino_session": to_save
+            "minodb_session": to_save
         }
 
         new api.handlers.save(api, {
-            "username": mino_username
+            "username": minodb_username
         }, {
             "objects": [
                 session_object
@@ -95,10 +95,10 @@ Session.get = function(session_id, api, options, callback){
 
     optinos = options || {};
     var path = options.path || "/" + api.minodb.root_username + "/sessions/";
-    var mino_username = options.mino_username || api.minodb.root_username;
+    var minodb_username = options.minodb_username || api.minodb.root_username;
 
     new api.handlers.get(api, {
-        "username": mino_username
+        "username": minodb_username
     }, {
         "addresses": [
             path+session_id
@@ -125,7 +125,7 @@ Session.create = function(data, api, options, callback){
     }
     console.trace();
     var session = new Session({
-        mino_session: data
+        minodb_session: data
     });
     session.save(api, options, callback);
 }

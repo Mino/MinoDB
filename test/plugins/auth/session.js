@@ -49,7 +49,7 @@ describe("session", function() {
 		
 		server.get('/test_session', function(req,res) {
 			assert.notEqual(req.user, undefined);
-			assert.equal(req.user.mino_user.username, 'testuser');
+			assert.equal(req.user.minodb_user.username, 'testuser');
 			res.send(200);
 			done();
 		});

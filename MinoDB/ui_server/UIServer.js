@@ -60,26 +60,26 @@ UIServer.prototype.init = function(minodb){
 
     us.express_server.get('/toolbar.js', us.auth.process_session({required:false}), function(req, res) {
         logger.log("req.mino_path",req.mino_path);
-        var mino_user = null;
+        var minodb_user = null;
         if (req.user) {
-            mino_user = req.user.mino_user;
+            minodb_user = req.user.minodb_user;
         }
         res.render('toolbar', {
             mino_path: req.mino_path,
-            user: JSON.stringify(mino_user)
+            user: JSON.stringify(minodb_user)
         });
     })
 
     us.express_server.get('/*', us.auth.process_session({required:false}), function(req, res) {
         var site_path = req.mino_path;
-        var mino_user = null;
+        var minodb_user = null;
         if (req.user) {
-            mino_user = req.user.mino_user;
+            minodb_user = req.user.minodb_user;
         }
         res.render('index', {
             custom_fields: JSON.stringify(us.minodb.custom_fields),
             site_path: site_path,
-            user: JSON.stringify(mino_user),
+            user: JSON.stringify(minodb_user),
             plugins: JSON.stringify(us.minodb.plugin_manager.list_plugins())
         });
     })

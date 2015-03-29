@@ -20,7 +20,7 @@ describe("basic_sign_in()", function() {
 			assert.equal(err, null);
 			assert.equal(user.username, "otheruser");
 
-			auth.get_user('mino_user.username', 'otheruser', function(err, user) {
+			auth.get_user('minodb_user.username', 'otheruser', function(err, user) {
 				assert.equal(session.user_id, user._id);
 				done();	
 			})

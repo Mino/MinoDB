@@ -11,12 +11,12 @@ function Type(item) {
 
     type.name = item.name;
 
-    type.rule = item['mino_type'];
+    type.rule = item['minodb_type'];
 }
 
 Type.rule = new FVRule();
 Type.rule_definition = {
-    name: "mino_type",
+    name: "minodb_type",
     display_name: "Type",
     type: "object",
     any: true
@@ -33,7 +33,7 @@ Type.NAME_CHECKS = [
 Type.prototype.init = function(type_data){
     var type = this;
 
-    type.item['mino_type'] = type_data;
+    type.item['minodb_type'] = type_data;
 
     type.rule = type_data;
 }

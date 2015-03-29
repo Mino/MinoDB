@@ -43,7 +43,7 @@ function CreateUserHandler(api, user, parameters, callback){
         logger.log("Passed object test",val);
         var options = {
             path: "/" + api.minodb.root_username + "/users/",
-            mino_username: api.minodb.root_username 
+            minodb_username: api.minodb.root_username 
         }
     	User.create(val, api, options, function(user_err, user_res){
             create_user_folders(val, api, function(err, res) {
