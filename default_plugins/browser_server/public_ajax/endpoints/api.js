@@ -8,7 +8,11 @@ module.exports = function(browser_server){
 
 		logger.log("req.user ",req.user);
 
-		var sdk = new MinoSDK(req.user.username);
+		var minodb_username = undefined;
+		if (req.user && req.user.minodb_user) {
+			minodb_username = req.user.minodb_user.username;
+		}
+		var sdk = new MinoSDK(minodb_username);
 		sdk.set_local_api(browser_server.minodb.api);
 
 		sdk.call(req.body ,function(api_err, api_res){

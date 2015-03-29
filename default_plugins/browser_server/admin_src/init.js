@@ -13,7 +13,7 @@
 
 @import("../../../fieldval_themes/mino_theme.js");
 
-@import("common.js");
+@import("../../common/common.js");
 
 @import("../../../common_elements/common_elements.js");
 @import("pages/pages.js");

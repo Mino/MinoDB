@@ -150,9 +150,9 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
             return path.object_names[0];
         }
 
-        //Allows "Mino" user to write
-        if(requesting_username==="Mino"){
-            return "Mino";
+        //Allows "MinoDB" user to write
+        if(requesting_username===Common.ROOT_USERNAME){
+            return Common.ROOT_USERNAME;
         }
 
         return null;
@@ -160,14 +160,14 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
 
 
     //Allow all users to read the types folder
-    if (path.object_names.length > 1 && path.object_names[0] === "Mino" && path.object_names[1] === "types"){
+    if (path.object_names.length > 1 && path.object_names[0] === Common.ROOT_USERNAME && path.object_names[1] === "types"){
         if(for_write===false){
             return requesting_username;
         }
     }
 
     if(path.object_names.length===0){
-        return "Mino";
+        return Common.ROOT_USERNAME;
     }
 
     return path.object_names[0];
@@ -202,7 +202,7 @@ Path.prototype.path_for_child_with_name = function(child_name, child_is_folder) 
 Path.prototype.parent_path = function() {
     var path = this;
 
-    if (path.length == 1) {
+    if (path.length <= 1) {
         return null;
     }
 

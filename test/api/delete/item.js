@@ -74,7 +74,7 @@ it('should not delete an object if access denied', function(done) {
         "function": "delete",
         "parameters": {
             "addresses": [
-                "/Mino/TestSave"
+                "/MinoDB/TestSave"
             ]
         }
     }, function(error, response) {
@@ -102,7 +102,7 @@ it('should not delete an object if access denied', function(done) {
             "error": 5
         });
         
-        globals.sdk.get(["/Mino/TestSave"], function(err, res) {
+        globals.sdk.get(["/MinoDB/TestSave"], function(err, res) {
             assert.equal(err, null);
             var object = res.objects[0];
             assert.equal(object, null);

@@ -84,7 +84,7 @@ it('should not save a folder if access denied', function(done) {
         "parameters": {
             "objects" : [{
                 "name": "TestFolder",
-                "path": "/Mino/",
+                "path": "/MinoDB/",
                 "folder": true
             }]
         }
@@ -120,7 +120,7 @@ it('should not save a folder if access denied', function(done) {
             "error": 5
         });
         
-        globals.sdk.get(["/Mino/TestFolder/"], function(err, res) {
+        globals.sdk.get(["/MinoDB/TestFolder/"], function(err, res) {
             assert.equal(err, null);
             var object = res.objects[0];
             assert.equal(object, null);

@@ -13,7 +13,8 @@ String.prototype.replaceAll = function(re, replace) {
     minimumTypeMiddleName : 3,
     maximumTypeMiddleName : 20,
     minimumShortTypeMiddleName : 3,
-    maximumShortTypeMiddleName : 20
+    maximumShortTypeMiddleName : 20,
+    ROOT_USERNAME: "MinoDB"
 }
 
 

@@ -155,13 +155,13 @@ GetHandler.prototype.get_type = function(type_object){
     var response_index = type_object[1];
     
     gh.db.object_collection.findOne({
-        "full_path": "/Mino/types/"+type_name
+        "full_path": "/" + gh.api.minodb.root_username + "/types/"+type_name
     }, function(err, res){
         // logger.log(err);
         // logger.log(res);
         if(res){
             delete res._id;//Remove _id
-            gh.response_array[response_index] = res['mino_type'];
+            gh.response_array[response_index] = res['minodb_type'];
         }
         gh.waiting_for--;
         gh.check_if_done();

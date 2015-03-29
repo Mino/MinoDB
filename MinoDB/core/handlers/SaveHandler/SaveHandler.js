@@ -143,15 +143,16 @@ SaveHandler.prototype.retrieve_types = function(){
 
     var type_addresses = [];
     for(var i = 0; i < sh.types_to_retrieve.length; i++){
-        type_addresses.push("/Mino/types/"+sh.types_to_retrieve[i]);
+        type_addresses.push("/" + sh.api.minodb.root_username + "/types/"+sh.types_to_retrieve[i]);
     }
 
+    logger.log(sh.api.minodb.root_username);
     new sh.api.handlers.get(sh.api, {
-        "username": "Mino"
+        "username": sh.api.minodb.root_username
     }, {
         "addresses": type_addresses
     }, function(get_err, get_res){
-        logger.log(get_err, get_res);
+        logger.log(type_addresses, get_err, get_res);
 
         if(get_err){
             throw new Error("Unexpected error");
@@ -176,7 +177,7 @@ SaveHandler.prototype.retrieve_types = function(){
             if(res){
                 logger.log(res);
                 var validation_type = new FVRule();
-                var type_init = validation_type.init(res['mino_type']);
+                var type_init = validation_type.init(res['minodb_type']);
                 logger.log(validation_type);
                 logger.log(type_init);
                 

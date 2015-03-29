@@ -44,8 +44,6 @@ describe('API', function() {
         require('./search/search')
     });
 
-    require('./modify_permissions');
-
     //Will delete the "person" type
     describe('When I make delete type request', function() {
         require('./delete_type/delete_type')

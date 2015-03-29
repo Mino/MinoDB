@@ -20,7 +20,6 @@ function Core(minodb, db_address){
         "search": require('./handlers/SearchHandler/SearchHandler'),
         "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler'),
         "delete_type": require('./handlers/DeleteTypeHandler/DeleteTypeHandler'),
-        "add_permissions": require('./handlers/AddPermissionsHandler/AddPermissionsHandler'),
         "create_user": require('./handlers/CreateUserHandler/CreateUserHandler')
     }
 
@@ -100,7 +99,7 @@ Core.prototype.call = function(user, request, callback){
         }
 
         if (handler != null) {
-            logger.log("Calling handler",handler);
+            logger.log("Calling handler as user", user, handler);
             var handler_callback = function(error, response) {
                 logger.log(JSON.stringify(error, null, 4));
                 logger.log(JSON.stringify(response, null, 4));

@@ -69,4 +69,6 @@ describe("Plugins", function() {
 	})
 
 	require('./ui_server');
+	require('./auth/auth');
+	require('./permissions/permissions');
 });

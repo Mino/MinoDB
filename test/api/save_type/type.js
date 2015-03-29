@@ -37,7 +37,7 @@ it('should save type', function(done) {
         logger.log(error, response);
         assert.equal(error, null);
 
-        globals.sdk.get(["/Mino/types/person"], function(err, res) {
+        globals.sdk.get(["/MinoDB/types/person"], function(err, res) {
             assert.equal(err, null);
             var person_type = res.objects[0];
             assert.notEqual(person_type, null);

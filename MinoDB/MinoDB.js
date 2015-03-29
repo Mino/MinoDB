@@ -11,11 +11,15 @@ var AdminServer = require('../default_plugins/admin_server/AdminServer');
 var APIServer = require('../default_plugins/api_server/APIServer');
 var BrowserServer = require('../default_plugins/browser_server/BrowserServer');
 var UIServer = require('./ui_server/UIServer');
+var AuthPlugin = require('../default_plugins/auth/Auth');
+var MinoDBPermissions = require('../default_plugins/permissions/MinoDbPermissions');
 
 var MinoSDK = require('minosdk');
 var extend = require('extend');
 
 var class_to_string = require('./class_to_string');
+
+var Common = require('../common_classes/Common');
 
 extend(MinoDB, MinoSDK);
 function MinoDB(config, username /*optional*/){
@@ -24,6 +28,7 @@ function MinoDB(config, username /*optional*/){
     MinoDB.superConstructor.call(this, username);
 
     mdb.config = config;
+    mdb.root_username = Common.ROOT_USERNAME;
 
     mdb.plugin_manager = new PluginManager(mdb);
 
@@ -51,16 +56,43 @@ function MinoDB(config, username /*optional*/){
         });
     });
 
+    mdb.signal_manager = new SignalManager(mdb);
+
     mdb.ui_server = new UIServer({});
+
+    var auth = new AuthPlugin({
+        name: "mino_auth",
+        display_name: "MinoDB Auth",
+        user_path: "/MinoDB/users/",
+        session_path: "/MinoDB/sessions/",
+        cookie_name: "minodb_token",
+        username: "MinoDB"
+    })
+
+    var permissions = new MinoDBPermissions({
+        path: "/MinoDB/minodb_permissions/",
+        name: "minodb-permissions",
+        display_name: "MinoDB Permissions",
+        username: "MinoDB"
+    })
+
+    auth.process_session_failed = function(req, res, next, options) {
+        if(options.required){
+            logger.log(req.mino_path+"?redirect="+req.originalUrl);
+            res.redirect(req.mino_path+"?redirect="+req.originalUrl);
+            return;
+        }
+        next();
+    }
+
     mdb.add_plugin(
+        auth,
+        permissions,
         mdb.ui_server,
         new AdminServer({}),
         new APIServer({}),
         new BrowserServer({})
     );
-
-    mdb.dynamic_signals_enabled = config.dynamic_signals_enabled || true;
-    mdb.signal_manager = new SignalManager(mdb);
 }
 
 MinoDB.prototype.add_plugin = function(){
@@ -163,6 +195,13 @@ MinoDB.prototype.add_signal = function(signal) {
     mdb.signal_manager.add_signal(signal);
 }
 
+MinoDB.prototype.get_plugin = function(name) {
+    var mdb = this;
+    return mdb.plugin_manager.plugins[name].plugin;
+}
+
 MinoDB.Signal = require('./core/models/Signal');
+MinoDB.Auth = require('../default_plugins/auth/Auth');
+MinoDB.Permissions = require('../default_plugins/permissions/MinoDbPermissions');
 
 module.exports = MinoDB;
