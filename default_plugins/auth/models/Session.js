@@ -8,14 +8,14 @@ function Session(obj) {
 
     session.id = obj._id;
 
-    var data = obj.mino_session;
+    var data = obj.minodb_session;
 
     session.user_id = data.user_id;
     session.key = data.key;
 }
 
 Session.rule_definition = {
-    name: "mino_session",
+    name: "minodb_session",
     display_name: "Session",
     type: "object",
     fields: [{
@@ -64,7 +64,7 @@ Session.prototype.save = function(api, options, callback){
             "_id": session.id,
             "name": "~id~",
             "path": path,
-            "mino_session": to_save
+            "minodb_session": to_save
         }
 
         new api.handlers.save(api, {
@@ -125,7 +125,7 @@ Session.create = function(data, api, options, callback){
     }
     console.trace();
     var session = new Session({
-        mino_session: data
+        minodb_session: data
     });
     session.save(api, options, callback);
 }
