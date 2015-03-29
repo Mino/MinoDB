@@ -36,7 +36,7 @@ module.exports = function(ui_server){
     	var mino_auth = api.minodb.get_plugin("mino_auth");
     	
     	var identifier = username ? "username" : "email";
-    	var minodb_identifier = username ? "mino_user.username" : "mino_user.email";
+    	var minodb_identifier = username ? "minodb_user.username" : "minodb_user.email";
     	var options = {
     		identifier: identifier,
     		minodb_identifier: minodb_identifier

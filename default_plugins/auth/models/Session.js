@@ -54,7 +54,7 @@ Session.prototype.save = function(api, options, callback){
     
     options = options || {};
     var path = options.path || "/" + api.minodb.root_username + "/sessions/";
-    var mino_username = options.mino_username || api.minodb.root_username;
+    var minodb_username = options.minodb_username || api.minodb.root_username;
 
     session.create_save_data(function(err, to_save){
 
@@ -68,7 +68,7 @@ Session.prototype.save = function(api, options, callback){
         }
 
         new api.handlers.save(api, {
-            "username": mino_username
+            "username": minodb_username
         }, {
             "objects": [
                 session_object
@@ -95,10 +95,10 @@ Session.get = function(session_id, api, options, callback){
 
     optinos = options || {};
     var path = options.path || "/" + api.minodb.root_username + "/sessions/";
-    var mino_username = options.mino_username || api.minodb.root_username;
+    var minodb_username = options.minodb_username || api.minodb.root_username;
 
     new api.handlers.get(api, {
-        "username": mino_username
+        "username": minodb_username
     }, {
         "addresses": [
             path+session_id

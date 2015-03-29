@@ -76,15 +76,15 @@ Auth.prototype.init = function(minodb){
     require('./admin_ajax/routes').add_routes(auth);
     auth.config_server.get('*', auth.minodb_auth.process_session({required: true}), function(req, res) {
         var site_path = path.join(req.mino_path,"/admin/plugin_config/",auth.info().name+"/");
-        var mino_user = null;
+        var minodb_user = null;
         if (req.user) {
-            mino_user = req.user.mino_user;
+            minodb_user = req.user.minodb_user;
         }
         res.render('auth_admin', {
             custom_fields: JSON.stringify(auth.minodb.custom_fields),
             site_path: site_path,
             mino_path: req.mino_path,
-            user: JSON.stringify(mino_user)
+            user: JSON.stringify(minodb_user)
         });
     })
 }
@@ -108,7 +108,7 @@ Auth.prototype.basic_sign_in = function(object, options, callback) {
 
     options = options || {};
 
-    var minodb_identifier = options.minodb_identifier || "mino_user.username";
+    var minodb_identifier = options.minodb_identifier || "minodb_user.username";
     var identifier = options.identifier || "username";
     var identifier_value = object[identifier];
 
@@ -122,7 +122,7 @@ Auth.prototype.basic_sign_in = function(object, options, callback) {
             return;
         }
 
-        var user_record = user_object.mino_user;
+        var user_record = user_object.minodb_user;
     	auth.check_password_hash(
     		password,
     		user_record.password_salt,
@@ -154,12 +154,10 @@ Auth.prototype.sign_in = Auth.prototype.basic_sign_in;
 
 Auth.prototype.create_user = function(object, callback) {
 	var auth = this;
-    //
-
 	logger.log(auth.minodb.api.ds);
     var options = {
         path: auth.user_path,
-        mino_username: auth.username
+        minodb_username: auth.username
     }
 	User.create(object, auth.minodb.api, options, callback);
 }
@@ -198,7 +196,7 @@ Auth.prototype.create_session = function(user_id, callback) {
 
     var options = {
         path: auth.session_path, 
-        mino_username: auth.username
+        minodb_username: auth.username
     }
 
 	Session.create(data, auth.minodb.api, options, callback);
@@ -208,7 +206,7 @@ Auth.prototype.get_session = function(value, callback) {
 	var auth = this;
     var options = {
         path: auth.session_path, 
-        mino_username: auth.username
+        minodb_username: auth.username
     }
 
 	Session.get(value, auth.minodb.api, options, callback);

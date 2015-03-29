@@ -129,4 +129,20 @@ describe('PathPermissionChecker', function() {
 		})
 	})
 
+	it('should return WRITE_PERMISSION for minodb_user that owns the folder', function(done) {
+		var ppc = new PathPermissionChecker(handler);
+		
+		var path = new Path();
+		path.init('/testuser/');
+
+		ppc.check_permissions_for_path(path, function(status){
+			assert.equal(status, Constants.WRITE_PERMISSION);
+			done();
+		});
+
+		ppc.retrieve_permissions(function(){
+			ppc.immediate_mode = true;
+		});
+	})
+
 })

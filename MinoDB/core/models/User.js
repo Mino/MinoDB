@@ -16,7 +16,7 @@ function User(obj) {
 
     user.id = obj._id;
 
-    var data = obj.mino_user;
+    var data = obj.minodb_user;
 
     user.username = data.username;
     user.email = data.email;
@@ -26,7 +26,7 @@ function User(obj) {
 }
 
 User.rule_definition = {
-    name: "mino_user",
+    name: "minodb_user",
     display_name: "User",
     type: "object",
     fields: [{
@@ -56,7 +56,7 @@ User.rule.init(User.rule_definition);
 
 
 User.sign_in_rule_definition = {
-    name: "mino_user",
+    name: "minodb_user",
     display_name: "User",
     type: "object",
     fields: [{
@@ -133,7 +133,7 @@ User.prototype.save = function(api, options, callback){
     }
 
     options = options || {};
-    var mino_username = options.mino_username || api.minodb.root_username;
+    var minodb_username = options.minodb_username || api.minodb.root_username;
     var path = options.path || "/" + api.minodb.root_username + "/users/";
 
     user.create_save_data(function(err, to_save){
@@ -141,14 +141,14 @@ User.prototype.save = function(api, options, callback){
         logger.log(to_save);
         logger.log(user);
         new api.handlers.save(api, {
-            "username": mino_username
+            "username": minodb_username
         }, {
             "objects": [
                 {  
                     "_id": user.id,
                     "name": user.username,
                     "path": path,
-                    "mino_user": to_save
+                    "minodb_user": to_save
                 }
             ]
         }, function(save_err, save_res){
@@ -177,17 +177,17 @@ User.get = function(value, api, options, callback){
     }
 
     options = options || {};
-    var mino_username = options.mino_username || api.minodb.root_username;
+    var minodb_username = options.minodb_username || api.minodb.root_username;
     var identifier = options.identifier || "username";
     var path = options.path || "/" + api.minodb.root_username + "/users/";
 
-    logger.log(mino_username, identifier, path)
+    logger.log(minodb_username, identifier, path)
 
     var query = {}
-    query["mino_user."+identifier] = value;
+    query["minodb_user."+identifier] = value;
 
     new api.handlers.search(api, {
-        "username": mino_username
+        "username": minodb_username
     }, {
         "paths": [
             path
@@ -225,7 +225,7 @@ User.create = function(data, api, options, callback){
         }
 
         var user = new User({
-            mino_user: data
+            minodb_user: data
         });
         user.save(api, options, function(err, res){
 
