@@ -161,7 +161,7 @@ GetHandler.prototype.get_type = function(type_object){
         // logger.log(res);
         if(res){
             delete res._id;//Remove _id
-            gh.response_array[response_index] = res['mino_type'];
+            gh.response_array[response_index] = res['minodb_type'];
         }
         gh.waiting_for--;
         gh.check_if_done();

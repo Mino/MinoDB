@@ -23424,7 +23424,7 @@ TypeSelector.prototype.do_search = function(query){
 			if(res.objects){
 				for(var i = 0; i < res.objects.length; i++){
 					(function(object){
-						var type_data = object.mino_type;
+						var type_data = object.minodb_type;
 						ts.results.append(
 							$("<div />").addClass("result").text(object.name).on('tap',function(){
 								ts.selection_made(object.name);

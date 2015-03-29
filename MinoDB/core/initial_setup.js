@@ -42,11 +42,11 @@ module.exports = function(api, callback){
         }, function(save_err, save_res){
             logger.log(JSON.stringify(save_err,null,4), save_res);
 
-    	    //Save the "mino_type" type definition without checks
+    	    //Save the "minodb_type" type definition without checks
     	    var so = new SaveObject({
-    	        "name": "mino_type",
+    	        "name": "minodb_type",
     	        "path": "/" + api.minodb.root_username + "/types/",
-    	        "mino_type": Type.rule_definition
+    	        "minodb_type": Type.rule_definition
     	    },{//Mocking the SaveHandler
     	        api: api,
     	        user: {

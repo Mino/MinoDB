@@ -177,7 +177,7 @@ SaveHandler.prototype.retrieve_types = function(){
             if(res){
                 logger.log(res);
                 var validation_type = new FVRule();
-                var type_init = validation_type.init(res['mino_type']);
+                var type_init = validation_type.init(res['minodb_type']);
                 logger.log(validation_type);
                 logger.log(type_init);
                 
