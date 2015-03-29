@@ -70,7 +70,7 @@ module.exports = function(ui_server){
 		            success: true
 		        }
 
-		        mino_auth.persist_session(res, session, 'mino_token');
+		        mino_auth.persist_session(res, session);
 		        res.json(response_object);
     		}
 	        				
