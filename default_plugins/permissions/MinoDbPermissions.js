@@ -16,7 +16,7 @@ function MinoDbPermissions(options) {
         throw "Plugin requires username to be specified in options"
     }
 
-    plugin.name = options.name || "minodb-permissions"
+    plugin.name = options.name || "minodb_permissions"
     plugin.display_name = options.display_name || plugin.name;
 
     plugin.permission_path = plugin.path + "permissions/";

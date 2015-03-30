@@ -230,7 +230,7 @@ it('should save an object if access is granted', function(done) {
                 "error": 5
             });
 
-            var perms = globals.minodb.get_plugin('minodb-permissions');
+            var perms = globals.minodb.get_plugin('minodb_permissions');
             perms.assign_permission_to_id('write:/otheruser/', 'testuser', function(err, res) {
                 assert.equal(err, null);
 

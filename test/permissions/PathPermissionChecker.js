@@ -8,7 +8,7 @@ var Constants = require('../../common_classes/Constants');
 describe('PathPermissionChecker', function() {
 
 	var clean_permissions = function(done) {
-		var perms = globals.minodb.get_plugin('minodb-permissions');
+		var perms = globals.minodb.get_plugin('minodb_permissions');
 		perms.remove_permission_from_id('write:/otheruser/', 'testuser', function(err, res) {
 			perms.remove_permission_from_id('read:/otheruser/', 'testuser', function(err, res) {
 				done();
@@ -54,7 +54,7 @@ describe('PathPermissionChecker', function() {
 		var path = new Path();
 		path.init('/otheruser/');
 
-		var perms = globals.minodb.get_plugin('minodb-permissions');
+		var perms = globals.minodb.get_plugin('minodb_permissions');
 		perms.assign_permission_to_id('write:/otheruser/', 'testuser', function(err, res) {
 			assert.equal(err, null);
 			ppc.check_permissions_for_path(path, function(status){
@@ -72,7 +72,7 @@ describe('PathPermissionChecker', function() {
 		var path = new Path();
 		path.init('/otheruser/');
 
-		var perms = globals.minodb.get_plugin('minodb-permissions');
+		var perms = globals.minodb.get_plugin('minodb_permissions');
 		perms.assign_permission_to_id('read:/otheruser/', 'testuser', function(err, res) {
 			assert.equal(err, null);
 			ppc.check_permissions_for_path(path, function(status){
@@ -89,7 +89,7 @@ describe('PathPermissionChecker', function() {
 		var path = new Path();
 		path.init('/');
 
-		var perms = globals.minodb.get_plugin('minodb-permissions');
+		var perms = globals.minodb.get_plugin('minodb_permissions');
 		perms.assign_permission_to_id('read:/', 'testuser', function(err, res) {
 			assert.equal(err, null);
 			ppc.check_permissions_for_path(path, function(status){
@@ -105,7 +105,7 @@ describe('PathPermissionChecker', function() {
 		var path = new Path();
 		path.init('/otheruser/');
 
-		var perms = globals.minodb.get_plugin('minodb-permissions');
+		var perms = globals.minodb.get_plugin('minodb_permissions');
 		perms.assign_permission_to_id('read:/otheruser/', 'testuser', function(err, res) {
 			assert.equal(err, null);
 			

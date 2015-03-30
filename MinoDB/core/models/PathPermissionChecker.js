@@ -115,7 +115,7 @@ PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths,
 		return;
 	}
 
-	var perms = ppc.handler.api.minodb.get_plugin('minodb-permissions');
+	var perms = ppc.handler.api.minodb.get_plugin('minodb_permissions');
 	perms.has_permissions(keys, ppc.handler.user.username, function(err, res) {
 		logger.log(err, res);
 

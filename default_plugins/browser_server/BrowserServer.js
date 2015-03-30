@@ -39,7 +39,7 @@ BrowserServer.prototype.init = function(minodb){
     var bs = this;
 
     bs.minodb = minodb;
-    bs.auth = minodb.get_plugin("mino_auth");
+    bs.auth = minodb.get_plugin("minodb_auth");
 
     bs.express_server = express();
     bs.express_server.disable('etag');//Prevents 304s

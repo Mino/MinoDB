@@ -17,7 +17,7 @@ it('should return an item if access is granted', function(done) {
 		assert.equal(err, null);
 		assert.equal(res.objects[0], null)
 
-		var perms = globals.minodb.get_plugin('minodb-permissions');
+		var perms = globals.minodb.get_plugin('minodb_permissions');
 		perms.assign_permission_to_id('read:/otheruser/', 'testuser', function(err, res) {
 			assert.equal(err, null);
 

@@ -56,7 +56,7 @@ UIServer.prototype.init = function(minodb){
 
     us.minodb = minodb;
 
-    us.auth = us.minodb.get_plugin('mino_auth');
+    us.auth = us.minodb.get_plugin('minodb_auth');
 
     us.express_server.get('/toolbar.js', us.auth.process_session({required:false}), function(req, res) {
         logger.log("req.mino_path",req.mino_path);

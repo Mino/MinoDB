@@ -63,7 +63,7 @@ Auth.prototype.init = function(minodb){
     var auth = this;
     auth.minodb = minodb;
 
-    auth.minodb_auth = minodb.get_plugin("mino_auth");
+    auth.minodb_auth = minodb.get_plugin("minodb_auth");
 
     auth.config_server = express();
     auth.config_server.disable('etag');//Prevents 304s

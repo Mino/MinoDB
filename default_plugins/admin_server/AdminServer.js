@@ -42,7 +42,7 @@ AdminServer.prototype.init = function(minodb){
     as.express_server.use(bodyParser());
     as.express_server.use(express.static(path.join(__dirname, 'public')));
 
-    var auth = as.minodb.get_plugin("mino_auth");
+    var auth = as.minodb.get_plugin("minodb_auth");
     as.express_server.use(auth.process_session({required:true}));
     as.express_server.use('/plugin_config/:plugin_name', function(req, res, next){
         var plugin_details = as.minodb.plugin_manager.plugins[req.params.plugin_name];

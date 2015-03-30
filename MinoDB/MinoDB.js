@@ -61,7 +61,7 @@ function MinoDB(config, username /*optional*/){
     mdb.ui_server = new UIServer({});
 
     var auth = new AuthPlugin({
-        name: "mino_auth",
+        name: "minodb_auth",
         display_name: "MinoDB Auth",
         user_path: "/MinoDB/users/",
         session_path: "/MinoDB/sessions/",
@@ -71,7 +71,7 @@ function MinoDB(config, username /*optional*/){
 
     var permissions = new MinoDBPermissions({
         path: "/MinoDB/minodb_permissions/",
-        name: "minodb-permissions",
+        name: "minodb_permissions",
         display_name: "MinoDB Permissions",
         username: "MinoDB"
     })

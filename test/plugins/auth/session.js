@@ -10,7 +10,7 @@ describe("session", function() {
 	describe('create_session()', function() {
 
 		it("should create a session object", function(done) {
-			var auth = globals.mino.get_plugin('mino_auth');
+			var auth = globals.mino.get_plugin('minodb_auth');
 			
 			var user_id = "10";
 			auth.create_session(user_id, function(err, session) {
@@ -25,7 +25,7 @@ describe("session", function() {
 	describe('get_session()', function() {
 		
 		it('should get a session by id', function(done) {
-			var auth = globals.mino.get_plugin('mino_auth');
+			var auth = globals.mino.get_plugin('minodb_auth');
 
 			auth.create_session("12", function(err, session) {
 				assert.equal(err, null);
@@ -41,7 +41,7 @@ describe("session", function() {
 	it('should persist and process session', function(done) {
 		this.timeout(200000);
 		var server = express();
-		var auth = globals.mino.get_plugin('mino_auth');
+		var auth = globals.mino.get_plugin('minodb_auth');
 		
 		server.use(cookieParser());
 		server.use('/mino/', globals.mino.server());

@@ -6,7 +6,7 @@ var globals = require('../../globals');
 describe("basic_sign_in()", function() {
 
 	it("should return a user and a session when password matches", function(done) {
-		var auth = globals.mino.get_plugin('mino_auth');
+		var auth = globals.mino.get_plugin('minodb_auth');
 		
 		var object = {
 			username: "otheruser",
@@ -28,7 +28,7 @@ describe("basic_sign_in()", function() {
 	})
 
 	it("should return an error when user does not exist", function(done) {
-		var auth = globals.mino.get_plugin('mino_auth');
+		var auth = globals.mino.get_plugin('minodb_auth');
 		
 		var object = {
 			username: "nonexistant_user",
@@ -53,7 +53,7 @@ describe("basic_sign_in()", function() {
 	})
 		
 	it("should return an error when password is invalid", function(done) {
-		var auth = globals.mino.get_plugin('mino_auth');
+		var auth = globals.mino.get_plugin('minodb_auth');
 		
 		var object = {
 			username: "otheruser",

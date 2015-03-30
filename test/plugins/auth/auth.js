@@ -9,7 +9,7 @@ describe("Auth", function() {
 	it("should retrieve config server", function(done) {
 		var test_server = express()
 		test_server.use("/mino/", globals.mino.server());
-		request_plugin_config("mino_auth", test_server, function(err, res) {
+		request_plugin_config("minodb_auth", test_server, function(err, res) {
 			logger.log(err, res);
 			assert.equal(err, null);
 			done();

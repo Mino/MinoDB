@@ -33,7 +33,7 @@ module.exports = function(ui_server){
 	        return;
 	    }
 
-    	var mino_auth = api.minodb.get_plugin("mino_auth");
+    	var minodb_auth = api.minodb.get_plugin("minodb_auth");
     	
     	var identifier = username ? "username" : "email";
     	var minodb_identifier = username ? "minodb_user.username" : "minodb_user.email";
@@ -47,7 +47,7 @@ module.exports = function(ui_server){
     	login_body[identifier] = value;
     	login_body.password = body.password;
 
-    	mino_auth.sign_in(login_body, options, function(err, user_record, session) {
+    	minodb_auth.sign_in(login_body, options, function(err, user_record, session) {
     		logger.log('FERROR', err);
     		if (err) {
     			if (err.invalid) {
@@ -70,7 +70,7 @@ module.exports = function(ui_server){
 		            success: true
 		        }
 
-		        mino_auth.persist_session(res, session);
+		        minodb_auth.persist_session(res, session);
 		        res.json(response_object);
     		}
 	        				
