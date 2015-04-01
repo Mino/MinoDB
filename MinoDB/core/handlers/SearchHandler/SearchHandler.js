@@ -37,17 +37,11 @@ function SearchHandler(api, user, parameters, callback){
         sh.query_and.push(sh.query);
     }
 
-    sh.sort = sh.validator.get('sort', BasicVal.object(false), function(sort_object) {
-        var inner_validator = new FieldVal(sort_object);
-        for (var key in sort_object) {
-            inner_validator.get(key, BasicVal.number(true), function(value) {
-                if (value != 1 && value != -1) {
-                    return errors.INVALID_SORT_PARAM;
-                }
-            });
+    sh.sort = sh.validator.get('sort', BasicVal.object(false), BasicVal.each(function(value) {
+        if (value != 1 && value != -1) {
+            return errors.INVALID_SORT_PARAM;
         }
-        return inner_validator.end();
-    })
+    }));
 
     sh.text_search = sh.validator.get("text_search", BasicVal.string(false));
     if(sh.text_search){
