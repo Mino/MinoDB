@@ -203,5 +203,6 @@ MinoDB.prototype.get_plugin = function(name) {
 MinoDB.Signal = require('./core/models/Signal');
 MinoDB.Auth = require('../default_plugins/auth/Auth');
 MinoDB.Permissions = require('../default_plugins/permissions/MinoDbPermissions');
+MinoDB.Path = require('../common_classes/Path.js');
 
 module.exports = MinoDB;
