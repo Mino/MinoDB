@@ -38,7 +38,7 @@ function SearchHandler(api, user, parameters, callback){
     }
 
     sh.sort = sh.validator.get('sort', BasicVal.object(false), BasicVal.each(function(value) {
-        if (value != 1 && value != -1) {
+        if (value !== 1 && value !== -1) {
             return errors.INVALID_SORT_PARAM;
         }
     }));
