@@ -15723,11 +15723,20 @@ function FVField(name, options) {
         })
         .addClass("fv_field fv_form")
         .data("field",field)
-        .on("submit",function(event){
+        
+        var submit_function = function(event){
             event.preventDefault();
             field.submit();
             return false;
-        });
+        };
+
+        var field_dom_element = field.element[0];
+        if (field_dom_element.addEventListener) {// For all major browsers, except IE 8 and earlier
+            field_dom_element.addEventListener("submit", submit_function);
+        } else if (field_dom_element.attachEvent) {// For IE 8 and earlier versions
+            field_dom_element.attachEvent("submit", submit_function);
+        }
+
         field.on_submit_callbacks = [];
     } else {
         field.element = $("<div />").addClass("fv_field").data("field",field);
@@ -16113,7 +16122,7 @@ FVTextField.prototype.blur = function() {
     return field;
 }
 
-FVTextField.numeric_regex = /^\d+(\.\d+)?$/;
+FVTextField.numeric_regex = /^[-+]?\d*\.?\d+$/;
 
 FVTextField.prototype.val = function(set_val, options) {
     var field = this;
@@ -18628,12 +18637,12 @@ var FVNumberRuleField = (function(){
 
         field.checks.push(BasicVal.number(field.required));
 
-        field.minimum = field.validator.get("minimum", BasicVal.number(false));
+        field.minimum = field.validator.get("minimum", BasicVal.number(false, {parse:true}));
         if (field.minimum != null) {
             field.checks.push(BasicVal.minimum(field.minimum,{stop_on_error:false}));
         }
 
-        field.maximum = field.validator.get("maximum", BasicVal.number(false));
+        field.maximum = field.validator.get("maximum", BasicVal.number(false, {parse:true}));
         if (field.maximum != null) {
             field.checks.push(BasicVal.maximum(field.maximum,{stop_on_error:false}));
         }
@@ -20522,6 +20531,10 @@ var errors = {
 	SOME_ERROR: {	
 		error: 184,
 		error_message: "The specified Type does not exist."
+	},
+	INVALID_SORT_PARAM: {	
+		error: 185,
+		error_message: "The specified sort parameter is invalid"
 	}
 };
 
@@ -22682,6 +22695,13 @@ SearchView.prototype.init = function(){
 	sv.form.add_field("paths",paths_field);
 	sv.form.add_field("include_subfolders", new FVBooleanField("Include Subfolders"));
 	sv.form.add_field("text_search",new FVTextField("Text Search"));
+	
+	var sort_field = new FVKeyValueField("Sort");
+	sort_field.new_field = function() {
+		return new FVTextField(null, {type:"number"});
+	}
+	sv.form.add_field("sort", sort_field);
+
 	sv.form.element.append(
 		sv.search_button = $("<button />").addClass("mino_button").text("Search")
 	)

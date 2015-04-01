@@ -37,6 +37,12 @@ function SearchHandler(api, user, parameters, callback){
         sh.query_and.push(sh.query);
     }
 
+    sh.sort = sh.validator.get('sort', BasicVal.object(false), BasicVal.each(function(value) {
+        if (value !== 1 && value !== -1) {
+            return errors.INVALID_SORT_PARAM;
+        }
+    }));
+
     sh.text_search = sh.validator.get("text_search", BasicVal.string(false));
     if(sh.text_search){
         sh.query_and.push({"$text":{"$search":sh.text_search}});
@@ -148,6 +154,9 @@ SearchHandler.prototype.do_search = function(callback){
         logger.log(options);
 
         var mongo_cursor = db.object_collection.find(sh.mongo_query,options);
+        if (sh.sort) {
+            mongo_cursor.sort(sh.sort);
+        }
         mongo_cursor.toArray(function(search_err, search_res){
             logger.log(search_err, search_res);
             if(search_err){

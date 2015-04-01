@@ -610,6 +610,10 @@ var errors = {
 	SOME_ERROR: {	
 		error: 184,
 		error_message: "The specified Type does not exist."
+	},
+	INVALID_SORT_PARAM: {	
+		error: 185,
+		error_message: "The specified sort parameter is invalid"
 	}
 };
 
