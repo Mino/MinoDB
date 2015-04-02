@@ -5,7 +5,6 @@ var assert = require('assert');
 var Common = require('../common_classes/Common');
 
 module.exports = function(done) {
-	this.timeout(200000);
 	MongoClient.connect(globals.db_address, function(err, db) {
 		db.dropDatabase(function(err, res) {
 			assert.equal(err, null);
@@ -32,6 +31,7 @@ module.exports = function(done) {
 	                password: "my_password"
 				}, function(user_err, user_res){
 	                logger.log(JSON.stringify(user_err, null, 4), user_res);
+					assert.equal(user_err, null);
 
 					mino.create_user({
 		                username: "otheruser",
@@ -39,6 +39,7 @@ module.exports = function(done) {
 		                password: "my_password"
 					}, function(user_err, user_res){
 					    logger.log(JSON.stringify(user_err, null, 4), user_res);
+						assert.equal(user_err, null);
 					    db.close();
 						done();
 					})

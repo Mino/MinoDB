@@ -39,7 +39,6 @@ describe("session", function() {
 	})
 
 	it('should persist and process session', function(done) {
-		this.timeout(200000);
 		var server = express();
 		var auth = globals.mino.get_plugin('minodb_auth');
 		
