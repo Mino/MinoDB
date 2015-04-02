@@ -22,9 +22,14 @@ require('./default_plugins/auth/gulpfile')(gulp);
 require('./default_plugins/permissions/gulpfile')(gulp);
 require('./MinoDB/ui_server/gulpfile')(gulp);
 
+var throw_errors = true;
+
 var onError = function (err) {  
   gutil.beep();
   console.log(err);
+  if (throw_errors) {
+    throw err;
+  }
 };
 
 gulp.task('test', function(cb){
@@ -38,7 +43,7 @@ gulp.task('test', function(cb){
         }))
         // .pipe(istanbul.writeReports())
         .on('end', cb)
-        .on('error', gutil.log)
+        .pipe(plumber(onError))
     // })
     // .on('error', gutil.log)
 });
