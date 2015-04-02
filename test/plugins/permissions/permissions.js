@@ -1,7 +1,7 @@
 var logger = require('tracer').console();
 var globals = require('../../globals');
 var assert = require('assert');
-var MinoDBPermissions = require('../../../default_plugins/permissions/MinoDBPermissions');
+var MinoDbPermissions = require('../../../default_plugins/permissions/MinoDbPermissions');
 
 globals.db_address = 'mongodb://127.0.0.1:27017/minodb_tests';
 
@@ -13,7 +13,7 @@ describe('MinoDBPermissions', function() {
 			folder: true
 		}], function(err, res) {
 			
-			var permissions_plugin = new MinoDBPermissions({
+			var permissions_plugin = new MinoDbPermissions({
 				path: "/testuser/minodb_permissions/",
 				name: "custom_permissions",
 				username: "testuser"
