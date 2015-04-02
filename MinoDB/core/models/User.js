@@ -5,12 +5,6 @@ var FVRule = require('fieldval-rules');
 
 var security = require('../security');
 
-User.systemUsers = [
-    "Mino",
-    "Admin",
-    "Public"
-];
-
 function User(obj) {
     var user = this;
 
@@ -157,15 +151,6 @@ User.prototype.save = function(api, options, callback){
             callback(save_err, save_res);
         })
     });
-}
-
-User.prototype.is_system_user = function(toCheck) {
-    for (var systemUser in User.systemUsers) {
-        if (systemUser == toCheck) {
-            return true;
-        }
-    }
-    return false;
 }
 
 User.get = function(value, api, options, callback){
