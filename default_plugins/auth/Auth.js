@@ -155,11 +155,30 @@ Auth.prototype.sign_in = Auth.prototype.basic_sign_in;
 Auth.prototype.create_user = function(object, callback) {
 	var auth = this;
 	logger.log(auth.minodb.api.ds);
-    var options = {
-        path: auth.user_path,
-        minodb_username: auth.username
-    }
-	User.create(object, auth.minodb.api, options, callback);
+
+    User.validate(object, function(error) {
+        logger.log(error);
+        if(error){
+            callback(error,null);
+            return;
+        }
+
+        var user = new User({
+            path: auth.user_path,
+            minodb_user: object
+        });
+        
+        var options = {
+            minodb_username: auth.username
+        }
+
+        user.save(auth.minodb.api, options, function(err, res){
+
+            logger.log(JSON.stringify(err,null,4), res);
+            callback(err, res);
+
+        });
+    });
 }
 
 Auth.prototype.get_user = function(identifier, value, callback) {

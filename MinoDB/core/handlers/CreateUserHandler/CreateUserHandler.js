@@ -2,7 +2,6 @@ var errors = require('../../../../errors')
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 var Path = require('../../../../common_classes/Path')
-var User = require('../../models/User');
 var FVRule = require('fieldval-rules');
 var logger = require('tracer').console();
 
@@ -45,7 +44,8 @@ function CreateUserHandler(api, user, parameters, callback){
             path: "/" + api.minodb.root_username + "/users/",
             minodb_username: api.minodb.root_username 
         }
-    	User.create(val, api, options, function(user_err, user_res){
+        var auth = api.minodb.get_plugin('minodb_auth');
+    	auth.create_user(val, function(user_err, user_res){
             create_user_folders(val, api, function(err, res) {
                 logger.log(user_err,user_res);
                 logger.log(JSON.stringify(user_err, null, 4), user_res);

@@ -9,6 +9,7 @@ function User(obj) {
     var user = this;
 
     user.id = obj._id;
+    user.path = obj.path;
 
     var data = obj.minodb_user;
 
@@ -80,7 +81,7 @@ User.username_validator = [
     BasicVal.start_with_letter()
 ]
 
-User.validate = function(data, creation, callback){
+User.validate = function(data, callback){
     logger.log("User.validate");
     User.sign_in_rule.validate(data, function(user_error) {
         logger.log(user_error);
@@ -91,17 +92,24 @@ User.validate = function(data, creation, callback){
     });
 }
 
-User.prototype.create_save_data = function(callback){
+User.prototype.to_minodb_object = function(callback){
     var user = this;
 
     var build_obj = function(){
-        var to_save = {
-            username: user.username,
-            email: user.email,
-            salted_password: user.salted_password,
-            password_salt: user.password_salt
+
+        var minodb_object = {  
+            "_id": user.id,
+            "name": user.username,
+            "path": user.path,
+            "minodb_user": {
+                username: user.username,
+                email: user.email,
+                salted_password: user.salted_password,
+                password_salt: user.password_salt
+            }
         }
-        callback(null, to_save);
+
+        callback(null, minodb_object);
     }
 
     if(user.password){
@@ -128,22 +136,14 @@ User.prototype.save = function(api, options, callback){
 
     options = options || {};
     var minodb_username = options.minodb_username || api.minodb.root_username;
-    var path = options.path || "/" + api.minodb.root_username + "/users/";
-
-    user.create_save_data(function(err, to_save){
-
-        logger.log(to_save);
+    user.to_minodb_object(function(err, minodb_object){
+        logger.log("saving", minodb_object);
         logger.log(user);
         new api.handlers.save(api, {
             "username": minodb_username
         }, {
             "objects": [
-                {  
-                    "_id": user.id,
-                    "name": user.username,
-                    "path": path,
-                    "minodb_user": to_save
-                }
+                minodb_object   
             ]
         }, function(save_err, save_res){
             logger.log(save_err, save_res);
@@ -151,75 +151,6 @@ User.prototype.save = function(api, options, callback){
             callback(save_err, save_res);
         })
     });
-}
-
-User.get = function(value, api, options, callback){
-    logger.log(arguments);
-    console.trace();
-    if (arguments.length == 3) {
-        callback = options;
-        options = undefined;
-    }
-
-    options = options || {};
-    var minodb_username = options.minodb_username || api.minodb.root_username;
-    var identifier = options.identifier || "username";
-    var path = options.path || "/" + api.minodb.root_username + "/users/";
-
-    logger.log(minodb_username, identifier, path)
-
-    var query = {}
-    query["minodb_user."+identifier] = value;
-
-    new api.handlers.search(api, {
-        "username": minodb_username
-    }, {
-        "paths": [
-            path
-        ],
-        query: query
-    }, function(get_err, get_res){
-        logger.log(get_err, get_res);
-
-        if(get_err){
-            callback(get_err);
-            return;
-        }
-        if(get_res && get_res.objects && get_res.objects[0]){
-            return callback(null, new User(get_res.objects[0]));
-        }
-        callback(null, null);
-    })
-}
-
-User.create = function(data, api, options, callback){
-    
-    logger.log(arguments);
-    if (arguments.length == 3) {
-        callback = options;
-        options = undefined;
-    }
-
-    logger.log("User.create");
-
-    User.validate(data, true, function(error) {
-        logger.log(error);
-        if(error){
-            callback(error,null);
-            return;
-        }
-
-        var user = new User({
-            minodb_user: data
-        });
-        user.save(api, options, function(err, res){
-
-            logger.log(JSON.stringify(err,null,4), res);
-            callback(err, res);
-
-        });
-    });
-
 }
 
 module.exports = User;
