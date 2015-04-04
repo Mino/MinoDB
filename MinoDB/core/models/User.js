@@ -8,16 +8,18 @@ var security = require('../security');
 function User(obj) {
     var user = this;
 
-    user.id = obj._id;
-    user.path = obj.path;
+    if (obj) {
+        user.id = obj._id;
+        user.path = obj.path;
 
-    var data = obj.minodb_user;
+        var data = obj.minodb_user;
 
-    user.username = data.username;
-    user.email = data.email;
-    user.password = data.password;
-    user.salted_password = data.salted_password;
-    user.password_salt = data.password_salt;
+        user.username = data.username;
+        user.email = data.email;
+        user.password = data.password;
+        user.salted_password = data.salted_password;
+        user.password_salt = data.password_salt;
+    }
 }
 
 User.rule_definition = {
