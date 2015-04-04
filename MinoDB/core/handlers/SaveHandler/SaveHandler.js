@@ -152,7 +152,7 @@ SaveHandler.prototype.retrieve_types = function(){
     }, {
         "addresses": type_addresses
     }, function(get_err, get_res){
-        logger.log(type_addresses, get_err, get_res);
+        logger.log(type_addresses, sh.parameters.objects, get_err, get_res);
 
         if(get_err){
             throw new Error("Unexpected error");
@@ -169,9 +169,17 @@ SaveHandler.prototype.retrieve_types = function(){
 
         var validating = false;
         for(var i = 0; i < sh.types_to_retrieve.length; i++){
+            var res = get_res.objects[i];
+            
+            if (res) {
+                var type_name = sh.types_to_retrieve[i];
+                waiting_for+=sh.types_to_items[type_name].length;    
+            }
+        }
+
+        for(var i = 0; i < sh.types_to_retrieve.length; i++){
             var type_name = sh.types_to_retrieve[i];
             var res = get_res.objects[i];
-
             var save_objects = sh.types_to_items[type_name];
 
             if(res){
@@ -182,7 +190,6 @@ SaveHandler.prototype.retrieve_types = function(){
                 logger.log(type_init);
                 
                 validating = true;
-                waiting_for+=save_objects.length;
                 for(var k = 0; k < save_objects.length; k++){
                     var save_object = save_objects[k];
                     save_object.got_type(type_name, null, validation_type, finished_one);
