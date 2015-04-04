@@ -113,7 +113,7 @@ Auth.prototype.basic_sign_in = function(object, options, callback) {
     var identifier = options.identifier || "username";
 
     var validator = new FieldVal(object);
-    var identifier_value = validator.get(identifier);
+    var identifier_value = validator.get(identifier, BasicVal.required(true));
     var password = validator.get('password', BasicVal.string());
     var error = validator.end();
     if (error) {
