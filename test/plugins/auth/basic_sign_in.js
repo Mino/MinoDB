@@ -76,4 +76,28 @@ describe("basic_sign_in()", function() {
 			done();
 		});
 	})
+
+	it("should return an error when password is empty", function(done) {
+		var auth = globals.mino.get_plugin('minodb_auth');
+		
+		var object = {
+			username: "otheruser"
+		}
+
+		auth.sign_in(object, function(err, res) {
+			logger.log(JSON.stringify(err, null, 4));
+			logger.log(JSON.stringify(res, null, 4));
+			assert.deepEqual(err, {
+				invalid: {
+					password: {
+						error: 1,
+						error_message: "Field missing."
+					}	
+				},
+				error: 5,
+				error_message: "One or more errors."
+			});
+			done();
+		});
+	})
 })

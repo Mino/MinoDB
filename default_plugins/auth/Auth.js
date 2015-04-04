@@ -4,6 +4,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 var errors = require('../../errors');
 
 var mustacheExpress = require('mustache-express');
@@ -110,9 +111,15 @@ Auth.prototype.basic_sign_in = function(object, options, callback) {
 
     var minodb_identifier = options.minodb_identifier || "minodb_user.username";
     var identifier = options.identifier || "username";
-    var identifier_value = object[identifier];
 
-    var password = object.password;
+    var validator = new FieldVal(object);
+    var identifier_value = validator.get(identifier);
+    var password = validator.get('password', BasicVal.string());
+    var error = validator.end();
+    if (error) {
+        callback(error);
+        return;
+    }
 
     auth.get_user(minodb_identifier, identifier_value, function(error,user_object){
     	
