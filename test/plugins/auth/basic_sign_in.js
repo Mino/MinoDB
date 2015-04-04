@@ -18,7 +18,7 @@ describe("basic_sign_in()", function() {
 			logger.log(JSON.stringify(user, null, 4));
 			logger.log(JSON.stringify(session, null, 4));
 			assert.equal(err, null);
-			assert.equal(user.username, "otheruser");
+			assert.equal(user.minodb_user.username, "otheruser");
 
 			auth.get_user('minodb_user.username', 'otheruser', function(err, user) {
 				assert.equal(session.user_id, user._id);

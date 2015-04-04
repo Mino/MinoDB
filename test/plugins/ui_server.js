@@ -29,7 +29,7 @@ describe("UI plugin", function() {
 				logger.log(JSON.stringify(res.body, null, 4));
 				assert.equal(err, null);
 				assert.notEqual(res.body.user, undefined);
-				assert.equal(res.body.user.username, 'testuser');
+				assert.equal(res.body.user.minodb_user.username, 'testuser');
 				done();
 			});
 	})
@@ -46,7 +46,7 @@ describe("UI plugin", function() {
 				logger.log(JSON.stringify(res.body, null, 4));
 				assert.equal(err, null);
 				assert.notEqual(res.body.user, undefined);
-				assert.equal(res.body.user.username, 'testuser');
+				assert.equal(res.body.user.minodb_user.username, 'testuser');
 				done();
 			});
 	})

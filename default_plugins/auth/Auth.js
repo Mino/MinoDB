@@ -142,7 +142,7 @@ Auth.prototype.basic_sign_in = function(object, options, callback) {
                 			JSON.stringify(session_err,null,4),
                 			session_res
                 		);
-                		callback(null, user_record, session_res);
+                		callback(null, user_object, session_res);
 
                 	})
                 } else {

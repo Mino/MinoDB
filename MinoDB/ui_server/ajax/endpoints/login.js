@@ -66,7 +66,7 @@ module.exports = function(ui_server){
     			return res.json(validator.end());
     		} else {
 				var response_object = {
-		            user: user_record,
+		            user: user_record.minodb_user,
 		            success: true
 		        }
 
