@@ -127,8 +127,8 @@ DataStore.prototype.get_id = function(callback){
 			ds.config_collection.findAndModify(
 				{_id:"id_index"},
 				[],
-				{$inc:{"index":DataStore.id_group_size}},
-				{},
+				{"$inc":{"index":DataStore.id_group_size}},
+				{"new":true},
 			function(error,response){
 	    		ds.id_last_index = response.value.index;
 				ds.id_index = response.value.index - DataStore.id_group_size;
