@@ -43,7 +43,8 @@ gulp.task('test', function(cb){
     // .on( 'finish', function () {
         gulp.src( [ 'test/test.js' ] )
         .pipe( mocha( {
-            // reporter: 'spec'
+            reporter: 'spec',
+            grep: gulp.env.grep
         }))
         // .pipe(istanbul.writeReports())
         .on('end', cb)
