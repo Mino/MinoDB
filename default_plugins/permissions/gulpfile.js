@@ -42,8 +42,6 @@ module.exports = function(gulp) {
 
     });
 
-    gulp.start('permissions_js');
-
     gulp.task('permissions_default', function(){
         gulp.start('permissions_js');
         gulp.start('permissions_less');

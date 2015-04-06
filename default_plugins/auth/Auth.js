@@ -72,7 +72,7 @@ Auth.prototype.init = function(minodb){
     auth.config_server.set('views', path.join(__dirname, 'views'));
     auth.config_server.set('view engine', 'mustache');
     auth.config_server.use(cookieParser());
-    auth.config_server.use(bodyParser());
+    auth.config_server.use(bodyParser.json());
     auth.config_server.use(express.static(path.join(__dirname, 'admin')));
     require('./admin_ajax/routes').add_routes(auth);
     auth.config_server.get('*', auth.minodb_auth.process_session({required: true}), function(req, res) {
@@ -253,7 +253,7 @@ Auth.prototype.persist_session = function(res, session) {
 Auth.prototype.process_session_failed = function(req, res, next, options) {
 	var auth = this;
 	if (options.required) {
-		res.send(401);
+		res.sendStatus(401);
 	} else {
 		next();
 	}

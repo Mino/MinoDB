@@ -82,10 +82,6 @@ module.exports = function(gulp){
         gulp.start('auth_admin_js');
     })
 
-    gulp.start("auth_js");
-
-
-
     gulp.task('auth_watch', function(){
         gulp.watch([wrap_path('./public_src/**/*.js')], ['auth_public_js']);
         gulp.watch([wrap_path('./public_src/**/*.less'),wrap_path('./public_src/**/*.subless')], ['auth_less']);

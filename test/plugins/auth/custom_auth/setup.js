@@ -19,7 +19,7 @@ module.exports = function(server, mino, callback) {
 	})
 
 	server.use(cookieParser());
-	server.use(bodyParser());
+	server.use(bodyParser.json());
 
 	server.post('/login', function(req, res) {
 		logger.debug(req.body);

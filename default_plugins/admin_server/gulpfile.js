@@ -58,10 +58,6 @@ module.exports = function(gulp){
         gulp.start('admin_public_js');
     })
 
-    gulp.start("admin_public_js");
-
-
-
     gulp.task('admin_watch', function(){
         gulp.watch([wrap_path('./public_src/**/*.js')], ['admin_js']);
         gulp.watch([wrap_path('./public_src/**/*.less'),wrap_path('./public_src/**/*.subless')], ['admin_less']);

@@ -22,8 +22,8 @@ function APIServer(options){
     as.path = options.path || '/api/';
 
     as.express_server.use(cookieParser());
-    as.express_server.use(bodyParser());
-    as.express_server.use(morgan())
+    as.express_server.use(bodyParser.json());
+    as.express_server.use(morgan('combined'))
 
     as.express_server.post('/', process_api_request, function(req, res) {
 

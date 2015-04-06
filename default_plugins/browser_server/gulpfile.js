@@ -82,10 +82,6 @@ module.exports = function(gulp){
         gulp.start('browser_admin_js');
     })
 
-    gulp.start("browser_js");
-
-
-
     gulp.task('browser_watch', function(){
         gulp.watch([wrap_path('./public_src/**/*.js')], ['browser_public_js']);
         gulp.watch([wrap_path('./public_src/**/*.less'),wrap_path('./public_src/**/*.subless')], ['browser_less']);

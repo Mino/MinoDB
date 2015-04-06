@@ -47,7 +47,7 @@ BrowserServer.prototype.init = function(minodb){
     bs.express_server.set('views', path.join(__dirname, 'views'));
     bs.express_server.set('view engine', 'mustache');
     bs.express_server.use(cookieParser());
-    bs.express_server.use(bodyParser());
+    bs.express_server.use(bodyParser.json());
     bs.express_server.use(express.static(path.join(__dirname, 'public')));
     require('./public_ajax/routes').add_routes(bs);
 
@@ -72,7 +72,7 @@ BrowserServer.prototype.init = function(minodb){
     bs.config_server.set('views', path.join(__dirname, 'views'));
     bs.config_server.set('view engine', 'mustache');
     bs.config_server.use(cookieParser());
-    bs.config_server.use(bodyParser());
+    bs.config_server.use(bodyParser.json());
     bs.config_server.use(express.static(path.join(__dirname, 'admin')));
     require('./admin_ajax/routes').add_routes(bs);
     bs.config_server.get('*', bs.auth.process_session({required: true}), function(req, res) {

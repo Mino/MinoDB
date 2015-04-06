@@ -23,7 +23,7 @@ function UIServer(options){
     us.express_server.set('views', path.join(__dirname, 'views'));
     us.express_server.set('view engine', 'mustache');
     us.express_server.use(cookieParser());
-    us.express_server.use(bodyParser());
+    us.express_server.use(bodyParser.json());
     us.express_server.use(express.static(path.join(__dirname, 'public')));
     require('./ajax/routes').add_routes(us);
 
