@@ -22,7 +22,6 @@
     "errorhandler": "*",
     "mongodb" : "^2.0.14",
     "minosdk" : "Mino/MinoSDK",
-    "tracer": "*",
     "fieldval" : "0.4.2",
     "fieldval-rules" : "0.4.3",
     "fieldval-ui" : "0.4.2",

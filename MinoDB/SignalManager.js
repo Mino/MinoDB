@@ -1,4 +1,3 @@
-var logger = require("tracer").console();
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 var Path = require('../common_classes/Path');
