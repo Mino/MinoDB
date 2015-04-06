@@ -26,7 +26,7 @@
     "fieldval-rules" : "0.4.3",
     "fieldval-ui" : "0.4.2",
     "extend": "MarcusLongmuir/extend",
-    "mino-logger": "Mino/mino-logger#ae618f4780dac8c0beb5ee0e035fb5ec2917f6c6"
+    "mino-logger": "Mino/mino-logger#3c307378ecf7b63f46361335bcd2c5826372d33d"
   },
   "devDependencies": {
     "gulp-imports" : "MarcusLongmuir/gulp-imports",
