@@ -27,6 +27,8 @@ function MinoDB(config, username /*optional*/){
 
     MinoDB.superConstructor.call(this, username);
 
+    mdb.logger = logger;
+
     mdb.config = config;
     mdb.root_username = Common.ROOT_USERNAME;
 

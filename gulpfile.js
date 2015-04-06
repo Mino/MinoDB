@@ -32,6 +32,10 @@ var onError = function (err) {
   }
 };
 
+if (gulp.env.loglevel) {
+    logger.set_level(gulp.env.loglevel);
+}
+
 gulp.task('test', function(cb){
     // gulp.src( [ 'MinoDB/**/*.js', '!MinoDB/ui_server/**/*' ] )
     // .pipe(istanbul())
@@ -44,6 +48,7 @@ gulp.task('test', function(cb){
         // .pipe(istanbul.writeReports())
         .on('end', cb)
         .pipe(plumber(onError))
+
     // })
     // .on('error', gutil.log)
 });
