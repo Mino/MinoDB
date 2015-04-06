@@ -4,3 +4,5 @@ services:
 node_js:
   - "0.11"
   - "0.10"
+notifications:
+  slack: minocloud:FwmE3aKIb7pHbAAgSamLq44I
