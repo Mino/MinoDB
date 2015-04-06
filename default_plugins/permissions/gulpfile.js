@@ -1,6 +1,6 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 var nodemon = require('gulp-nodemon');
 var path = require('path');
@@ -41,8 +41,6 @@ module.exports = function(gulp) {
         gulp.watch(['config_server/public_src/**/*.less', 'config_server/public_src/**/*.subless'], ['less']);    
 
     });
-
-    gulp.start('permissions_js');
 
     gulp.task('permissions_default', function(){
         gulp.start('permissions_js');

@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 var MinoDB = require('../../../../MinoDB/MinoDB');
 var my_user_rule = require('./my_user_rule');
@@ -19,10 +19,10 @@ module.exports = function(server, mino, callback) {
 	})
 
 	server.use(cookieParser());
-	server.use(bodyParser());
+	server.use(bodyParser.json());
 
 	server.post('/login', function(req, res) {
-		logger.log(req.body);
+		logger.debug(req.body);
 		auth.sign_in(req.body, {identifier: "my_username"}, function(err, user, session) {
 			if (err) {
 				var validator = new FieldVal(null);
@@ -67,7 +67,7 @@ module.exports = function(server, mino, callback) {
 		            "my_user": object
 		        }
 			], function(save_err, save_res){
-			    logger.log(save_err, save_res);
+			    logger.debug(save_err, save_res);
 			    callback(save_err, save_res);
 			})		
 		}
@@ -81,11 +81,11 @@ module.exports = function(server, mino, callback) {
 	    	} else if (!user_record) {
 	    		callback(null, null);
 	    	} else if (user_record) {
-	    		logger.log(user_record, object);
+	    		logger.debug(user_record, object);
 	    		if (user_record.my_user.my_password == object.my_password) {
 
 	    			auth.create_session(user_record._id, function(session_err,session_res){
-	    				logger.log(
+	    				logger.debug(
 	    					JSON.stringify(session_err,null,4),
 	    					session_res
 	    				);

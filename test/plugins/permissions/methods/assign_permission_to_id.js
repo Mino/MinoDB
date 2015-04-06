@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var globals = require('../../../globals');
 var assert = require('assert');
 
@@ -25,7 +25,7 @@ describe('assign_permission_to_id()', function() {
 			assert.equal(res.name, 'id:stan%2Ftest');
 
 			perms.has_permission('allow_edit/escaped', 'stan/test', function(err, has_permission) {
-				logger.log(JSON.stringify(err, null, 4));
+				logger.debug(JSON.stringify(err, null, 4));
 				assert.equal(err, null);
 				assert.equal(has_permission, true);
 				done();

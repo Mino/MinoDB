@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 var express = require('express');
 var globals = require('../../globals');
@@ -49,7 +49,7 @@ describe("session", function() {
 		server.get('/test_session', function(req,res) {
 			assert.notEqual(req.user, undefined);
 			assert.equal(req.user.minodb_user.username, 'testuser');
-			res.send(200);
+			res.sendStatus(200);
 			done();
 		});
 

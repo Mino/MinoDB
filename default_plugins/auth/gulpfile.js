@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var plumber = require('gulp-plumber');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 var less = require('gulp-less');
 var concat = require('gulp-concat');
@@ -81,10 +81,6 @@ module.exports = function(gulp){
         gulp.start('auth_public_js');
         gulp.start('auth_admin_js');
     })
-
-    gulp.start("auth_js");
-
-
 
     gulp.task('auth_watch', function(){
         gulp.watch([wrap_path('./public_src/**/*.js')], ['auth_public_js']);

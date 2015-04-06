@@ -5,10 +5,7 @@ module.exports = function(class_data){
 
     var class_string = String(class_data)+"\n\n";
 
-    console.log(class_name);
-
     for (var i in class_data) {
-    	console.log(i, class_data[i], typeof class_data[i], class_data.hasOwnProperty(i));
     	if (class_data.hasOwnProperty(i)) {
 
 	    	if (i=="superConstructor") {

@@ -5,7 +5,7 @@ var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var Path = require('../../../../common_classes/Path');
 var Constants = require('../../../../common_classes/Constants');
 var validators = require('../../validators');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 function SearchHandler(api, user, parameters, callback){
     var sh = this;
@@ -54,8 +54,8 @@ function SearchHandler(api, user, parameters, callback){
         return;
     } else {
         sh.do_search(function(err,res){
-            // logger.log(err);
-            // logger.log(res);
+            // logger.debug(err);
+            // logger.debug(res);
             callback(err, res);
         })
     }
@@ -76,7 +76,7 @@ SearchHandler.prototype.do_search = function(callback){
             var path_error = validators.folder_path(sh.paths[i], function(emit_path){
                 path = emit_path
             })
-            logger.log(path_error);
+            logger.debug(path_error);
 
             if(path_error){
                 path_validator.invalid(i, path_error);
@@ -150,15 +150,15 @@ SearchHandler.prototype.do_search = function(callback){
             sh.mongo_query["$and"] = sh.query_and;
         }
 
-        logger.log(JSON.stringify(sh.mongo_query,null,4));
-        logger.log(options);
+        logger.debug(JSON.stringify(sh.mongo_query,null,4));
+        logger.debug(options);
 
         var mongo_cursor = db.object_collection.find(sh.mongo_query,options);
         if (sh.sort) {
             mongo_cursor.sort(sh.sort);
         }
         mongo_cursor.toArray(function(search_err, search_res){
-            logger.log(search_err, search_res);
+            logger.debug(search_err, search_res);
             if(search_err){
                 error = search_err;
             } else {
@@ -170,7 +170,7 @@ SearchHandler.prototype.do_search = function(callback){
 
         var mongo_count_cursor = db.object_collection.find(sh.mongo_query);
         mongo_count_cursor.count(function(err, res_count){
-            logger.log(err, res_count);
+            logger.debug(err, res_count);
             if(err){
                 error = err;
             } else {

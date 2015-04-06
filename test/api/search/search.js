@@ -1,5 +1,5 @@
 var globals = require('../../globals');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 
 it('should perform a basic search', function(done) {
@@ -15,7 +15,7 @@ it('should perform a basic search', function(done) {
             }
         }
     }, function(error, response) {
-        logger.log(error, response);
+        logger.debug(error, response);
         assert.equal(error, null);
         assert.notEqual(response.objects[0]);
         done();
@@ -34,7 +34,7 @@ it('should sort values if items are valid', function(done) {
             }
         }
     }, function(error, response) {
-        logger.log(error, response);
+        logger.debug(error, response);
         assert.equal(error, null);
         assert.equal(response.objects[0].name, 'otheruser');
         assert.equal(response.objects[1].name, 'testuser');
@@ -50,7 +50,7 @@ it('should sort values if items are valid', function(done) {
                 }
             }
         }, function(error, response) {
-            logger.log(error, response);
+            logger.debug(error, response);
             assert.equal(error, null);
             assert.equal(response.objects[0].name, 'testuser');
             assert.equal(response.objects[1].name, 'otheruser');
@@ -72,8 +72,8 @@ it('should return an error if sort params are invalid', function(done) {
             }
         }
     }, function(error, response) {
-        logger.log(error, response);
-        logger.log(JSON.stringify(error, null, 4));
+        logger.debug(error, response);
+        logger.debug(JSON.stringify(error, null, 4));
         assert.deepEqual(error, {
             "invalid": {
                 "parameters": {

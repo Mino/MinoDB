@@ -1,10 +1,10 @@
 var request = require('request');
 var assert = require("assert");
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var globals = require('../globals');
 
 var jsonout = function(json) {
-    logger.log(JSON.stringify(json, null, 4));
+    logger.debug(JSON.stringify(json, null, 4));
 }
 
 describe('API', function() {
@@ -14,7 +14,7 @@ describe('API', function() {
             globals.sdk.call({
                 "something": "invalid"
             }, function(error, response) {
-                logger.log(error, response)
+                logger.debug(error, response)
                 assert.notEqual(error, null);
                 done();
             });

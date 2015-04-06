@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var globals = require('../../../globals');
 var assert = require('assert');
 
@@ -39,10 +39,10 @@ describe('remove_permission_from_group()', function() {
 		perms.assign_permission_to_group('removed_permission/escaped', "removed_permission_group/escaped", function(err, res) {
 			assert.equal(err, null);
 			assert.equal(res.name, 'group:removed_permission_group%2Fescaped');
-			logger.log(res);
+			logger.debug(res);
 
 			globals.minodb.get([perms.permission_path + 'removed_permission%2Fescaped/group:removed_permission_group%2Fescaped'], function(err, res) {
-				logger.log(err, res)
+				logger.debug(err, res)
 				assert.equal(err, null);
 				assert.equal(res.objects[0].name, 'group:removed_permission_group%2Fescaped');
 				

@@ -136,8 +136,6 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
     //Restricts access to the permissions folder in each user's root
     if (path.object_names.length > 1 && path.object_names[1] == "permissions") {
 
-        console.log("USERNAME FOR PERMISSION ",path.toString(), requesting_username);
-
         if (path.object_names.length==2 && !path.is_folder) {
             /* The request is for an item with the same name as one of the restricted folders, not the folder itself
              * so return the username of the top folder.

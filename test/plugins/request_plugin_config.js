@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var request = require('supertest');
 
 
@@ -15,7 +15,7 @@ module.exports = function(name, server, callback) {
 				.get('/mino/admin/plugin_config/' + name + '/')
 				.expect(200)
 				.end(function(err, res) {
-					logger.log(err, res.body, res.text);
+					logger.debug(err, res.body, res.text);
 					callback(err, res.text)
 				});
 		});

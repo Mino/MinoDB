@@ -5,7 +5,7 @@ var Path = require('../../../../common_classes/Path')
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var Common = require('../../../../common_classes/Common')
 var Constants = require('../../../../common_classes/Constants');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 function GetHandler(api, user, parameters, callback) {
     var gh = this;
@@ -103,7 +103,7 @@ GetHandler.prototype.get_id = function(id_object){
             var path_error = full_path.init(res.full_path, {
                 "allow_tilde": true
             });
-            logger.log(path_error);
+            logger.debug(path_error);
             gh.path_permission_checker.check_permissions_for_path(full_path,function(status){
                 if(status===Constants.WRITE_PERMISSION || status===Constants.READ_PERMISSION){
                     gh.response_array[response_index] = res;
@@ -131,8 +131,8 @@ GetHandler.prototype.get_path = function(path_object){
         if(res){
             var full_path = new Path();
             var path_error = full_path.init(res.full_path, true);
-            logger.log(res.full_path);
-            logger.log(path_error);
+            logger.debug(res.full_path);
+            logger.debug(path_error);
             gh.path_permission_checker.check_permissions_for_path(full_path,function(status){
                 if(status===Constants.WRITE_PERMISSION || status===Constants.READ_PERMISSION){
                     gh.response_array[response_index] = res;
@@ -157,8 +157,8 @@ GetHandler.prototype.get_type = function(type_object){
     gh.db.object_collection.findOne({
         "full_path": "/" + gh.api.minodb.root_username + "/types/"+type_name
     }, function(err, res){
-        // logger.log(err);
-        // logger.log(res);
+        // logger.debug(err);
+        // logger.debug(res);
         if(res){
             delete res._id;//Remove _id
             gh.response_array[response_index] = res['minodb_type'];

@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 var express = require('express');
 
@@ -26,7 +26,7 @@ describe("UI plugin", function() {
 			.send({username_or_email: 'testuser', password: 'my_password'})
 			.expect(200)
 			.end(function(err, res) {
-				logger.log(JSON.stringify(res.body, null, 4));
+				logger.debug(JSON.stringify(res.body, null, 4));
 				assert.equal(err, null);
 				assert.notEqual(res.body.user, undefined);
 				assert.equal(res.body.user.username, 'testuser');
@@ -43,7 +43,7 @@ describe("UI plugin", function() {
 			.send({username_or_email: 'test@minocloud.com', password: 'my_password'})
 			.expect(200)
 			.end(function(err, res) {
-				logger.log(JSON.stringify(res.body, null, 4));
+				logger.debug(JSON.stringify(res.body, null, 4));
 				assert.equal(err, null);
 				assert.notEqual(res.body.user, undefined);
 				assert.equal(res.body.user.username, 'testuser');
@@ -60,7 +60,7 @@ describe("UI plugin", function() {
 			.send({username_or_email: 'nonexistent_user', password: 'incorrect_password'})
 			.expect(200)
 			.end(function(err, res) {
-				logger.log(JSON.stringify(res.body, null, 4));
+				logger.debug(JSON.stringify(res.body, null, 4));
 				assert.equal(err, null);
 				assert.deepEqual(res.body, {
 				    "invalid": {
@@ -85,7 +85,7 @@ describe("UI plugin", function() {
 			.send({username_or_email: 'testuser', password: 'incorrect_password'})
 			.expect(200)
 			.end(function(err, res) {
-				logger.log(JSON.stringify(res.body, null, 4));
+				logger.debug(JSON.stringify(res.body, null, 4));
 				assert.equal(err, null);
 				assert.deepEqual(res.body, {
 				    "invalid": {

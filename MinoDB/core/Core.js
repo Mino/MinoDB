@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 
@@ -27,14 +27,14 @@ function Core(minodb, db_address){
     core.connect_callbacks = [];
 
     core.connect(function(){
-        logger.log("API CONNECTED");
+        logger.debug("API CONNECTED");
     })
 }
 
 Core.prototype.call_connect_callbacks = function(){
     var core = this;
 
-    logger.log("CALLING CORE CONNECT CALLBACKS");
+    logger.debug("CALLING CORE CONNECT CALLBACKS");
     for(var i = 0; i < core.connect_callbacks.length; i++){
         core.connect_callbacks[i]();
     }
@@ -46,12 +46,12 @@ Core.prototype.connect = function(callback){
     core.ds.connect(function(err){
         if(err) throw err;
 
-        logger.log("CORE CONNECTED");
+        logger.debug("CORE CONNECTED");
 
         require('./initial_setup')(core.minodb.api, function(){
             core.connected = true;
             for(var i = 0; i < core.connect_callbacks.length; i++){
-                logger.log("CALLING CONNECTED CALLBACK ",i);
+                logger.debug("CALLING CONNECTED CALLBACK ",i);
                 core.connect_callbacks[i]();
             }
 
@@ -79,11 +79,11 @@ Core.prototype.on_connected = function(callback){
 Core.prototype.call = function(user, request, callback){
 	var core = this;
 
-    logger.log("Core.call");
+    logger.debug("Core.call");
 
     core.on_connected(function(){
 
-        logger.log("Core.call connected");
+        logger.debug("Core.call connected");
 
         var api_val = new FieldVal(request);
 
@@ -99,10 +99,10 @@ Core.prototype.call = function(user, request, callback){
         }
 
         if (handler != null) {
-            logger.log("Calling handler as user", user, handler);
+            logger.debug("Calling handler as user", user, handler);
             var handler_callback = function(error, response) {
-                logger.log(JSON.stringify(error, null, 4));
-                logger.log(JSON.stringify(response, null, 4));
+                logger.debug(JSON.stringify(error, null, 4));
+                logger.debug(JSON.stringify(response, null, 4));
                 if (error != null) {
                     return callback(api_val.invalid("parameters", error).end());
                 } else {

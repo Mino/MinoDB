@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var MongoClient = require('mongodb').MongoClient;
 
 function DataStore(config){
@@ -21,7 +21,7 @@ DataStore.id_group_size = 100;
 DataStore.prototype.call_connect_callbacks = function(){
 	var ds = this;
 
-	logger.log("CALLING CONNECT CALLBACKS");
+	logger.debug("CALLING CONNECT CALLBACKS");
 	for(var i = 0; i < ds.connect_callbacks.length; i++){
 		ds.connect_callbacks[i]();
 	}
@@ -42,7 +42,7 @@ DataStore.prototype.connect = function(callback) {
 
 	MongoClient.connect(ds.config.address, function(err, mongo_connection) {
 	    if (err){
-	    	logger.log(err);
+	    	logger.debug(err);
 	    	throw err;
 	    }
 
@@ -54,15 +54,15 @@ DataStore.prototype.connect = function(callback) {
 	    ds.users_collection = ds.mongo_connection.collection('users');
 
 	    ds.object_collection.ensureIndex( { full_path: 1 }, { unique: true }, function(err,res){
-	    	logger.log(err, res);
+	    	logger.debug(err, res);
 	    })
 
 	    ds.object_collection.ensureIndex( { path: 1 }, function(err,res){
-	    	logger.log(err, res);
+	    	logger.debug(err, res);
 	    })
 
 	    ds.object_collection.ensureIndex( { name: 1 }, function(err,res){
-	    	logger.log(err, res);
+	    	logger.debug(err, res);
 	    })
 
 	    ds.object_collection.ensureIndex(
@@ -73,15 +73,15 @@ DataStore.prototype.connect = function(callback) {
 	    		name: "AllTextIndex"
 	    	},
 	    	function(){
-	    		logger.log(arguments);
+	    		logger.debug(arguments);
 			    ds.connected = true;
 			    ds.call_connect_callbacks();
 			}
 		);
 
 	    // mongo_connection.runCommand({shardCollection:"minods.objects", key: { full_path: 1 }}, function(err,res){
-	    // 	logger.log(err);
-	    // 	logger.log(res);
+	    // 	logger.debug(err);
+	    // 	logger.debug(res);
 	    // })
 	});
 };

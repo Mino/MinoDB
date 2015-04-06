@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -10,7 +10,7 @@ var path = require('path');
 
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var crypt = require("./crypt");
 var process_api_request = require('./process_api_request');
 
@@ -22,8 +22,8 @@ function APIServer(options){
     as.path = options.path || '/api/';
 
     as.express_server.use(cookieParser());
-    as.express_server.use(bodyParser());
-    as.express_server.use(morgan())
+    as.express_server.use(bodyParser.json());
+    as.express_server.use(morgan('combined'))
 
     as.express_server.post('/', process_api_request, function(req, res) {
 
@@ -32,8 +32,8 @@ function APIServer(options){
         var user_api_key = req.user_api_key;
 
         as.minodb.api.call(user, params, function(api_err, api_res){
-            logger.log(api_err);
-            logger.log(api_res);
+            logger.debug(api_err);
+            logger.debug(api_res);
             if(api_err){
                 res.json(api_err);
                 return;

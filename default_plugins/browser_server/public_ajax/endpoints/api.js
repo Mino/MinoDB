@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 var MinoSDK = require('minosdk');
 
@@ -6,7 +6,7 @@ module.exports = function(browser_server){
 	
 	return function(req, res){
 
-		logger.log("req.user ",req.user);
+		logger.debug("req.user ",req.user);
 
 		var minodb_username = undefined;
 		if (req.user && req.user.minodb_user) {

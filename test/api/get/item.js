@@ -1,10 +1,10 @@
 var globals = require('../../globals');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 
 it('should not throw an error if access denied', function(done) {
 	globals.sdk.with_user("testuser").get(["/MinoDB/users/testuser"], function(err, res) {
-		logger.log(res);
+		logger.debug(res);
 		assert.equal(err, null);
 		assert.equal(res.objects[0], null)
 		done();
@@ -13,7 +13,7 @@ it('should not throw an error if access denied', function(done) {
 
 it('should return an item if access is granted', function(done) {
 	globals.minodb.get(["/otheruser/"], function(err, res) {
-		logger.log(res);
+		logger.debug(res);
 		assert.equal(err, null);
 		assert.equal(res.objects[0], null)
 

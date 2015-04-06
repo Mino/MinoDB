@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 var express = require('express');
 var globals = require('../../globals');
@@ -14,9 +14,9 @@ describe("basic_sign_in()", function() {
 		}
 
 		auth.sign_in(object, function(err, user, session) {
-			logger.log(JSON.stringify(err, null, 4));
-			logger.log(JSON.stringify(user, null, 4));
-			logger.log(JSON.stringify(session, null, 4));
+			logger.debug(JSON.stringify(err, null, 4));
+			logger.debug(JSON.stringify(user, null, 4));
+			logger.debug(JSON.stringify(session, null, 4));
 			assert.equal(err, null);
 			assert.equal(user.minodb_user.username, "otheruser");
 
@@ -36,8 +36,8 @@ describe("basic_sign_in()", function() {
 		}
 
 		auth.sign_in(object, function(err, res) {
-			logger.log(JSON.stringify(err, null, 4));
-			logger.log(JSON.stringify(res, null, 4));
+			logger.debug(JSON.stringify(err, null, 4));
+			logger.debug(JSON.stringify(res, null, 4));
 			assert.deepEqual(err, {
 				invalid: {
 					username: {
@@ -61,8 +61,8 @@ describe("basic_sign_in()", function() {
 		}
 
 		auth.sign_in(object, function(err, res) {
-			logger.log(JSON.stringify(err, null, 4));
-			logger.log(JSON.stringify(res, null, 4));
+			logger.debug(JSON.stringify(err, null, 4));
+			logger.debug(JSON.stringify(res, null, 4));
 			assert.deepEqual(err, {
 				invalid: {
 					password: {
@@ -85,8 +85,8 @@ describe("basic_sign_in()", function() {
 		}
 
 		auth.sign_in(object, function(err, res) {
-			logger.log(JSON.stringify(err, null, 4));
-			logger.log(JSON.stringify(res, null, 4));
+			logger.debug(JSON.stringify(err, null, 4));
+			logger.debug(JSON.stringify(res, null, 4));
 			assert.deepEqual(err, {
 				invalid: {
 					password: {
@@ -109,8 +109,8 @@ describe("basic_sign_in()", function() {
 		}
 
 		auth.sign_in(object, function(err, res) {
-			logger.log(JSON.stringify(err, null, 4));
-			logger.log(JSON.stringify(res, null, 4));
+			logger.debug(JSON.stringify(err, null, 4));
+			logger.debug(JSON.stringify(res, null, 4));
 			assert.deepEqual(err, {
 				invalid: {
 					username: {

@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -23,7 +23,7 @@ function UIServer(options){
     us.express_server.set('views', path.join(__dirname, 'views'));
     us.express_server.set('view engine', 'mustache');
     us.express_server.use(cookieParser());
-    us.express_server.use(bodyParser());
+    us.express_server.use(bodyParser.json());
     us.express_server.use(express.static(path.join(__dirname, 'public')));
     require('./ajax/routes').add_routes(us);
 
@@ -59,7 +59,7 @@ UIServer.prototype.init = function(minodb){
     us.auth = us.minodb.get_plugin('minodb_auth');
 
     us.express_server.get('/toolbar.js', us.auth.process_session({required:false}), function(req, res) {
-        logger.log("req.mino_path",req.mino_path);
+        logger.debug("req.mino_path",req.mino_path);
         var minodb_user = null;
         if (req.user) {
             minodb_user = req.user.minodb_user;

@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 var FVRule = require('fieldval-rules');
@@ -77,7 +77,7 @@ Type.prototype.save = function(api, callback){
             type.item
         ]
     }, function(save_err, save_res){
-        logger.log(JSON.stringify(save_err,null,4), save_res);
+        logger.debug(JSON.stringify(save_err,null,4), save_res);
 
         callback(null, save_res);
     })
@@ -91,7 +91,7 @@ Type.get = function(typename, api, callback){
             "/" + api.minodb.root_username + "/types/"+typename
         ]
     }, function(get_err, get_res){
-        logger.log(typename, get_err, get_res);
+        logger.debug(typename, get_err, get_res);
 
         if(get_err){
             throw new Error("Unexpected API error");

@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -39,7 +39,7 @@ AdminServer.prototype.init = function(minodb){
     as.express_server.set('views', path.join(__dirname, 'views'));
     as.express_server.set('view engine', 'mustache');
     as.express_server.use(cookieParser());
-    as.express_server.use(bodyParser());
+    as.express_server.use(bodyParser.json());
     as.express_server.use(express.static(path.join(__dirname, 'public')));
 
     var auth = as.minodb.get_plugin("minodb_auth");

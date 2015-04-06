@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var globals = require('./globals');
 
 globals.db_address = 'mongodb://127.0.0.1:27017/minodb_tests';
