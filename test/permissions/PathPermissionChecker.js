@@ -1,5 +1,5 @@
 var globals = require('../globals');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 var Path = require('../../common_classes/Path');
 var PathPermissionChecker = require('../../MinoDB/core/models/PathPermissionChecker');

@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 var express = require('express');
 var globals = require('../../globals');

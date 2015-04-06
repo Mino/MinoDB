@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 var express = require('express');
 var globals = require('../../../globals');
@@ -22,7 +22,7 @@ describe("custom auth", function() {
 			.get('/')
 			.expect(401)
 			.end(function(err, res) {
-				logger.log(err,res);
+				logger.debug(err,res);
 				assert.equal(err,null);
 				done();
 			})
@@ -35,7 +35,7 @@ describe("custom auth", function() {
 			.send({my_username: "some_user", my_password: "some_password"})
 			.expect(200)
 			.end(function(err,res) {
-				logger.log(err, res);
+				logger.debug(err, res);
 				assert.equal(err, null);
 				
 				agent

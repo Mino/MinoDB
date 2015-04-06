@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 var FVRule = require('fieldval-rules');
@@ -73,7 +73,7 @@ User.sign_in_rule_definition = {
     }]
 };
 User.sign_in_rule = new FVRule();
-logger.log(FVRule.prototype.validate+"");
+logger.debug(FVRule.prototype.validate+"");
 User.sign_in_rule.init(User.sign_in_rule_definition);
 
 //TODO add more checks for tilde, slashes, etc
@@ -84,9 +84,9 @@ User.username_validator = [
 ]
 
 User.validate = function(data, callback){
-    logger.log("User.validate");
+    logger.debug("User.validate");
     User.sign_in_rule.validate(data, function(user_error) {
-        logger.log(user_error);
+        logger.debug(user_error);
 
         var validator = new FieldVal(data, user_error);
         validator.get("username", User.username_validator);
@@ -129,8 +129,7 @@ User.prototype.to_minodb_object = function(callback){
 User.prototype.save = function(api, options, callback){
     var user = this;
 
-    logger.log(arguments);
-    console.trace();
+    logger.debug(arguments);
     if (arguments.length == 2) {
         callback = options;
         options = undefined;
@@ -139,8 +138,8 @@ User.prototype.save = function(api, options, callback){
     options = options || {};
     var minodb_username = options.minodb_username || api.minodb.root_username;
     user.to_minodb_object(function(err, minodb_object){
-        logger.log("saving", minodb_object);
-        logger.log(user);
+        logger.debug("saving", minodb_object);
+        logger.debug(user);
         new api.handlers.save(api, {
             "username": minodb_username
         }, {
@@ -148,7 +147,7 @@ User.prototype.save = function(api, options, callback){
                 minodb_object   
             ]
         }, function(save_err, save_res){
-            logger.log(save_err, save_res);
+            logger.debug(save_err, save_res);
 
             callback(save_err, save_res);
         })

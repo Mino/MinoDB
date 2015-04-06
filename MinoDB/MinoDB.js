@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 var express = require('express');
 var errorHandler = require('errorhandler');
@@ -78,7 +78,7 @@ function MinoDB(config, username /*optional*/){
 
     auth.process_session_failed = function(req, res, next, options) {
         if(options.required){
-            logger.log(req.mino_path+"?redirect="+req.originalUrl);
+            logger.debug(req.mino_path+"?redirect="+req.originalUrl);
             res.redirect(req.mino_path+"?redirect="+req.originalUrl);
             return;
         }
@@ -186,7 +186,7 @@ MinoDB.prototype.get_plugin_scripts = function(mino_path) {
             scripts = scripts.concat(plugin_scripts);
         }
     }
-    logger.log("SCRIPTS", scripts);
+    logger.debug("SCRIPTS", scripts);
     return scripts;
 }
 

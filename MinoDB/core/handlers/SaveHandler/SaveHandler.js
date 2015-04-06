@@ -6,7 +6,7 @@ var FVRule = require('fieldval-rules');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var FolderChecker = require('../../models/FolderChecker');
 var SaveObject = require('./SaveObject')
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 function SaveHandler(api, user, parameters, options, callback){
     var sh = this;
@@ -41,8 +41,8 @@ function SaveHandler(api, user, parameters, options, callback){
 
     var objects = sh.validator.get("objects", BasicVal.array(true), BasicVal.each(function(object, index){
         var error = BasicVal.object(true).check(object); if(error) return error;
-        logger.log(object);
-        logger.log(index);
+        logger.debug(object);
+        logger.debug(index);
 
         sh.save_objects.push(
             new SaveObject(
@@ -93,9 +93,9 @@ SaveHandler.prototype.check_ready_to_save = function(){
     var sh = this;
 
     if(sh.permissions_checked && sh.types_retrived && sh.folders_checked){
-        logger.log("FINISHED GETTING RULES, PERMISSIONS AND FOLDER EXISTANCES");
+        logger.debug("FINISHED GETTING RULES, PERMISSIONS AND FOLDER EXISTANCES");
 
-        logger.log(sh.objects_validator);
+        logger.debug(sh.objects_validator);
 
         for(var i = 0; i < sh.save_objects.length; i++){
             var save_object = sh.save_objects[i];
@@ -103,8 +103,8 @@ SaveHandler.prototype.check_ready_to_save = function(){
             var object_error = save_object.validator.end();
 
             if(object_error){
-                logger.log(object_error);
-                logger.log(save_object.index);
+                logger.debug(object_error);
+                logger.debug(save_object.index);
                 sh.objects_validator.invalid(save_object.index, object_error);
             }
         }
@@ -139,20 +139,20 @@ SaveHandler.prototype.check_ready_to_save = function(){
 SaveHandler.prototype.retrieve_types = function(){
     var sh = this;
 
-    logger.log(sh.types_to_items);
+    logger.debug(sh.types_to_items);
 
     var type_addresses = [];
     for(var i = 0; i < sh.types_to_retrieve.length; i++){
         type_addresses.push("/" + sh.api.minodb.root_username + "/types/"+sh.types_to_retrieve[i]);
     }
 
-    logger.log(sh.api.minodb.root_username);
+    logger.debug(sh.api.minodb.root_username);
     new sh.api.handlers.get(sh.api, {
         "username": sh.api.minodb.root_username
     }, {
         "addresses": type_addresses
     }, function(get_err, get_res){
-        logger.log(type_addresses, sh.parameters.objects, get_err, get_res);
+        logger.debug(type_addresses, sh.parameters.objects, get_err, get_res);
 
         if(get_err){
             throw new Error("Unexpected error");
@@ -183,11 +183,11 @@ SaveHandler.prototype.retrieve_types = function(){
             var save_objects = sh.types_to_items[type_name];
 
             if(res){
-                logger.log(res);
+                logger.debug(res);
                 var validation_type = new FVRule();
                 var type_init = validation_type.init(res['minodb_type']);
-                logger.log(validation_type);
-                logger.log(type_init);
+                logger.debug(validation_type);
+                logger.debug(type_init);
                 
                 validating = true;
                 for(var k = 0; k < save_objects.length; k++){
@@ -212,7 +212,7 @@ SaveHandler.prototype.do_saving = function(callback){
     sh.total = sh.save_objects.length;
     sh.completed = 0;
 
-    logger.log(sh.total);
+    logger.debug(sh.total);
 
     if(sh.total===0){
         sh.finished_saving();
@@ -223,7 +223,7 @@ SaveHandler.prototype.do_saving = function(callback){
         var save_object = sh.save_objects[i];
         
         save_object.do_saving(function(save_object,error,save_details){
-            logger.log(error);
+            logger.debug(error);
             if(error){
                 sh.result_object_array[save_object.index] = error;
                 sh.objects_validator.invalid(""+save_object.index,error);
@@ -232,14 +232,14 @@ SaveHandler.prototype.do_saving = function(callback){
             }
 
             sh.completed++;
-            logger.log(sh.completed + " : " +sh.total);
+            logger.debug(sh.completed + " : " +sh.total);
             if(sh.completed===sh.total){
                 sh.finished_saving();
             }
 
             if (!error) {
                 sh.api.minodb.signal_manager.trigger(sh.user, "save", save_object.saving_json, function(err, res) {
-                  logger.log(err,res);
+                  logger.debug(err,res);
                 })    
             }
             

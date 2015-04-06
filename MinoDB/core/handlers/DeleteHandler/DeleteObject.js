@@ -1,7 +1,7 @@
 var Constants = require('../../../../common_classes/Constants');
 var Common = require('../../../../common_classes/Common')
 var Path = require('../../../../common_classes/Path');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 var validators = require('../../validators');
@@ -10,7 +10,7 @@ function DeleteObject(address, handler, index, options){
 	var del_obj = this;
 
 	var address_details = Common.get_resource_type(address);
-    logger.log("address_details ",address_details);
+    logger.debug("address_details ",address_details);
     var address_type = address_details[0];
     var address_value = address_details[1];
 
@@ -21,7 +21,7 @@ function DeleteObject(address, handler, index, options){
         del_obj.id = address_value;
         del_obj.address_type = DeleteObject.BY_ID;
     } else {
-        logger.log("DeleteObject address_type ",address_type);
+        logger.debug("DeleteObject address_type ",address_type);
         del_obj.error = FieldVal.Error(0)
     }
 
@@ -51,20 +51,20 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
 			_id: del_obj.id
 		};
 	} else {//Is by address
-		logger.log(del_obj.path);
+		logger.debug(del_obj.path);
 		find_query = {
 			full_path: del_obj.path.toString()
 		};
 	}
 
-	logger.log(find_query);
+	logger.debug(find_query);
 
 
 	db.object_collection.findOne(
     	find_query,function(err,res){
 
-    		logger.log(err);
-    		logger.log(res);
+    		logger.debug(err);
+    		logger.debug(res);
 
     		if(res===null){
     			on_delete_callback(del_obj,{
@@ -89,28 +89,28 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
 					};
 				} else {//Is by address
 					//Must be the same id and full_path
-					logger.log(del_obj.path);
+					logger.debug(del_obj.path);
 					update_conditions = {
 						_id: del_obj.id,
 						full_path: del_obj.path.toString()
 					};
 				}
 
-				logger.log(update_conditions);
+				logger.debug(update_conditions);
 
 	    		db.object_collection.remove(
 			    	update_conditions,
 			    	function(err,response){
-			    		logger.log("DELETED");
+			    		logger.debug("DELETED");
 
-			    		logger.log(response);
+			    		logger.debug(response);
 
 			    		if(err){
-			    			logger.log(err);
+			    			logger.debug(err);
 			    			throw new Error("UNEXPECTED!");
 			    		} else {
 
-			    			logger.log(del_obj.path);
+			    			logger.debug(del_obj.path);
 
 			    			if(del_obj.path.is_folder){
 			    				var delete_folder_conditions = {
@@ -119,10 +119,10 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
 			    					}
 			    				};
 
-			    				logger.log(delete_folder_conditions);
+			    				logger.debug(delete_folder_conditions);
 
 			    				db.object_collection.remove(delete_folder_conditions, function(folder_err, folder_res){
-			    					logger.log(folder_err, folder_res);
+			    					logger.debug(folder_err, folder_res);
 					    			on_delete_callback(del_obj,null,{
 					    				deleted: true
 					    			});	
@@ -137,17 +137,17 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
 			    );
     		}
 
-    		logger.log(old_full_path.username_for_permission);
+    		logger.debug(old_full_path.username_for_permission);
     		var username_for_permission = old_full_path.username_for_permission(del_obj.handler.user.username, true);
-    		logger.log("DELETING username_for_permission",username_for_permission);
+    		logger.debug("DELETING username_for_permission",username_for_permission);
 			if(username_for_permission===del_obj.handler.user.username){
 				have_permission();
 			} else {
 
-				logger.log("old_full_path ",old_full_path);
+				logger.debug("old_full_path ",old_full_path);
 	    		del_obj.handler.path_permission_checker.check_permissions_for_path(old_full_path,function(status){
-	    			logger.log("status ",status);
-	    			logger.log("FAILED OLD PATH: "+del_obj.index);
+	    			logger.debug("status ",status);
+	    			logger.debug("FAILED OLD PATH: "+del_obj.index);
 					if(status!=Constants.WRITE_PERMISSION){
 						on_delete_callback(del_obj, {
 							error: -1,

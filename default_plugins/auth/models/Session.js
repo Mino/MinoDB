@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 var FVRule = require("fieldval-rules");
@@ -39,13 +39,13 @@ Session.prototype.create_save_data = function(callback){
         user_id: session.user_id,
         key: session.key
     }
-    logger.log("to_save", to_save);
+    logger.debug("to_save", to_save);
     callback(null, to_save);
 }
 
 Session.prototype.save = function(api, options, callback){
     var session = this;
-    logger.log(arguments);
+    logger.debug(arguments);
 
     if (arguments.length == 2) {
         callback = options;
@@ -58,7 +58,7 @@ Session.prototype.save = function(api, options, callback){
 
     session.create_save_data(function(err, to_save){
 
-        logger.log(err, to_save);
+        logger.debug(err, to_save);
 
         var session_object = {  
             "_id": session.id,
@@ -74,7 +74,7 @@ Session.prototype.save = function(api, options, callback){
                 session_object
             ]
         }, function(save_err, save_res){
-            logger.log(save_err, save_res);
+            logger.debug(save_err, save_res);
             if (save_err) {
                 callback(save_err);
             } else {
@@ -86,7 +86,7 @@ Session.prototype.save = function(api, options, callback){
 }
 
 Session.get = function(session_id, api, options, callback){
-    logger.log(arguments);
+    logger.debug(arguments);
 
     if (arguments.length == 3) {
         callback = options;
@@ -104,7 +104,7 @@ Session.get = function(session_id, api, options, callback){
             path+session_id
         ]
     }, function(get_err, get_res){
-        logger.log(get_err, get_res);
+        logger.debug(get_err, get_res);
 
         if(get_err){
             callback(get_err);
@@ -118,12 +118,11 @@ Session.get = function(session_id, api, options, callback){
 }
 
 Session.create = function(data, api, options, callback){
-    logger.log(arguments);
+    logger.debug(arguments);
     if (arguments.length == 3) {
         callback = options;
         options = {};
     }
-    console.trace();
     var session = new Session({
         minodb_session: data
     });

@@ -5,7 +5,7 @@ var Path = require('../../../../common_classes/Path')
 var FVRule = require('fieldval-rules');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var DeleteObject = require('./DeleteObject')
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 function DeleteHandler(api, user, parameters, callback){
     var dh = this;
@@ -31,8 +31,8 @@ function DeleteHandler(api, user, parameters, callback){
         dh.delete_objects.push(new DeleteObject(address, dh,index));
     }));
 
-    logger.log("parameters", parameters);
-    logger.log("objects", objects);
+    logger.debug("parameters", parameters);
+    logger.debug("objects", objects);
 
 
     dh.result = {};
@@ -53,20 +53,20 @@ DeleteHandler.prototype.check_ready_to_delete = function(){
     var dh = this;
 
     if(dh.permissions_checked){
-        logger.log("FINISHED GETTING RULES AND PERMISSIONS");
+        logger.debug("FINISHED GETTING RULES AND PERMISSIONS");
 
-        logger.log(dh.objects_validator);
+        logger.debug(dh.objects_validator);
 
         for(var i = 0; i < dh.delete_objects.length; i++){
             var delete_object = dh.delete_objects[i];
 
             var object_error = delete_object.error;
 
-            logger.log(object_error);
+            logger.debug(object_error);
 
             if(object_error){
-                logger.log(object_error);
-                logger.log(delete_object.index);
+                logger.debug(object_error);
+                logger.debug(delete_object.index);
                 dh.objects_validator.invalid(delete_object.index, object_error);
             }
         }
@@ -106,7 +106,7 @@ DeleteHandler.prototype.do_deleting = function(callback){
     dh.total = dh.delete_objects.length;
     dh.completed = 0;
 
-    logger.log(dh.total);
+    logger.debug(dh.total);
 
     if(dh.total===0){
         dh.finished_deleting();
@@ -117,7 +117,7 @@ DeleteHandler.prototype.do_deleting = function(callback){
         var delete_object = dh.delete_objects[i];
         
         delete_object.do_deleting(function(delete_object,error,delete_details){
-            logger.log(error);
+            logger.debug(error);
             if(error){
                 dh.result_object_array[delete_object.index] = error;
                 dh.objects_validator.invalid(""+delete_object.index,error);
@@ -126,14 +126,14 @@ DeleteHandler.prototype.do_deleting = function(callback){
             }
 
             dh.completed++;
-            logger.log(dh.completed + " : " +dh.total);
+            logger.debug(dh.completed + " : " +dh.total);
             if(dh.completed===dh.total){
                 dh.finished_deleting();
             }
 
             if (!error) {
                 dh.api.minodb.signal_manager.trigger(dh.user, "delete", delete_object.deleting_json, function(err, res) {
-                    logger.log(err,res);
+                    logger.debug(err,res);
                 })    
             }
             

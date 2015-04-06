@@ -1,5 +1,5 @@
 var globals = require('../../globals');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 var express = require('express');
 var request_plugin_config = require('../request_plugin_config');
@@ -10,7 +10,7 @@ describe("Auth", function() {
 		var test_server = express()
 		test_server.use("/mino/", globals.mino.server());
 		request_plugin_config("minodb_auth", test_server, function(err, res) {
-			logger.log(err, res);
+			logger.debug(err, res);
 			assert.equal(err, null);
 			done();
 		})

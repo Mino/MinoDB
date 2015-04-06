@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var errors = require('../../../../errors');
 var User = require('../../../core/models/User')
 
@@ -48,7 +48,7 @@ module.exports = function(ui_server){
     	login_body.password = body.password;
 
     	minodb_auth.sign_in(login_body, options, function(err, user_record, session) {
-    		logger.log('FERROR', err);
+    		logger.debug('FERROR', err);
     		if (err) {
     			if (err.invalid) {
     				if (err.invalid.username) {

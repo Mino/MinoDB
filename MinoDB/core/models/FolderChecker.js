@@ -1,5 +1,5 @@
 var Constants = require('../../../common_classes/Constants');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 function CallbackObject(callback){
 	var co = this;
@@ -24,7 +24,7 @@ function FolderChecker(handler){
 FolderChecker.prototype.check_path_existance = function(path, callback){
 	var fc = this;
 
-	logger.log("check_path_existance ",path);
+	logger.debug("check_path_existance ",path);
 
 	if(fc.immediate_mode){
 		paths = {};
@@ -107,7 +107,7 @@ FolderChecker.prototype.retrieve_existances = function(callback, paths, callback
 		for(var i = 0; i < array.length; i++){
 			var object = array[i];
 
-			logger.log(object.full_path);
+			logger.debug(object.full_path);
 			var callbacks = paths[object.full_path];
 			if(callbacks){
 				for(var n = 0; n < callbacks.length; n++){

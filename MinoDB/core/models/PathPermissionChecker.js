@@ -1,5 +1,5 @@
 var Constants = require('../../../common_classes/Constants');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 function CallbackObject(callback){
 	var co = this;
@@ -29,7 +29,7 @@ PathPermissionChecker.prototype.check_permissions_for_path = function(path, call
 	var ppc = this;
 
 	var username_for_permission = path.username_for_permission(ppc.handler.user.username, ppc.for_write);
-	logger.log(username_for_permission, ppc.handler.user.username, path.toString());
+	logger.debug(username_for_permission, ppc.handler.user.username, path.toString());
 	if(username_for_permission===ppc.handler.user.username){
 		callback(Constants.WRITE_PERMISSION);
 		return;
@@ -56,7 +56,7 @@ PathPermissionChecker.prototype.check_permissions_for_path = function(path, call
 
 	var sub_path = path;
 	do{
-		logger.log(sub_path);
+		logger.debug(sub_path);
 		var permission_path = (ppc.for_write ? "write:" : "read:") + sub_path;
 		var existing_permission = ppc.retrieved_permissions[permission_path];
 		if(existing_permission){
@@ -106,7 +106,7 @@ PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths,
 	}
 
 	var keys = Object.keys(paths);
-	logger.log(paths);
+	logger.debug(paths);
 	if(keys.length===0){
 		ppc.resolve_callbacks(callback_objects);
 		if(callback){
@@ -117,12 +117,12 @@ PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths,
 
 	var perms = ppc.handler.api.minodb.get_plugin('minodb_permissions');
 	perms.has_permissions(keys, ppc.handler.user.username, function(err, res) {
-		logger.log(err, res);
+		logger.debug(err, res);
 
 		for (var i=0; i<keys.length; i++) {
 			var permission = keys[i];
-			logger.log(permission);
-			logger.log(callback_objects);
+			logger.debug(permission);
+			logger.debug(callback_objects);
 			if (res[i] === true) {
 				for (var j=0; j<paths[permission].length; j++) {
 					var callback_object = paths[permission][j];

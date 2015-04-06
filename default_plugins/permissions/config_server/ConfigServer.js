@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var path = require('path');
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -19,7 +19,7 @@ function ConfigServer(plugin){
     us.express_server.get('/*', function(req, res) {
         var original_url = req.originalUrl;
         var plugin_path = original_url.substring(0, original_url.length - req._parsedUrl.path.length) + '/'
-        logger.log(original_url, plugin_path, req._parsedUrl.path);
+        logger.debug(original_url, plugin_path, req._parsedUrl.path);
 
         // throw "error";
         var params = {

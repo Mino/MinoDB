@@ -1,5 +1,5 @@
 var globals = require('../globals');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 var class_to_string = require('../../MinoDB/class_to_string');
 var extend = require('extend');
@@ -44,7 +44,7 @@ describe("class_to_string", function() {
 		function test_class() {}
 		test_class.property = 2;
 
-		logger.log(output);
+		logger.debug(output);
 
 		var output = class_to_string(test_class);
 		assert.notEqual(output.indexOf("test_class.property = 2"), -1);
@@ -65,7 +65,7 @@ describe("class_to_string", function() {
 
 		
 		var output = class_to_string(test_class);
-		logger.log(output);
+		logger.debug(output);
 
 		assert.notEqual(output.indexOf("extend(test_class, super_class)"), -1);
 		assert.equal(output, "extend(test_class, super_class)\n\n"

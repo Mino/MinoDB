@@ -2,7 +2,7 @@ var errors = require('../../../../errors')
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 var Path = require('../../../../common_classes/Path')
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 var Type = require('../../models/Type');
 
@@ -36,7 +36,7 @@ function DeleteTypeHandler(api, user, parameters, callback){
                     dth.validator.error(errors.DELETE_TYPE_FAILED).end()
                 )
             } else {
-                logger.log(err, response);
+                logger.debug(err, response);
 
                 if(response===0){
                     //There was no type

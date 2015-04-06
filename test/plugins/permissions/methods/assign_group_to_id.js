@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var globals = require('../../../globals');
 var assert = require('assert');
 
@@ -22,9 +22,9 @@ describe('assign_group_to_id()', function() {
 		perms.assign_group_to_id('assigned_group/escaped', "stan/test", function(err, res) {
 			assert.equal(err, null);
 			assert.equal(res.name, 'id:stan%2Ftest');
-			logger.log(res);
+			logger.debug(res);
 			globals.minodb.get([perms.group_path + 'assigned_group%2Fescaped/id:stan%2Ftest'], function(err, res) {
-				logger.log(err, res)
+				logger.debug(err, res)
 				assert.equal(err, null);
 				assert.equal(res.objects[0].name, 'id:stan%2Ftest');
 				done();

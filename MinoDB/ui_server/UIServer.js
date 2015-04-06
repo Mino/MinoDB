@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -59,7 +59,7 @@ UIServer.prototype.init = function(minodb){
     us.auth = us.minodb.get_plugin('minodb_auth');
 
     us.express_server.get('/toolbar.js', us.auth.process_session({required:false}), function(req, res) {
-        logger.log("req.mino_path",req.mino_path);
+        logger.debug("req.mino_path",req.mino_path);
         var minodb_user = null;
         if (req.user) {
             minodb_user = req.user.minodb_user;

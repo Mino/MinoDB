@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var crypto = require('crypto');
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -91,10 +91,10 @@ Auth.prototype.init = function(minodb){
 }
 
 Auth.prototype.check_password_hash = function(password,salt,correct_hash_64,callback){
-	logger.log(arguments);
+	logger.debug(arguments);
     crypto.pbkdf2(password, salt, 32, 32, function(err, hash_binary) {
     	var hash = new Buffer(hash_binary, 'binary').toString('base64');
-    	logger.log("output hash: ",hash);
+    	logger.debug("output hash: ",hash);
     	callback(hash===correct_hash_64);
     });
 }
@@ -136,9 +136,9 @@ Auth.prototype.basic_sign_in = function(object, options, callback) {
     		user_record.salted_password,
     		function(is_correct){
                 if(is_correct){
-                    logger.log(user_object);
+                    logger.debug(user_object);
                 	auth.create_session(user_object._id, function(session_err,session_res){
-                		logger.log(
+                		logger.debug(
                 			JSON.stringify(session_err,null,4),
                 			session_res
                 		);
@@ -161,10 +161,10 @@ Auth.prototype.sign_in = Auth.prototype.basic_sign_in;
 
 Auth.prototype.create_user = function(object, callback) {
 	var auth = this;
-	logger.log(auth.minodb.api.ds);
+	logger.debug(auth.minodb.api.ds);
 
     User.validate(object, function(error) {
-        logger.log(error);
+        logger.debug(error);
         if(error){
             callback(error,null);
             return;
@@ -181,7 +181,7 @@ Auth.prototype.create_user = function(object, callback) {
 
         user.save(auth.minodb.api, options, function(err, res){
 
-            logger.log(JSON.stringify(err,null,4), res);
+            logger.debug(JSON.stringify(err,null,4), res);
             callback(err, res);
 
         });
@@ -193,7 +193,7 @@ Auth.prototype.get_user = function(identifier, value, callback) {
 
     var query = {}
     query[identifier] = value;
-    logger.log(query);
+    logger.debug(query);
     auth.minodb.with_user(auth.username).call({
         "function": "search",
         "parameters": {
@@ -201,7 +201,7 @@ Auth.prototype.get_user = function(identifier, value, callback) {
             "query": query
         }
     }, function(err, res) {
-        logger.log(JSON.stringify(err, null, 4), res);
+        logger.debug(JSON.stringify(err, null, 4), res);
         if (res.objects[0]) {
             callback(null, res.objects[0]);
             return;
@@ -242,7 +242,7 @@ Auth.prototype.persist_session = function(res, session) {
 	var auth = this;
 
 	//mino_token, id-key
-	logger.log(session);
+	logger.debug(session);
     res.cookie(auth.cookie_name, session.id+"-"+session.key, {
         maxAge: 60 * 60 * 24 * 365,
         httpOnly: false
@@ -273,14 +273,14 @@ Auth.prototype.process_session = function(options) {
         var cookies = cookie.parse(req.headers.cookie);
     	var current_token = cookies[auth.cookie_name];
     	if(!current_token){
-    		logger.log("A");
+    		logger.debug("A");
     		auth.process_session_failed(req, res, next, options);
     		return;
     	}
 
     	var split = current_token.split("-");
     	if(split.length!==2){
-    		logger.log("B");
+    		logger.debug("B");
     		auth.process_session_failed(req, res, next, options);
     		return;
     	}
@@ -289,13 +289,13 @@ Auth.prototype.process_session = function(options) {
     	var key = split[1];
 
     	auth.get_session(id, function(err, session) {
-    		logger.log(err, session);
+    		logger.debug(err, session);
         	if(session && session.key && session.key===key){
         		
                 auth.get_user("_id", session.user_id, function(err, user) {
                     req.user = user;
-                    logger.log("SIGNED IN AS ",req.user)
-                    logger.log("C");
+                    logger.debug("SIGNED IN AS ",req.user)
+                    logger.debug("C");
                     next();
                 })
 
