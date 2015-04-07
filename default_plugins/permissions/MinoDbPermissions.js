@@ -499,4 +499,30 @@ MinoDbPermissions.prototype.get_ids_from_group = function(group, callback) {
     })
 }
 
+MinoDbPermissions.prototype.get_groups_from_perm = function(perm, callback) {
+    var plugin = this;
+    plugin.sdk.call({
+        "function": "search",
+        "parameters": {
+            "paths": [plugin.permission_path + perm + "/"],
+            "query": {
+                "minodb_group_permission": {
+                    "$exists": true
+                }
+            }
+        }
+    }, function(err, res) {
+        logger.debug(err, res);
+        
+        var result = [];
+        for (var i=0; i<res.objects.length; i++) {
+            var group = res.objects[i].minodb_group_permission.group;
+            result.push(group);
+        }
+
+        callback(null, result);
+        
+    })
+}
+
 module.exports = MinoDbPermissions;
