@@ -133,30 +133,6 @@ Path.prototype.permission_path = function(requesting_username,for_write){
 Path.prototype.username_for_permission = function(requesting_username, for_write) {
     var path = this;
 
-    //Restricts access to the permissions folder in each user's root
-    if (path.object_names.length > 1 && path.object_names[1] == "permissions") {
-
-        if (path.object_names.length==2 && !path.is_folder) {
-            /* The request is for an item with the same name as one of the restricted folders, not the folder itself
-             * so return the username of the top folder.
-             */
-            return path.object_names[0];
-        }
-
-        //Allows read access of permissions by user
-        if (for_write===false) {
-            return path.object_names[0];
-        }
-
-        //Allows "MinoDB" user to write
-        if(requesting_username===Common.ROOT_USERNAME){
-            return Common.ROOT_USERNAME;
-        }
-
-        return null;
-    }
-
-
     //Allow all users to read the types folder
     if (path.object_names.length > 1 && path.object_names[0] === Common.ROOT_USERNAME && path.object_names[1] === "types"){
         if(for_write===false){
