@@ -190,10 +190,25 @@ Auth.prototype.create_user = function(object, callback) {
 
 Auth.prototype.get_user = function(identifier, value, callback) {
 	var auth = this;
+    auth.get_users(identifier, [value], function(err, res) {
+        logger.debug(err, res);
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, res[0]);
+        }
+    });
+}
+
+Auth.prototype.get_users = function(identifier, values, callback) {
+    var auth = this;
 
     var query = {}
-    query[identifier] = value;
+    query[identifier] = {
+        "$in": values
+    }
     logger.debug(query);
+
     auth.minodb.with_user(auth.username).call({
         "function": "search",
         "parameters": {
@@ -202,11 +217,12 @@ Auth.prototype.get_user = function(identifier, value, callback) {
         }
     }, function(err, res) {
         logger.debug(JSON.stringify(err, null, 4), res);
-        if (res.objects[0]) {
-            callback(null, res.objects[0]);
+        if (values.length == 1 && res.objects[0] == null) {
+            callback(errors.USER_DOES_NOT_EXIST, null);
             return;
         }
-        callback(errors.USER_DOES_NOT_EXIST, null);
+
+        callback(null, res.objects);
     })
 
 }
