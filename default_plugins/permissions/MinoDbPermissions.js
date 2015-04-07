@@ -476,13 +476,19 @@ MinoDbPermissions.prototype.get_available_groups = function(callback) {
 
 MinoDbPermissions.prototype.get_ids_from_group = function(group, callback) {
     var plugin = this;
+    plugin.get_ids_from_groups([group], callback);
+}
+
+MinoDbPermissions.prototype.get_ids_from_groups = function(groups, callback) {
+    var plugin = this;
     plugin.sdk.call({
         "function": "search",
         "parameters": {
-            "paths": [plugin.group_path + group + "/"],
+            "paths": [plugin.group_path],
+            "include_subfolders": true,
             "query": {
-                "minodb_identifier_group": {
-                    "$exists": true
+                "minodb_identifier_group.group": {
+                    "$in": groups
                 }
             }
         }
@@ -491,7 +497,9 @@ MinoDbPermissions.prototype.get_ids_from_group = function(group, callback) {
         var result = [];
         for (var i=0; i<res.objects.length; i++) {
             var id = res.objects[i].minodb_identifier_group.identifier;
-            result.push(id);
+            if (result.indexOf(id) === -1) {
+                result.push(id);
+            }
         }
 
         callback(null, result);
@@ -523,6 +531,43 @@ MinoDbPermissions.prototype.get_groups_from_perm = function(perm, callback) {
         callback(null, result);
         
     })
+}
+
+MinoDbPermissions.prototype.get_ids_from_perm = function(perm, callback) {
+    var plugin = this;
+    plugin.sdk.call({
+        "function": "search",
+        "parameters": {
+            "paths": [plugin.permission_path + perm + "/"],
+            "query": {
+                "minodb_identifier_permission": {
+                    "$exists": true
+                }
+            }
+        }
+    }, function(err, res) {
+        logger.debug(err, res);
+        var result = [];
+        for (var i=0; i<res.objects.length; i++) {
+            var id = res.objects[i].minodb_identifier_permission.identifier;
+            result.push(id);
+        }
+
+        plugin.get_groups_from_perm(perm, function(err, groups) {
+            logger.debug(err, groups);
+            plugin.get_ids_from_groups(groups, function(err, ids) {
+                logger.debug(err, ids);
+                for (var i=0; i<ids.length; i++) {
+                    if (result.indexOf(ids[i]) === -1) {
+                        result.push(ids[i]);
+                    }
+                }
+
+                callback(null, result);
+
+            });
+        });
+    });
 }
 
 module.exports = MinoDbPermissions;
