@@ -474,4 +474,29 @@ MinoDbPermissions.prototype.get_available_groups = function(callback) {
     })
 }
 
+MinoDbPermissions.prototype.get_ids_from_group = function(group, callback) {
+    var plugin = this;
+    plugin.sdk.call({
+        "function": "search",
+        "parameters": {
+            "paths": [plugin.group_path + group + "/"],
+            "query": {
+                "minodb_identifier_group": {
+                    "$exists": true
+                }
+            }
+        }
+    }, function(err, res) {
+        logger.debug(err, res);
+        var result = [];
+        for (var i=0; i<res.objects.length; i++) {
+            var id = res.objects[i].minodb_identifier_group.identifier;
+            result.push(id);
+        }
+
+        callback(null, result);
+        
+    })
+}
+
 module.exports = MinoDbPermissions;

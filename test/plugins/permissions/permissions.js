@@ -40,4 +40,5 @@ describe('MinoDBPermissions', function() {
 	require('./methods/has_permissions.js');
 	
 	require('./methods/get_available_groups.js');
+	require('./methods/get_ids_from_group.js');
 });
