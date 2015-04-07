@@ -448,4 +448,30 @@ MinoDbPermissions.prototype.decode_text = function(text) {
     return decodeURIComponent(text);
 }
 
+MinoDbPermissions.prototype.get_available_groups = function(callback) {
+    var plugin = this;
+    plugin.sdk.call({
+        "function": "search",
+        "parameters": {
+            "paths": [plugin.permission_path],
+            "include_subfolders": true,
+            "query": {
+                "minodb_group_permission": {
+                    "$exists": true
+                }
+            }
+        }
+    }, function(err, res) {
+        logger.debug(err, res);
+        var result = [];
+        for (var i=0; i<res.objects.length; i++) {
+            var group = res.objects[i].minodb_group_permission.group;
+            result.push(group);
+        }
+
+        callback(null, result);
+        
+    })
+}
+
 module.exports = MinoDbPermissions;

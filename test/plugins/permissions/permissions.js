@@ -38,4 +38,6 @@ describe('MinoDBPermissions', function() {
 	require('./methods/remove_permission_from_group.js');
 	
 	require('./methods/has_permissions.js');
+	
+	require('./methods/get_available_groups.js');
 });
