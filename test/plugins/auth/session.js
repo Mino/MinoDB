@@ -7,6 +7,17 @@ var cookieParser = require('cookie-parser');
 
 describe("session", function() {
 
+	var server, auth;
+	before(function() {
+		server = express();
+		auth = globals.mino.get_plugin('minodb_auth');
+		
+		server.use(cookieParser());
+		server.use('/mino/', globals.mino.server());
+		server.use(auth.process_session({required: false}));
+		
+	})
+
 	describe('create_session()', function() {
 
 		it("should create a session object", function(done) {
@@ -38,15 +49,10 @@ describe("session", function() {
 		
 	})
 
+
+
 	it('should persist and process session', function(done) {
-		var server = express();
-		var auth = globals.mino.get_plugin('minodb_auth');
-		
-		server.use(cookieParser());
-		server.use('/mino/', globals.mino.server());
-		server.use(auth.process_session({required: false}));
-		
-		server.get('/test_session', function(req,res) {
+		server.get('/test_process_session', function(req,res) {
 			assert.notEqual(req.user, undefined);
 			assert.equal(req.user.minodb_user.username, 'testuser');
 			res.sendStatus(200);
@@ -55,17 +61,62 @@ describe("session", function() {
 
 		var agent = request.agent(server);
 		agent
-			.post('/mino/ajax/login')
-			.send({username_or_email: 'testuser', password: 'my_password'})
-			.expect(200)
-			.end(function(err, res) {
-				agent
-					.get('/test_session')
-					.expect(200).
-					end(function(err, res) {
+		.post('/mino/ajax/login')
+		.send({username_or_email: 'testuser', password: 'my_password'})
+		.expect(200)
+		.end(function(err, res) {
+			assert.equal(err, null);
 
-					});
+			agent
+			.get('/test_process_session')
+			.expect(200).
+			end(function(err, res) {
+				assert.equal(err, null);
 			});
+		});
 	})
 
-})
+	it('should invalidate active sessions when new one is created', function(done) {
+		server.get('/test_invalidate_session', function(req,res) {
+			if (req.user) {
+				res.sendStatus(200);
+			} else {
+				res.sendStatus(401);
+			}
+		});
+
+		var agent = request.agent(server);
+		agent
+		.post('/mino/ajax/login')
+		.send({username_or_email: 'testuser', password: 'my_password'})
+		.expect(200)
+		.end(function(err, res) {
+			assert.equal(err, null);
+
+			agent
+			.get('/test_invalidate_session')
+			.expect(200).
+			end(function(err, res) {
+				assert.equal(err, null);
+
+				var agent2 = request.agent(server);
+				agent2
+				.post('/mino/ajax/login')
+				.send({username_or_email: 'testuser', password: 'my_password'})
+				.expect(200)
+				.end(function(err, res) {
+					assert.equal(err, null);
+
+					//Previous session should be invalid now
+					agent
+					.get('/test_invalidate_session')
+					.expect(401).
+					end(function(err, res) {
+						assert.equal(err, null);
+						done();
+					});
+				});
+			});
+		});
+	});
+});

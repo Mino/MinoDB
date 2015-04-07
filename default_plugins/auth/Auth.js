@@ -217,7 +217,8 @@ Auth.prototype.create_session = function(user_id, callback) {
     //TODO improve key generation
 	var data = {
         user_id : user_id,
-        key: ""+Math.random()+Math.random()+Math.random()+Math.random()
+        key: ""+Math.random()+Math.random()+Math.random()+Math.random(),
+        end_time: null
     }
 
     var options = {
@@ -290,18 +291,27 @@ Auth.prototype.process_session = function(options) {
 
     	auth.get_session(id, function(err, session) {
     		logger.debug(err, session);
-        	if(session && session.key && session.key===key){
-        		
-                auth.get_user("_id", session.user_id, function(err, user) {
-                    req.user = user;
-                    logger.debug("SIGNED IN AS ",req.user)
-                    logger.debug("C");
-                    next();
-                })
 
-			} else {
+            if (!session) {
                 auth.process_session_failed(req, res, next, options);
+                return;
             }
+
+            if (!session.key || session.key !== key) {
+                auth.process_session_failed(req, res, next, options);
+                return;   
+            }
+
+            if (session.end_time && session.end_time < new Date().getTime()) {
+                auth.process_session_failed(req, res, next, options);
+                return;      
+            }
+            auth.get_user("_id", session.user_id, function(err, user) {
+                req.user = user;
+                logger.debug("SIGNED IN AS ",req.user)
+                logger.debug("C");
+                next();
+            })
 
     	})
 	}
