@@ -129,11 +129,10 @@ Auth.prototype.basic_sign_in = function(object, options, callback) {
             return;
         }
 
-        var user_record = user_object.minodb_user;
     	auth.check_password_hash(
     		password,
-    		user_record.password_salt,
-    		user_record.salted_password,
+    		auth.get_password_salt_from_user_object(user_object),
+    		auth.get_salted_password_from_user_object(user_object),
     		function(is_correct){
                 if(is_correct){
                     logger.debug(user_object);
@@ -155,6 +154,14 @@ Auth.prototype.basic_sign_in = function(object, options, callback) {
 		);
 
     });
+}
+
+Auth.prototype.get_salted_password_from_user_object = function(user_object) {
+    return user_object.minodb_user.salted_password;
+}
+
+Auth.prototype.get_password_salt_from_user_object = function(user_object) {
+    return user_object.minodb_user.password_salt;
 }
 
 Auth.prototype.sign_in = Auth.prototype.basic_sign_in;
