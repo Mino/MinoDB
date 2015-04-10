@@ -136,7 +136,7 @@ Auth.prototype.basic_sign_in = function(object, options, callback) {
     		function(is_correct){
                 if(is_correct){
                     logger.debug(user_object);
-                	auth.create_session(user_object._id, function(session_err,session_res){
+                	auth.create_session(auth.get_identifier_from_user(user_object), function(session_err,session_res){
                 		logger.debug(
                 			JSON.stringify(session_err,null,4),
                 			session_res
@@ -162,6 +162,10 @@ Auth.prototype.get_salted_password_from_user_object = function(user_object) {
 
 Auth.prototype.get_password_salt_from_user_object = function(user_object) {
     return user_object.minodb_user.password_salt;
+}
+
+Auth.prototype.get_identifier_from_user = function(user) {
+    return user._id;
 }
 
 Auth.prototype.sign_in = Auth.prototype.basic_sign_in;
