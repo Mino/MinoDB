@@ -43,15 +43,15 @@ gulp.task('test', function(cb){
         .pipe( mocha( {
             reporter: 'spec',
             grep: gulp.env.grep
-        }))
+        }));
         
         if (!debug) {
-            task.pipe(istanbul.writeReports())
+            task.pipe(istanbul.writeReports());
         }
         
-        task.on('end', cb)
+        task.on('end', cb);
         task.pipe(plumber(onError));
-    }
+    };
 
     var setup_coverage = function(callback) {
         gulp.src([
@@ -67,14 +67,14 @@ gulp.task('test', function(cb){
             callback();
         })
         .on('error', gutil.log);
-    }
+    };
 
     if (debug) {
         run_tests();
     } else {
         setup_coverage(function() {
             run_tests();
-        })
+        });
     }
     
 });
@@ -82,7 +82,7 @@ gulp.task('test', function(cb){
 gulp.task('docs', function() {
     return gulp.src('./docs_src/*.json')
     .pipe(docs_to_json())
-    .pipe(gulp.dest('./docs/'))
+    .pipe(gulp.dest('./docs/'));
 });
 
 gulp.task('watch', function(){
@@ -101,9 +101,9 @@ gulp.task('default', function(){
     gulp.start('admin_default');
     gulp.start('ui_default');
     gulp.start('permissions_default');
-})
+});
 
 gulp.task('dev', function(){
     gulp.start('default');
     gulp.start('watch');
-})
+});
