@@ -1,5 +1,3 @@
-var logger = require('mino-logger');
-
 var errors = require('../errors');
 
 var FieldVal = require('fieldval');
@@ -45,7 +43,7 @@ PluginManager.prototype.add_plugin = function(plugin){
 			validator.invalid("name", errors.PLUGIN_WITH_SAME_NAME);
 		}
 	}
-	var display_name = validator.get("display_name", BasicVal.string(false));
+	validator.get("display_name", BasicVal.string(false));
 
 	var error = validator.end();
 	if(error){

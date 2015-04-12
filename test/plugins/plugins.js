@@ -32,6 +32,15 @@ describe("Plugins", function() {
 				}
 			};
 			globals.mino.add_plugin(plugin);
+
+			var added = false;
+			var plugins = globals.mino.plugin_manager.list_plugins();
+			for (var i=0; i<plugins.length; i++) {
+				if (plugins[i].name === "test_plugin" && plugins[i].display_name === "Test Plugin") {
+					added = true;
+				}
+			}
+			assert.equal(added, true);
 		});
 
 		it("should retrieve config server", function(done) {
@@ -49,6 +58,31 @@ describe("Plugins", function() {
 		it('should retrieve plugin script', function() {
 			var scripts = globals.mino.get_plugin_scripts("/mino");
 			assert.deepEqual(scripts, ["/mino/script.js"]);
+		});
+
+		it('should not add a plugin with the same name', function(done) {
+			var plugin = {
+				get_config_server: function() {
+					return server;
+				},
+				info: function() {
+					return {
+						name: "test_plugin",
+						display_name: "Test Plugin"
+					};
+				},
+				init: function() {
+
+				},
+				get_scripts: function() {
+					return ["/script.js"];
+				}
+			};
+			try {
+				globals.mino.add_plugin(plugin);
+			} catch (err) {
+				done();
+			}
 		});
 	});
 
