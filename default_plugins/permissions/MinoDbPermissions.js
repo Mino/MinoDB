@@ -1,5 +1,4 @@
 var logger = require('mino-logger');
-var express = require('express');
 var ConfigServer = require('./config_server/ConfigServer');
 var Path = require('../../common_classes/Path');
 
