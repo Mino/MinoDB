@@ -8,14 +8,14 @@ var request = require('supertest');
 
 describe("UI plugin", function() {
 	it("should retrieve config server", function(done) {
-		var test_server = express()
+		var test_server = express();
 		test_server.use("/mino/", globals.mino.server());
 		request_plugin_config("ui", test_server, function(err, res) {
 			assert.equal(err, null);
 			assert.equal(res, "UI CONFIG");
 			done();
-		})
-	})
+		});
+	});
 
 	it("should return user object if username and password are correct", function(done) {
 		var server = express();
@@ -32,7 +32,7 @@ describe("UI plugin", function() {
 				assert.equal(res.body.user.username, 'testuser');
 				done();
 			});
-	})
+	});
 
 	it("should return user object if email and password are correct", function(done) {
 		var server = express();
@@ -49,7 +49,7 @@ describe("UI plugin", function() {
 				assert.equal(res.body.user.username, 'testuser');
 				done();
 			});
-	})
+	});
 
 	it("should return error if user does not exist", function(done) {
 		var server = express();
@@ -71,10 +71,10 @@ describe("UI plugin", function() {
 				    },
 				    "error_message": "One or more errors.",
 				    "error": 5
-				})
+				});
 				done();
 			});
-	})
+	});
 
 	it("should return error if password is incorrect", function(done) {
 		var server = express();
@@ -96,8 +96,8 @@ describe("UI plugin", function() {
 				    },
 				    "error_message": "One or more errors.",
 				    "error": 5
-				})
+				});
 				done();
 			});
-	})
-})
+	});
+});

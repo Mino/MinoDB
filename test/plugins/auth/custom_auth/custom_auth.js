@@ -12,9 +12,9 @@ describe("custom auth", function() {
 		var setup = require('./setup');
 		setup(server, globals.mino, function() {
 			done();
-		})
+		});
 		
-	})
+	});
 
 	it('should return 401 with no session', function(done) {
 		var agent = request.agent(server);
@@ -25,28 +25,27 @@ describe("custom auth", function() {
 				logger.debug(err,res);
 				assert.equal(err,null);
 				done();
-			})
-	})
+			});
+	});
 
 	it('should sign in', function(done) {
 		var agent = request.agent(server);
 		agent
-			.post('/login')
-			.send({my_username: "some_user", my_password: "some_password"})
+		.post('/login')
+		.send({my_username: "some_user", my_password: "some_password"})
+		.expect(200)
+		.end(function(err,res) {
+			logger.debug(err, res);
+			assert.equal(err, null);
+			
+			agent
+			.get('/')
 			.expect(200)
-			.end(function(err,res) {
-				logger.debug(err, res);
+			.end(function(err, res) {
 				assert.equal(err, null);
-				
-				agent
-					.get('/')
-					.expect(200)
-					.end(function(err, res) {
-						assert.equal(err, null);
-						assert.equal(res.text, "some_user");
-						done();
-					})
-			})
-	})	
-
-})
+				assert.equal(res.text, "some_user");
+				done();
+			});
+		});
+	});
+});

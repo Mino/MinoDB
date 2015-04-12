@@ -28,11 +28,11 @@ describe('remove_permission_from_group()', function() {
 								done();
 							});
 						});
-					})
-				})
-			})
-		})
-	})
+					});
+				});
+			});
+		});
+	});
 
 	it('should remove permission from group with escaped name', function(done) {
 		var perms = globals.minodb.get_plugin('custom_permissions');
@@ -42,7 +42,7 @@ describe('remove_permission_from_group()', function() {
 			logger.debug(res);
 
 			globals.minodb.get([perms.permission_path + 'removed_permission%2Fescaped/group:removed_permission_group%2Fescaped'], function(err, res) {
-				logger.debug(err, res)
+				logger.debug(err, res);
 				assert.equal(err, null);
 				assert.equal(res.objects[0].name, 'group:removed_permission_group%2Fescaped');
 				
@@ -61,9 +61,9 @@ describe('remove_permission_from_group()', function() {
 								done();
 							});
 						});
-					})
-				})
-			})
-		})
-	})
+					});
+				});
+			});
+		});
+	});
 });

@@ -4,7 +4,7 @@ if (typeof require != 'undefined') {
     Common = require('../Common');
     FieldVal = require('fieldval');
     BasicVal = FieldVal.BasicVal;
-    errors = require('../errors')
+    errors = require('../errors');
 }
 
 function ID() {
@@ -27,12 +27,12 @@ ID.prototype.init = function(id_string) {
     });
 
     return error;
-}
+};
 
 ID.prototype.toString = function() {
     var id = this;
     return id.id_string;
-}
+};
 
 if (typeof module != 'undefined') {
     module.exports = ID;

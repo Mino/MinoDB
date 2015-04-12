@@ -3,7 +3,7 @@ if (typeof require != 'undefined') {
     Constants = require('./Constants');
     Common = require('./Common');
     FieldVal = require('fieldval');
-    errors = require('../errors')
+    errors = require('../errors');
 }
 
 function Path() {
@@ -24,7 +24,7 @@ Path.prototype.init = function(path_string, allow_tilde) {
 
     path.string_length = path_string.length;
     if (path.string_length >= Constants.maximumAccessiblePathLength) {
-        return errors.INVALID_PATH_FORMAT
+        return errors.INVALID_PATH_FORMAT;
     }
     var path_char = path.path_string.charAt(0);
     if (path_char != "/") { //Equal to forward slash
@@ -75,13 +75,13 @@ Path.prototype.init = function(path_string, allow_tilde) {
     path.length = path.object_names.length;
 
     return null;
-}
+};
 
 Path.prototype.replace_id_operator = function(id){
     var path = this;
 
 
-}
+};
 
 Path.object_name_check = function(allowed_tilde){
 
@@ -97,8 +97,8 @@ Path.object_name_check = function(allowed_tilde){
                 return errors.INVALID_OBJECT_NAME;
             }
         }
-    }
-}
+    };
+};
 
 Path.is_valid_character_for_object_name = function(path_char, allowed_tilde) {
 
@@ -114,13 +114,13 @@ Path.is_valid_character_for_object_name = function(path_char, allowed_tilde) {
         return false;
     }
     return true;
-}
+};
 
 Path.prototype.to_tilde_path = function(){
     var path = this;
 
-    return Common.convert_path_to_tilde_path(path.toString())
-}
+    return Common.convert_path_to_tilde_path(path.toString());
+};
 
 Path.prototype.permission_path = function(requesting_username,for_write){
     var path = this;
@@ -128,7 +128,7 @@ Path.prototype.permission_path = function(requesting_username,for_write){
     var user = path.username_for_permission(requesting_username,for_write);
 
     return "/"+requesting_username+"/permissions/received/"+Common.convert_path_to_tilde_path(path.toString());
-}
+};
 
 Path.prototype.username_for_permission = function(requesting_username, for_write) {
     var path = this;
@@ -145,7 +145,7 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
     }
 
     return path.object_names[0];
-}
+};
 
 Path.prototype.path_for_child_with_name = function(child_name, child_is_folder) {
     var path = this;
@@ -171,7 +171,7 @@ Path.prototype.path_for_child_with_name = function(child_name, child_is_folder) 
     child_path.object_names[child_path.length - 1] = child_name;
     child_path.sub_paths[child_path.length - 1] = child_path.path_string;
     return child_path;
-}
+};
 
 Path.prototype.parent_path = function() {
     var path = this;
@@ -191,12 +191,12 @@ Path.prototype.parent_path = function() {
     parent_path.is_folder = true;
     parent_path.path_string = parent_path.sub_paths[parent_path.length - 1];
     return parent_path;
-}
+};
 
 Path.prototype.toString = function() {
     var path = this;
     return path.path_string;
-}
+};
 
 if (typeof module != 'undefined') {
     module.exports = Path;

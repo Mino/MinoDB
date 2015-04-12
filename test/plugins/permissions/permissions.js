@@ -17,12 +17,12 @@ describe('MinoDBPermissions', function() {
 				path: "/testuser/minodb_permissions/",
 				name: "custom_permissions",
 				username: "testuser"
-			})
+			});
 
 			globals.minodb.add_plugin(permissions_plugin, function() {
 				done();
 			});
-		})
+		});
 	});
 
 	require('./methods/init.js');

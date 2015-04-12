@@ -11,7 +11,7 @@ function SignalManager(mdb) {
 SignalManager.prototype.add_signal = function(signal) {
 	var sm = this;
 	sm.signals.push(signal);
-}
+};
 
 SignalManager.prototype.trigger = function(user, handler, object, callback) {
 	var sm = this;
@@ -26,7 +26,7 @@ SignalManager.prototype.trigger = function(user, handler, object, callback) {
 			continue;
 		}
 
-		if (signal.paths == undefined) {
+		if (signal.paths === undefined) {
 			signal.trigger(object, handler);
 			continue;
 		}
@@ -47,6 +47,6 @@ SignalManager.prototype.trigger = function(user, handler, object, callback) {
 			signal.trigger(object, handler);
 		}
 	}
-}
+};
 
 module.exports = SignalManager;

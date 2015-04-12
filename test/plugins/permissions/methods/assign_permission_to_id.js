@@ -13,10 +13,10 @@ describe('assign_permission_to_id()', function() {
 				assert.equal(err, null);
 				assert.equal(has_permission, true);
 				done();
-			})
+			});
 
-		})
-	})
+		});
+	});
 
 	it('should assign permission to id with escaped name', function(done) {
 		var perms = globals.minodb.get_plugin('custom_permissions');
@@ -29,8 +29,8 @@ describe('assign_permission_to_id()', function() {
 				assert.equal(err, null);
 				assert.equal(has_permission, true);
 				done();
-			})
+			});
 
-		})
-	})
+		});
+	});
 });

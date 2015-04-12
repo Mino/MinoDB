@@ -1,9 +1,9 @@
 var errors = require('../../../../errors');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
-var Path = require('../../../../common_classes/Path')
+var Path = require('../../../../common_classes/Path');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
-var Common = require('../../../../common_classes/Common')
+var Common = require('../../../../common_classes/Common');
 var Constants = require('../../../../common_classes/Constants');
 var logger = require('mino-logger');
 
@@ -116,8 +116,8 @@ GetHandler.prototype.get_id = function(id_object){
         }
         gh.waiting_for--;
         gh.check_if_done();
-    })
-}
+    });
+};
 
 GetHandler.prototype.get_path = function(path_object){
     var gh = this;
@@ -145,8 +145,8 @@ GetHandler.prototype.get_path = function(path_object){
         }
         gh.waiting_for--;
         gh.check_if_done();
-    })
-}
+    });
+};
 
 GetHandler.prototype.get_type = function(type_object){
     var gh = this;
@@ -161,12 +161,12 @@ GetHandler.prototype.get_type = function(type_object){
         // logger.debug(res);
         if(res){
             delete res._id;//Remove _id
-            gh.response_array[response_index] = res['minodb_type'];
+            gh.response_array[response_index] = res.minodb_type;
         }
         gh.waiting_for--;
         gh.check_if_done();
-    })
-}
+    });
+};
 
 GetHandler.prototype.check_if_done = function(){
     var gh = this;
@@ -174,7 +174,7 @@ GetHandler.prototype.check_if_done = function(){
     if(gh.waiting_for===0){
         gh.send_response();
     }
-}
+};
 
 GetHandler.prototype.send_response = function(){
     var gh = this;
@@ -182,8 +182,8 @@ GetHandler.prototype.send_response = function(){
     gh.path_permission_checker.retrieve_permissions(function(){
         gh.callback(null, {
             "objects": gh.response_array
-        })
+        });
     });
-}
+};
 
 module.exports = GetHandler;

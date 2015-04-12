@@ -42,6 +42,6 @@ it('should save type', function(done) {
             var person_type = res.objects[0];
             assert.notEqual(person_type, null);
             done();
-        })
+        });
     });
 });

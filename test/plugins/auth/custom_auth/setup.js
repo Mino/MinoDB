@@ -16,7 +16,7 @@ module.exports = function(server, mino, callback) {
 		session_path: "/testuser/sessions/",
 		cookie_name: "custom_auth_token",
 		username: "testuser"
-	})
+	});
 
 	server.use(cookieParser());
 	server.use(bodyParser.json());
@@ -27,9 +27,9 @@ module.exports = function(server, mino, callback) {
 			if (err) {
 				var validator = new FieldVal(null);
 				if (err.error == 117) {
-					validator.invalid("my_password", err)
+					validator.invalid("my_password", err);
 				} else {
-					validator.invalid("my_username", err)
+					validator.invalid("my_username", err);
 				}
 				return res.json(validator.end());
 			} else if (user){
@@ -38,14 +38,14 @@ module.exports = function(server, mino, callback) {
 			} else {
 				res.json({success: false});
 			}
-		})
+		});
 
 	});
 
 	server.post('/sign_out', function(req, res) {
 		auth.sign_out(res);
 		res.json({success:true});
-	})
+	});
 
 	server.get('/', auth.process_session({required:true}), function(req,res) {
 		res.send(req.user.my_user.my_username);
@@ -69,9 +69,9 @@ module.exports = function(server, mino, callback) {
 			], function(save_err, save_res){
 			    logger.debug(save_err, save_res);
 			    callback(save_err, save_res);
-			})		
+			});
 		}
-	}
+	};
 
 	auth.sign_in = function(object, options, callback) {
 		var auth = this;
@@ -91,7 +91,7 @@ module.exports = function(server, mino, callback) {
 	    				);
 	    				callback(null, user_record, session_res);
 
-	    			})
+	    			});
 
 	    		} else {
 	    			callback({error: 117, error_message: "Incorrect password"});
@@ -100,7 +100,7 @@ module.exports = function(server, mino, callback) {
 
 	    	}
 	    });
-	}
+	};
 
 	mino.add_plugin(auth);
 	server.use('/mino/', mino.server());
@@ -127,6 +127,6 @@ module.exports = function(server, mino, callback) {
 				assert.equal(err, null);
 				callback();
 			});
-		})
-	})
-}
+		});
+	});
+};

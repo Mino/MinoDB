@@ -42,11 +42,9 @@ module.exports = function(done) {
 						assert.equal(user_err, null);
 					    db.close();
 						done();
-					})
-	            })
+					});
+	            });
 			});
 		});
 	});
-
-
-}
+};

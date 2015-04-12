@@ -20,11 +20,11 @@ describe('assign_permission_to_group()', function() {
 						assert.equal(err, null);
 						assert.equal(has_permission, true);
 						done();
-					})
-				})
-			})
-		})
-	})
+					});
+				});
+			});
+		});
+	});
 
 	it('should assign permission to group with escaped name', function(done) {
 		var perms = globals.minodb.get_plugin('custom_permissions');
@@ -34,7 +34,7 @@ describe('assign_permission_to_group()', function() {
 			logger.debug(res);
 
 			globals.minodb.get([perms.permission_path + 'assigned_permission%2Fescaped/group:assigned_group%2Fescaped'], function(err, res) {
-				logger.debug(err, res)
+				logger.debug(err, res);
 				assert.equal(err, null);
 				assert.equal(res.objects[0].name, 'group:assigned_group%2Fescaped');
 				
@@ -45,9 +45,9 @@ describe('assign_permission_to_group()', function() {
 						assert.equal(err, null);
 						assert.equal(has_permission, true);
 						done();
-					})
-				})
-			})
-		})
-	})
+					});
+				});
+			});
+		});
+	});
 });

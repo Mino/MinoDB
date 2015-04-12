@@ -8,15 +8,15 @@ function MinoDbPermissions(options) {
 
     plugin.path = options.path;
     if (!plugin.path) {
-        throw "Plugin requires path to be specified in options"
+        throw "Plugin requires path to be specified in options";
     }
 
     plugin.username = options.username;
     if (!plugin.username) {
-        throw "Plugin requires username to be specified in options"
+        throw "Plugin requires username to be specified in options";
     }
 
-    plugin.name = options.name || "minodb_permissions"
+    plugin.name = options.name || "minodb_permissions";
     plugin.display_name = options.display_name || plugin.name;
 
     plugin.permission_path = plugin.path + "permissions/";
@@ -28,7 +28,7 @@ function MinoDbPermissions(options) {
 MinoDbPermissions.prototype.get_config_server = function(){
     var plugin = this;
     return plugin.config_server.express_server;
-}
+};
 
 MinoDbPermissions.prototype.info = function(){
     var plugin = this;
@@ -37,7 +37,7 @@ MinoDbPermissions.prototype.info = function(){
         name: plugin.name,
         display_name: plugin.display_name
     };
-}
+};
 
 MinoDbPermissions.prototype.init = function(minodb, callback){
     var plugin = this;
@@ -47,14 +47,14 @@ MinoDbPermissions.prototype.init = function(minodb, callback){
     var waiting_for = 2;
     var finished_one = function() {
         waiting_for--;
-        if (waiting_for == 0) {
+        if (waiting_for === 0) {
             callback();
         }
-    }
+    };
 
     plugin.create_folders(finished_one);
     plugin.create_types(finished_one);
-}
+};
 
 MinoDbPermissions.prototype.create_folders = function(callback) {
     var plugin = this;
@@ -85,7 +85,7 @@ MinoDbPermissions.prototype.create_folders = function(callback) {
         });
 
     });
-}
+};
 
 MinoDbPermissions.prototype.create_types = function(callback) {
     var plugin = this;
@@ -167,11 +167,9 @@ MinoDbPermissions.prototype.create_types = function(callback) {
 
                 callback();
             });
-
-        })
-
-    })
-}
+        });
+    });
+};
 
 
 MinoDbPermissions.prototype.assign_permission_to_id = function(permission, id, callback) {
@@ -201,9 +199,9 @@ MinoDbPermissions.prototype.assign_permission_to_id = function(permission, id, c
             } else {
                 callback(null, res.objects[0]);
             }
-        })
+        });
     });
-}
+};
 
 MinoDbPermissions.prototype.remove_permission_from_id = function(permission, id, callback) {
     var plugin = this;
@@ -216,10 +214,10 @@ MinoDbPermissions.prototype.remove_permission_from_id = function(permission, id,
         if (err) {
             callback(err);
         } else {
-            callback(null, res.objects[0])
+            callback(null, res.objects[0]);
         }
     });
-}
+};
 
 MinoDbPermissions.prototype.has_permission = function(permission, id, callback) {
     var plugin = this;
@@ -232,12 +230,12 @@ MinoDbPermissions.prototype.has_permission = function(permission, id, callback) 
             callback(null, has_permissions[0]);
         }
     });
-}
+};
 
 MinoDbPermissions.prototype.has_permissions = function(permissions, id, callback) {
     var plugin = this;
 
-    var permission_results = {}
+    var permission_results = {};
     for (var i=0; i<permissions.length; i++) {
         var permission = permissions[i];
         permission_results[permission] = false;
@@ -266,7 +264,7 @@ MinoDbPermissions.prototype.has_permissions = function(permissions, id, callback
             }
             callback();
         });
-    }
+    };
 
     var check_group_permissions = function(callback) {
         plugin.sdk.call({
@@ -288,12 +286,12 @@ MinoDbPermissions.prototype.has_permissions = function(permissions, id, callback
             }
 
             var groups = [];
-            var group_permissions = {}
+            var group_permissions = {};
             for (var i=0; i< res.objects.length; i++) {
                 var group = res.objects[i].minodb_group_permission.group;
                 groups.push(group);
                 if (!group_permissions[group]) {
-                    group_permissions[group] = []
+                    group_permissions[group] = [];
                 }
                 group_permissions[group].push(res.objects[i].minodb_group_permission.permission);
             }
@@ -332,19 +330,19 @@ MinoDbPermissions.prototype.has_permissions = function(permissions, id, callback
             });
 
         });
-    }
+    };
 
     check_individual_permissions(function() {
         check_group_permissions(function() {
-            var result = []
+            var result = [];
             for (var i=0; i<permissions.length; i++) {
                 var permission = permissions[i];
                 result.push(permission_results[permission]);
             }
             callback(null, result);
-        })
-    })
-}
+        });
+    });
+};
 
 MinoDbPermissions.prototype.assign_group_to_id = function(group, id, callback) {
     var plugin = this;
@@ -373,9 +371,9 @@ MinoDbPermissions.prototype.assign_group_to_id = function(group, id, callback) {
             } else {
                 callback(null, res.objects[0]);
             }
-        })
+        });
     });
-}
+};
 
 MinoDbPermissions.prototype.remove_group_from_id = function(group, id, callback) {
     var plugin = this;
@@ -388,10 +386,10 @@ MinoDbPermissions.prototype.remove_group_from_id = function(group, id, callback)
         if (err) {
             callback(err);
         } else {
-            callback(null, res.objects[0])
+            callback(null, res.objects[0]);
         }
     });
-}
+};
 
 MinoDbPermissions.prototype.assign_permission_to_group = function(permission, group, callback) {
     var plugin = this;
@@ -420,9 +418,9 @@ MinoDbPermissions.prototype.assign_permission_to_group = function(permission, gr
             } else {
                 callback(null, res.objects[0]);
             }
-        })
+        });
     });
-}
+};
 
 MinoDbPermissions.prototype.remove_permission_from_group = function(permission, group, callback) {
     var plugin = this;
@@ -435,18 +433,18 @@ MinoDbPermissions.prototype.remove_permission_from_group = function(permission, 
         if (err) {
             callback(err);
         } else {
-            callback(null, res.objects[0])
+            callback(null, res.objects[0]);
         }
     });
-}
+};
 
 MinoDbPermissions.prototype.encode_text = function(text) {
     return encodeURIComponent(text);
-}
+};
 
 MinoDbPermissions.prototype.decode_text = function(text) {
     return decodeURIComponent(text);
-}
+};
 
 MinoDbPermissions.prototype.get_available_groups = function(callback) {
     var plugin = this;
@@ -471,13 +469,13 @@ MinoDbPermissions.prototype.get_available_groups = function(callback) {
 
         callback(null, result);
         
-    })
-}
+    });
+};
 
 MinoDbPermissions.prototype.get_ids_from_group = function(group, callback) {
     var plugin = this;
     plugin.get_ids_from_groups([group], callback);
-}
+};
 
 MinoDbPermissions.prototype.get_ids_from_groups = function(groups, callback) {
     var plugin = this;
@@ -504,8 +502,8 @@ MinoDbPermissions.prototype.get_ids_from_groups = function(groups, callback) {
 
         callback(null, result);
         
-    })
-}
+    });
+};
 
 MinoDbPermissions.prototype.get_groups_from_perm = function(perm, callback) {
     var plugin = this;
@@ -530,8 +528,8 @@ MinoDbPermissions.prototype.get_groups_from_perm = function(perm, callback) {
 
         callback(null, result);
         
-    })
-}
+    });
+};
 
 MinoDbPermissions.prototype.get_ids_from_perm = function(perm, callback) {
     var plugin = this;
@@ -568,6 +566,6 @@ MinoDbPermissions.prototype.get_ids_from_perm = function(perm, callback) {
             });
         });
     });
-}
+};
 
 module.exports = MinoDbPermissions;

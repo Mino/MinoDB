@@ -13,8 +13,8 @@ describe('PathPermissionChecker', function() {
 			perms.remove_permission_from_id('read:/otheruser/', 'testuser', function(err, res) {
 				done();
 			});
-		})
-	}
+		});
+	};
 
 	var handler;
 	before(function(done){
@@ -23,7 +23,7 @@ describe('PathPermissionChecker', function() {
 			user: {
 				username: 'testuser'
 			}
-		}
+		};
 		clean_permissions(done);
 
 	});
@@ -43,7 +43,7 @@ describe('PathPermissionChecker', function() {
 			done();
 		});
 
-	})
+	});
 
 	it('should return WRITE_PERMISSION if access is granted', function(done) {
 		var ppc = new PathPermissionChecker(handler,{
@@ -61,9 +61,9 @@ describe('PathPermissionChecker', function() {
 				assert.equal(status, Constants.WRITE_PERMISSION);
 				done();
 			});
-		})
+		});
 		
-	})
+	});
 
 	it('should return READ_PERMISSION if access is granted', function(done) {
 		var ppc = new PathPermissionChecker(handler);
@@ -79,8 +79,8 @@ describe('PathPermissionChecker', function() {
 				assert.equal(status, Constants.READ_PERMISSION);
 				done();
 			});
-		})
-	})
+		});
+	});
 
 	it('should return NO_PERMISSION to root path', function(done) {
 		var ppc = new PathPermissionChecker(handler);
@@ -96,8 +96,8 @@ describe('PathPermissionChecker', function() {
 				assert.equal(status, Constants.NO_PERMISSION);
 				done();
 			});
-		})
-	})
+		});
+	});
 
 	it('should reuse fetched permissions', function(done) {
 		var ppc = new PathPermissionChecker(handler);
@@ -119,15 +119,15 @@ describe('PathPermissionChecker', function() {
 			    
 			    ppc.retrieve_permissions = function() {
 			    	throw "ERROR: permission should be cached.";
-			    }
+			    };
 
 			    ppc.check_permissions_for_path(path, function(status) {
 					assert.equal(status, Constants.READ_PERMISSION);
 					done();
-			    })
+			    });
 			});
-		})
-	})
+		});
+	});
 
 	it('should return WRITE_PERMISSION for minodb_user that owns the folder', function(done) {
 		var ppc = new PathPermissionChecker(handler);
@@ -143,6 +143,6 @@ describe('PathPermissionChecker', function() {
 		ppc.retrieve_permissions(function(){
 			ppc.immediate_mode = true;
 		});
-	})
+	});
 
-})
+});

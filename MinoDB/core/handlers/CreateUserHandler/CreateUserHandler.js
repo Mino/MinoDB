@@ -1,7 +1,7 @@
-var errors = require('../../../../errors')
+var errors = require('../../../../errors');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
-var Path = require('../../../../common_classes/Path')
+var Path = require('../../../../common_classes/Path');
 var FVRule = require('fieldval-rules');
 var logger = require('mino-logger');
 
@@ -43,7 +43,7 @@ function CreateUserHandler(api, user, parameters, callback){
         var options = {
             path: "/" + api.minodb.root_username + "/users/",
             minodb_username: api.minodb.root_username 
-        }
+        };
         var auth = api.minodb.get_plugin('minodb_auth');
     	auth.create_user(val, function(user_err, user_res){
             create_user_folders(val, api, function(err, res) {
@@ -53,7 +53,7 @@ function CreateUserHandler(api, user, parameters, callback){
                 done(user_err);    
             });
     	});
-    }])
+    }]);
 
     cuh.validator.end(function(error){
         logger.debug(error);
@@ -63,7 +63,7 @@ function CreateUserHandler(api, user, parameters, callback){
     	}
 
     	callback(null, output);
-    })
+    });
 }
 
 module.exports = CreateUserHandler;

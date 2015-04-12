@@ -11,7 +11,7 @@ function Type(item) {
 
     type.name = item.name;
 
-    type.rule = item['minodb_type'];
+    type.rule = item.minodb_type;
 }
 
 Type.rule = new FVRule();
@@ -20,8 +20,8 @@ Type.rule_definition = {
     display_name: "Type",
     type: "object",
     any: true
-}
-Type.rule.init(Type.rule_definition)
+};
+Type.rule.init(Type.rule_definition);
 
 Type.NAME_CHECKS = [
     BasicVal.string(true),
@@ -33,10 +33,10 @@ Type.NAME_CHECKS = [
 Type.prototype.init = function(type_data){
     var type = this;
 
-    type.item['minodb_type'] = type_data;
+    type.item.minodb_type = type_data;
 
     type.rule = type_data;
-}
+};
 
 Type.validate = function(data, creation){
     var rule = new FVRule();
@@ -56,14 +56,14 @@ Type.validate = function(data, creation){
     );
 
     return validator.end();
-}
+};
 
 Type.prototype.create_save_data = function(callback){
     var type = this;
 
     var to_save = JSON.parse(JSON.stringify(type.data));
     callback(null, to_save);
-}
+};
 
 Type.prototype.save = function(api, callback){
     var type = this;
@@ -80,8 +80,8 @@ Type.prototype.save = function(api, callback){
         logger.debug(JSON.stringify(save_err,null,4), save_res);
 
         callback(null, save_res);
-    })
-}
+    });
+};
 
 Type.get = function(typename, api, callback){
     new api.handlers.get(api, {
@@ -103,8 +103,8 @@ Type.get = function(typename, api, callback){
         } else {
             callback(null, null);
         }
-    })
-}
+    });
+};
 
 Type.create = function(data, api, callback){
     
@@ -116,6 +116,6 @@ Type.create = function(data, api, callback){
 
     var type = new Type(data);
     type.save(api, callback);
-}
+};
 
 module.exports = Type;

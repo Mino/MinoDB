@@ -18,6 +18,6 @@ var my_user_rule = {
             "ui_type": "password"
         }
     ]
-}
+};
 
 module.exports = my_user_rule;

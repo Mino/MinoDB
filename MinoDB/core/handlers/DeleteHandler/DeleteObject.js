@@ -1,5 +1,5 @@
 var Constants = require('../../../../common_classes/Constants');
-var Common = require('../../../../common_classes/Common')
+var Common = require('../../../../common_classes/Common');
 var Path = require('../../../../common_classes/Path');
 var logger = require('mino-logger');
 var FieldVal = require('fieldval');
@@ -22,7 +22,7 @@ function DeleteObject(address, handler, index, options){
         del_obj.address_type = DeleteObject.BY_ID;
     } else {
         logger.debug("DeleteObject address_type ",address_type);
-        del_obj.error = FieldVal.Error(0)
+        del_obj.error = FieldVal.Error(0);
     }
 
 	del_obj.options = options || {};
@@ -126,7 +126,7 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
 					    			on_delete_callback(del_obj,null,{
 					    				deleted: true
 					    			});	
-			    				})
+			    				});
 			    			} else {
 				    			on_delete_callback(del_obj,null,{
 				    				deleted: true
@@ -135,7 +135,7 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
 			    		}
 				    }
 			    );
-    		}
+    		};
 
     		logger.debug(old_full_path.username_for_permission);
     		var username_for_permission = old_full_path.username_for_permission(del_obj.handler.user.username, true);
@@ -160,6 +160,6 @@ DeleteObject.prototype.do_deleting = function(on_delete_callback){
 			}
     	}
     );
-}
+};
 
 module.exports = DeleteObject;

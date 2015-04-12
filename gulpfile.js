@@ -87,6 +87,7 @@ gulp.task('lint', function() {
         'common_classes/**/*.js',
         'default_plugins/auth/Auth.js',
         'default_plugins/permissions/MinoDbPermissions.js',
+        'test/**/*.js',
     ])
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'));

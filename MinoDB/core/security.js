@@ -15,6 +15,6 @@ security.generate_salted_password = function(password, callback){
             callback(hash,iv64);
         });
    });
-}
+};
 
 module.exports = security;

@@ -35,7 +35,7 @@ PathPermissionChecker.prototype.check_permissions_for_path = function(path, call
 		return;
 	}
 
-	if (path.length == 0) {
+	if (path.length === 0) {
 		callback(Constants.NO_PERMISSION);
 		return;
 	}
@@ -80,7 +80,7 @@ PathPermissionChecker.prototype.check_permissions_for_path = function(path, call
 	if(ppc.immediate_mode){
 		ppc.retrieve_permissions(null,paths,callback_objects);
 	}
-}
+};
 
 PathPermissionChecker.prototype.resolve_callbacks = function(callback_objects){
 	var ppc = this;
@@ -93,15 +93,15 @@ PathPermissionChecker.prototype.resolve_callbacks = function(callback_objects){
 		var co = callback_objects[i];
 		co.callback(co.permission);
 	}
-}
+};
 
 PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths, callback_objects){
 	var ppc = this;
-
-	if(paths==null){
+ 
+	if(!paths){
 		paths = ppc.paths;
 	}
-	if(callback_objects==null){
+	if(callback_objects===null){
 		callback_objects = ppc.callback_objects;
 	}
 
@@ -142,9 +142,7 @@ PathPermissionChecker.prototype.retrieve_permissions = function(callback, paths,
 		if (callback) {
 			callback();
 		}	
-		
-	})
-
-}
+	});
+};
 
 module.exports = PathPermissionChecker;

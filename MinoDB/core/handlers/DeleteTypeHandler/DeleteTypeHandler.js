@@ -1,7 +1,7 @@
-var errors = require('../../../../errors')
+var errors = require('../../../../errors');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
-var Path = require('../../../../common_classes/Path')
+var Path = require('../../../../common_classes/Path');
 var logger = require('mino-logger');
 
 var Type = require('../../models/Type');
@@ -34,7 +34,7 @@ function DeleteTypeHandler(api, user, parameters, callback){
             if(err){
                 callback(
                     dth.validator.error(errors.DELETE_TYPE_FAILED).end()
-                )
+                );
             } else {
                 logger.debug(err, response);
 
@@ -45,7 +45,7 @@ function DeleteTypeHandler(api, user, parameters, callback){
                 } else {
                     callback(null,{
                         success: true
-                    })
+                    });
                 }
             }
         }

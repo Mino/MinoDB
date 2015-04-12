@@ -60,7 +60,7 @@ FolderChecker.prototype.check_path_existance = function(path, callback){
 	if(fc.immediate_mode){
 		fc.retrieve_existances(null,paths,callback_objects);
 	}
-}
+};
 
 FolderChecker.prototype.resolve_callbacks = function(callback_objects){
 	var fc = this;
@@ -78,15 +78,15 @@ FolderChecker.prototype.resolve_callbacks = function(callback_objects){
 			co.callback(null);
 		}
 	}
-}
+};
 
 FolderChecker.prototype.retrieve_existances = function(callback, paths, callback_objects){
 	var fc = this;
 
-	if(paths==null){
+	if(!paths){
 		paths = fc.paths;
 	}
-	if(callback_objects==null){
+	if(callback_objects===null){
 		callback_objects = fc.callback_objects;
 	}
 
@@ -130,6 +130,6 @@ FolderChecker.prototype.retrieve_existances = function(callback, paths, callback
 			callback();
 		}
 	});
-}
+};
 
 module.exports = FolderChecker;

@@ -14,11 +14,11 @@ describe('has_permissions()', function() {
 				perms.assign_group_to_id("group_has_permissions", "stan_has_permissions", function(err, res) {
 					assert.equal(err, null);
 					done();
-				})
-			})
-		})
+				});
+			});
+		});
 
-	})
+	});
 
 	it('should return correct values', function(done) {
 		var perms = globals.minodb.get_plugin('custom_permissions');
@@ -26,7 +26,7 @@ describe('has_permissions()', function() {
 			assert.equal(err, null);
 			assert.deepEqual(res, [true, false, true]);
 			done();
-		})
-	})
+		});
+	});
 
-})
+});

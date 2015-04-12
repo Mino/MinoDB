@@ -15,7 +15,7 @@ it('should save a folder', function(done) {
         }
     }, function(error, response) {
         logger.debug(JSON.stringify(error, null, 4), response);
-        assert.equal(error,null)
+        assert.equal(error,null);
         
         globals.sdk.with_user("testuser").get(["/testuser/TestFolder/"], function(err, res) {
             logger.debug(err, res);
@@ -23,7 +23,7 @@ it('should save a folder', function(done) {
             var object = res.objects[0];
             assert.notEqual(object, null);
             done();
-        })
+        });
     });
 });
 
@@ -39,7 +39,7 @@ it('should not save a folder if path does not exist', function(done) {
         }
     }, function(error, response) {
         logger.debug(JSON.stringify(error, null, 4), response);
-        assert.notEqual(error,null)
+        assert.notEqual(error,null);
         assert.deepEqual(error, {
             "invalid": {
                 "parameters": {
@@ -67,14 +67,14 @@ it('should not save a folder if path does not exist', function(done) {
             },
             "error_message": "One or more errors.",
             "error": 5
-        })
+        });
 
         globals.sdk.with_user("testuser").get(["/testuser/randompath/TestFolder/"], function(err, res) {
             assert.equal(err, null);
             var object = res.objects[0];
             assert.equal(object, null);
             done();
-        })
+        });
     });
 });
 
@@ -90,7 +90,7 @@ it('should not save a folder if access denied', function(done) {
         }
     }, function(error, response) {
         logger.debug(JSON.stringify(error, null, 4), response);
-        assert.notEqual(error,null)
+        assert.notEqual(error,null);
         assert.deepEqual(error, { 
             "invalid": {
                 "parameters": {
@@ -125,6 +125,6 @@ it('should not save a folder if access denied', function(done) {
             var object = res.objects[0];
             assert.equal(object, null);
             done();
-        })
+        });
     });
 });

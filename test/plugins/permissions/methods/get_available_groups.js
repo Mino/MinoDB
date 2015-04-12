@@ -42,7 +42,7 @@ describe('get_available_groups()', function() {
 						assert.equal(err, null);
 						assert.deepEqual(res, ["group1", "group2", "group3"]);
 						done();
-					})
+					});
 				});
 			});
 		});

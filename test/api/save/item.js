@@ -18,7 +18,7 @@ it('should save an object', function(done) {
         }
     }, function(error, response) {
         logger.debug(JSON.stringify(error, null, 4), response);
-        assert.equal(error,null)
+        assert.equal(error,null);
         
         globals.sdk.with_user("testuser").get(["/testuser/TestSave"], function(err, res) {
             logger.debug(err, res);
@@ -26,7 +26,7 @@ it('should save an object', function(done) {
             var object = res.objects[0];
             assert.notEqual(object, null);
             done();
-        })
+        });
     });
 });
 
@@ -46,7 +46,7 @@ it('should not save an object if path does not exist', function(done) {
         }
     }, function(error, response) {
         logger.debug(JSON.stringify(error, null, 4), response);
-        assert.notEqual(error,null)
+        assert.notEqual(error,null);
         assert.deepEqual(error, {
             "invalid": {
                 "parameters": {
@@ -81,7 +81,7 @@ it('should not save an object if path does not exist', function(done) {
             var object = res.objects[0];
             assert.equal(object, null);
             done();
-        })
+        });
     });
 });
 
@@ -135,7 +135,7 @@ it('should not save an object if access denied', function(done) {
             var object = res.objects[0];
             assert.equal(object, null);
             done();
-        })
+        });
     });
 });
 
@@ -180,7 +180,7 @@ it('should throw an error if I save an object with a non-existant type', functio
             },
             "error_message": "One or more errors.",
             "error": 5
-        })
+        });
         assert.equal(response, null);
         done();
     });
@@ -198,7 +198,7 @@ it('should save an object if access is granted', function(done) {
         var object = {
             name: 'saved_object_granted_access',
             path: '/otheruser/inner_folder/'
-        }
+        };
         globals.minodb.save([object], function(err, res) {
             logger.debug(res);
             assert.deepEqual(err, { 
@@ -235,14 +235,14 @@ it('should save an object if access is granted', function(done) {
                 assert.equal(err, null);
 
                 globals.minodb.save([object], function(err, res) {
-                    logger.debug(res)
+                    logger.debug(res);
                     assert.equal(err, null);
                     assert.notEqual(res.objects[0], null);
                     assert.equal(res.objects[0].full_path, '/otheruser/inner_folder/saved_object_granted_access');
                     done();
                 });
-            })
+            });
         });
-    })
+    });
 
-})
+});
