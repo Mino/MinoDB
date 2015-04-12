@@ -1,5 +1,6 @@
 MinoDB
 ======
+[![Build Status](https://travis-ci.org/Mino/MinoDB.svg?branch=develop)](https://travis-ci.org/Mino/MinoDB) [![Code Climate](https://codeclimate.com/github/Mino/MinoDB/badges/gpa.svg)](https://codeclimate.com/github/Mino/MinoDB) [![Test Coverage](https://codeclimate.com/github/Mino/MinoDB/badges/coverage.svg)](https://codeclimate.com/github/Mino/MinoDB)
 
 MinoDB is an extensible database layer for web apps. Utilizing [MongoDB](http://www.mongodb.org/)'s freedom, MinoDB adds well-designed structure - allowing you to build apps much faster.
 
