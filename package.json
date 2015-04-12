@@ -21,15 +21,15 @@
     "morgan" : "*",
     "errorhandler": "*",
     "mongodb" : "^2.0.14",
-    "minosdk" : "Mino/MinoSDK",
+    "minosdk" : "Mino/MinoSDK#864c6fae84b07f6b10771219266c690902cbb5fb",
     "fieldval" : "0.4.2",
     "fieldval-rules" : "0.4.3",
     "fieldval-ui" : "0.4.2",
-    "extend": "MarcusLongmuir/extend",
+    "extend": "MarcusLongmuir/extend#ab161eb5e479a74da6206d7f589892cabe29ecb7",
     "mino-logger": "Mino/mino-logger#0f8b81f946ebd956aea2fb66ea3e4fb4e418c3f7"
   },
   "devDependencies": {
-    "gulp-imports" : "MarcusLongmuir/gulp-imports",
+    "gulp-imports" : "MarcusLongmuir/gulp-imports#3127259aa250e3568224c84dc5fbd079936f08a7",
     "gulp-nodemon" : "*",
     "gulp-util": "^2.2.14",
     "gulp": "^3.6.1",
@@ -43,7 +43,9 @@
     "gulp-plumber": "^0.6.1",
     "gulp-mocha": "2.0.0",
     "supertest": "*",
-    "sa-docs-to-json": "SuperAwesomeLtd/sa-docs-to-json",
-    "codeclimate-test-reporter": "*"
+    "sa-docs-to-json": "SuperAwesomeLtd/sa-docs-to-json#5a805884a082521515a348b338d9cbec13d48d77",
+    "codeclimate-test-reporter": "*",
+    "gulp-jshint": "*",
+    "jshint-stylish": "*"
   }
 }

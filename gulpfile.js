@@ -15,6 +15,7 @@ var docs_to_json = require('sa-docs-to-json');
 
 var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');
+var jshint = require('gulp-jshint');
 
 require('./default_plugins/admin_server/gulpfile')(gulp);
 require('./default_plugins/browser_server/gulpfile')(gulp);
@@ -77,6 +78,18 @@ gulp.task('test', function(cb){
         });
     }
     
+});
+
+gulp.task('lint', function() {
+    return gulp.src([
+        'MinoDB/**/*.js', 
+        '!MinoDB/ui_server/**/*', 
+        'common_classes/**/*.js',
+        'default_plugins/auth/Auth.js',
+        'default_plugins/permissions/MinoDbPermissions.js',
+    ])
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'));
 });
 
 gulp.task('docs', function() {
