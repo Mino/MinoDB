@@ -18,6 +18,6 @@ it('should delete type', function(done) {
             var person_type = res.objects[0];
             assert.equal(person_type, null);
             done();
-        })
+        });
     });
 });

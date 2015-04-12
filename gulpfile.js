@@ -3,6 +3,7 @@ var gutil = require('gulp-util');
 var plumber = require('gulp-plumber');
 var logger = require('mino-logger');
 
+var open = require('gulp-open');
 var less = require('gulp-less');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
@@ -15,6 +16,7 @@ var docs_to_json = require('sa-docs-to-json');
 
 var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');
+var jshint = require('gulp-jshint');
 
 require('./default_plugins/admin_server/gulpfile')(gulp);
 require('./default_plugins/browser_server/gulpfile')(gulp);
@@ -27,6 +29,8 @@ var debug = gulp.env.debug;
 if (debug) {
     logger.set_level("debug");
 }
+
+var coverage = gulp.env.coverage;
 
 var onError = function (err) {  
   gutil.beep();
@@ -43,15 +47,21 @@ gulp.task('test', function(cb){
         .pipe( mocha( {
             reporter: 'spec',
             grep: gulp.env.grep
-        }))
+        }));
         
         if (!debug) {
-            task.pipe(istanbul.writeReports())
+            task.pipe(istanbul.writeReports());
         }
         
-        task.on('end', cb)
+        task.on('end', function() {
+            if (coverage) {
+                gulp.src('./coverage/lcov-report/index.html')
+                .pipe(open());    
+            }
+            cb();
+        });
         task.pipe(plumber(onError));
-    }
+    };
 
     var setup_coverage = function(callback) {
         gulp.src([
@@ -67,22 +77,35 @@ gulp.task('test', function(cb){
             callback();
         })
         .on('error', gutil.log);
-    }
+    };
 
     if (debug) {
         run_tests();
     } else {
         setup_coverage(function() {
             run_tests();
-        })
+        });
     }
     
+});
+
+gulp.task('lint', function() {
+    return gulp.src([
+        'MinoDB/**/*.js', 
+        '!MinoDB/ui_server/**/*', 
+        'common_classes/**/*.js',
+        'default_plugins/auth/Auth.js',
+        'default_plugins/permissions/MinoDbPermissions.js',
+        'test/**/*.js',
+    ])
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'));
 });
 
 gulp.task('docs', function() {
     return gulp.src('./docs_src/*.json')
     .pipe(docs_to_json())
-    .pipe(gulp.dest('./docs/'))
+    .pipe(gulp.dest('./docs/'));
 });
 
 gulp.task('watch', function(){
@@ -101,9 +124,9 @@ gulp.task('default', function(){
     gulp.start('admin_default');
     gulp.start('ui_default');
     gulp.start('permissions_default');
-})
+});
 
 gulp.task('dev', function(){
     gulp.start('default');
     gulp.start('watch');
-})
+});

@@ -29,4 +29,4 @@ module.exports = function(class_data){
     }
 
     return class_string;
-}
+};

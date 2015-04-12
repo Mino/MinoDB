@@ -55,7 +55,7 @@ module.exports = function(api, callback){
     	    },0,{
     	        bypass_type_checks: true,
                 bypass_path_checks: true
-    	    })
+    	    });
 
     	    so.do_saving(function(save_object, error, save_details){
     	        logger.debug(save_object, error, save_details);
@@ -75,9 +75,9 @@ module.exports = function(api, callback){
                     }, function(session_type_err, session_type_res){
                         logger.debug(JSON.stringify(session_type_err,null,4), session_type_res);
                         callback();
-                    })
-                })
-    	    })
-        })
-    })
-}
+                    });
+                });
+    	    });
+        });
+    });
+};

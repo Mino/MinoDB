@@ -11,7 +11,7 @@ describe("basic_sign_in()", function() {
 		var object = {
 			username: "otheruser",
 			password: "my_password"
-		}
+		};
 
 		auth.sign_in(object, function(err, user, session) {
 			logger.debug(JSON.stringify(err, null, 4));
@@ -23,9 +23,9 @@ describe("basic_sign_in()", function() {
 			auth.get_user('minodb_user.username', 'otheruser', function(err, user) {
 				assert.equal(session.user_id, user._id);
 				done();	
-			})
+			});
 		});
-	})
+	});
 
 	it("should return an error when user does not exist", function(done) {
 		var auth = globals.mino.get_plugin('minodb_auth');
@@ -33,7 +33,7 @@ describe("basic_sign_in()", function() {
 		var object = {
 			username: "nonexistant_user",
 			password: "my_password"
-		}
+		};
 
 		auth.sign_in(object, function(err, res) {
 			logger.debug(JSON.stringify(err, null, 4));
@@ -50,7 +50,7 @@ describe("basic_sign_in()", function() {
 			});
 			done();
 		});
-	})
+	});
 		
 	it("should return an error when password is invalid", function(done) {
 		var auth = globals.mino.get_plugin('minodb_auth');
@@ -58,7 +58,7 @@ describe("basic_sign_in()", function() {
 		var object = {
 			username: "otheruser",
 			password: "incorrect_password"
-		}
+		};
 
 		auth.sign_in(object, function(err, res) {
 			logger.debug(JSON.stringify(err, null, 4));
@@ -75,14 +75,14 @@ describe("basic_sign_in()", function() {
 			});
 			done();
 		});
-	})
+	});
 
 	it("should return an error when password is empty", function(done) {
 		var auth = globals.mino.get_plugin('minodb_auth');
 		
 		var object = {
 			username: "otheruser"
-		}
+		};
 
 		auth.sign_in(object, function(err, res) {
 			logger.debug(JSON.stringify(err, null, 4));
@@ -99,14 +99,14 @@ describe("basic_sign_in()", function() {
 			});
 			done();
 		});
-	})
+	});
 
 	it("should return an error when identifier is empty", function(done) {
 		var auth = globals.mino.get_plugin('minodb_auth');
 		
 		var object = {
 			password: "testtest"
-		}
+		};
 
 		auth.sign_in(object, function(err, res) {
 			logger.debug(JSON.stringify(err, null, 4));
@@ -123,5 +123,5 @@ describe("basic_sign_in()", function() {
 			});
 			done();
 		});
-	})
-})
+	});
+});

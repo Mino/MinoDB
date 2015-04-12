@@ -25,12 +25,12 @@ PluginManager.prototype.list_plugins = function(){
 			output.push({
 				name: plugin_details.info.name,
 				display_name: plugin_details.info.display_name
-			})
+			});
 		}
 	}
 
 	return output;
-}
+};
 
 PluginManager.prototype.add_plugin = function(plugin){
 	var pm = this;
@@ -56,6 +56,6 @@ PluginManager.prototype.add_plugin = function(plugin){
 		plugin: plugin,
 		info: info
 	};
-}
+};
 
 module.exports = PluginManager;

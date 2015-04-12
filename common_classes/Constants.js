@@ -5,7 +5,7 @@ var Constants = {
 	READ_PERMISSION : constant_count++,
 	WRITE_PERMISSION : constant_count++,
 	EXISTS : constant_count++
-}
+};
 
 if (typeof module != 'undefined') {
     module.exports = Constants;

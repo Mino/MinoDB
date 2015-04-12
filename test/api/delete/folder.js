@@ -12,9 +12,9 @@ it('should delete a folder', function(done) {
         }
     }, function(error, response) {
         logger.debug(JSON.stringify(error, null, 4), response);
-        assert.equal(error,null)
+        assert.equal(error,null);
         var object = response.objects[0];
-        assert.equal(object.deleted, true)
+        assert.equal(object.deleted, true);
         
         globals.sdk.with_user("testuser").get(["/testuser/TestFolder/"], function(err, res) {
             logger.debug(err, res);
@@ -22,7 +22,7 @@ it('should delete a folder', function(done) {
             var object = res.objects[0];
             assert.equal(object, null);
             done();
-        })
+        });
     });
 });
 
@@ -36,7 +36,7 @@ it('should not delete a folder if path does not exist', function(done) {
         }
     }, function(error, response) {
         logger.debug(JSON.stringify(error, null, 4), response);
-        assert.notEqual(error,null)
+        assert.notEqual(error,null);
         assert.deepEqual(error, {
             "invalid": {
                 "parameters": {
@@ -65,7 +65,7 @@ it('should not delete a folder if path does not exist', function(done) {
             var object = res.objects[0];
             assert.equal(object, null);
             done();
-        })
+        });
     });
 });
 
@@ -107,6 +107,6 @@ it('should not delete a folder if access denied', function(done) {
             var object = res.objects[0];
             assert.equal(object, null);
             done();
-        })
+        });
     });
 });

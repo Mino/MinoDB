@@ -16,7 +16,7 @@ describe("session", function() {
 		server.use('/mino/', globals.mino.server());
 		server.use(auth.process_session({required: false}));
 		
-	})
+	});
 
 	describe('create_session()', function() {
 
@@ -28,10 +28,10 @@ describe("session", function() {
 				assert.equal(err, null);
 				assert.equal(session.user_id, user_id);
 				done();
-			})
-		})
+			});
+		});
 
-	})
+	});
 
 	describe('get_session()', function() {
 		
@@ -44,10 +44,10 @@ describe("session", function() {
 					assert.deepEqual(session, get_session);
 					done();
 				});
-			})
-		})
+			});
+		});
 		
-	})
+	});
 
 
 
@@ -74,7 +74,7 @@ describe("session", function() {
 				assert.equal(err, null);
 			});
 		});
-	})
+	});
 
 	it('should invalidate active sessions when new one is created', function(done) {
 		server.get('/test_invalidate_session', function(req,res) {

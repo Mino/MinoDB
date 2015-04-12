@@ -11,6 +11,6 @@ function Signal(data) {
 Signal.prototype.trigger = function(object, handler) {
 	var signal = this;
 	signal.callback(object, handler);
-}
+};
 
 module.exports = Signal;

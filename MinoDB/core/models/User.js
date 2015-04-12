@@ -81,7 +81,7 @@ User.username_validator = [
     BasicVal.string(true),
     BasicVal.no_whitespace(),
     BasicVal.start_with_letter()
-]
+];
 
 User.validate = function(data, callback){
     logger.debug("User.validate");
@@ -92,7 +92,7 @@ User.validate = function(data, callback){
         validator.get("username", User.username_validator);
         callback(validator.end());
     });
-}
+};
 
 User.prototype.to_minodb_object = function(callback){
     var user = this;
@@ -109,10 +109,10 @@ User.prototype.to_minodb_object = function(callback){
                 salted_password: user.salted_password,
                 password_salt: user.password_salt
             }
-        }
+        };
 
         callback(null, minodb_object);
-    }
+    };
 
     if(user.password){
         security.generate_salted_password(user.password, function(hash, salt){
@@ -124,7 +124,7 @@ User.prototype.to_minodb_object = function(callback){
     } else {
         build_obj();
     }
-}
+};
 
 User.prototype.save = function(api, options, callback){
     var user = this;
@@ -150,8 +150,8 @@ User.prototype.save = function(api, options, callback){
             logger.debug(save_err, save_res);
 
             callback(save_err, save_res);
-        })
+        });
     });
-}
+};
 
 module.exports = User;

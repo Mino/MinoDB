@@ -16,7 +16,7 @@ module.exports = function(name, server, callback) {
 				.expect(200)
 				.end(function(err, res) {
 					logger.debug(err, res.body, res.text);
-					callback(err, res.text)
+					callback(err, res.text);
 				});
 		});
-}
+};

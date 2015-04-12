@@ -25,7 +25,7 @@ DataStore.prototype.call_connect_callbacks = function(){
 	for(var i = 0; i < ds.connect_callbacks.length; i++){
 		ds.connect_callbacks[i]();
 	}
-}
+};
 
 DataStore.prototype.connect = function(callback) {
 	var ds = this;
@@ -55,15 +55,15 @@ DataStore.prototype.connect = function(callback) {
 
 	    ds.object_collection.ensureIndex( { full_path: 1 }, { unique: true }, function(err,res){
 	    	logger.debug(err, res);
-	    })
+	    });
 
 	    ds.object_collection.ensureIndex( { path: 1 }, function(err,res){
 	    	logger.debug(err, res);
-	    })
+	    });
 
 	    ds.object_collection.ensureIndex( { name: 1 }, function(err,res){
 	    	logger.debug(err, res);
-	    })
+	    });
 
 	    ds.object_collection.ensureIndex(
 	    	{ 
@@ -96,7 +96,7 @@ DataStore.prototype.close = function(callback){
 			callback();
 		}
 	}
-}
+};
 
 DataStore.prototype.get_id = function(callback){
 	var ds = this;

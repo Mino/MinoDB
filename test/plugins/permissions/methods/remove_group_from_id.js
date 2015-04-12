@@ -21,10 +21,10 @@ describe('remove_group_from_id()', function() {
 						assert.equal(err, null);
 						done();
 					});
-				})
-			})
-		})
-	})
+				});
+			});
+		});
+	});
 
 	it('should remove group from id with escaped name', function(done) {
 		var perms = globals.minodb.get_plugin('custom_permissions');
@@ -44,8 +44,8 @@ describe('remove_group_from_id()', function() {
 						assert.equal(err, null);
 						done();
 					});
-				})
-			})
-		})
-	})
+				});
+			});
+		});
+	});
 });

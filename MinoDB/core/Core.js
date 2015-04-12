@@ -11,7 +11,7 @@ function Core(minodb, db_address){
 
     core.ds = new DataStore({
         address: db_address
-    })
+    });
 
     core.handlers = {
         "get": require('./handlers/GetHandler/GetHandler'),
@@ -21,14 +21,14 @@ function Core(minodb, db_address){
         "save_type": require('./handlers/SaveTypeHandler/SaveTypeHandler'),
         "delete_type": require('./handlers/DeleteTypeHandler/DeleteTypeHandler'),
         "create_user": require('./handlers/CreateUserHandler/CreateUserHandler')
-    }
+    };
 
     core.connected = false;
     core.connect_callbacks = [];
 
     core.connect(function(){
         logger.debug("API CONNECTED");
-    })
+    });
 }
 
 Core.prototype.call_connect_callbacks = function(){
@@ -38,7 +38,7 @@ Core.prototype.call_connect_callbacks = function(){
     for(var i = 0; i < core.connect_callbacks.length; i++){
         core.connect_callbacks[i]();
     }
-}
+};
 
 Core.prototype.connect = function(callback){
     var core = this;
@@ -56,15 +56,15 @@ Core.prototype.connect = function(callback){
             }
 
             callback();
-        })
-    })
-}
+        });
+    });
+};
 
 Core.prototype.close = function(callback){
     var core = this;
 
     core.ds.close(callback);
-}
+};
 
 Core.prototype.on_connected = function(callback){
     var core = this;
@@ -74,7 +74,7 @@ Core.prototype.on_connected = function(callback){
         return;
     }
     core.connect_callbacks.push(callback);
-}
+};
 
 Core.prototype.call = function(user, request, callback){
 	var core = this;
@@ -98,20 +98,20 @@ Core.prototype.call = function(user, request, callback){
             return;
         }
 
-        if (handler != null) {
+        if (handler !== null) {
             logger.debug("Calling handler as user", user, handler);
             var handler_callback = function(error, response) {
                 logger.debug(JSON.stringify(error, null, 4));
                 logger.debug(JSON.stringify(response, null, 4));
-                if (error != null) {
+                if (error !== null) {
                     return callback(api_val.invalid("parameters", error).end());
                 } else {
                     callback(null, response);
                 }
             };
-            new handler(core, user, parameters, handler_callback)
+            new handler(core, user, parameters, handler_callback);
         }
     });
-}
+};
 
 module.exports = Core;

@@ -9,12 +9,12 @@ describe('MinoDB', function() {
 	require('./initial_setup.js');
 	require('./Models/models.js');
 	require('./api/api.js');
-    require('./plugins/plugins.js')
-    require('./signals/signals.js')
+    require('./plugins/plugins.js');
+    require('./signals/signals.js');
     require('./utils/class_to_string');
     require('./permissions/PathPermissionChecker');
 
     after(function(){
 		globals.mino.close();
-    })
+    });
 });

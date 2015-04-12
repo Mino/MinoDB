@@ -1,4 +1,4 @@
-var errors = require('../../../../errors')
+var errors = require('../../../../errors');
 var Constants = require('../../../../common_classes/Constants');
 var Path = require('../../../../common_classes/Path');
 var logger = require('mino-logger');
@@ -35,7 +35,7 @@ function SaveObject(json, handler, index, options){
 	so.validator.get("full_path",BasicVal.string(false));//, validators.path);
 	
 	so.path = so.validator.get("path", BasicVal.string(true), validators.folder_path);
-	if(so.path!=null){
+	if(so.path!==null){
 		var permission_called = false;
 		logger.debug(so.path);
 
@@ -62,9 +62,6 @@ function SaveObject(json, handler, index, options){
 		}
 	}
 	so.name = so.validator.get("name", BasicVal.string(true), BasicVal.not_empty(true), Path.object_name_check(so.options.bypass_path_checks));
-	if(so.name!=null && so.path!=null){
-		
-	}
 
 	var unrecognized = so.validator.get_unrecognized();
 
@@ -92,7 +89,7 @@ SaveObject.prototype.create_saving_json = function(){
 	for(var key in so.type_keys){
 		so.saving_json[key] = so.type_keys[key];
 	}
-}
+};
 
 SaveObject.prototype.got_type = function(name, error, type, callback){
 	var so = this;
@@ -107,18 +104,18 @@ SaveObject.prototype.got_type = function(name, error, type, callback){
 
 	type.validate(value, function(error) {
 		logger.debug(error);
-		if(error!=null){
+		if(error!==null){
 			so.validator.invalid(name, error);
 		}
 		callback();
 	});	
-}
+};
 
 SaveObject.prototype.replace_id_in_name = function(){
 	var so = this;
 
 	so.name = so.name.replaceAll("~id~", so.id);
-}
+};
 
 SaveObject.prototype.do_saving = function(on_save_callback){
 	var so = this;
@@ -144,7 +141,7 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 
 				if(err){
 	    			logger.debug(err);
-	    			so.validator.invalid("name", errors.FULL_PATH_EXISTS)
+	    			so.validator.invalid("name", errors.FULL_PATH_EXISTS);
 			       	on_save_callback(so,so.validator.end(),null);
 	    		} else {
 	    			on_save_callback(so,null,{
@@ -152,15 +149,15 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 	    				version: so.version,
 	    				name: so.name,
 	    				full_path: so.full_path.toString()
-	    			})
+	    			});
 	    		}
-			})
+			});
 		});
 	} else {
 
 		var find_query = {
 			"_id":so.id
-		}
+		};
 
 		so.replace_id_in_name();
 		so.full_path = so.path.path_for_child_with_name(so.name,so.folder);
@@ -179,7 +176,7 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 		    			so.validator.invalid("_id",{
 		    				error: -1,
 		    				error_message: "ID DOES NOT EXIST"
-		    			})
+		    			});
 		    			on_save_callback(so,so.validator.end());
 		    			return;
 		    		}
@@ -228,7 +225,7 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 					    		}
 						    }
 					    );
-		    		}
+		    		};
 
 		    		var username_for_permission = old_full_path.username_for_permission(so.handler.user.username, true);
 					if(username_for_permission===so.handler.user.username){
@@ -242,7 +239,7 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 									error: -1,
 									error_message: errors.NO_WRITE_PERMISSION
 								});
-								on_save_callback(so, null, so.validator.end())
+								on_save_callback(so, null, so.validator.end());
 							} else {
 								have_permission();
 						    }
@@ -250,13 +247,11 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 					}
 		    	}
 		    );
-		}
+		};
 
 		attempt_save();
 
 	}
-
-    
-}
+};
 
 module.exports = SaveObject;

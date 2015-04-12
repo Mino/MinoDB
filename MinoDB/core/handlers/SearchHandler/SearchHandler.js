@@ -1,4 +1,4 @@
-var errors = require('../../../../errors')
+var errors = require('../../../../errors');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
@@ -19,7 +19,7 @@ function SearchHandler(api, user, parameters, callback){
 
     sh.validator = new FieldVal(parameters);
 
-    sh.mongo_query = {}
+    sh.mongo_query = {};
     sh.query_and = [];
 
     sh.paths = sh.validator.get("paths", BasicVal.array(true));
@@ -57,7 +57,7 @@ function SearchHandler(api, user, parameters, callback){
             // logger.debug(err);
             // logger.debug(res);
             callback(err, res);
-        })
+        });
     }
 }
 
@@ -68,28 +68,30 @@ SearchHandler.prototype.do_search = function(callback){
 
 
     var path_validator = new FieldVal(null);
+    var validate_path = function(i) {
+        var sh = this;
+
+        var path;
+        var path_error = validators.folder_path(sh.paths[i], function(emit_path){
+            path = emit_path;
+        });
+        logger.debug(path_error);
+
+        if(path_error){
+            path_validator.invalid(i, path_error);
+        } else {
+            sh.path_permission_checker.check_permissions_for_path(path,function(status){
+                if(status===Constants.WRITE_PERMISSION || status===Constants.READ_PERMISSION){
+                    //All good
+                } else {
+                    path_validator.invalid(i, errors.NOT_FOUND_OR_NO_PERMISSION_TO_ACCESS);
+                }
+            });
+        }
+    };
+
     for(var i = 0; i < sh.paths.length; i++){
-        (function(i){
-            var sh = this;
-
-            var path;
-            var path_error = validators.folder_path(sh.paths[i], function(emit_path){
-                path = emit_path
-            })
-            logger.debug(path_error);
-
-            if(path_error){
-                path_validator.invalid(i, path_error);
-            } else {
-                sh.path_permission_checker.check_permissions_for_path(path,function(status){
-                    if(status===Constants.WRITE_PERMISSION || status===Constants.READ_PERMISSION){
-                        //All good
-                    } else {
-                        path_validator.invalid(i, errors.NOT_FOUND_OR_NO_PERMISSION_TO_ACCESS);
-                    }
-                });
-            }
-        }).call(sh,i);
+        validate_path.call(sh,i);
     }
 
     sh.path_permission_checker.retrieve_permissions(function(){
@@ -110,9 +112,9 @@ SearchHandler.prototype.do_search = function(callback){
                     "path":{
                         "$regex": "^"+path
                     }
-                })
+                });
             }
-            sh.mongo_query["$or"] = path_prefixes;
+            sh.mongo_query.$or = path_prefixes;
         } else {
             sh.mongo_query.path = {
                 "$in": sh.paths
@@ -139,7 +141,7 @@ SearchHandler.prototype.do_search = function(callback){
                     skip: sh.skip
                 });
             }
-        }
+        };
 
         var options = {
             skip: sh.skip,
@@ -147,7 +149,7 @@ SearchHandler.prototype.do_search = function(callback){
         };
 
         if(sh.query_and.length>0){
-            sh.mongo_query["$and"] = sh.query_and;
+            sh.mongo_query.$and = sh.query_and;
         }
 
         logger.debug(JSON.stringify(sh.mongo_query,null,4));
@@ -178,8 +180,8 @@ SearchHandler.prototype.do_search = function(callback){
             }
             have_count = true;
             done();
-        })
+        });
     });
-}
+};
 
 module.exports = SearchHandler;

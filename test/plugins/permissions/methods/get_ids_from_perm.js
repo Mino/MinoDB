@@ -47,7 +47,7 @@ describe('get_ids_from_perm()', function() {
 						});
 					});
 				});
-			})
+			});
 		});
 	});
 });

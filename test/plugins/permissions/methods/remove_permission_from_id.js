@@ -24,10 +24,10 @@ describe('remove_permission_from_id())', function() {
 						done();
 					});
 
-				})
-			})
-		})
-	})
+				});
+			});
+		});
+	});
 
 	it('should remove permission from id with escaped name', function(done) {
 		var perms = globals.minodb.get_plugin('custom_permissions');
@@ -50,8 +50,8 @@ describe('remove_permission_from_id())', function() {
 						done();
 					});
 
-				})
-			})
-		})
-	})
+				});
+			});
+		});
+	});
 });

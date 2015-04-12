@@ -23,12 +23,12 @@ module.exports = function(done) {
 		                password: "my_password"
 					}, function(user_err, user_res){
 						done();
-					})
-	            })
+					});
+	            });
 			});
 
 		});
-	}
+	};
 	
 	if (globals.mongodb) {
 		setup_database();
@@ -38,4 +38,4 @@ module.exports = function(done) {
 			setup_database();	
 		});
 	}
-}
+};

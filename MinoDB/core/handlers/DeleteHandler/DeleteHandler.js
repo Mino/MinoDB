@@ -1,10 +1,10 @@
-var errors = require('../../../../errors')
+var errors = require('../../../../errors');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
-var Path = require('../../../../common_classes/Path')
+var Path = require('../../../../common_classes/Path');
 var FVRule = require('fieldval-rules');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
-var DeleteObject = require('./DeleteObject')
+var DeleteObject = require('./DeleteObject');
 var logger = require('mino-logger');
 
 function DeleteHandler(api, user, parameters, callback){
@@ -93,10 +93,10 @@ DeleteHandler.prototype.check_ready_to_delete = function(){
             };
 
             dh.callback(null, returning);
-        }
+        };
         dh.do_deleting();
     }
-}
+};
 
 DeleteHandler.prototype.do_deleting = function(callback){
     var dh = this;
@@ -113,32 +113,32 @@ DeleteHandler.prototype.do_deleting = function(callback){
         return;
     }
 
+    var delete_object_callback = function(delete_object,error,delete_details){
+        logger.debug(error);
+        if(error){
+            dh.result_object_array[delete_object.index] = error;
+            dh.objects_validator.invalid(""+delete_object.index,error);
+        } else {
+            dh.result_object_array[delete_object.index] = delete_details;
+        }
+
+        dh.completed++;
+        logger.debug(dh.completed + " : " +dh.total);
+        if(dh.completed===dh.total){
+            dh.finished_deleting();
+        }
+
+        if (!error) {
+            dh.api.minodb.signal_manager.trigger(dh.user, "delete", delete_object.deleting_json, function(err, res) {
+                logger.debug(err,res);
+            });
+        }
+    };
+
     for(var i = 0; i < dh.total; i++){
         var delete_object = dh.delete_objects[i];
-        
-        delete_object.do_deleting(function(delete_object,error,delete_details){
-            logger.debug(error);
-            if(error){
-                dh.result_object_array[delete_object.index] = error;
-                dh.objects_validator.invalid(""+delete_object.index,error);
-            } else {
-                dh.result_object_array[delete_object.index] = delete_details;
-            }
-
-            dh.completed++;
-            logger.debug(dh.completed + " : " +dh.total);
-            if(dh.completed===dh.total){
-                dh.finished_deleting();
-            }
-
-            if (!error) {
-                dh.api.minodb.signal_manager.trigger(dh.user, "delete", delete_object.deleting_json, function(err, res) {
-                    logger.debug(err,res);
-                })    
-            }
-            
-        });
+        delete_object.do_deleting(delete_object_callback);
     }    
-}
+};
 
 module.exports = DeleteHandler;

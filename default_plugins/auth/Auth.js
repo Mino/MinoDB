@@ -24,22 +24,22 @@ function Auth(options) {
 
 	auth.user_path = options.user_path;
 	if (!auth.user_path) {
-		throw "Plugin requires user_path to be specified in options"
+		throw "Plugin requires user_path to be specified in options";
 	}
 
 	auth.session_path = options.session_path;
 	if (!auth.session_path) {
-		throw "Plugin requires session_path to be specified in options"
+		throw "Plugin requires session_path to be specified in options";
 	}
 
 	auth.cookie_name = options.cookie_name;
 	if (!auth.cookie_name) {
-		throw "Plugin requires cookie_name to be specified in options"
+		throw "Plugin requires cookie_name to be specified in options";
 	}
 
 	auth.username = options.username;
 	if (!auth.username) {
-		throw "Plugin requires username to be specified in options"
+		throw "Plugin requires username to be specified in options";
 	}
 
 	auth.name = options.name || "auth";
@@ -49,7 +49,7 @@ function Auth(options) {
 Auth.prototype.get_config_server = function(){
     var auth = this;
     return auth.config_server;
-}
+};
 
 Auth.prototype.info = function(){
     var auth = this;
@@ -58,7 +58,7 @@ Auth.prototype.info = function(){
         name: auth.name,
         display_name: auth.display_name
     };
-}
+};
 
 Auth.prototype.init = function(minodb){
     var auth = this;
@@ -87,8 +87,8 @@ Auth.prototype.init = function(minodb){
             mino_path: req.mino_path,
             user: JSON.stringify(minodb_user)
         });
-    })
-}
+    });
+};
 
 Auth.prototype.check_password_hash = function(password,salt,correct_hash_64,callback){
 	logger.debug(arguments);
@@ -97,7 +97,7 @@ Auth.prototype.check_password_hash = function(password,salt,correct_hash_64,call
     	logger.debug("output hash: ",hash);
     	callback(hash===correct_hash_64);
     });
-}
+};
 
 Auth.prototype.basic_sign_in = function(object, options, callback) {
 	var auth = this;
@@ -143,9 +143,9 @@ Auth.prototype.basic_sign_in = function(object, options, callback) {
                 		);
                 		callback(null, user_object, session_res);
 
-                	})
+                	});
                 } else {
-                    var error = new FieldVal(null).invalid("password", errors.INCORRECT_PASSWORD).end()
+                    var error = new FieldVal(null).invalid("password", errors.INCORRECT_PASSWORD).end();
                     callback(error);
                     return;
                 }
@@ -154,19 +154,19 @@ Auth.prototype.basic_sign_in = function(object, options, callback) {
 		);
 
     });
-}
+};
 
 Auth.prototype.get_salted_password_from_user_object = function(user_object) {
     return user_object.minodb_user.salted_password;
-}
+};
 
 Auth.prototype.get_password_salt_from_user_object = function(user_object) {
     return user_object.minodb_user.password_salt;
-}
+};
 
 Auth.prototype.get_identifier_from_user = function(user) {
     return user._id;
-}
+};
 
 Auth.prototype.sign_in = Auth.prototype.basic_sign_in;
 
@@ -188,7 +188,7 @@ Auth.prototype.create_user = function(object, callback) {
         
         var options = {
             minodb_username: auth.username
-        }
+        };
 
         user.save(auth.minodb.api, options, function(err, res){
 
@@ -197,7 +197,7 @@ Auth.prototype.create_user = function(object, callback) {
 
         });
     });
-}
+};
 
 Auth.prototype.get_user = function(identifier, value, callback) {
 	var auth = this;
@@ -209,15 +209,15 @@ Auth.prototype.get_user = function(identifier, value, callback) {
             callback(null, res[0]);
         }
     });
-}
+};
 
 Auth.prototype.get_users = function(identifier, values, callback) {
     var auth = this;
 
-    var query = {}
+    var query = {};
     query[identifier] = {
         "$in": values
-    }
+    };
     logger.debug(query);
 
     auth.minodb.with_user(auth.username).call({
@@ -228,15 +228,15 @@ Auth.prototype.get_users = function(identifier, values, callback) {
         }
     }, function(err, res) {
         logger.debug(JSON.stringify(err, null, 4), res);
-        if (values.length == 1 && res.objects[0] == null) {
+        if (values.length === 1 && !res.objects[0]) {
             callback(errors.USER_DOES_NOT_EXIST, null);
             return;
         }
 
         callback(null, res.objects);
-    })
+    });
 
-}
+};
 
 Auth.prototype.create_session = function(user_id, callback) {
 	var auth = this;
@@ -246,25 +246,25 @@ Auth.prototype.create_session = function(user_id, callback) {
         user_id : user_id,
         key: ""+Math.random()+Math.random()+Math.random()+Math.random(),
         end_time: null
-    }
+    };
 
     var options = {
         path: auth.session_path, 
         minodb_username: auth.username
-    }
+    };
 
 	Session.create(data, auth.minodb.api, options, callback);
-}
+};
 
 Auth.prototype.get_session = function(value, callback) {
 	var auth = this;
     var options = {
         path: auth.session_path, 
         minodb_username: auth.username
-    }
+    };
 
 	Session.get(value, auth.minodb.api, options, callback);
-}
+};
 
 Auth.prototype.persist_session = function(res, session) {
 	var auth = this;
@@ -276,7 +276,7 @@ Auth.prototype.persist_session = function(res, session) {
         httpOnly: false
     });
 
-}
+};
 
 Auth.prototype.process_session_failed = function(req, res, next, options) {
 	var auth = this;
@@ -285,7 +285,7 @@ Auth.prototype.process_session_failed = function(req, res, next, options) {
 	} else {
 		next();
 	}
-}
+};
 
 Auth.prototype.process_session = function(options) {
 	var auth = this;
@@ -335,20 +335,20 @@ Auth.prototype.process_session = function(options) {
             }
             auth.get_user("_id", session.user_id, function(err, user) {
                 req.user = user;
-                logger.debug("SIGNED IN AS ",req.user)
+                logger.debug("SIGNED IN AS ",req.user);
                 logger.debug("C");
                 next();
-            })
+            });
 
-    	})
-	}
-}
+    	});
+	};
+};
 
 Auth.prototype.sign_out = function(res) {
     var auth = this;
     res.clearCookie(auth.cookie_name, {
         path: '/'
     });
-}
+};
 
 module.exports = Auth;

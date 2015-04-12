@@ -1,11 +1,11 @@
-var errors = require('../../../../errors')
+var errors = require('../../../../errors');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
-var Path = require('../../../../common_classes/Path')
+var Path = require('../../../../common_classes/Path');
 var FVRule = require('fieldval-rules');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var FolderChecker = require('../../models/FolderChecker');
-var SaveObject = require('./SaveObject')
+var SaveObject = require('./SaveObject');
 var logger = require('mino-logger');
 
 function SaveHandler(api, user, parameters, options, callback){
@@ -87,7 +87,7 @@ SaveHandler.prototype.request_type = function(type_name, save_object){
         sh.types_to_retrieve.push(type_name);
     }
     existing.push(save_object);
-}
+};
 
 SaveHandler.prototype.check_ready_to_save = function(){
     var sh = this;
@@ -131,10 +131,10 @@ SaveHandler.prototype.check_ready_to_save = function(){
             };
 
             sh.callback(null, returning);
-        }
+        };
         sh.do_saving();
     }
-}
+};
 
 SaveHandler.prototype.retrieve_types = function(){
     var sh = this;
@@ -165,7 +165,7 @@ SaveHandler.prototype.retrieve_types = function(){
                 sh.types_retrived = true;
                 sh.check_ready_to_save();
             }
-        }
+        };
 
         var validating = false;
         for(var i = 0; i < sh.types_to_retrieve.length; i++){
@@ -185,7 +185,7 @@ SaveHandler.prototype.retrieve_types = function(){
             if(res){
                 logger.debug(res);
                 var validation_type = new FVRule();
-                var type_init = validation_type.init(res['minodb_type']);
+                var type_init = validation_type.init(res.minodb_type);
                 logger.debug(validation_type);
                 logger.debug(type_init);
                 
@@ -202,7 +202,7 @@ SaveHandler.prototype.retrieve_types = function(){
         }
         
     });
-}
+};
 
 SaveHandler.prototype.do_saving = function(callback){
     var sh = this;
@@ -219,32 +219,34 @@ SaveHandler.prototype.do_saving = function(callback){
         return;
     }
 
+    var save_object_callback = function(save_object,error,save_details){
+        logger.debug(error);
+        if(error){
+            sh.result_object_array[save_object.index] = error;
+            sh.objects_validator.invalid(""+save_object.index,error);
+        } else {
+            sh.result_object_array[save_object.index] = save_details;
+        }
+
+        sh.completed++;
+        logger.debug(sh.completed + " : " +sh.total);
+        if(sh.completed===sh.total){
+            sh.finished_saving();
+        }
+
+        if (!error) {
+            sh.api.minodb.signal_manager.trigger(sh.user, "save", save_object.saving_json, function(err, res) {
+              logger.debug(err,res);
+            });
+        }
+        
+    };
+
     for(var i = 0; i < sh.total; i++){
         var save_object = sh.save_objects[i];
         
-        save_object.do_saving(function(save_object,error,save_details){
-            logger.debug(error);
-            if(error){
-                sh.result_object_array[save_object.index] = error;
-                sh.objects_validator.invalid(""+save_object.index,error);
-            } else {
-                sh.result_object_array[save_object.index] = save_details;
-            }
-
-            sh.completed++;
-            logger.debug(sh.completed + " : " +sh.total);
-            if(sh.completed===sh.total){
-                sh.finished_saving();
-            }
-
-            if (!error) {
-                sh.api.minodb.signal_manager.trigger(sh.user, "save", save_object.saving_json, function(err, res) {
-                  logger.debug(err,res);
-                })    
-            }
-            
-        });
+        save_object.do_saving(save_object_callback);
     }    
-}
+};
 
 module.exports = SaveHandler;
