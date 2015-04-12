@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var plumber = require('gulp-plumber');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 var less = require('gulp-less');
 var concat = require('gulp-concat');
@@ -18,27 +18,67 @@ var istanbul = require('gulp-istanbul');
 
 require('./default_plugins/admin_server/gulpfile')(gulp);
 require('./default_plugins/browser_server/gulpfile')(gulp);
+require('./default_plugins/auth/gulpfile')(gulp);
+require('./default_plugins/permissions/gulpfile')(gulp);
 require('./MinoDB/ui_server/gulpfile')(gulp);
+
+var throw_errors = true;
+var debug = false;
 
 var onError = function (err) {  
   gutil.beep();
   console.log(err);
+  if (throw_errors) {
+    throw err;
+  }
 };
 
+if (gulp.env.loglevel === "debug") {
+    debug = true;
+    logger.set_level(gulp.env.loglevel);
+}
+
 gulp.task('test', function(cb){
-    gulp.src( [ 'MinoDB/**/*.js', '!MinoDB/ui_server/**/*' ] )
-    .pipe(istanbul())
-    .pipe(istanbul.hookRequire())
-    .on( 'finish', function () {
-        gulp.src( [ 'test/test.js' ] )
+
+    var run_tests = function() {
+        var task = gulp.src( [ 'test/test.js' ] )
         .pipe( mocha( {
-            // reporter: 'spec'
+            reporter: 'spec',
+            grep: gulp.env.grep
         }))
-        .pipe(istanbul.writeReports())
-        .on('end', cb)
-        .on('error', gutil.log)
-    })
-    .on('error', gutil.log)
+        
+        if (!debug) {
+            task.pipe(istanbul.writeReports())
+        }
+        
+        task.on('end', cb)
+        task.pipe(plumber(onError));
+    }
+
+    var setup_coverage = function(callback) {
+        gulp.src([
+            'MinoDB/**/*.js', 
+            '!MinoDB/ui_server/**/*', 
+            'common_classes/**/*.js',
+            'default_plugins/auth/Auth.js',
+            'default_plugins/permissions/MinoDbPermissions.js',
+        ])
+        .pipe(istanbul())
+        .pipe(istanbul.hookRequire())
+        .on( 'finish', function () {
+            callback();
+        })
+        .on('error', gutil.log);
+    }
+
+    if (debug) {
+        run_tests();
+    } else {
+        setup_coverage(function() {
+            run_tests();
+        })
+    }
+    
 });
 
 gulp.task('docs', function() {
@@ -51,14 +91,18 @@ gulp.task('watch', function(){
     gulp.watch('docs_src/**/**.*', ['docs']);
     gulp.watch(['fieldval_themes/**/**.*','common_elements/**/**.*','common_classes/**/**.*'], ['default']);
     gulp.start('browser_watch');
+    gulp.start('auth_watch');
     gulp.start('admin_watch');
     gulp.start('ui_watch');
+    gulp.start('permissions_watch');
 });
 
 gulp.task('default', function(){
     gulp.start('browser_default');
+    gulp.start('auth_default');
     gulp.start('admin_default');
     gulp.start('ui_default');
+    gulp.start('permissions_default');
 })
 
 gulp.task('dev', function(){

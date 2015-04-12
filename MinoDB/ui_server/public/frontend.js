@@ -12707,6 +12707,7 @@ return jQuery;
 (function($) {
     $.fn.ajax_url = function(custom_trigger, on_trigger) {
         var element = this;
+        element.off('tap');
         element.on('tap',function(event) {
             var custom_trigger_return = null;
             if (custom_trigger != null) {
@@ -13204,7 +13205,7 @@ SAFEClass.prototype.on_resize = function(resize_obj) {
     
 };
 
-SAFEClass.prototype.pre_load = function(class_name, parameters, url, wildcard_contents) {
+SAFEClass.prototype.pre_load = function(class_obj, details, old_page) {
     var sf = this;
 
     //Must return undefined (null shows 404)
@@ -13331,6 +13332,29 @@ SAFEClass.prototype.use_page_class = function(details){
         sf.current_page.remove();
         old_page = sf.current_page;
     }
+
+    var redirect_response;
+    if(typeof class_obj.redirect === 'function'){
+        redirect_response = class_obj.redirect(details);
+    } else if(typeof class_obj.prototype.redirect === 'function'){
+        console.log(class_obj.prototype.redirect);
+        redirect_response = class_obj.prototype.redirect(details);
+    }
+    if (redirect_response !== undefined) {
+        if((typeof redirect_response) === 'function'){
+            //Given a class
+        } else if(redirect_response===null){
+            //Load the 404 page
+            details.class_name = null;
+            sf.use_page_class(details);
+            return;
+        } else {
+            //Load as URL
+            sf.load_url(redirect_response, false);
+        }
+        return;
+    }
+
 
     var pre_load_response = sf.pre_load(class_obj, details, old_page);
 
@@ -13509,6 +13533,20 @@ SAFEClass.prototype.replace_current_url = function(new_url, call_url_changed) {
             false
         );
     }
+}
+
+SAFEClass.prototype.add_history_state = function(url){
+    var sf = this;
+
+    var full_url;
+    if(url.substring(0,Site.origin.length)===Site.origin){
+        full_url = url;
+    } else {
+        full_url = Site.origin + url;
+    }
+
+    sf.ignore_next_url = true;
+    History.pushState(null, "", full_url);
 }
 
 SAFEClass.prototype.add_url = function(url, class_name) {
@@ -13777,6 +13815,8 @@ var FieldVal = (function(){
             //Provided a (potentially undefined) existing error
 
             if(existing_error){
+                //Is not null
+                
                 var key_error;
                 if(existing_error.error===FieldVal.ONE_OR_MORE_ERRORS){
                     //The existing_error is a key error
@@ -14056,16 +14096,16 @@ var FieldVal = (function(){
         return this_error;
     };
 
-    FieldVal.prototype.missing = function (field_name, flags) {
+    FieldVal.prototype.missing = function (field_name, options) {
         var fv = this;
 
-        return fv.error(field_name, FieldVal.create_error(FieldVal.MISSING_ERROR, flags));
+        return fv.error(field_name, FieldVal.create_error(FieldVal.MISSING_ERROR, options));
     };
 
-    FieldVal.prototype.unrecognized = function (field_name, flags) {
+    FieldVal.prototype.unrecognized = function (field_name, options) {
         var fv = this;
 
-        return fv.error(field_name, FieldVal.create_error(FieldVal.UNRECOGNIZED_ERROR, flags));
+        return fv.error(field_name, FieldVal.create_error(FieldVal.UNRECOGNIZED_ERROR, options));
     };
 
     FieldVal.prototype.recognized = function (field_name) {
@@ -14209,7 +14249,6 @@ var FieldVal = (function(){
      * to prevent multiple instances of FieldVal (due to being 
      * a dependency) having not-strictly-equal constants. */
     FieldVal.ASYNC = -1;//Used to indicate async functions
-    FieldVal.REQUIRED_ERROR = Math.sqrt;
     FieldVal.NOT_REQUIRED_BUT_MISSING = Math.floor;
 
     FieldVal.FIELD_MISSING = 1;
@@ -14245,11 +14284,11 @@ var FieldVal = (function(){
         };
     };
 
-    FieldVal.get_value_and_type = function (value, desired_type, flags) {
-        if (!flags) {
-            flags = {};
+    FieldVal.get_value_and_type = function (value, desired_type, options) {
+        if (!options) {
+            options = {};
         }
-        var parse = flags.parse !== undefined ? flags.parse : false;
+        var parse = options.parse !== undefined ? options.parse : false;
 
         if (typeof value !== 'string' || parse) {
             if (desired_type === "integer") {
@@ -14295,7 +14334,7 @@ var FieldVal = (function(){
 
         var this_check_function;
         var stop_on_error = true;//Default to true
-        var flags = {};
+        var options = {};
         var i = 0;
 
         if ((typeof this_check) === 'object') {
@@ -14331,10 +14370,10 @@ var FieldVal = (function(){
                 }
                 return FieldVal.ASYNC;
             } else {
-                flags = this_check;
-                this_check_function = flags;
-                if (flags && (flags.stop_on_error !== undefined)) {
-                    stop_on_error = flags.stop_on_error;
+                options = this_check;
+                this_check_function = options;
+                if (options && (options.stop_on_error !== undefined)) {
+                    stop_on_error = options.stop_on_error;
                 }
             }
         } else if(typeof this_check === 'function') {
@@ -14351,41 +14390,19 @@ var FieldVal = (function(){
                 }
                 shared_options.had_error = true;
 
-                if (response === FieldVal.REQUIRED_ERROR) {
-
-                    if (shared_options.field_name!==undefined) {
-                        shared_options.validator.error(shared_options.field_name, FieldVal.create_error(FieldVal.MISSING_ERROR, flags));
-                        use_check_done();
-                        return;
-                    } else {
-                        if (shared_options.existing_validator) {
-                        
-                            shared_options.validator.error(
-                                FieldVal.create_error(FieldVal.MISSING_ERROR, flags)
-                            );
-                            use_check_done();
-                            return;
-                        } else {
-                            shared_options.return_missing = true;
-                            use_check_done();
-                            return;
-                        }
-                    }
-                } else if (response === FieldVal.NOT_REQUIRED_BUT_MISSING) {
+                if (response === FieldVal.NOT_REQUIRED_BUT_MISSING) {
                     //NOT_REQUIRED_BUT_MISSING means "don't process proceeding checks, but don't throw an error"
                     use_check_done();
                 } else {
 
-                    if (shared_options.existing_validator) {
-                        if (shared_options.field_name!==undefined) {
-                            shared_options.validator.invalid(shared_options.field_name, response);
-                        } else {
-                            shared_options.validator.error(response);
-                        }
+                    if (shared_options.field_name!==undefined) {
+                        shared_options.validator.error(shared_options.field_name, response);
                         use_check_done();
+                        return;
                     } else {
                         shared_options.validator.error(response);
                         use_check_done();
+                        return;
                     }
                 }
             } else {
@@ -14436,7 +14453,6 @@ var FieldVal = (function(){
             },
             options: options,
             stop: false,
-            return_missing: false,
             had_error: false
         };
 
@@ -14469,12 +14485,6 @@ var FieldVal = (function(){
                 }
             }
 
-            if (shared_options.return_missing) {
-                finish(FieldVal.REQUIRED_ERROR);
-                shared_options.validator.async_call_ended();
-                return;
-            }
-
             if(!shared_options.existing_validator){
                 finish(shared_options.validator.end());
                 shared_options.validator.async_call_ended();
@@ -14498,85 +14508,89 @@ var FieldVal = (function(){
         }
     };
 
-    FieldVal.required = function (required, flags) {//required defaults to true
+    FieldVal.merge_options_and_checks = function(options, check){
+        var new_options = {};
+        if(options){
+            for(var i in options){
+                if(options.hasOwnProperty(i)){
+                    new_options[i] = options[i];
+                }
+            }
+        }
+        new_options.check = check;
+        return new_options;
+    };
+
+    FieldVal.required = function (required, options) {//required defaults to true
         var check = function (value) {
             if (value === null || value === undefined) {
                 if (required || required === undefined) {
-                    return FieldVal.REQUIRED_ERROR;
+                    return FieldVal.create_error(FieldVal.MISSING_ERROR, options);
                 }
 
                 return FieldVal.NOT_REQUIRED_BUT_MISSING;
             }
         };
-        if (flags !== undefined) {
-            flags.check = check;
-            return flags;
-        }
-        return check;
+        return FieldVal.merge_options_and_checks(options,check);
     };
 
-    FieldVal.type = function (desired_type, flags) {
+    FieldVal.type = function (desired_type, options) {
 
-        var required = (flags && flags.required !== undefined) ? flags.required : true;
+        var required = (options && options.required !== undefined) ? options.required : true;
 
         var check = function (value, emit) {
 
-            var required_error = FieldVal.required(required)(value);
+            var required_error = FieldVal.required(required, options || {}).check(value);
 
             if (required_error) {
                 return required_error;
             }
 
-            var value_and_type = FieldVal.get_value_and_type(value, desired_type, flags);
+            var value_and_type = FieldVal.get_value_and_type(value, desired_type, options);
 
             var inner_desired_type = value_and_type.desired_type;
             var type = value_and_type.type;
             value = value_and_type.value;
 
             if (type !== inner_desired_type) {
-                return FieldVal.create_error(FieldVal.INCORRECT_TYPE_ERROR, flags, inner_desired_type, type);
+                return FieldVal.create_error(FieldVal.INCORRECT_TYPE_ERROR, options, inner_desired_type, type);
             }
             if (emit) {
                 emit(value);
             }
         };
 
-        if (flags !== undefined) {
-            flags.check = check;
-            return flags;
-        }
-
-        return check;
+        return FieldVal.merge_options_and_checks(options,check);
     };
 
-    FieldVal.create_error = function (default_error, flags) {
-        if (!flags) {
+    FieldVal.create_error = function (default_error, options) {
+        if (!options) {
             return default_error.apply(null, Array.prototype.slice.call(arguments, 2));
         }
         if (default_error === FieldVal.MISSING_ERROR) {
-            var missing_error_type = typeof flags.missing_error;
+            var missing_error_type = typeof options.missing_error;
 
             /* istanbul ignore else */
             if (missing_error_type === 'function') {
-                return flags.missing_error.apply(null, Array.prototype.slice.call(arguments, 2));
+                return options.missing_error.apply(null, Array.prototype.slice.call(arguments, 2));
             } else if (missing_error_type === 'object') {
-                return flags.missing_error;
+                return options.missing_error;
             } else if (missing_error_type === 'string') {
                 return {
-                    error_message: flags.missing_error
+                    error_message: options.missing_error
                 };
             }
         } else {
-            var error_type = typeof flags.error;
+            var error_type = typeof options.error;
 
             /* istanbul ignore else */
             if (error_type === 'function') {
-                return flags.error.apply(null, Array.prototype.slice.call(arguments, 2));
+                return options.error.apply(null, Array.prototype.slice.call(arguments, 2));
             } else if (error_type === 'object') {
-                return flags.error;
+                return options.error;
             } else if (error_type === 'string') {
                 return {
-                    error_message: flags.error
+                    error_message: options.error
                 };
             }
         }
@@ -14588,10 +14602,11 @@ var FieldVal = (function(){
 
     var DateVal = {
     	errors: {
-            invalid_date_format: function() {
+            invalid_date_format: function(format) {
                 return {
                     error: 111,
-                    error_message: "Invalid date format."
+                    error_message: "Invalid date format.",
+                    format: format
                 };
             },
             invalid_date: function() {
@@ -14607,9 +14622,9 @@ var FieldVal = (function(){
                 };
             }
         },
-    	date_format: function(flags){
+    	date_format: function(options){
 
-            flags = flags || {};
+            options = options || {};
 
             var check = function(format, emit) {
 
@@ -14634,10 +14649,10 @@ var FieldVal = (function(){
                 }
 
                 if(error){
-                    return FieldVal.create_error(DateVal.errors.invalid_date_format_string, flags);
+                    return FieldVal.create_error(DateVal.errors.invalid_date_format_string, options);
                 } else {
                     
-                    if (flags.emit == DateVal.EMIT_STRING) {
+                    if (options.emit == DateVal.EMIT_STRING) {
                         emit(format);
                     } else {
                         emit(format_array);
@@ -14645,9 +14660,9 @@ var FieldVal = (function(){
 
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
@@ -14709,9 +14724,9 @@ var FieldVal = (function(){
             }
             return value;
         },
-    	date: function(format, flags){
+    	date: function(format, options){
 
-    		flags = flags || {};
+    		options = options || {};
 
             var format_array;
 
@@ -14804,32 +14819,32 @@ var FieldVal = (function(){
                 }
 
                 if(error || component_index<format_array.length-1){
-                    return FieldVal.create_error(DateVal.errors.invalid_date_format, flags);
+                    return FieldVal.create_error(DateVal.errors.invalid_date_format, options, format);
                 }
 
                 if(values.hour!==undefined && (values.hour < 0 || values.hour>23)){
-                	return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                	return FieldVal.create_error(DateVal.errors.invalid_date, options);
                 }
                 if(values.minute!==undefined && (values.minute < 0 || values.minute>59)){
-                	return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                	return FieldVal.create_error(DateVal.errors.invalid_date, options);
                 }
                 if(values.second!==undefined && (values.second < 0 || values.second>59)){
-                	return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                	return FieldVal.create_error(DateVal.errors.invalid_date, options);
                 }
 
                 if(values.month!==undefined){
                     var month = values.month;
                     if(month>12){
-                        return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                        return FieldVal.create_error(DateVal.errors.invalid_date, options);
                     } else if(month<1){
-                        return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                        return FieldVal.create_error(DateVal.errors.invalid_date, options);
                     }
 
                     if(values.day){
                         var day = values.day;
 
                         if(day<1){
-                            return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                            return FieldVal.create_error(DateVal.errors.invalid_date, options);
                         }
 
                         if(values.year){
@@ -14837,11 +14852,11 @@ var FieldVal = (function(){
                             if(month==2){
                                 if(year%400===0 || (year%100!==0 && year%4===0)){
                                     if(day>29){
-                                        return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                                        return FieldVal.create_error(DateVal.errors.invalid_date, options);
                                     }
                                 } else {
                                     if(day>28){
-                                        return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                                        return FieldVal.create_error(DateVal.errors.invalid_date, options);
                                     }
                                 }
                             }
@@ -14849,15 +14864,15 @@ var FieldVal = (function(){
         
                         if(month===4 || month===6 || month===9 || month===11){
                             if(day > 30){
-                                return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                                return FieldVal.create_error(DateVal.errors.invalid_date, options);
                             }
                         } else if(month===2){
                             if(day > 29){
-                                return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                                return FieldVal.create_error(DateVal.errors.invalid_date, options);
                             }
                         } else {
                             if(day > 31){
-                                return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                                return FieldVal.create_error(DateVal.errors.invalid_date, options);
                             }
                         }
                     }
@@ -14865,19 +14880,19 @@ var FieldVal = (function(){
                     //Don't have month, but days shouldn't be greater than 31 anyway
                     if(values.day){
                         if(values.day > 31){
-                            return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                            return FieldVal.create_error(DateVal.errors.invalid_date, options);
                         } else if(values.day < 1){
-                            return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                            return FieldVal.create_error(DateVal.errors.invalid_date, options);
                         }
                     }
                 }
 
-                if(flags.emit){
-                	if(flags.emit === DateVal.EMIT_COMPONENT_ARRAY){
+                if(options.emit){
+                	if(options.emit === DateVal.EMIT_COMPONENT_ARRAY){
                 		emit(value_array);
-                	} else if(flags.emit === DateVal.EMIT_OBJECT){
+                	} else if(options.emit === DateVal.EMIT_OBJECT){
                         emit(values);
-                    } else if(flags.emit === DateVal.EMIT_DATE){
+                    } else if(options.emit === DateVal.EMIT_DATE){
                         var date = new Date(0);//Start with Jan 1st 1970
                         date.setUTCFullYear(0);
 
@@ -14907,9 +14922,9 @@ var FieldVal = (function(){
                 //SUCCESS
                 return;
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
@@ -14982,25 +14997,29 @@ var FieldVal = (function(){
             too_short: function(min_len) {
                 return {
                     error: 100,
-                    error_message: "Length is less than " + min_len
+                    error_message: "Length is less than " + min_len,
+                    min_length: min_len
                 };
             },
             too_long: function(max_len) {
                 return {
                     error: 101,
-                    error_message: "Length is greater than " + max_len
+                    error_message: "Length is greater than " + max_len,
+                    max_length: max_len
                 };
             },
             too_small: function(min_val) {
                 return {
                     error: 102,
-                    error_message: "Value is less than " + min_val
+                    error_message: "Value is less than " + min_val,
+                    minimum: min_val
                 };
             },
             too_large: function(max_val) {
                 return {
                     error: 103,
-                    error_message: "Value is greater than " + max_val
+                    error_message: "Value is greater than " + max_val,
+                    maximum: max_val
                 };
             },
             not_in_list: function() {
@@ -15018,7 +15037,8 @@ var FieldVal = (function(){
             no_prefix: function(prefix) {
                 return {
                     error: 106,
-                    error_message: "Value does not have prefix: " + prefix
+                    error_message: "Value does not have prefix: " + prefix,
+                    prefix: prefix
                 };
             },
             invalid_email: function() {
@@ -15036,13 +15056,15 @@ var FieldVal = (function(){
             incorrect_length: function(len){
                 return {
                     error: 109,
-                    error_message: "Length is not equal to " + len
+                    error_message: "Length is not equal to " + len,
+                    length: len
                 };
             },
             no_suffix: function(suffix) {
                 return {
                     error: 110,
-                    error_message: "Value does not have suffix: " + suffix
+                    error_message: "Value does not have suffix: " + suffix,
+                    suffix: suffix
                 };
             },
             //111 in DateVal
@@ -15051,7 +15073,7 @@ var FieldVal = (function(){
                 return {
                     error: 113,
                     error_message: "Not equal to " + match + ".",
-
+                    equal: match
                 };
             },
             //114 in DateVal
@@ -15083,57 +15105,67 @@ var FieldVal = (function(){
                 var disallowed = characters.join(",");
                 return {
                     error: 105,
-                    error_message: "Cannot contain "+disallowed
+                    error_message: "Cannot contain "+disallowed,
+                    cannot_contain: characters
                 };
             }
         },
-        equal_to: function(match, flags){
+        equal_to: function(match, options){
             var check = function(value) {
                 if (value!==match) {
-                    return FieldVal.create_error(BasicVal.errors.not_equal, flags, match);
+                    return FieldVal.create_error(BasicVal.errors.not_equal, options, match);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        merge_required_and_flags: function(required, flags){
+        merge_required_and_options: function(required, options){
+            var new_options = {};
             if((typeof required)==="object"){
-                flags = required;
+                options = required;
+                required = undefined;
             } else {
-                if(!flags){
-                    flags = {};
+                if(!options){
+                    options = {};
                 }
-                flags.required = required;
             }
-            return flags;
+            for(var i in options){
+                if(options.hasOwnProperty(i)){
+                    new_options[i] = options[i];
+                }
+            }
+            if(required!==undefined){
+                new_options.required = required;
+            }
+            return new_options;
         },
-        integer: function(required, flags){
-            return FieldVal.type("integer",BasicVal.merge_required_and_flags(required, flags));
+        integer: function(required, options){
+            return FieldVal.type("integer",BasicVal.merge_required_and_options(required, options));
         },
-        number: function(required, flags){
-            return FieldVal.type("number",BasicVal.merge_required_and_flags(required, flags));
+        number: function(required, options){
+            return FieldVal.type("number",BasicVal.merge_required_and_options(required, options));
         },
-        array: function(required, flags){
-            return FieldVal.type("array",BasicVal.merge_required_and_flags(required, flags));
+        array: function(required, options){
+            return FieldVal.type("array",BasicVal.merge_required_and_options(required, options));
         },
-        object: function(required, flags){
-            return FieldVal.type("object",BasicVal.merge_required_and_flags(required, flags));
+        object: function(required, options){
+            return FieldVal.type("object",BasicVal.merge_required_and_options(required, options));
         },
-        boolean: function(required, flags){
-            return FieldVal.type("boolean",BasicVal.merge_required_and_flags(required, flags));
+        boolean: function(required, options){
+            return FieldVal.type("boolean",BasicVal.merge_required_and_options(required, options));
         },
-        string: function(required, flags){
-            flags = BasicVal.merge_required_and_flags(required, flags);
+        string: function(required, options){
+            options = BasicVal.merge_required_and_options(required, options);
             var check = function(value, emit) {
 
-                var core_check = FieldVal.type("string",flags);
+                var core_check = FieldVal.type("string",options);
                 if(typeof core_check === 'object'){
-                    //Passing flags turns the check into an object
+                    //Passing options turns the check into an object
                     core_check = core_check.check;
                 }
 
@@ -15141,146 +15173,146 @@ var FieldVal = (function(){
                 var error = core_check(value,emit);
                 if(error) return error;
 
-                if(!flags || flags.trim!==false){//If not explicitly false
+                if(!options || options.trim!==false){//If not explicitly false
                     value = value.trim();
                 }
                 if (value.length === 0) {
                     if(required || required===undefined){
-                        return FieldVal.REQUIRED_ERROR;
+                        return FieldVal.create_error(FieldVal.MISSING_ERROR, options);
                     } else {
                         return FieldVal.NOT_REQUIRED_BUT_MISSING;
                     }
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        length: function(len, flags) {
+        length: function(len, options) {
             var check = function(value) {
                 if (value.length!==len) {
-                    return FieldVal.create_error(BasicVal.errors.incorrect_length, flags, len);
+                    return FieldVal.create_error(BasicVal.errors.incorrect_length, options, len);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        min_length: function(min_len, flags) {
+        min_length: function(min_len, options) {
             var check = function(value) {
                 if (value.length < min_len) {
-                    return FieldVal.create_error(BasicVal.errors.too_short, flags, min_len);
+                    return FieldVal.create_error(BasicVal.errors.too_short, options, min_len);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        max_length: function(max_len, flags) {
+        max_length: function(max_len, options) {
             var check = function(value) {
                 if (value.length > max_len) {
-                    return FieldVal.create_error(BasicVal.errors.too_long, flags, max_len);
+                    return FieldVal.create_error(BasicVal.errors.too_long, options, max_len);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        no_whitespace: function(flags) {
+        no_whitespace: function(options) {
             var check = function(value) {
                 if (/\s/.test(value)){
-                    return FieldVal.create_error(BasicVal.errors.contains_whitespace, flags, max_len);
+                    return FieldVal.create_error(BasicVal.errors.contains_whitespace, options);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        minimum: function(min_val, flags) {
+        minimum: function(min_val, options) {
             var check = function(value) {
                 if (value < min_val) {
-                    return FieldVal.create_error(BasicVal.errors.too_small, flags, min_val);
+                    return FieldVal.create_error(BasicVal.errors.too_small, options, min_val);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        maximum: function(max_val, flags) {
+        maximum: function(max_val, options) {
             var check = function(value) {
                 if (value > max_val) {
-                    return FieldVal.create_error(BasicVal.errors.too_large, flags, max_val);
+                    return FieldVal.create_error(BasicVal.errors.too_large, options, max_val);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        range: function(min_val, max_val, flags) {
+        range: function(min_val, max_val, options) {
             //Effectively combines minimum and maximum
             var check = function(value){
                 if (value < min_val) {
-                    return FieldVal.create_error(BasicVal.errors.too_small, flags, min_val);
+                    return FieldVal.create_error(BasicVal.errors.too_small, options, min_val);
                 } else if (value > max_val) {
-                    return FieldVal.create_error(BasicVal.errors.too_large, flags, max_val);
+                    return FieldVal.create_error(BasicVal.errors.too_large, options, max_val);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        does_not_contain: function(characters, flags){
+        does_not_contain: function(characters, options){
             if(!Array.isArray(characters)){
                 characters = [characters];
             }
             var check = function(value) {
                 for(var i = 0; i < characters.length; i++){
                     if(value.indexOf(characters[i])!==-1){
-                        return FieldVal.create_error(BasicVal.errors.should_not_contain, flags, characters);
+                        return FieldVal.create_error(BasicVal.errors.should_not_contain, options, characters);
                     }
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        one_of: function(array, flags) {
+        one_of: function(array, options) {
             var valid_values = [];
             if(Array.isArray(array)){
                 for(var i = 0; i < array.length; i++){
@@ -15300,18 +15332,18 @@ var FieldVal = (function(){
             }
             var check = function(value) {
                 if (valid_values.indexOf(value) === -1) {
-                    return FieldVal.create_error(BasicVal.errors.not_in_list, flags);
+                    return FieldVal.create_error(BasicVal.errors.not_in_list, options);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        not_one_of: function(array, flags) {
+        not_one_of: function(array, options) {
             var valid_values = [];
             if(Object.prototype.toString.call(array) === '[object Array]'){
                 for(var i = 0; i < array.length; i++){
@@ -15331,89 +15363,89 @@ var FieldVal = (function(){
             }
             var check = function(value) {
                 if (valid_values.indexOf(value) !== -1) {
-                    return FieldVal.create_error(BasicVal.errors.value_in_list, flags);
+                    return FieldVal.create_error(BasicVal.errors.value_in_list, options);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        not_empty: function(trim, flags) {
+        not_empty: function(trim, options) {
             var check = function(value) {
                 if (trim) {
                     if (value.trim().length === 0) {
-                        if(typeof flags.error){
+                        if(typeof options.error){
                         }
-                        return FieldVal.create_error(BasicVal.errors.cannot_be_empty, flags);
+                        return FieldVal.create_error(BasicVal.errors.cannot_be_empty, options);
                     }
                 } else {
                     if (value.length === 0) {
-                        return FieldVal.create_error(BasicVal.errors.cannot_be_empty, flags);
+                        return FieldVal.create_error(BasicVal.errors.cannot_be_empty, options);
                     }
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        prefix: function(prefix, flags) {
+        prefix: function(prefix, options) {
             var check = function(value) {
                 if (value.length >= prefix.length) {
                     if (value.substring(0, prefix.length) != prefix) {
-                        return FieldVal.create_error(BasicVal.errors.no_prefix, flags, prefix);
+                        return FieldVal.create_error(BasicVal.errors.no_prefix, options, prefix);
                     }
                 } else {
-                    return FieldVal.create_error(BasicVal.errors.no_prefix, flags, prefix);
+                    return FieldVal.create_error(BasicVal.errors.no_prefix, options, prefix);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        start_with_letter: function(flags) {
+        start_with_letter: function(options) {
             var check = function(value) {
                 if (value.length > 0) {
                     var char_code = value.charCodeAt(0);
                     if( !((char_code >= 65 && char_code <= 90) || (char_code >= 97 && char_code <= 122))){
-                        return FieldVal.create_error(BasicVal.errors.must_start_with_letter, flags);
+                        return FieldVal.create_error(BasicVal.errors.must_start_with_letter, options);
                     }
                 } else {
-                    return FieldVal.create_error(BasicVal.errors.must_start_with_letter, flags);
+                    return FieldVal.create_error(BasicVal.errors.must_start_with_letter, options);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        suffix: function(suffix, flags) {
+        suffix: function(suffix, options) {
             var check = function(value) {
                 if (value.length >= suffix.length) {
                     if (value.substring(value.length-suffix.length, value.length) != suffix) {
-                        return FieldVal.create_error(BasicVal.errors.no_suffix, flags, suffix);
+                        return FieldVal.create_error(BasicVal.errors.no_suffix, options, suffix);
                     }
                 } else {
-                    return FieldVal.create_error(BasicVal.errors.no_suffix, flags, suffix);
+                    return FieldVal.create_error(BasicVal.errors.no_suffix, options, suffix);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
@@ -15421,7 +15453,7 @@ var FieldVal = (function(){
         },
         date: DateVal.date,
         date_format: DateVal.date_format,
-        each: function(on_each, flags) {
+        each: function(on_each, options) {
             var check = function(array, stop) {
                 var validator = new FieldVal(null);
                 var iterator = function(i){
@@ -15433,9 +15465,7 @@ var FieldVal = (function(){
                     if(res===FieldVal.ASYNC){
                         throw new Error(".each used with async checks, use .each_async.");
                     }
-                    if (res === FieldVal.REQUIRED_ERROR){
-                        validator.missing("" + i);
-                    } else if (res) {
+                    if (res) {
                         validator.invalid("" + i, res);
                     }
                 };
@@ -15455,15 +15485,15 @@ var FieldVal = (function(){
                     return error;
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        each_async: function(on_each, flags) {
+        each_async: function(on_each, options) {
             var check = function(array, emit, callback) {
 
                 var is_array = Array.isArray(array);
@@ -15514,15 +15544,15 @@ var FieldVal = (function(){
                 };
                 do_possible();
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        multiple: function(possibles, flags){
+        multiple: function(possibles, options){
 
             possibles = possibles || [];
             if(possibles.length===0){
@@ -15547,17 +15577,17 @@ var FieldVal = (function(){
                         return null;
                     }
                 }
-                return FieldVal.create_error(BasicVal.errors.no_valid_option, flags);
+                return FieldVal.create_error(BasicVal.errors.no_valid_option, options);
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        multiple_async: function(possibles, flags){
+        multiple_async: function(possibles, options){
 
             possibles = possibles || [];
             if(possibles.length===0){
@@ -15575,7 +15605,7 @@ var FieldVal = (function(){
                 var do_possible = function(){
                     i++;
                     if(i>possibles.length){
-                        callback(FieldVal.create_error(BasicVal.errors.no_valid_option, flags));
+                        callback(FieldVal.create_error(BasicVal.errors.no_valid_option, options));
                         return;
                     }
                     var option = possibles[i-1];
@@ -15595,47 +15625,47 @@ var FieldVal = (function(){
                 do_possible();
                 return to_return;
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        email: function(required, flags){
-            flags = BasicVal.merge_required_and_flags(required, flags);
+        email: function(required, options){
+            options = BasicVal.merge_required_and_options(required, options);
             var check = function(value) {
-                var string_error = BasicVal.string(flags).check(value);
+                var string_error = BasicVal.string(options).check(value);
                 if(string_error!==undefined) return string_error;
 
                 var re = BasicVal.email_regex;
                 if(!re.test(value)){
-                    return FieldVal.create_error(BasicVal.errors.invalid_email, flags);
+                    return FieldVal.create_error(BasicVal.errors.invalid_email, options);
                 } 
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        url: function(required, flags){
-            flags = BasicVal.merge_required_and_flags(required, flags);
+        url: function(required, options){
+            options = BasicVal.merge_required_and_options(required, options);
             var check = function(value) {
-                var string_error = BasicVal.string(flags).check(value);
+                var string_error = BasicVal.string(options).check(value);
                 if(string_error!==undefined) return string_error;
                 
                 var re = BasicVal.url_regex;
                 if(!re.test(value)){
-                    return FieldVal.create_error(BasicVal.errors.invalid_url, flags);
+                    return FieldVal.create_error(BasicVal.errors.invalid_url, options);
                 } 
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
@@ -15687,17 +15717,26 @@ function FVField(name, options) {
 
     field.on_change_callbacks = [];
 
-    if(field.options.form){
+    if(field.options.use_form){
         field.element = $("<form />",{
             "novalidate": "novalidate"//Disable browser-based validation
         })
-        .addClass("fv_field")
+        .addClass("fv_field fv_form")
         .data("field",field)
-        .on("submit",function(event){
+        
+        var submit_function = function(event){
             event.preventDefault();
             field.submit();
             return false;
-        });
+        };
+
+        var field_dom_element = field.element[0];
+        if (field_dom_element.addEventListener) {// For all major browsers, except IE 8 and earlier
+            field_dom_element.addEventListener("submit", submit_function);
+        } else if (field_dom_element.attachEvent) {// For IE 8 and earlier versions
+            field_dom_element.attachEvent("submit", submit_function);
+        }
+
         field.on_submit_callbacks = [];
     } else {
         field.element = $("<div />").addClass("fv_field").data("field",field);
@@ -15714,6 +15753,12 @@ function FVField(name, options) {
     field.error_message = $("<div />").addClass("fv_error_message").hide()
 
     field.layout();
+}
+
+FVField.prototype.clear_errors = function(){
+    var field = this;
+
+    field.error(null);
 }
 
 FVField.prototype.on_submit = function(callback){
@@ -16077,7 +16122,7 @@ FVTextField.prototype.blur = function() {
     return field;
 }
 
-FVTextField.numeric_regex = /^\d+(\.\d+)?$/;
+FVTextField.numeric_regex = /^[-+]?\d*\.?\d+$/;
 
 FVTextField.prototype.val = function(set_val, options) {
     var field = this;
@@ -17093,13 +17138,6 @@ FVObjectField.prototype.fields_error = function(error){
     }
 }
 
-
-FVObjectField.prototype.clear_errors = function(){
-	var field = this;
-
-	field.error(null);
-}
-
 FVObjectField.prototype.val = function(set_val, options) {
     var field = this;
 
@@ -17190,17 +17228,10 @@ FVObjectField.prototype.val = function(set_val, options) {
 
             list.placeEl = $('<div class="' + list.options.placeClass + '"/>');
 
-            $.each(this.el.find(list.options.itemNodeName), function(k, el) {
-                list.setParent($(el));
-            });
-
             var onStartEvent = function(e)
             {
                 var handle = $(e.target);
                 if (!handle.hasClass(list.options.handleClass)) {
-                    if (handle.closest('.' + list.options.noDragClass).length) {
-                        return;
-                    }
                     handle = handle.closest('.' + list.options.handleClass);
                 }
 
@@ -17213,8 +17244,11 @@ FVObjectField.prototype.val = function(set_val, options) {
                     return;
                 }
 
-                e.preventDefault();
-                list.dragStart(e.touches ? e.touches[0] : e);
+                var dragEl = handle.closest('.' + list.options.itemClass);
+                if(dragEl[0].parentNode===list.el[0]){
+                    e.preventDefault();
+                    list.dragStart(e.touches ? e.touches[0] : e);
+                }
             };
 
             var onMoveEvent = function(e)
@@ -17277,13 +17311,7 @@ FVObjectField.prototype.val = function(set_val, options) {
 
         setParent: function(li)
         {
-            li.children('[data-action="expand"]').hide();
-        },
-
-        unsetParent: function(li)
-        {
-            li.children('[data-action]').remove();
-            li.children(this.options.listNodeName).remove();
+            li.data("fv_parent_list",this);
         },
 
         dragStart: function(e)
@@ -17391,30 +17419,35 @@ FVObjectField.prototype.val = function(set_val, options) {
             if (!hasPointerEvents) {
                 this.dragEl[0].style.visibility = 'hidden';
             }
-            this.pointEl = $(document.elementFromPoint(e.pageX - document.body.scrollLeft, e.pageY - (window.pageYOffset || document.documentElement.scrollTop)));
-            if(!this.pointEl.hasClass(opt.itemClass)){
-                this.pointEl = this.pointEl.closest('.' + opt.itemClass);
+            
+
+            var pointEl = $(document.elementFromPoint(e.pageX - document.body.scrollLeft, e.pageY - (window.pageYOffset || document.documentElement.scrollTop)));
+            if(!pointEl.hasClass(opt.itemClass)){
+                pointEl = pointEl.closest('.' + opt.itemClass);
             }
             if (!hasPointerEvents) {
                 this.dragEl[0].style.visibility = 'visible';
             }
-            if (this.pointEl.hasClass(opt.handleClass)) {
-                this.pointEl = this.pointEl.closest("."+opt.itemClass);
+            if (pointEl.hasClass(opt.handleClass)) {
+                pointEl = pointEl.closest("."+opt.itemClass);
             }
-            else if (!this.pointEl.length || !this.pointEl.hasClass(opt.itemClass)) {
+            else if (!pointEl.length || !pointEl.hasClass(opt.itemClass)) {
                 return;
             }
 
             // find parent list of item under cursor
-            var pointElRoot = this.pointEl.closest('.' + opt.rootClass);
+            var pointElRoot = $(pointEl[0].parentNode)
 
             /**
              * move vertical
              */
             // check that this is the same list element
+            // console.log(this.el[0], pointElRoot[0]);
             if (this.el[0] !== pointElRoot[0]) {
                 return;
             }
+
+            this.pointEl = pointEl;
 
             var diffY = e.pageY - this.pointEl.offset().top;
             var diffX = e.pageY - this.pointEl.offset().top;
@@ -17443,8 +17476,7 @@ FVObjectField.prototype.val = function(set_val, options) {
         var lists  = this,
             retval = this;
 
-        lists.each(function()
-        {
+        lists.each(function(){
             var plugin = $(this).data("nestable");
 
             if (!plugin) {
@@ -18232,7 +18264,7 @@ function FVForm(fields){
 	var form = this;
 
 	FVForm.superConstructor.call(this,null,{
-		form: true
+		use_form: true
 	});
 
 	form.element.addClass("fv_form");
@@ -18243,7 +18275,7 @@ if($.fn.tap || $.tap){
 	FVForm.button_event = 'tap';
 }
 //Used to subclass Javascript classes
-function extend(sub, sup) {
+function fv_rules_extend(sub, sup) {
 	function emptyclass() {}
 	emptyclass.prototype = sup.prototype;
 	sub.prototype = new emptyclass();
@@ -18252,8 +18284,8 @@ function extend(sub, sup) {
 	sub.superClass = sup.prototype;
 }
 
-if (typeof module != 'undefined') {
-    module.exports = extend;
+if (typeof module != "undefined") {
+    module.exports = fv_rules_extend;
 }
 
 var FVRuleField = (function(){
@@ -18293,14 +18325,74 @@ var FVRuleField = (function(){
         }
     }
 
+    FVRuleField.errors = {
+        interval_conflict: function(this_interval, existing_interval) {
+            return {
+                error: 501,
+                error_message: "Only one interval can be used.",
+                interval: this_interval,
+                existing: existing_interval
+            }
+        },
+        index_already_present: function(){
+            return {
+                error: 502,
+                error_message: "Index already present."
+            }    
+        },
+        invalid_indices_format: function(){
+            return {
+                error: 503,
+                error_message: "Invalid format for an indices rule."
+            }    
+        },
+        incomplete_indicies: function(missing){
+            var error = {
+                error: 504,
+                error_message: "Incomplete indices pattern"
+            }
+            if(missing!==undefined){
+                error.missing = missing;
+            }
+            return error;
+        },
+        any_and_fields: function(){
+            return {
+                error: 505,
+                error_message: "'any' can't be used with 'fields'."
+            }    
+        },
+        key_value_field_without_any: function(){
+            return {
+                error: 506,
+                error_message: "'key_value_field' can't be used without setting any to true."
+            }    
+        },
+        max_length_not_greater_than_min_length: function(){
+            return {
+                error: 507,
+                error_message: "Must be greater than or equal to the minimum length"
+            }    
+        },
+        maximum_not_greater_than_minimum: function(){
+            return {
+                error: 508,
+                error_message: "Must be greater than or equal to the minimum"
+            }    
+        }
+    }
+
     FVRuleField.types = {};
 
-    FVRuleField.add_field_type = function(field_type_data){
+    FVRuleField.add_rule_type = function(field_type_data){
         FVRuleField.types[field_type_data.name] = {
             display_name: field_type_data.display_name,
             class: field_type_data.class
         }
     }
+
+    //add_field_type is deprecated
+    FVRuleField.add_field_type = FVRuleField.add_rule_type;
 
     FVRuleField.create_field = function(json, options) {
         var field = null;
@@ -18369,17 +18461,13 @@ var FVRuleField = (function(){
         });
     }
 
-    FVRuleField.prototype.make_nested = function(){}
-    FVRuleField.prototype.init = function(){}
-    FVRuleField.prototype.remove = function(){}
-    FVRuleField.prototype.view_mode = function(){}
-    FVRuleField.prototype.edit_mode = function(){}
-    FVRuleField.prototype.change_name = function(name) {}
-    FVRuleField.prototype.disable = function() {}
-    FVRuleField.prototype.enable = function() {}
-    FVRuleField.prototype.focus = function() {}
-    FVRuleField.prototype.blur = function() {}
-    FVRuleField.prototype.val = function(set_val) {}
+    FVRuleField.prototype.init = function(){
+        if(this.constructor.name){
+            throw new Error(".init not overriden for class: "+this.constructor.name);
+        } else {
+            throw new Error(".init not overriden for class: "+this.constructor);
+        }
+    }
 
     return FVRuleField;
 
@@ -18387,92 +18475,6 @@ var FVRuleField = (function(){
 
 if (typeof module != 'undefined') {
     module.exports = FVRuleField;
-}
-var FVBasicRuleField = (function(){
-
-    var _FVRuleField;
-    if(this.FVRuleField !== undefined){
-        _FVRuleField = this.FVRuleField;
-    } else if((typeof require) === 'function'){
-        _FVRuleField = require('./FVRuleField');    
-    } else {
-        throw new Error("FVRuleField is missing");
-    }
-
-    var _extend;
-    if(this.extend !== undefined){
-        _extend = this.extend;
-    } else if((typeof require) === 'function'){
-        _extend = require('extend');
-    } else {
-        throw new Error("extend() is missing");
-    }
-
-    var extend = _extend;
-    var FVRuleField = _FVRuleField;
-
-    extend(FVBasicRuleField, FVRuleField);
-
-    function FVBasicRuleField(json, validator) {
-        var field = this;
-
-        FVBasicRuleField.superConstructor.call(this, json, validator);
-    }
-
-    FVBasicRuleField.prototype.init = function(){
-        var field = this;
-        return field.ui_field.init.apply(field.ui_field, arguments);    
-    }
-    FVBasicRuleField.prototype.remove = function(){
-        var field = this;
-        return field.ui_field.remove.apply(field.ui_field, arguments);
-    }
-    FVBasicRuleField.prototype.in_array = function(){
-        var field = this;
-        return field.ui_field.in_array.apply(field.ui_field, arguments);
-    }
-    FVBasicRuleField.prototype.in_key_value = function(){
-        var field = this;
-        return field.ui_field.in_key_value.apply(field.ui_field, arguments);
-    }
-    FVBasicRuleField.prototype.change_name = function(name) {
-        var field = this;
-        return field.ui_field.change_name.apply(field.ui_field, arguments);
-    }
-    FVBasicRuleField.prototype.disable = function() {
-        var field = this;
-        return field.ui_field.disable.apply(field.ui_field, arguments);
-    }
-    FVBasicRuleField.prototype.enable = function() {
-        var field = this;
-        return field.ui_field.enable.apply(field.ui_field, arguments);
-    }
-    FVBasicRuleField.prototype.name_val = function(){
-        var field = this;
-        return field.ui_field.name_val.apply(field.ui_field, arguments);
-    }
-    FVBasicRuleField.prototype.val = function(){
-        var field = this;
-        return field.ui_field.val.apply(field.ui_field, arguments);
-    }
-    FVBasicRuleField.prototype.error = function(){
-        var field = this;
-        return field.ui_field.error.apply(field.ui_field, arguments);
-    }
-    FVBasicRuleField.prototype.blur = function(){
-        var field = this;
-        return field.ui_field.blur.apply(field.ui_field, arguments);
-    }
-    FVBasicRuleField.prototype.focus = function(){
-        var field = this;
-        return field.ui_field.blur.apply(field.ui_field, arguments);
-    }
-
-    return FVBasicRuleField;
-}).call((typeof window !== 'undefined')?window:null);
-
-if (typeof module != 'undefined') {
-    module.exports = FVBasicRuleField;
 }
 
 var FVTextRuleField = (function(){
@@ -18488,16 +18490,6 @@ var FVTextRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
-    var _FVBasicRuleField;
-    if(this.FVRuleField !== undefined){
-        _FVBasicRuleField = this.FVBasicRuleField;
-    } else if((typeof require) === 'function'){
-        _FVBasicRuleField = require('./FVBasicRuleField');    
-    } else {
-        throw new Error("FVBasicRuleField is missing");
-    }
-    var FVBasicRuleField = _FVBasicRuleField;
-
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -18508,17 +18500,17 @@ var FVTextRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _extend;
-    if(this.extend !== undefined){
-        _extend = this.extend;
+    var _fv_rules_extend;
+    if(this.fv_rules_extend !== undefined){
+        _fv_rules_extend = this.fv_rules_extend;
     } else if((typeof require) === 'function'){
-        _extend = require('extend');
+        _fv_rules_extend = require('../fv_rules_extend');
     } else {
-        throw new Error("extend() is missing");
+        throw new Error("fv_rules_extend() is missing");
     }
-    var extend = _extend;
+    var fv_rules_extend = _fv_rules_extend;
 
-    extend(FVTextRuleField, FVBasicRuleField);
+    fv_rules_extend(FVTextRuleField, FVRuleField);
 
     function FVTextRuleField(json, validator) {
         var field = this;
@@ -18526,13 +18518,14 @@ var FVTextRuleField = (function(){
         FVTextRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVTextRuleField.prototype.create_ui = function(parent){
+    FVTextRuleField.prototype.create_ui = function(use_form){
         var field = this;
 
         field.ui_field = new FVTextField(field.display_name || field.name, {
-            name: field.json.name,
-            display_name: field.json.display_name,
-            type: field.json.ui_type
+            name: field.name,
+            display_name: field.display_name,
+            type: field.ui_type,
+            use_form: use_form
         });
 
         field.element = field.ui_field.element;
@@ -18544,12 +18537,16 @@ var FVTextRuleField = (function(){
 
         field.checks.push(BasicVal.string(field.required));
 
-        field.min_length = field.validator.get("min_length", BasicVal.integer(false));
+        field.min_length = field.validator.get("min_length", BasicVal.integer(false), BasicVal.minimum(0));
         if(field.min_length !== undefined){
             field.checks.push(BasicVal.min_length(field.min_length,{stop_on_error:false}));
         }
 
-        field.max_length = field.validator.get("max_length", BasicVal.integer(false));
+        field.max_length = field.validator.get("max_length", BasicVal.integer(false), BasicVal.minimum(0), function(value){
+            if(field.min_length!==undefined && value<field.min_length){
+                return FVRuleField.errors.max_length_not_greater_than_min_length();
+            }
+        });
         if(field.max_length !== undefined){
             field.checks.push(BasicVal.max_length(field.max_length,{stop_on_error:false}));
         }
@@ -18559,14 +18556,6 @@ var FVTextRuleField = (function(){
             "textarea",
             "password"
         ]));
-
-        //Currently unused
-        field.phrase = field.validator.get("phrase", BasicVal.string(false));
-        field.equal_to = field.validator.get("equal_to", BasicVal.string(false));
-        field.ci_equal_to = field.validator.get("ci_equal_to", BasicVal.string(false));
-        field.prefix = field.validator.get("prefix", BasicVal.string(false));
-        field.ci_prefix = field.validator.get("ci_prefix", BasicVal.string(false));
-        field.query = field.validator.get("query", BasicVal.string(false));
         
         return field.validator.end();
     }
@@ -18581,11 +18570,6 @@ var FVTextRuleField = (function(){
             choices: ["text", "textarea", "password"]
         })
         editor.add_field("ui_type", ui_type);
-
-        var value = editor.val();
-        editor.fields.min_length.val(value.min_length);
-        editor.fields.max_length.val(value.max_length);
-        editor.fields.ui_type.val(value.ui_type);
     }
 
     return FVTextRuleField;
@@ -18607,16 +18591,6 @@ var FVNumberRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
-    var _FVBasicRuleField;
-    if(this.FVRuleField !== undefined){
-        _FVBasicRuleField = this.FVBasicRuleField;
-    } else if((typeof require) === 'function'){
-        _FVBasicRuleField = require('./FVBasicRuleField');    
-    } else {
-        throw new Error("FVBasicRuleField is missing");
-    }
-    var FVBasicRuleField = _FVBasicRuleField;
-
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -18627,17 +18601,17 @@ var FVNumberRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _extend;
-    if(this.extend !== undefined){
-        _extend = this.extend;
+    var _fv_rules_extend;
+    if(this.fv_rules_extend !== undefined){
+        _fv_rules_extend = this.fv_rules_extend;
     } else if((typeof require) === 'function'){
-        _extend = require('extend');
+        _fv_rules_extend = require('../fv_rules_extend');
     } else {
-        throw new Error("extend() is missing");
+        throw new Error("fv_rules_extend() is missing");
     }
-    var extend = _extend;
+    var fv_rules_extend = _fv_rules_extend;
 
-    extend(FVNumberRuleField, FVBasicRuleField);
+    fv_rules_extend(FVNumberRuleField, FVRuleField);
 
     function FVNumberRuleField(json, validator) {
         var field = this;
@@ -18645,10 +18619,15 @@ var FVNumberRuleField = (function(){
         FVNumberRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVNumberRuleField.prototype.create_ui = function(parent){
+    FVNumberRuleField.prototype.create_ui = function(use_form){
         var field = this;
 
-        field.ui_field = new FVTextField(field.display_name || field.name, field.json);
+        field.ui_field = new FVTextField(field.display_name || field.name, {
+            name: field.name,
+            display_name: field.display_name,
+            type: "number",
+            use_form: use_form
+        });
         field.element = field.ui_field.element;
         return field.ui_field;
     }
@@ -18708,16 +18687,6 @@ var FVObjectRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
-    var _FVBasicRuleField;
-    if(this.FVRuleField !== undefined){
-        _FVBasicRuleField = this.FVBasicRuleField;
-    } else if((typeof require) === 'function'){
-        _FVBasicRuleField = require('./FVBasicRuleField');    
-    } else {
-        throw new Error("FVBasicRuleField is missing");
-    }
-    var FVBasicRuleField = _FVBasicRuleField;
-
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -18728,17 +18697,17 @@ var FVObjectRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _extend;
-    if(this.extend !== undefined){
-        _extend = this.extend;
+    var _fv_rules_extend;
+    if(this.fv_rules_extend !== undefined){
+        _fv_rules_extend = this.fv_rules_extend;
     } else if((typeof require) === 'function'){
-        _extend = require('extend');
+        _fv_rules_extend = require('../fv_rules_extend');
     } else {
-        throw new Error("extend() is missing");
+        throw new Error("fv_rules_extend() is missing");
     }
-    var extend = _extend;
+    var fv_rules_extend = _fv_rules_extend;
 
-    extend(FVObjectRuleField, FVBasicRuleField);
+    fv_rules_extend(FVObjectRuleField, FVRuleField);
 
     function FVObjectRuleField(json, validator) {
         var field = this;
@@ -18746,53 +18715,34 @@ var FVObjectRuleField = (function(){
         FVObjectRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVObjectRuleField.prototype.create_ui = function(form){
+    FVObjectRuleField.prototype.create_ui = function(use_form){
         var field = this;
 
         if(field.any){
-            if(field.field_type){
-                field.ui_field = new FVKeyValueField(field.display_name || field.name, {"form": form});
+            field.ui_field = new FVTextField(field.display_name || field.name, {"type": 'textarea', "use_form": use_form});//Empty options
 
-                field.element = field.ui_field.element;
-
-                field.ui_field.new_field = function(index){
-                    return field.new_field(index);
-                }
-                var original_remove_field = field.ui_field.remove_field;
-                field.ui_field.remove_field = function(inner_field){
-                    for(var i = 0; i < field.fields.length; i++){
-                        if(field.fields[i]===inner_field){
-                            field.fields.splice(i,1);
-                        }
+            field.ui_field.val = function(set_val){//Override the .val function
+                var ui_field = this;
+                if (arguments.length===0) {
+                    var value = ui_field.input.val();
+                    if(value.length===0){
+                        return null;
                     }
-                    return original_remove_field.call(field.ui_field, inner_field);
-                }
-            } else {
-                field.ui_field = new FVTextField(field.display_name || field.name, {"type": 'textarea', "form": form});//Empty options
-
-                field.ui_field.val = function(set_val){//Override the .val function
-                    var ui_field = this;
-                    if (arguments.length===0) {
-                        var value = ui_field.input.val();
-                        if(value.length===0){
-                            return null;
-                        }
-                        try{
-                            return JSON.parse(value);
-                        } catch (e){
-                            console.error("FAILED TO PARSE: ",value);
-                        }
-                        return value;
-                    } else {
-                        ui_field.input.val(JSON.stringify(set_val,null,4));
-                        return ui_field;
+                    try{
+                        return JSON.parse(value);
+                    } catch (e){
+                        console.error("FAILED TO PARSE: ",value);
                     }
+                    return value;
+                } else {
+                    ui_field.input.val(JSON.stringify(set_val,null,4));
+                    return ui_field;
                 }
-                field.element = field.ui_field.element;
             }
+            field.element = field.ui_field.element;
         } else {
 
-            field.ui_field = new FVObjectField(field.display_name || field.name, {"form": form});
+            field.ui_field = new FVObjectField(field.display_name || field.name, {"use_form": use_form});
 
             for(var i in field.fields){
                 var inner_field = field.fields[i];
@@ -18823,28 +18773,7 @@ var FVObjectRuleField = (function(){
         })
 
         editor.add_field("any", any);
-
-        var value = editor.val();
-        any.val(value.any);
-        var inner_fields = value.fields;
-        if(inner_fields){
-            for(var i = 0; i < value.fields.length; i++){
-                var field_data = value.fields[i];
-
-                var inner_field = new editor.constructor(field_data, editor);
-                fields_field.add_field(null, inner_field);
-            }
-        }
-    }
-
-    FVObjectRuleField.prototype.new_field = function(index){
-        var field = this;
-
-        var field_creation = FVRuleField.create_field(field.field_type.json);
-        var err = field_creation[0];
-        var rule = field_creation[1];
-        
-        return rule.create_ui();
+        editor.add_field("fields", fields_field);
     }
 
     FVObjectRuleField.prototype.init = function() {
@@ -18882,53 +18811,48 @@ var FVObjectRuleField = (function(){
             var fields_error = fields_validator.end();
             if(fields_error!=null){
                 field.validator.invalid("fields",fields_error);
+            } else {
+
+                field.checks.push(function(value,emit,done){
+
+                    var inner_validator = new FieldVal(value);
+
+                    for(var i in field.fields){
+                        var inner_field = field.fields[i];
+                        inner_field.validate_as_field(i, inner_validator);
+                    }
+
+                    return inner_validator.end(function(error){
+                        done(error);
+                    });
+                });
+
             }
         }
 
-        field.any = field.validator.get("any", BasicVal.boolean(false));
-        if(!field.any){
-            field.checks.push(function(value,emit,done){
-
-                var inner_validator = new FieldVal(value);
-
-                for(var i in field.fields){
-                    var inner_field = field.fields[i];
-                    inner_field.validate_as_field(i, inner_validator);
-                }
-
-                return inner_validator.end(function(error){
-                    done(error);
-                });
-            });
-        }    
-
-        field.validator.get("field_type", BasicVal.object(false), {
-            check: function(val){
-                if(!field.any){
-                    return FVRule.errors.field_type_without_any();
-                }
-            },
-            stop_on_error: true
-        }, function(val, emit){
-            var field_creation = FVRuleField.create_field(val);
-            var err = field_creation[0];
-            field.field_type = field_creation[1];
-            if(err){
-                return err;
-            }
-            field.checks.push(function(value,emit){
-
-                var inner_validator = new FieldVal(value);
-
-                for(var i in value){
-                    if(value.hasOwnProperty(i)){
-                        field.field_type.validate_as_field(i, inner_validator);
+        field.any = field.validator.get("any", 
+            BasicVal.boolean(false),
+            function(val){
+                if(val){
+                    if(fields_json!==undefined){
+                        return FVRuleField.errors.any_and_fields();
                     }
                 }
+            }
+        );
 
-                return inner_validator.end();
-            });
-        });
+        if(!field.any){
+            if(fields_json===undefined){
+                //No fields should be allowed in the object (empty object only)
+
+                field.checks.push(function(value,emit,done){
+                    var inner_validator = new FieldVal(value);
+                    return inner_validator.end(function(error){
+                        done(error);
+                    });
+                });
+            }
+        }
 
         return field.validator.end();
     }
@@ -18938,6 +18862,127 @@ var FVObjectRuleField = (function(){
 
 if (typeof module != 'undefined') {
     module.exports = FVObjectRuleField;
+}
+var FVKeyValueRuleField = (function(){
+
+    var _FieldVal;
+    if(this.FieldVal !== undefined){
+        _FieldVal = this.FieldVal;
+    } else if((typeof require) === 'function'){
+        _FieldVal = require('fieldval');
+    } else {
+        throw new Error("FieldVal Rules requires FieldVal");
+    }
+    var FieldVal = _FieldVal;
+    var BasicVal = FieldVal.BasicVal;
+
+    var _FVRuleField;
+    if(this.FVRuleField !== undefined){
+        _FVRuleField = this.FVRuleField;
+    } else if((typeof require) === 'function'){
+        _FVRuleField = require('./FVRuleField');    
+    } else {
+        throw new Error("FVRuleField is missing");
+    }
+    var FVRuleField = _FVRuleField;
+
+    var _fv_rules_extend;
+    if(this.fv_rules_extend !== undefined){
+        _fv_rules_extend = this.fv_rules_extend;
+    } else if((typeof require) === 'function'){
+        _fv_rules_extend = require('../fv_rules_extend');
+    } else {
+        throw new Error("fv_rules_extend() is missing");
+    }
+    var fv_rules_extend = _fv_rules_extend;
+
+    fv_rules_extend(FVKeyValueRuleField, FVRuleField);
+
+    function FVKeyValueRuleField(json, validator) {
+        var field = this;
+
+        FVKeyValueRuleField.superConstructor.call(this, json, validator);
+    }
+
+    FVKeyValueRuleField.prototype.create_ui = function(use_form){
+        var field = this;
+
+        field.ui_field = new FVKeyValueField(field.display_name || field.name, {"use_form": use_form});
+
+        field.element = field.ui_field.element;
+
+        field.ui_field.new_field = function(index){
+            return field.new_field(index);
+        }
+        var original_remove_field = field.ui_field.remove_field;
+        field.ui_field.remove_field = function(inner_field){
+            for(var i = 0; i < field.fields.length; i++){
+                if(field.fields[i]===inner_field){
+                    field.fields.splice(i,1);
+                }
+            }
+            return original_remove_field.call(field.ui_field, inner_field);
+        }
+         
+        return field.ui_field;
+    }
+
+    FVKeyValueRuleField.add_editor_params = function(editor) {
+        var fields_field = new FVArrayField("Fields");
+
+        editor.add_field("value_field", new editor.constructor("Value Field", editor));
+    }
+
+    FVKeyValueRuleField.prototype.new_field = function(index){
+        var field = this;
+
+        var field_creation = FVRuleField.create_field(field.value_rule.json);
+        var err = field_creation[0];
+        var rule = field_creation[1];
+        
+        return rule.create_ui();
+    }
+
+    FVKeyValueRuleField.prototype.init = function() {
+        var field = this;
+
+        field.checks.push(BasicVal.object(field.required));
+
+        field.fields = {};
+
+        field.validator.get("value_field",
+            BasicVal.object(true),
+            function(val){
+
+                var field_creation = FVRuleField.create_field(val);
+                var err = field_creation[0];
+                field.value_rule = field_creation[1];
+                if(err){
+                    return err;
+                }
+                field.checks.push(function(value){
+
+                    var inner_validator = new FieldVal(value);
+
+                    for(var i in value){
+                        if(value.hasOwnProperty(i)){
+                            field.value_rule.validate_as_field(i, inner_validator);
+                        }
+                    }
+
+                    return inner_validator.end();
+                })
+            }
+        )
+
+        return field.validator.end();
+    }
+
+    return FVKeyValueRuleField;
+}).call((typeof window !== 'undefined')?window:null);
+
+if (typeof module != 'undefined') {
+    module.exports = FVKeyValueRuleField;
 }
 var FVArrayRuleField = (function(){
 
@@ -18952,16 +18997,6 @@ var FVArrayRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
-    var _FVBasicRuleField;
-    if(this.FVRuleField !== undefined){
-        _FVBasicRuleField = this.FVBasicRuleField;
-    } else if((typeof require) === 'function'){
-        _FVBasicRuleField = require('./FVBasicRuleField');    
-    } else {
-        throw new Error("FVBasicRuleField is missing");
-    }
-    var FVBasicRuleField = _FVBasicRuleField;
-
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -18972,17 +19007,17 @@ var FVArrayRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _extend;
-    if(this.extend !== undefined){
-        _extend = this.extend;
+    var _fv_rules_extend;
+    if(this.fv_rules_extend !== undefined){
+        _fv_rules_extend = this.fv_rules_extend;
     } else if((typeof require) === 'function'){
-        _extend = require('extend');
+        _fv_rules_extend = require('../fv_rules_extend');
     } else {
-        throw new Error("extend() is missing");
+        throw new Error("fv_rules_extend() is missing");
     }
-    var extend = _extend;
+    var fv_rules_extend = _fv_rules_extend;
 
-    extend(FVArrayRuleField, FVBasicRuleField);
+    fv_rules_extend(FVArrayRuleField, FVRuleField);
 
     function FVArrayRuleField(json, validator) {
         var field = this;
@@ -18991,14 +19026,19 @@ var FVArrayRuleField = (function(){
 
         field.rules = [];
         field.fields = [];
+        field.indices = {};
         field.interval = null;
         field.interval_offsets = [];
     }
 
-    FVArrayRuleField.prototype.create_ui = function(parent, form){
+    FVArrayRuleField.prototype.create_ui = function(use_form){
         var field = this;
 
-        field.ui_field = new FVArrayField(field.display_name || field.name, field.json);
+        field.ui_field = new FVArrayField(field.display_name || field.name, {
+            name: field.name,
+            display_name: field.display_name,
+            use_form: use_form
+        });
         field.ui_field.new_field = function(index){
             return field.new_field(index);
         }
@@ -19061,7 +19101,19 @@ var FVArrayRuleField = (function(){
 
         field.checks.push(BasicVal.array(field.required));
 
-        field.indices = {};
+        field.min_length = field.validator.get("min_length", BasicVal.integer(false), BasicVal.minimum(0));
+        if(field.min_length !== undefined){
+            field.checks.push(BasicVal.min_length(field.min_length,{stop_on_error:false}));
+        }
+
+        field.max_length = field.validator.get("max_length", BasicVal.integer(false), BasicVal.minimum(0), function(value){
+            if(field.min_length!==undefined && value<field.min_length){
+                return FVRuleField.errors.max_length_not_greater_than_min_length();
+            }
+        });
+        if(field.max_length !== undefined){
+            field.checks.push(BasicVal.max_length(field.max_length,{stop_on_error:false}));
+        }
 
         var indices_json = field.validator.get("indices", BasicVal.object(false));
 
@@ -19088,16 +19140,17 @@ var FVArrayRuleField = (function(){
                     if(field.interval && interval!==field.interval){
                         indices_validator.invalid(
                             index_string,
-                            FieldVal.create_error(
-                                FVRule.errors.interval_conflict,
-                                {},
-                                interval,
-                                field.interval
-                            )
+                            FVRuleField.errors.interval_conflict(interval,field.interval)
                         );
                         continue;   
                     }
                     field.interval = interval;
+                    if(field.interval_offsets[offset]!==undefined){
+                        indices_validator.invalid(
+                            index_string,
+                            FVRuleField.errors.index_already_present()
+                        );
+                    }
                     field.interval_offsets[offset] = field_json;
                 } else {
                     var integer_match = index_string.match(FVArrayRuleField.integer_regex);
@@ -19109,10 +19162,7 @@ var FVArrayRuleField = (function(){
                     } else {
                         indices_validator.invalid(
                             index_string,
-                            FieldVal.create_error(
-                                FVRule.errors.invalid_indices_format,
-                                {}
-                            )
+                            FVRuleField.errors.invalid_indices_format
                         );
                     }
                 }
@@ -19121,6 +19171,37 @@ var FVArrayRuleField = (function(){
             var indices_error = indices_validator.end();
             if(indices_error){
                 field.validator.invalid("indices", indices_error)
+            } else {
+
+                if(!field.indices['*']){
+                    //Doesn't have wildcard - must check that indices pattern is complete
+
+                    var missing = [];
+
+                    if(field.max_length!==undefined){
+                        for(var i = 0; i < field.max_length; i++){
+                            if(!field.rule_json_for_index(i)){
+                                missing.push(i);
+                            }
+                        }
+                    } else {
+
+                        if(field.interval){
+                            for(var i = 0; i < field.interval; i++){
+                                if(field.interval_offsets[i]===undefined){
+                                    missing.push(field.interval+"n"+(i===0?"":"+"+i));
+                                }
+                            }
+                        } else {
+                            //Doesn't have an interval - no patterns
+                            field.validator.invalid("indices", FVRuleField.errors.incomplete_indicies());    
+                        }
+                    }
+
+                    if(missing.length>0){
+                        field.validator.invalid("indices", FVRuleField.errors.incomplete_indicies(missing));
+                    }
+                }
             }
         }
 
@@ -19176,16 +19257,6 @@ var FVChoiceRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
-    var _FVBasicRuleField;
-    if(this.FVRuleField !== undefined){
-        _FVBasicRuleField = this.FVBasicRuleField;
-    } else if((typeof require) === 'function'){
-        _FVBasicRuleField = require('./FVBasicRuleField');    
-    } else {
-        throw new Error("FVBasicRuleField is missing");
-    }
-    var FVBasicRuleField = _FVBasicRuleField;
-
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -19196,17 +19267,17 @@ var FVChoiceRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _extend;
-    if(this.extend !== undefined){
-        _extend = this.extend;
+    var _fv_rules_extend;
+    if(this.fv_rules_extend !== undefined){
+        _fv_rules_extend = this.fv_rules_extend;
     } else if((typeof require) === 'function'){
-        _extend = require('extend');
+        _fv_rules_extend = require('../fv_rules_extend');
     } else {
-        throw new Error("extend() is missing");
+        throw new Error("fv_rules_extend() is missing");
     }
-    var extend = _extend;
+    var fv_rules_extend = _fv_rules_extend;
 
-    extend(FVChoiceRuleField, FVBasicRuleField);
+    fv_rules_extend(FVChoiceRuleField, FVRuleField);
 
     function FVChoiceRuleField(json, validator) {
         var field = this;
@@ -19214,12 +19285,17 @@ var FVChoiceRuleField = (function(){
         FVChoiceRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVChoiceRuleField.prototype.create_ui = function(parent){
+    FVChoiceRuleField.prototype.create_ui = function(use_form){
         var field = this;
 
         field.json.choices = field.choices;
 
-        field.ui_field = new FVChoiceField(field.display_name || field.name, field.json);
+        field.ui_field = new FVChoiceField(field.display_name || field.name, {
+            name: field.name,
+            display_name: field.display_name,
+            choices: field.choices,
+            use_form: use_form
+        });
         field.element = field.ui_field.element;
         return field.ui_field;
     }
@@ -19381,16 +19457,6 @@ var FVBooleanRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
-    var _FVBasicRuleField;
-    if(this.FVRuleField !== undefined){
-        _FVBasicRuleField = this.FVBasicRuleField;
-    } else if((typeof require) === 'function'){
-        _FVBasicRuleField = require('./FVBasicRuleField');    
-    } else {
-        throw new Error("FVBasicRuleField is missing");
-    }
-    var FVBasicRuleField = _FVBasicRuleField;
-
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -19401,17 +19467,17 @@ var FVBooleanRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _extend;
-    if(this.extend !== undefined){
-        _extend = this.extend;
+    var _fv_rules_extend;
+    if(this.fv_rules_extend !== undefined){
+        _fv_rules_extend = this.fv_rules_extend;
     } else if((typeof require) === 'function'){
-        _extend = require('extend');
+        _fv_rules_extend = require('../fv_rules_extend');
     } else {
-        throw new Error("extend() is missing");
+        throw new Error("fv_rules_extend() is missing");
     }
-    var extend = _extend;
+    var fv_rules_extend = _fv_rules_extend;
 
-    extend(FVBooleanRuleField, FVBasicRuleField);
+    fv_rules_extend(FVBooleanRuleField, FVRuleField);
 
     function FVBooleanRuleField(json, validator) {
         var field = this;
@@ -19419,10 +19485,14 @@ var FVBooleanRuleField = (function(){
         FVBooleanRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVBooleanRuleField.prototype.create_ui = function(parent){
+    FVBooleanRuleField.prototype.create_ui = function(use_form){
         var field = this;
 
-        field.ui_field = new FVBooleanField(field.display_name || field.name, field.json);
+        field.ui_field = new FVBooleanField(field.display_name || field.name, {
+            name: field.name,
+            display_name: field.display_name,
+            use_form: use_form
+        });
         field.element = field.ui_field.element;
         return field.ui_field;
     }
@@ -19468,16 +19538,6 @@ var FVEmailRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
-    var _FVBasicRuleField;
-    if(this.FVRuleField !== undefined){
-        _FVBasicRuleField = this.FVBasicRuleField;
-    } else if((typeof require) === 'function'){
-        _FVBasicRuleField = require('./FVBasicRuleField');    
-    } else {
-        throw new Error("FVBasicRuleField is missing");
-    }
-    var FVBasicRuleField = _FVBasicRuleField;
-
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -19488,17 +19548,17 @@ var FVEmailRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _extend;
-    if(this.extend !== undefined){
-        _extend = this.extend;
+    var _fv_rules_extend;
+    if(this.fv_rules_extend !== undefined){
+        _fv_rules_extend = this.fv_rules_extend;
     } else if((typeof require) === 'function'){
-        _extend = require('extend');
+        _fv_rules_extend = require('../fv_rules_extend');
     } else {
-        throw new Error("extend() is missing");
+        throw new Error("fv_rules_extend() is missing");
     }
-    var extend = _extend;
+    var fv_rules_extend = _fv_rules_extend;
 
-    extend(FVEmailRuleField, FVBasicRuleField);
+    fv_rules_extend(FVEmailRuleField, FVRuleField);
 
     function FVEmailRuleField(json, validator) {
         var field = this;
@@ -19506,10 +19566,14 @@ var FVEmailRuleField = (function(){
         FVEmailRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVEmailRuleField.prototype.create_ui = function(parent){
+    FVEmailRuleField.prototype.create_ui = function(use_form){
         var field = this;
 
-        field.ui_field = new FVTextField(field.display_name || field.name, field.json);
+        field.ui_field = new FVTextField(field.display_name || field.name, {
+            name: field.name,
+            display_name: field.display_name,
+            use_form: use_form
+        });
         field.element = field.ui_field.element;
         return field.ui_field;
     }
@@ -19541,16 +19605,6 @@ var FVDateRuleField = (function(){
     var FieldVal = _FieldVal;
     var BasicVal = FieldVal.BasicVal;
 
-    var _FVBasicRuleField;
-    if(this.FVRuleField !== undefined){
-        _FVBasicRuleField = this.FVBasicRuleField;
-    } else if((typeof require) === 'function'){
-        _FVBasicRuleField = require('./FVBasicRuleField');    
-    } else {
-        throw new Error("FVBasicRuleField is missing");
-    }
-    var FVBasicRuleField = _FVBasicRuleField;
-
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
@@ -19561,17 +19615,17 @@ var FVDateRuleField = (function(){
     }
     var FVRuleField = _FVRuleField;
 
-    var _extend;
-    if(this.extend !== undefined){
-        _extend = this.extend;
+    var _fv_rules_extend;
+    if(this.fv_rules_extend !== undefined){
+        _fv_rules_extend = this.fv_rules_extend;
     } else if((typeof require) === 'function'){
-        _extend = require('extend');
+        _fv_rules_extend = require('../fv_rules_extend');
     } else {
-        throw new Error("extend() is missing");
+        throw new Error("fv_rules_extend() is missing");
     }
-    var extend = _extend;
+    var fv_rules_extend = _fv_rules_extend;
 
-    extend(FVDateRuleField, FVBasicRuleField);
+    fv_rules_extend(FVDateRuleField, FVRuleField);
 
     function FVDateRuleField(json, validator) {
         var field = this;
@@ -19579,12 +19633,13 @@ var FVDateRuleField = (function(){
         FVDateRuleField.superConstructor.call(this, json, validator);
     }
 
-    FVDateRuleField.prototype.create_ui = function(parent){
+    FVDateRuleField.prototype.create_ui = function(use_form){
         var field = this;
 
         field.ui_field = new FVDateField(field.display_name || field.name, {
-            name: field.json.name,
-            display_name: field.json.display_name,
+            name: field.name,
+            display_name: field.display_name,
+            use_form: use_form,
             format: field.date_format
         });
 
@@ -19623,8 +19678,8 @@ var FVRule = (function(){
     var _FieldVal;
     if(this.FieldVal !== undefined){
         _FieldVal = this.FieldVal;
-    } else if((typeof require) === 'function'){
-        _FieldVal = require('fieldval');
+    } else if((typeof require) === "function"){
+        _FieldVal = require("fieldval");
     } else {
         throw new Error("FieldVal Rules requires FieldVal");
     }
@@ -19634,41 +19689,29 @@ var FVRule = (function(){
     var _FVRuleField;
     if(this.FVRuleField !== undefined){
         _FVRuleField = this.FVRuleField;
-    } else if((typeof require) === 'function'){
-        _FVRuleField = require('./fields/FVRuleField');    
+    } else if((typeof require) === "function"){
+        _FVRuleField = require("./fields/FVRuleField");    
     } else {
         throw new Error("FVRuleField is missing");
     }
     var FVRuleField = _FVRuleField;
 
+    var _fv_rules_extend;
+    if(this.fv_rules_extend !== undefined){
+        _fv_rules_extend = this.fv_rules_extend;
+    } else if((typeof require) === "function"){
+        _fv_rules_extend = require("./fv_rules_extend");    
+    } else {
+        throw new Error("fv_rules_extend is missing");
+    }
+    var fv_rules_extend = _fv_rules_extend;
+
     function FVRule() {
         var vr = this;
     }
 
-    FVRule.errors = {
-        interval_conflict: function(this_interval, existing_interval) {
-            return {
-                error: 501,
-                error_message: "Only one interval can be used.",
-                interval: this_interval,
-                existing: existing_interval
-            }
-        },
-        invalid_indices_format: function(){
-            return {
-                error: 502,
-                error_message: "Invalid format for an indices rule."
-            }    
-        },
-        field_type_without_any: function(){
-            return {
-                error: 503,
-                error_message: "field_type can't be used with setting any to true."
-            }    
-        }
-    }
-
     FVRule.FVRuleField = FVRuleField;
+    FVRule.extend = fv_rules_extend;
 
     //Performs validation required for saving
     FVRule.prototype.init = function(json, options) {
@@ -19684,6 +19727,12 @@ var FVRule = (function(){
         //Keep the created field
         vr.field = field_res[1];
         return null;
+    }
+
+    FVRule.add_rule_type = function(){
+        var vr = this;
+
+        return FVRule.FVRuleField.add_rule_type.apply(FVRule.FVRuleField, arguments);
     }
 
     FVRule.prototype.create_form = function(){
@@ -19711,119 +19760,162 @@ var FVRule = (function(){
         });
     }
 
-    FVRuleField.add_field_type({
-        name: 'text',
-        display_name: 'Text',
-        class: (typeof FVTextRuleField) !== 'undefined' ? FVTextRuleField : require('./fields/FVTextRuleField')
+    FVRule.add_rule_type({
+        name: "text",
+        display_name: "Text",
+        class: (typeof FVTextRuleField) !== "undefined" ? FVTextRuleField : require("./fields/FVTextRuleField")
     });
-    FVRuleField.add_field_type({
-        name: 'string',
-        display_name: 'String',
-        class: (typeof FVTextRuleField) !== 'undefined' ? FVTextRuleField : require('./fields/FVTextRuleField')
+    FVRule.add_rule_type({
+        name: "string",
+        display_name: "String",
+        class: (typeof FVTextRuleField) !== "undefined" ? FVTextRuleField : require("./fields/FVTextRuleField")
     });
-    FVRuleField.add_field_type({
-        name: 'boolean',
-        display_name: 'Boolean',
-        class: (typeof FVBooleanRuleField) !== 'undefined' ? FVBooleanRuleField : require('./fields/FVBooleanRuleField')
+    FVRule.add_rule_type({
+        name: "boolean",
+        display_name: "Boolean",
+        class: (typeof FVBooleanRuleField) !== "undefined" ? FVBooleanRuleField : require("./fields/FVBooleanRuleField")
     });
-    FVRuleField.add_field_type({
-        name: 'number',
-        display_name: 'Number',
-        class: (typeof FVNumberRuleField) !== 'undefined' ? FVNumberRuleField : require('./fields/FVNumberRuleField')
+    FVRule.add_rule_type({
+        name: "number",
+        display_name: "Number",
+        class: (typeof FVNumberRuleField) !== "undefined" ? FVNumberRuleField : require("./fields/FVNumberRuleField")
     });
-    FVRuleField.add_field_type({
-        name: 'object',
-        display_name: 'Object',
-        class: (typeof FVObjectRuleField) !== 'undefined' ? FVObjectRuleField : require('./fields/FVObjectRuleField')
+    FVRule.add_rule_type({
+        name: "object",
+        display_name: "Object",
+        class: (typeof FVObjectRuleField) !== "undefined" ? FVObjectRuleField : require("./fields/FVObjectRuleField")
     });
-    FVRuleField.add_field_type({
-        name: 'array',
-        display_name: 'Array',
-        class: (typeof FVArrayRuleField) !== 'undefined' ? FVArrayRuleField : require('./fields/FVArrayRuleField')
+    FVRule.add_rule_type({
+        name: "key_value",
+        display_name: "Key Value",
+        class: (typeof FVKeyValueRuleField) !== "undefined" ? FVKeyValueRuleField : require("./fields/FVKeyValueRuleField")
     });
-    FVRuleField.add_field_type({
-        name: 'choice',
-        display_name: 'Choice',
-        class: (typeof FVChoiceRuleField) !== 'undefined' ? FVChoiceRuleField : require('./fields/FVChoiceRuleField')
+    FVRule.add_rule_type({
+        name: "array",
+        display_name: "Array",
+        class: (typeof FVArrayRuleField) !== "undefined" ? FVArrayRuleField : require("./fields/FVArrayRuleField")
     });
-    FVRuleField.add_field_type({
-        name: 'email',
-        display_name: 'Email',
-        class: (typeof FVEmailRuleField) !== 'undefined' ? FVEmailRuleField : require('./fields/FVEmailRuleField')
+    FVRule.add_rule_type({
+        name: "choice",
+        display_name: "Choice",
+        class: (typeof FVChoiceRuleField) !== "undefined" ? FVChoiceRuleField : require("./fields/FVChoiceRuleField")
     });
-    FVRuleField.add_field_type({
-        name: 'date',
-        display_name: 'Date',
-        class: (typeof FVDateRuleField) !== 'undefined' ? FVDateRuleField : require('./fields/FVDateRuleField')
+    FVRule.add_rule_type({
+        name: "email",
+        display_name: "Email",
+        class: (typeof FVEmailRuleField) !== "undefined" ? FVEmailRuleField : require("./fields/FVEmailRuleField")
+    });
+    FVRule.add_rule_type({
+        name: "date",
+        display_name: "Date",
+        class: (typeof FVDateRuleField) !== "undefined" ? FVDateRuleField : require("./fields/FVDateRuleField")
     });
 
     return FVRule;
 
-}).call((typeof window !== 'undefined')?window:null);
+}).call((typeof window !== "undefined")?window:null);
 
-if (typeof module != 'undefined') {
+if (typeof module != "undefined") {
     module.exports = FVRule;
 }
-fieldval_ui_extend(FVRuleEditor, FVObjectField);
+var FVRuleEditor = (function(){
 
-function FVRuleEditor(name, options){
-	var editor = this;
+    var _FVRuleField;
+    if(this.FVRuleField !== undefined){
+        _FVRuleField = this.FVRuleField;
+    } else if((typeof require) === 'function'){
+        _FVRuleField = require('./FVRuleField');    
+    } else {
+        throw new Error("FVRuleField is missing");
+    }
+    var FVRuleField = _FVRuleField;
 
-    editor.base_fields = {};
+    var _fv_rules_extend;
+    if(this.fv_rules_extend !== undefined){
+        _fv_rules_extend = this.fv_rules_extend;
+    } else if((typeof require) === 'function'){
+        _fv_rules_extend = require('./fv_rules_extend');
+    } else {
+        throw new Error("fv_rules_extend() is missing");
+    }
+    var fv_rules_extend = _fv_rules_extend;
 
-	FVRuleEditor.superConstructor.call(this, name, options);
+    fv_rules_extend(FVRuleEditor, FVForm);
+	function FVRuleEditor(name, options){
+		var editor = this;
 
-	var field_type_choices = [];
-	var types = FVRule.FVRuleField.types;
-	for(var i in types){
-		if (types.hasOwnProperty(i)) {
-			var field_type_class = types[i];
+	    editor.base_fields = {};
 
-			var name = i;
-			var display_name = field_type_class.display_name;
-			if(display_name){
-				field_type_choices.push([name, display_name])
-			} else {
-				field_type_choices.push(name);
+		FVRuleEditor.superConstructor.call(this, name, options);
+
+		var field_type_choices = [];
+		var types = FVRuleField.types;
+		for(var i in types){
+			if (types.hasOwnProperty(i)) {
+				var field_type_class = types[i];
+
+				var name = i;
+				var display_name = field_type_class.display_name;
+				if(display_name){
+					field_type_choices.push([name, display_name])
+				} else {
+					field_type_choices.push(name);
+				}
+			}
+
+		}
+
+		editor.add_field("name", new FVTextField("Name"));
+		editor.add_field("display_name", new FVTextField("Display Name"));
+		editor.add_field("type", new FVChoiceField("Type", {
+			choices: field_type_choices
+		}).on_change(function(){
+			editor.update_type_fields();
+		}));
+
+		for(var name in editor.fields){
+			if (editor.fields.hasOwnProperty(name)) {
+		    	editor.base_fields[name] = true;
+			}
+	    }
+
+	    editor.update_type_fields();
+	}
+
+	FVRuleEditor.prototype.update_type_fields = function(value){
+		var editor = this;
+
+		var type = editor.fields.type.val();
+		for(var name in editor.fields){
+			if(!editor.base_fields[name]){
+				editor.fields[name].remove();
 			}
 		}
 
-	}
-
-	editor.add_field("name", new FVTextField("Name"));
-	editor.add_field("display_name", new FVTextField("Display Name"));
-	editor.add_field("type", new FVChoiceField("Type", {
-		choices: field_type_choices
-	}).on_change(function(){
-		editor.update_type_fields();
-	}));
-
-	for(var name in editor.fields){
-		if (editor.fields.hasOwnProperty(name)) {
-	    	editor.base_fields[name] = true;
-		}
-    }
-
-    editor.update_type_fields();
-}
-
-FVRuleEditor.prototype.update_type_fields = function(){
-	var editor = this;
-
-	var type = editor.fields.type.val();
-	for(var name in editor.fields){
-		if(!editor.base_fields[name]){
-			editor.fields[name].remove();
+		if (type) {
+			var rule_field = FVRuleField.types[type].class;
+			if (rule_field.add_editor_params !== undefined) {
+				rule_field.add_editor_params(editor, value);
+			}
 		}
 	}
 
-	if (type) {
-		var rule_field = FVRule.FVRuleField.types[type].class;
-		console.log(rule_field.add_editor_params);
-		if (rule_field.add_editor_params !== undefined) {
-			rule_field.add_editor_params(editor);
+	FVRuleEditor.prototype.val = function(set_val, options) {
+		var editor = this;
+
+		if (set_val) {
+			editor.fields.type.val(set_val.type, {ignore_change: true});
+			editor.update_type_fields(set_val);
+			delete set_val.type;
 		}
+		return FVForm.prototype.val.apply(editor, arguments);
 	}
+
+	return FVRuleEditor;
+}).call((typeof window !== 'undefined')?window:null);
+
+if (typeof module != 'undefined') {
+    module.exports = FVRuleEditor;
 }
 //Used to subclass Javascript classes
 function extend(sub, sup) {
@@ -20450,6 +20542,10 @@ var errors = {
 	SOME_ERROR: {	
 		error: 184,
 		error_message: "The specified Type does not exist."
+	},
+	INVALID_SORT_PARAM: {	
+		error: 185,
+		error_message: "The specified sort parameter is invalid"
 	}
 };
 
@@ -20522,7 +20618,8 @@ String.prototype.replaceAll = function(re, replace) {
     minimumTypeMiddleName : 3,
     maximumTypeMiddleName : 20,
     minimumShortTypeMiddleName : 3,
-    maximumShortTypeMiddleName : 20
+    maximumShortTypeMiddleName : 20,
+    ROOT_USERNAME: "MinoDB"
 }
 
 
@@ -21034,8 +21131,6 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
     //Restricts access to the permissions folder in each user's root
     if (path.object_names.length > 1 && path.object_names[1] == "permissions") {
 
-        console.log("USERNAME FOR PERMISSION ",path.toString(), requesting_username);
-
         if (path.object_names.length==2 && !path.is_folder) {
             /* The request is for an item with the same name as one of the restricted folders, not the folder itself
              * so return the username of the top folder.
@@ -21048,9 +21143,9 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
             return path.object_names[0];
         }
 
-        //Allows "Mino" user to write
-        if(requesting_username==="Mino"){
-            return "Mino";
+        //Allows "MinoDB" user to write
+        if(requesting_username===Common.ROOT_USERNAME){
+            return Common.ROOT_USERNAME;
         }
 
         return null;
@@ -21058,14 +21153,14 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
 
 
     //Allow all users to read the types folder
-    if (path.object_names.length > 1 && path.object_names[0] === "Mino" && path.object_names[1] === "types"){
+    if (path.object_names.length > 1 && path.object_names[0] === Common.ROOT_USERNAME && path.object_names[1] === "types"){
         if(for_write===false){
             return requesting_username;
         }
     }
 
     if(path.object_names.length===0){
-        return "Mino";
+        return Common.ROOT_USERNAME;
     }
 
     return path.object_names[0];
@@ -21100,7 +21195,7 @@ Path.prototype.path_for_child_with_name = function(child_name, child_is_folder) 
 Path.prototype.parent_path = function() {
     var path = this;
 
-    if (path.length == 1) {
+    if (path.length <= 1) {
         return null;
     }
 
@@ -21368,7 +21463,7 @@ function AuthPage(req) {
         page.login_press(object);
     })
     page.form.element.append(
-        $("<button />").addClass("mino_button").text("Login")
+        $("<button />").addClass("mino_button").text("Sign in")
     );
 
     page.element
@@ -21458,7 +21553,7 @@ function HomePage(req) {
         page.login_press(object);
     })
     page.form.element.append(
-        $("<button />").addClass("mino_button").text("Login")
+        $("<button />").addClass("mino_button").text("Sign in")
     );
 
     page.element

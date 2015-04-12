@@ -1,5 +1,5 @@
 var globals = require('../../globals');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 
 
@@ -14,11 +14,11 @@ it('should save a folder', function(done) {
             }]
         }
     }, function(error, response) {
-        logger.log(JSON.stringify(error, null, 4), response);
+        logger.debug(JSON.stringify(error, null, 4), response);
         assert.equal(error,null)
         
         globals.sdk.with_user("testuser").get(["/testuser/TestFolder/"], function(err, res) {
-            logger.log(err, res);
+            logger.debug(err, res);
             assert.equal(err, null);
             var object = res.objects[0];
             assert.notEqual(object, null);
@@ -38,7 +38,7 @@ it('should not save a folder if path does not exist', function(done) {
             }]
         }
     }, function(error, response) {
-        logger.log(JSON.stringify(error, null, 4), response);
+        logger.debug(JSON.stringify(error, null, 4), response);
         assert.notEqual(error,null)
         assert.deepEqual(error, {
             "invalid": {
@@ -84,12 +84,12 @@ it('should not save a folder if access denied', function(done) {
         "parameters": {
             "objects" : [{
                 "name": "TestFolder",
-                "path": "/Mino/",
+                "path": "/MinoDB/",
                 "folder": true
             }]
         }
     }, function(error, response) {
-        logger.log(JSON.stringify(error, null, 4), response);
+        logger.debug(JSON.stringify(error, null, 4), response);
         assert.notEqual(error,null)
         assert.deepEqual(error, { 
             "invalid": {
@@ -120,7 +120,7 @@ it('should not save a folder if access denied', function(done) {
             "error": 5
         });
         
-        globals.sdk.get(["/Mino/TestFolder/"], function(err, res) {
+        globals.sdk.get(["/MinoDB/TestFolder/"], function(err, res) {
             assert.equal(err, null);
             var object = res.objects[0];
             assert.equal(object, null);

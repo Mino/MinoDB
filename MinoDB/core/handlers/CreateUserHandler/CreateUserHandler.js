@@ -2,9 +2,27 @@ var errors = require('../../../../errors')
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 var Path = require('../../../../common_classes/Path')
-var User = require('../../models/User');
 var FVRule = require('fieldval-rules');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
+
+
+function create_user_folders(user, api, callback) {
+    logger.debug(user);
+    new api.handlers.save(api, {
+        "username": api.minodb.root_username
+    }, {
+        "objects": [
+            {
+                "name": user.username,
+                "path": "/",
+                "folder": true
+            }
+        ]
+    }, function(save_err, save_res){
+        logger.debug(JSON.stringify(save_err,null,4), save_res);
+        callback(save_err, save_res);
+    });
+}
 
 function CreateUserHandler(api, user, parameters, callback){
     var cuh = this;
@@ -18,20 +36,27 @@ function CreateUserHandler(api, user, parameters, callback){
 
     var output = {};
 
-    logger.log("STARTED CUH");
+    logger.debug("STARTED CUH");
 
     cuh.validator.get_async("user", [BasicVal.object(true), function(val, emit, done){
-        logger.log("Passed object test",val);
-    	User.create(val, api, function(user_err, user_res){
-            logger.log(user_err,user_res);
-    	    logger.log(JSON.stringify(user_err, null, 4), user_res);
-    	    output.user = user_res;
-	    	done(user_err);
+        logger.debug("Passed object test",val);
+        var options = {
+            path: "/" + api.minodb.root_username + "/users/",
+            minodb_username: api.minodb.root_username 
+        }
+        var auth = api.minodb.get_plugin('minodb_auth');
+    	auth.create_user(val, function(user_err, user_res){
+            create_user_folders(val, api, function(err, res) {
+                logger.debug(user_err,user_res);
+                logger.debug(JSON.stringify(user_err, null, 4), user_res);
+                output.user = user_res;
+                done(user_err);    
+            });
     	});
     }])
 
     cuh.validator.end(function(error){
-        logger.log(error);
+        logger.debug(error);
     	if(error){
     		callback(error);
     		return;

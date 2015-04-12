@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var plumber = require('gulp-plumber');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 var less = require('gulp-less');
 var concat = require('gulp-concat');
@@ -27,14 +27,14 @@ module.exports = function(gulp){
         gulp.src(wrap_path('../../bower_components/font-awesome/fonts/*'))
         .pipe(gulp.dest(wrap_path('./public/fonts/')));
 
-        return gulp.src(wrap_path('./public_src/style/style.less'))
+        return gulp.src(wrap_path('./public_src/style.less'))
         .pipe(plumber(onError))
         .pipe(less())
         .pipe(concat('style.css'))
         .pipe(gulp.dest(wrap_path('./public/')));
     });
     gulp.task('browser_admin_less', function(){
-        return gulp.src(wrap_path('./admin_src/style/style.less'))
+        return gulp.src(wrap_path('./admin_src/style.less'))
         .pipe(plumber(onError))
         .pipe(less())
         .pipe(concat('style.css'))
@@ -81,10 +81,6 @@ module.exports = function(gulp){
         gulp.start('browser_public_js');
         gulp.start('browser_admin_js');
     })
-
-    gulp.start("browser_js");
-
-
 
     gulp.task('browser_watch', function(){
         gulp.watch([wrap_path('./public_src/**/*.js')], ['browser_public_js']);

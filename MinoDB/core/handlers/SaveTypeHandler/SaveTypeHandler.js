@@ -2,7 +2,7 @@ var errors = require('../../../../errors')
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 var Path = require('../../../../common_classes/Path')
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 var Type = require('../../models/Type');
 
@@ -31,7 +31,7 @@ function SaveTypeHandler(api, user, parameters, callback){
 
     Type.get(type_data.name, api, function(get_err, existing_type){
 
-        logger.log(get_err, existing_type);
+        logger.debug(get_err, existing_type);
 
         if(existing_type){
             sh.type = existing_type
@@ -45,7 +45,7 @@ function SaveTypeHandler(api, user, parameters, callback){
         
         sh.type.save(api, function(save_err, save_res){
             
-            logger.log(save_err, save_res);
+            logger.debug(save_err, save_res);
             
             callback(null,{
                 success: true

@@ -1,7 +1,7 @@
 var errors = require('../../../../errors')
 var Constants = require('../../../../common_classes/Constants');
 var Path = require('../../../../common_classes/Path');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 var validators = require('../../validators');
@@ -13,7 +13,7 @@ function SaveObject(json, handler, index, options){
 	so.json = json;
 	so.handler = handler;
 	so.index = index;
-	logger.log(so.index);
+	logger.debug(so.index);
 
 	so.waiting_for_types = {};
 	so.type_keys = {};
@@ -37,7 +37,7 @@ function SaveObject(json, handler, index, options){
 	so.path = so.validator.get("path", BasicVal.string(true), validators.folder_path);
 	if(so.path!=null){
 		var permission_called = false;
-		logger.log(so.path);
+		logger.debug(so.path);
 
 		if(!so.options.bypass_path_checks){
 			handler.path_permission_checker.check_permissions_for_path(so.path,function(status){
@@ -51,7 +51,7 @@ function SaveObject(json, handler, index, options){
 				}
 			});
 			handler.folder_checker.check_path_existance(so.path,function(status){
-				logger.log("folder_checker response ", so.path, status);
+				logger.debug("folder_checker response ", so.path, status);
 				if(status===Constants.EXISTS){
 					//Can write to the specified path
 					so.new_path_exists = true;
@@ -97,16 +97,16 @@ SaveObject.prototype.create_saving_json = function(){
 SaveObject.prototype.got_type = function(name, error, type, callback){
 	var so = this;
 
-	logger.log(error);
-	logger.log(type);
-	logger.log("type.name: ",name);
+	logger.debug(error);
+	logger.debug(type);
+	logger.debug("type.name: ",name);
 
 	so.validator.recognized(name);
 
 	var value = so.json[name];
 
 	type.validate(value, function(error) {
-		logger.log(error);
+		logger.debug(error);
 		if(error!=null){
 			so.validator.invalid(name, error);
 		}
@@ -125,11 +125,11 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 
 	var db = so.handler.api.ds;
 
-	logger.log("DO SAVING");
+	logger.debug("DO SAVING");
 
 	if(so.is_new){
 		db.get_id(function(id){
-			logger.log("GOT ID ",id);
+			logger.debug("GOT ID ",id);
 			so.id = ""+id;
 			so.replace_id_in_name();
 
@@ -139,11 +139,11 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 			so.create_saving_json();
 
 			db.object_collection.insert(so.saving_json,function(err,response){
-				logger.log("INSERTED");
-				logger.log(err, response);
+				logger.debug("INSERTED");
+				logger.debug(err, response);
 
 				if(err){
-	    			logger.log(err);
+	    			logger.debug(err);
 	    			so.validator.invalid("name", errors.FULL_PATH_EXISTS)
 			       	on_save_callback(so,so.validator.end(),null);
 	    		} else {
@@ -172,8 +172,8 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 			db.object_collection.findOne(
 		    	find_query,function(err,res){
 
-		    		logger.log(err);
-		    		logger.log(res);
+		    		logger.debug(err);
+		    		logger.debug(res);
 
 		    		if(res===null){
 		    			so.validator.invalid("_id",{
@@ -191,31 +191,31 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 		    			so.version = res.version+1;
 			    		so.saving_json.version = res.version+1;
 
-						logger.log(so.saving_json);
+						logger.debug(so.saving_json);
 
 						var update_conditions = {
 							_id: so.id,
 							version: so.version-1//Must be previous version
 						};
 
-						logger.log(update_conditions);
+						logger.debug(update_conditions);
 
 			    		db.object_collection.update(
 					    	update_conditions,
 					    	so.saving_json,
 					    	function(err,response){
-					    		logger.log("UPDATED");
+					    		logger.debug("UPDATED");
 
-					    		logger.log(response);
+					    		logger.debug(response);
 					    		if(response===0){
 					    			//The item wasn't saved because the conditions weren't met
-					    			logger.log("TRY AGAIN!");
+					    			logger.debug("TRY AGAIN!");
 					    			attempt_save();//Try again
 					    			return;
 					    		}
 
 					    		if(err){
-					    			logger.log(err);
+					    			logger.debug(err);
 					    			so.validator.invalid("name",errors.FULL_PATH_EXISTS);
 					    			on_save_callback(so,so.validator.end());
 					    		} else {
@@ -236,7 +236,7 @@ SaveObject.prototype.do_saving = function(on_save_callback){
 					} else {
 
 			    		so.handler.path_permission_checker.check_permissions_for_path(old_full_path,function(status){
-			    			logger.log("FAILED OLD PATH: "+so.index);
+			    			logger.debug("FAILED OLD PATH: "+so.index);
 							if(status!=Constants.WRITE_PERMISSION){
 								so.validator.invalid("_id",{
 									error: -1,

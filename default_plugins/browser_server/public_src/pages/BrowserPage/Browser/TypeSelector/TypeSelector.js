@@ -115,7 +115,7 @@ TypeSelector.prototype.do_search = function(query){
 	var this_request = ts.current_request = api_request({
 		"function": "search",
 		"parameters": {
-			"paths": ["/Mino/types/"],
+			"paths": ["/" + Common.ROOT_USERNAME + "/types/"],
 			"query": {
 				"name": {
 					"$regex": "^" + query + ".*"
@@ -131,7 +131,7 @@ TypeSelector.prototype.do_search = function(query){
 			if(res.objects){
 				for(var i = 0; i < res.objects.length; i++){
 					(function(object){
-						var type_data = object.mino_type;
+						var type_data = object.minodb_type;
 						ts.results.append(
 							$("<div />").addClass("result").text(object.name).on('tap',function(){
 								ts.selection_made(object.name);

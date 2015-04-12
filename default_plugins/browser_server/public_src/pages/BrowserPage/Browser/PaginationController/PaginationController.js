@@ -37,7 +37,15 @@ PaginationController.prototype.populate = function(response){
 	    if(prev_skip<0){
 	        prev_skip = 0;
 	    }
-        pc.previous_button.attr("href",pc.parent.link_with_skip_and_limit(prev_skip,pc.limit)).ajax_url();
+	    var prev_link_and_function = pc.parent.link_with_skip_and_limit(prev_skip,pc.limit);
+	    var prev_link, prev_function;
+	    if(Array.isArray(prev_link_and_function)){
+	    	prev_link = prev_link_and_function[0];
+	    	prev_function = prev_link_and_function[1];
+	    } else {
+	    	prev_link = prev_link_and_function;
+	    }
+        pc.previous_button.attr("href",prev_link).ajax_url(prev_function);
 	} else {
 	    pc.previous_button.hide();
 	}
@@ -50,7 +58,15 @@ PaginationController.prototype.populate = function(response){
 	    //There is a next page
 	    pc.next_button.show();
 	    var next_skip = response.skip+results.length;
-        pc.next_button.attr("href",pc.parent.link_with_skip_and_limit(next_skip,pc.limit)).ajax_url();
+	    var next_link_and_function = pc.parent.link_with_skip_and_limit(next_skip,pc.limit);
+	    var next_link, next_function;
+	    if(Array.isArray(next_link_and_function)){
+	    	next_link = next_link_and_function[0];
+	    	next_function = next_link_and_function[1];
+	    } else {
+	    	next_link = next_link_and_function;
+	    }
+        pc.next_button.attr("href",next_link).ajax_url(next_function);
 	} else {
 	    pc.next_button.hide();
 	}

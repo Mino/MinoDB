@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -11,25 +11,39 @@ var errorHandler = require('errorhandler');
 var http = require('http');
 var path = require('path');
 
-var process_session = require('../../MinoDB/ui_server/process_session');
-
 function AdminServer(options){
 	var as = this;
 
     options = options || {};
 
     as.path = options.path || '/admin/';
+}
 
-	as.express_server = express();
+AdminServer.prototype.info = function(){
+    var as = this;
+
+    return {
+        name: "admin",
+        display_name: "Admin"
+    };
+}
+
+AdminServer.prototype.init = function(minodb){
+    var as = this;
+
+    as.minodb = minodb;
+
+    as.express_server = express();
     as.express_server.disable('etag');//Prevents 304s
     as.express_server.engine('mustache', mustacheExpress());
     as.express_server.set('views', path.join(__dirname, 'views'));
     as.express_server.set('view engine', 'mustache');
     as.express_server.use(cookieParser());
-    as.express_server.use(bodyParser());
+    as.express_server.use(bodyParser.json());
     as.express_server.use(express.static(path.join(__dirname, 'public')));
 
-    as.express_server.use(process_session(as,true));
+    var auth = as.minodb.get_plugin("minodb_auth");
+    as.express_server.use(auth.process_session({required:true}));
     as.express_server.use('/plugin_config/:plugin_name', function(req, res, next){
         var plugin_details = as.minodb.plugin_manager.plugins[req.params.plugin_name];
         if(plugin_details.plugin.get_config_server!==undefined){
@@ -53,21 +67,7 @@ function AdminServer(options){
     })
 
     as.express_server.use(errorHandler({ showStack: true, dumpExceptions: true}));
-}
 
-AdminServer.prototype.info = function(){
-    var as = this;
-
-    return {
-        name: "admin",
-        display_name: "Admin"
-    };
-}
-
-AdminServer.prototype.init = function(minodb){
-    var as = this;
-
-    as.minodb = minodb;
     minodb.internal_server().use(as.path, as.express_server);
 }
 

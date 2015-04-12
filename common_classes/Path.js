@@ -133,41 +133,15 @@ Path.prototype.permission_path = function(requesting_username,for_write){
 Path.prototype.username_for_permission = function(requesting_username, for_write) {
     var path = this;
 
-    //Restricts access to the permissions folder in each user's root
-    if (path.object_names.length > 1 && path.object_names[1] == "permissions") {
-
-        console.log("USERNAME FOR PERMISSION ",path.toString(), requesting_username);
-
-        if (path.object_names.length==2 && !path.is_folder) {
-            /* The request is for an item with the same name as one of the restricted folders, not the folder itself
-             * so return the username of the top folder.
-             */
-            return path.object_names[0];
-        }
-
-        //Allows read access of permissions by user
-        if (for_write===false) {
-            return path.object_names[0];
-        }
-
-        //Allows "Mino" user to write
-        if(requesting_username==="Mino"){
-            return "Mino";
-        }
-
-        return null;
-    }
-
-
     //Allow all users to read the types folder
-    if (path.object_names.length > 1 && path.object_names[0] === "Mino" && path.object_names[1] === "types"){
+    if (path.object_names.length > 1 && path.object_names[0] === Common.ROOT_USERNAME && path.object_names[1] === "types"){
         if(for_write===false){
             return requesting_username;
         }
     }
 
     if(path.object_names.length===0){
-        return "Mino";
+        return Common.ROOT_USERNAME;
     }
 
     return path.object_names[0];
@@ -202,7 +176,7 @@ Path.prototype.path_for_child_with_name = function(child_name, child_is_folder) 
 Path.prototype.parent_path = function() {
     var path = this;
 
-    if (path.length == 1) {
+    if (path.length <= 1) {
         return null;
     }
 

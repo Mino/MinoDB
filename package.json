@@ -16,15 +16,17 @@
     "request": "*",
     "body-parser": "*",
     "cookie-parser": "*",
+    "cookie": "0.1.2",
     "serve-favicon": "*",
     "morgan" : "*",
     "errorhandler": "*",
-    "mongodb" : "*",
+    "mongodb" : "^2.0.14",
     "minosdk" : "Mino/MinoSDK",
-    "tracer": "*",
-    "fieldval" : "0.4.0",
-    "fieldval-rules" : "FieldVal/fieldval-rules-js#develop",
-    "extend": "MarcusLongmuir/extend"
+    "fieldval" : "0.4.2",
+    "fieldval-rules" : "0.4.3",
+    "fieldval-ui" : "0.4.2",
+    "extend": "MarcusLongmuir/extend",
+    "mino-logger": "Mino/mino-logger#0f8b81f946ebd956aea2fb66ea3e4fb4e418c3f7"
   },
   "devDependencies": {
     "gulp-imports" : "MarcusLongmuir/gulp-imports",
@@ -41,6 +43,7 @@
     "gulp-plumber": "^0.6.1",
     "gulp-mocha": "2.0.0",
     "supertest": "*",
-    "sa-docs-to-json": "SuperAwesomeLtd/sa-docs-to-json"
+    "sa-docs-to-json": "SuperAwesomeLtd/sa-docs-to-json",
+    "codeclimate-test-reporter": "*"
   }
 }

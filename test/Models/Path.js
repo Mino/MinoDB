@@ -1,4 +1,4 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require("assert");
 
 var Path = require('../../common_classes/Path')
@@ -105,41 +105,6 @@ describe('Path', function() {
             var path = new Path();
             path.init("/Test/Subfolder/");
             assert.equal(path.username_for_permission("Test", true),"Test");
-            done();
-        });
-
-        it('should return the user for the "permissions" folder if reading', function(done) {
-            var path = new Path();
-            path.init("/Test/permissions/");
-            assert.equal(path.username_for_permission("Test", false),"Test");
-            done();
-        });
-
-        it('should return the user for an item named "permissions" if writing', function(done) {
-            var path = new Path();
-            path.init("/Test/permissions");
-            assert.equal(path.username_for_permission("Test", true),"Test");
-            done();
-        });
-
-        it('should return "Mino" for the "permissions" folder if requested by "Mino"', function(done) {
-            var path = new Path();
-            path.init("/Test/permissions/");
-            assert.equal(path.username_for_permission("Mino", true),"Mino");
-            done();
-        });
-
-        it('should return the owner of the permissions folder if requested by anyone other than "Mino" and not for write', function(done) {
-            var path = new Path();
-            path.init("/Test/permissions/");
-            assert.equal(path.username_for_permission("AnotherUser", false),"Test");
-            done();
-        });
-
-        it('should return null for the "permissions" folder if requested by anyone other than "Mino" for write', function(done) {
-            var path = new Path();
-            path.init("/Test/permissions/");
-            assert.equal(path.username_for_permission("AnotherUser", true),null);
             done();
         });
 

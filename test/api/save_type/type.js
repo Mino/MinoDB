@@ -1,5 +1,5 @@
 var globals = require('../../globals');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 
 it('should save type', function(done) {
@@ -34,10 +34,10 @@ it('should save type', function(done) {
             }
         }
     }, function(error, response) {
-        logger.log(error, response);
+        logger.debug(error, response);
         assert.equal(error, null);
 
-        globals.sdk.get(["/Mino/types/person"], function(err, res) {
+        globals.sdk.get(["/MinoDB/types/person"], function(err, res) {
             assert.equal(err, null);
             var person_type = res.objects[0];
             assert.notEqual(person_type, null);

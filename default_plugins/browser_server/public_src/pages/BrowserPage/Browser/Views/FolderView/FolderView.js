@@ -1,26 +1,22 @@
 @import("CreateFolderModal/CreateFolderModal.js");
 @import("DeleteModal/DeleteModal.js");
 
+extend(FolderView, ObjectsView);
 function FolderView(path, data, browser, options){
 	var folder_view = this;
 
-	folder_view.browser = browser;
-	folder_view.path = path;
-	folder_view.item_data = data;
-	folder_view.options = options || {};
+	FolderView.superConstructor.call(this, browser);
 
-    folder_view.pagination_controller = new PaginationController(folder_view);
+	folder_view.element.addClass("folder_view");
+
+	folder_view.path = path;
+	folder_view.folder_object_data = data;
+	folder_view.options = options || {};
 
     folder_view.select_mode = false;
     folder_view.selected = [];
 
-	folder_view.element = $("<div />").addClass("folder_view").append(
-		folder_view.contents = $("<div />").addClass("contents")
-	,
-		folder_view.pagination_controller.element
-	)
-
-	browser.view_container.empty().append(folder_view.element);
+    folder_view.no_result_text = "Empty folder. Create some items..."
 
 	browser.toolbar.element.empty().append(
 		folder_view.toolbar_element = $("<div />").append(
@@ -48,15 +44,7 @@ function FolderView(path, data, browser, options){
 	
 	browser.address_bar.populate_path_buttons(folder_view.path);
 
-	folder_view.load({});
-}
-
-FolderView.prototype.init = function(){
-	var folder_view = this;
-}
-
-FolderView.prototype.remove = function(){
-	var folder_view = this;
+	folder_view.load(folder_view.options);
 }
 
 FolderView.prototype.add_selected = function(icon){
@@ -143,26 +131,37 @@ FolderView.prototype.create_item = function(){
 FolderView.prototype.link_with_skip_and_limit = function(skip, limit){
 	var folder_view = this;
 
-	var query = {};
+	var options = {};
 	if(skip!==undefined){
-		query.skip = skip;
+		options.skip = skip;
 	}
 	if(limit!==undefined){
-		query.limit = limit;
+		options.limit = limit;
 	}
 
-	return Site.path+folder_view.path.toString()+SAFE.build_query_string(query);
+	var link_address = Site.path+folder_view.path.toString()+SAFE.build_query_string(options);
+
+	return [link_address, function(e){
+		if(!e.originalEvent.metaKey && SAFE.history_state_supported){
+			e.preventDefault();
+			SAFE.add_history_state(link_address);
+			folder_view.load(options);
+		}
+	}]
 }
 
 FolderView.prototype.load = function(options){
 	var folder_view = this;
 
-	var limit = folder_view.options.limit;
+	folder_view.start_load();
+	folder_view.selected = [];
+
+	var limit = options.limit;
 	if(limit===undefined){
 		limit = 10;
 	}
 
-	var skip = folder_view.options.skip;
+	var skip = options.skip;
 	if(skip===undefined){
 		skip = 0;
 	}
@@ -175,44 +174,11 @@ FolderView.prototype.load = function(options){
 			"limit": parseInt(limit)
 		}
 	};
-
-	folder_view.pagination_controller.hide();
 	
 	api_request(request,function(err, response){
 		console.log(err, response);
 		folder_view.populate(options, response);
 	});
-}
-
-FolderView.prototype.populate = function(options, data){
-	var folder_view = this;
-
-	var objects = data.objects;
-
-	if(objects.length===0){
-		folder_view.contents.append(
-			$("<div />").addClass("empty_folder").append(
-				$("<div />").addClass("fa_icon fa fa-warning"),
-				$("<div />").text("Empty folder. Create some items...")
-			)
-		)
-		folder_view.pagination_controller.hide();
-	} else {
-		folder_view.pagination_controller.show();
-	}
-
-	for(var i = 0; i < objects.length; i++){
-		var object = objects[i];
-		var icon;
-		if(object.folder){
-			icon = new FolderIcon(object,folder_view);
-		} else {
-			icon = new ItemIcon(object, folder_view);
-		}
-		folder_view.contents.append(icon.element);
-	}
-
-	folder_view.pagination_controller.populate(data);
 }
 
 FolderView.prototype.resize = function(resize_obj){

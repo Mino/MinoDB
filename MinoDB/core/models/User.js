@@ -1,32 +1,29 @@
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
 var FVRule = require('fieldval-rules');
 
 var security = require('../security');
 
-User.systemUsers = [
-    "Mino",
-    "Admin",
-    "Public"
-];
-
 function User(obj) {
     var user = this;
 
-    user.id = obj._id;
+    if (obj) {
+        user.id = obj._id;
+        user.path = obj.path;
 
-    var data = obj.mino_user;
+        var data = obj.minodb_user;
 
-    user.username = data.username;
-    user.email = data.email;
-    user.password = data.password;
-    user.salted_password = data.salted_password;
-    user.password_salt = data.password_salt;
+        user.username = data.username;
+        user.email = data.email;
+        user.password = data.password;
+        user.salted_password = data.salted_password;
+        user.password_salt = data.password_salt;
+    }
 }
 
 User.rule_definition = {
-    name: "mino_user",
+    name: "minodb_user",
     display_name: "User",
     type: "object",
     fields: [{
@@ -56,7 +53,7 @@ User.rule.init(User.rule_definition);
 
 
 User.sign_in_rule_definition = {
-    name: "mino_user",
+    name: "minodb_user",
     display_name: "User",
     type: "object",
     fields: [{
@@ -76,7 +73,7 @@ User.sign_in_rule_definition = {
     }]
 };
 User.sign_in_rule = new FVRule();
-logger.log(FVRule.prototype.validate+"");
+logger.debug(FVRule.prototype.validate+"");
 User.sign_in_rule.init(User.sign_in_rule_definition);
 
 //TODO add more checks for tilde, slashes, etc
@@ -86,10 +83,10 @@ User.username_validator = [
     BasicVal.start_with_letter()
 ]
 
-User.validate = function(data, creation, callback){
-    logger.log("User.validate");
+User.validate = function(data, callback){
+    logger.debug("User.validate");
     User.sign_in_rule.validate(data, function(user_error) {
-        logger.log(user_error);
+        logger.debug(user_error);
 
         var validator = new FieldVal(data, user_error);
         validator.get("username", User.username_validator);
@@ -97,17 +94,24 @@ User.validate = function(data, creation, callback){
     });
 }
 
-User.prototype.create_save_data = function(callback){
+User.prototype.to_minodb_object = function(callback){
     var user = this;
 
     var build_obj = function(){
-        var to_save = {
-            username: user.username,
-            email: user.email,
-            salted_password: user.salted_password,
-            password_salt: user.password_salt
+
+        var minodb_object = {  
+            "_id": user.id,
+            "name": user.username,
+            "path": user.path,
+            "minodb_user": {
+                username: user.username,
+                email: user.email,
+                salted_password: user.salted_password,
+                password_salt: user.password_salt
+            }
         }
-        callback(null, to_save);
+
+        callback(null, minodb_object);
     }
 
     if(user.password){
@@ -122,136 +126,32 @@ User.prototype.create_save_data = function(callback){
     }
 }
 
-User.prototype.save = function(api, callback){
+User.prototype.save = function(api, options, callback){
     var user = this;
 
-    user.create_save_data(function(err, to_save){
+    logger.debug(arguments);
+    if (arguments.length == 2) {
+        callback = options;
+        options = undefined;
+    }
 
-        logger.log(to_save);
-
+    options = options || {};
+    var minodb_username = options.minodb_username || api.minodb.root_username;
+    user.to_minodb_object(function(err, minodb_object){
+        logger.debug("saving", minodb_object);
+        logger.debug(user);
         new api.handlers.save(api, {
-            "username": "Mino"
+            "username": minodb_username
         }, {
             "objects": [
-                {  
-                    "_id": user.id,
-                    "name": user.username,
-                    "path": "/Mino/users/",
-                    "mino_user": to_save
-                }
+                minodb_object   
             ]
         }, function(save_err, save_res){
-            logger.log(save_err, save_res);
+            logger.debug(save_err, save_res);
 
             callback(save_err, save_res);
         })
     });
-}
-
-User.prototype.is_system_user = function(toCheck) {
-    for (var systemUser in User.systemUsers) {
-        if (systemUser == toCheck) {
-            return true;
-        }
-    }
-    return false;
-}
-
-User.get = function(username, api, callback){
-    logger.log("username ",username);
-    new api.handlers.get(api, {
-        "username": "Mino"
-    }, {
-        "addresses": [
-            "/Mino/users/"+username
-        ]
-    }, function(get_err, get_res){
-        logger.log(get_err, get_res);
-
-        if(get_err){
-            callback(get_err);
-            return;
-        }
-        if(get_res && get_res.objects && get_res.objects[0]){
-            return callback(null, new User(get_res.objects[0]));
-        }
-        callback(null, null);
-    })
-}
-
-User.create = function(data, api, callback){
-    
-    logger.log("User.create");
-
-    User.validate(data, true, function(error) {
-        logger.log(error);
-        if(error){
-            callback(error,null);
-            return;
-        }
-
-        var user = new User({
-            mino_user: data
-        });
-        user.save(api, function(err, res){
-
-            logger.log(JSON.stringify(err,null,4), res);
-
-            new api.handlers.save(api, {
-                "username": "Mino"
-            }, {
-                "objects": [
-                    {
-                        "name": user.username,
-                        "path": "/",
-                        "folder": true
-                    }
-                ]
-            }, function(save_err, save_res){
-                logger.log(JSON.stringify(save_err,null,4), save_res);
-
-                new api.handlers.save(api, {
-                    "username": user.username
-                }, {
-                    "objects": [
-                        {
-                            "name": "permissions",
-                            "path": "/"+user.username+"/",
-                            "folder": true
-                        },
-                        {
-                            "name": "signals",
-                            "path": "/"+user.username+"/",
-                            "folder": true
-                        }
-                    ]
-                }, function(save_err, save_res){
-                    logger.log(JSON.stringify(save_err,null,4), save_res);
-
-
-                    new api.handlers.save(api, {
-                        "username": user.username
-                    }, {
-                        "objects": [
-                            {
-                                "name": "sent",
-                                "path": "/"+user.username+"/permissions/",
-                                "folder": true
-                            },{
-                                "name": "received",
-                                "path": "/"+user.username+"/permissions/",
-                                "folder": true
-                            }
-                        ]
-                    }, function(save_err, save_res){
-                        logger.log(JSON.stringify(save_err,null,4), save_res);
-                        callback(err, res);
-                    })
-                });
-            });
-        });
-    });
-
 }
 
 module.exports = User;

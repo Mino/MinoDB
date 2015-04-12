@@ -1,3 +1,5 @@
+@import "ObjectsView/ObjectsView.subless";
+
 @import "FolderView/FolderView.subless";
 @import "ItemView/ItemView.subless";
 @import "SearchView/SearchView.subless";

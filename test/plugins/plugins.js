@@ -1,5 +1,5 @@
 var globals = require('../globals');
-var logger = require('tracer').console();
+var logger = require('mino-logger');
 var assert = require('assert');
 var express = require('express');
 var request_plugin_config = require('./request_plugin_config');
@@ -69,4 +69,6 @@ describe("Plugins", function() {
 	})
 
 	require('./ui_server');
+	require('./auth/auth');
+	require('./permissions/permissions');
 });
