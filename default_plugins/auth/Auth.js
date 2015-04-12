@@ -10,8 +10,6 @@ var errors = require('../../errors');
 var mustacheExpress = require('mustache-express');
 
 var cookie = require('cookie');
-var errorHandler = require('errorhandler');
-var http = require('http');
 var path = require('path');
 
 
@@ -102,7 +100,7 @@ Auth.prototype.check_password_hash = function(password,salt,correct_hash_64,call
 Auth.prototype.basic_sign_in = function(object, options, callback) {
 	var auth = this;
 
-    if (arguments.length == 2) {
+    if (arguments.length === 2) {
         callback = options;
         options = undefined;
     }
@@ -279,7 +277,6 @@ Auth.prototype.persist_session = function(res, session) {
 };
 
 Auth.prototype.process_session_failed = function(req, res, next, options) {
-	var auth = this;
 	if (options.required) {
 		res.sendStatus(401);
 	} else {

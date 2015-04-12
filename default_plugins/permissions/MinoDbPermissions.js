@@ -2,6 +2,10 @@ var logger = require('mino-logger');
 var ConfigServer = require('./config_server/ConfigServer');
 var Path = require('../../common_classes/Path');
 
+var GROUP_PERMISSION_TYPE = 'minodb_group_permission';
+var IDENTIFIER_GROUP_TYPE = 'minodb_identifier_group';
+var IDENTIFIER_PERMISSION_TYPE = 'minodb_identifier_permission';
+
 function MinoDbPermissions(options) {
 	var plugin = this;
 
@@ -90,7 +94,7 @@ MinoDbPermissions.prototype.create_types = function(callback) {
     var plugin = this;
 
     plugin.minodb.save_type({
-        "name": "minodb_group_permission",
+        "name": GROUP_PERMISSION_TYPE,
         "display_name": "MinoDB Group Permission",
         "type": "object",
         "any": false,
@@ -115,7 +119,7 @@ MinoDbPermissions.prototype.create_types = function(callback) {
         }
 
         plugin.minodb.save_type({
-            "name": "minodb_identifier_permission",
+            "name": IDENTIFIER_PERMISSION_TYPE,
             "display_name": "MinoDB Identifier Permission",
             "type": "object",
             "any": false,
@@ -140,7 +144,7 @@ MinoDbPermissions.prototype.create_types = function(callback) {
             }
 
             plugin.minodb.save_type({
-                "name": "minodb_identifier_group",
+                "name": IDENTIFIER_GROUP_TYPE,
                 "display_name": "MinoDB Identifier Group",
                 "type": "object",
                 "any": false,
@@ -170,28 +174,45 @@ MinoDbPermissions.prototype.create_types = function(callback) {
     });
 };
 
-
-MinoDbPermissions.prototype.assign_permission_to_id = function(permission, id, callback) {
+MinoDbPermissions.prototype.assign_item = function(name, parent, type, callback) {
     var plugin = this;
 
-    var escaped_id = plugin.encode_text(id);
-    var escaped_permission = plugin.encode_text(permission);
+    var escaped_name = plugin.get_item_name_from_type(type, name);
+    var escaped_parent = plugin.encode_text(parent);
+    var root_path = plugin.get_root_path_from_type(type);
+
+    var save_object = {
+        name: escaped_name,
+        path: root_path + escaped_parent + '/'
+    };
+    
+    if (type === GROUP_PERMISSION_TYPE) {
+        save_object[type] = {
+            group: name,
+            permission: parent
+        };
+    } else if (type === IDENTIFIER_GROUP_TYPE) {
+        save_object[type] = {
+            identifier: name,
+            group: parent
+        };
+    } else if (type === IDENTIFIER_PERMISSION_TYPE) {
+        save_object[type] = {
+            identifier: name,
+            permission: parent
+        };
+    }
+
+    logger.debug(save_object);
 
     plugin.sdk.save([{
-        name: escaped_permission,
-        path: plugin.permission_path,
+        name: escaped_parent,
+        path: root_path,
         folder: true
     }], function(err, res) {
         logger.debug(err, res);
 
-        plugin.sdk.save([{
-            name: "id:"+escaped_id,
-            path: plugin.permission_path + escaped_permission + '/',
-            minodb_identifier_permission: {
-                permission: permission,
-                identifier: id
-            }
-        }], function(err, res) {
+        plugin.sdk.save([save_object], function(err, res) {
             logger.debug(err,res);
             if (err) {
                 callback(err);
@@ -202,13 +223,15 @@ MinoDbPermissions.prototype.assign_permission_to_id = function(permission, id, c
     });
 };
 
-MinoDbPermissions.prototype.remove_permission_from_id = function(permission, id, callback) {
+MinoDbPermissions.prototype.remove_item = function(name, parent, type, callback) {
     var plugin = this;
 
-    var escaped_id = plugin.encode_text(id);
-    var escaped_permission = plugin.encode_text(permission);
-    var path = plugin.permission_path + escaped_permission + '/id:'+escaped_id;
+    var escaped_name = plugin.get_item_name_from_type(type, name);
+    var escaped_parent = plugin.encode_text(parent);
+    var root_path = plugin.get_root_path_from_type(type);
 
+    var path = root_path + escaped_parent + '/' + escaped_name;
+    logger.debug(path);
     plugin.sdk.delete([path], function(err, res) {
         if (err) {
             callback(err);
@@ -216,6 +239,36 @@ MinoDbPermissions.prototype.remove_permission_from_id = function(permission, id,
             callback(null, res.objects[0]);
         }
     });
+};
+
+MinoDbPermissions.prototype.assign_permission_to_id = function(permission, id, callback) {
+    var plugin = this;
+    plugin.assign_item(id, permission, IDENTIFIER_PERMISSION_TYPE, callback);
+};
+
+MinoDbPermissions.prototype.remove_permission_from_id = function(permission, id, callback) {
+    var plugin = this;
+    plugin.remove_item(id, permission, IDENTIFIER_PERMISSION_TYPE, callback);
+};
+
+MinoDbPermissions.prototype.assign_group_to_id = function(group, id, callback) {
+    var plugin = this;
+    plugin.assign_item(id, group, IDENTIFIER_GROUP_TYPE, callback);
+};
+
+MinoDbPermissions.prototype.remove_group_from_id = function(group, id, callback) {
+    var plugin = this;
+    plugin.remove_item(id, group, IDENTIFIER_GROUP_TYPE, callback);
+};
+
+MinoDbPermissions.prototype.assign_permission_to_group = function(permission, group, callback) {
+    var plugin = this;
+    plugin.assign_item(group, permission, GROUP_PERMISSION_TYPE, callback);
+};
+
+MinoDbPermissions.prototype.remove_permission_from_group = function(permission, group, callback) {
+    var plugin = this;
+    plugin.remove_item(group, permission, GROUP_PERMISSION_TYPE, callback);
 };
 
 MinoDbPermissions.prototype.has_permission = function(permission, id, callback) {
@@ -343,98 +396,29 @@ MinoDbPermissions.prototype.has_permissions = function(permissions, id, callback
     });
 };
 
-MinoDbPermissions.prototype.assign_group_to_id = function(group, id, callback) {
+MinoDbPermissions.prototype.get_root_path_from_type = function(type) {
     var plugin = this;
-
-    var escaped_id = plugin.encode_text(id);
-    var escaped_group = plugin.encode_text(group);
-
-    plugin.sdk.save([{
-        name: escaped_group,
-        path: plugin.group_path,
-        folder: true
-    }], function(err, res) {
-        logger.debug(err, res);
-
-        plugin.sdk.save([{
-            name: "id:"+escaped_id,
-            path: plugin.group_path + escaped_group + '/',
-            minodb_identifier_group: {
-                group: group,
-                identifier: id
-            }
-        }], function(err, res) {
-            logger.debug(err,res);
-            if (err) {
-                callback(err);
-            } else {
-                callback(null, res.objects[0]);
-            }
-        });
-    });
+    if (type === GROUP_PERMISSION_TYPE) {
+        return plugin.permission_path;
+    } else if (type === IDENTIFIER_GROUP_TYPE) {
+        return plugin.group_path;
+    } else if (type === IDENTIFIER_PERMISSION_TYPE) {
+        return plugin.permission_path;
+    }
 };
 
-MinoDbPermissions.prototype.remove_group_from_id = function(group, id, callback) {
+MinoDbPermissions.prototype.get_item_name_from_type = function() {
     var plugin = this;
+    var type = arguments[0];
+    var name = plugin.encode_text(arguments[1]);
 
-    var escaped_id = plugin.encode_text(id);
-    var escaped_group = plugin.encode_text(group);
-    var path = plugin.group_path + escaped_group + '/id:'+escaped_id;
-
-    plugin.sdk.delete([path], function(err, res) {
-        if (err) {
-            callback(err);
-        } else {
-            callback(null, res.objects[0]);
-        }
-    });
-};
-
-MinoDbPermissions.prototype.assign_permission_to_group = function(permission, group, callback) {
-    var plugin = this;
-
-    var escaped_group = plugin.encode_text(group);
-    var escaped_permission = plugin.encode_text(permission);
-
-    plugin.sdk.save([{
-        name: escaped_permission,
-        path: plugin.permission_path,
-        folder: true
-    }], function(err, res) {
-        logger.debug(err, res);
-
-        plugin.sdk.save([{
-            name: "group:"+escaped_group,
-            path: plugin.permission_path + escaped_permission + '/',
-            minodb_group_permission: {
-                permission: permission,
-                group: group
-            }
-        }], function(err, res) {
-            logger.debug(err,res);
-            if (err) {
-                callback(err);
-            } else {
-                callback(null, res.objects[0]);
-            }
-        });
-    });
-};
-
-MinoDbPermissions.prototype.remove_permission_from_group = function(permission, group, callback) {
-    var plugin = this;
-
-    var escaped_permission = plugin.encode_text(permission);
-    var escaped_group = plugin.encode_text(group);
-    var path = plugin.permission_path + escaped_permission + '/group:'+escaped_group;
-
-    plugin.sdk.delete([path], function(err, res) {
-        if (err) {
-            callback(err);
-        } else {
-            callback(null, res.objects[0]);
-        }
-    });
+    if (type === GROUP_PERMISSION_TYPE) {
+        return 'group:'+name;
+    } else if (type === IDENTIFIER_GROUP_TYPE) {
+        return 'id:'+name;
+    } else if (type === IDENTIFIER_PERMISSION_TYPE) {
+        return 'id:'+name;
+    }
 };
 
 MinoDbPermissions.prototype.encode_text = function(text) {

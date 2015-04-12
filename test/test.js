@@ -11,7 +11,9 @@ describe('MinoDB', function() {
 	require('./api/api.js');
     require('./plugins/plugins.js');
     require('./signals/signals.js');
+    require('./utils/validators');
     require('./utils/class_to_string');
+    require('./utils/get_resource_type');
     require('./permissions/PathPermissionChecker');
 
     after(function(){

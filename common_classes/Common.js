@@ -27,11 +27,11 @@ Common.get_resource_type = function(this_address){
 
     var type_of = typeof this_address;
 
-    if (type_of == 'string') {
+    if (type_of === 'string') {
 
         var index_of_slash = this_address.indexOf('/');
 
-        if (index_of_slash == -1) {
+        if (index_of_slash === -1) {
             //Could be a number or type
             var numeric_value = parseFloat(this_address);
             var is_integer = numeric_value % 1 === 0;
@@ -58,7 +58,7 @@ Common.get_resource_type = function(this_address){
             var is_integer_2 = num_2 % 1 === 0;
 
             if (isNaN(num_1) || !is_integer_1 || num_1 < 1 || isNaN(num_2) || !is_integer_2 || num_2 < 1) {
-
+                return [null, null];
             } else {
                 return ["id_version",[num_1,num_2]];
             }
@@ -75,21 +75,6 @@ Common.get_resource_type = function(this_address){
     return [null,null];
 };
 
-
-//Returns true if the string is a valid username (Less than 15 characters, more than 1 and not containing the reserved space replacements (ascii 30 or 31), whitespace, dot or /.)
-Common.is_valid_username = function(string) {
-    var length = string.length;
-    if (length > Common.MAXIMUM_USERNAME_LENGTH || length < Common.MINIMUM_USERNAME_LENGTH) {
-        return false;
-    }
-
-    var letters = /^[a-zA-Z][0-9a-zA-Z]+$/;  
-    if(string.match(letters)){
-        return true;
-    }
-    return false;
-};
-
-if (typeof module != 'undefined') {
+if (typeof module !== 'undefined') {
     module.exports = Common;
 }

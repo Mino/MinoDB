@@ -29,6 +29,7 @@ describe('API', function() {
     describe("When I make get request", function() {
         require('./get/folder');
         require('./get/item');
+        require('./get/id');
     });
 
     describe("When I make delete request", function() {

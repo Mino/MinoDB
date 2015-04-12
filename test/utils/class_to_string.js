@@ -4,7 +4,6 @@ var assert = require('assert');
 var class_to_string = require('../../MinoDB/class_to_string');
 var extend = require('extend');
 
-
 describe("class_to_string", function() {
 
 	it("should include instance methods", function() {
