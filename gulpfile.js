@@ -23,7 +23,10 @@ require('./default_plugins/permissions/gulpfile')(gulp);
 require('./MinoDB/ui_server/gulpfile')(gulp);
 
 var throw_errors = true;
-var debug = false;
+var debug = gulp.env.debug;
+if (debug) {
+    logger.set_level("debug");
+}
 
 var onError = function (err) {  
   gutil.beep();
@@ -32,11 +35,6 @@ var onError = function (err) {
     throw err;
   }
 };
-
-if (gulp.env.loglevel === "debug") {
-    debug = true;
-    logger.set_level(gulp.env.loglevel);
-}
 
 gulp.task('test', function(cb){
 

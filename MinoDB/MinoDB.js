@@ -47,7 +47,7 @@ function MinoDB(config, username /*optional*/){
     mdb.express_server = express();
     mdb.express_server.disable('etag');//Prevents 304s
     mdb.express_server.use(errorHandler({ dumpExceptions: true, showStack: true }));
-    mdb.express_server.use(function(req,res,next){
+    mdb.express_server.use(function(req,res){
         var mino_path = req.originalUrl.substring(0, req.originalUrl.length - req._parsedUrl.path.length);
         if(mino_path==="" || mino_path[mino_path.length-1]!=="/"){
             mino_path+="/";
@@ -69,14 +69,14 @@ function MinoDB(config, username /*optional*/){
         session_path: "/MinoDB/sessions/",
         cookie_name: "minodb_token",
         username: "MinoDB"
-    })
+    });
 
     var permissions = new MinoDBPermissions({
         path: "/MinoDB/minodb_permissions/",
         name: "minodb_permissions",
         display_name: "MinoDB Permissions",
         username: "MinoDB"
-    })
+    });
 
     auth.process_session_failed = function(req, res, next, options) {
         if(options.required){
@@ -85,7 +85,7 @@ function MinoDB(config, username /*optional*/){
             return;
         }
         next();
-    }
+    };
 
     mdb.add_plugin(
         auth,
@@ -134,29 +134,29 @@ MinoDB.prototype.add_plugin = function(){
         } else {
             throw new Error("Argument is not an object or function");
         }
-    }
+    };
     next();
 
     return mdb;
-}
+};
 
 MinoDB.prototype.close = function(callback){
     var mdb = this;
 
     mdb.core.close(callback);
-}
+};
 
 MinoDB.prototype.server = function(){
     var mdb = this;
 
     return mdb.express_server;
-}
+};
 
 MinoDB.prototype.internal_server = function(){
     var mdb = this;
 
     return mdb.internal_express_server;
-}
+};
 
 MinoDB.FVRule = require('fieldval-rules');
 
@@ -172,35 +172,38 @@ MinoDB.prototype.add_field_type = function(field_data){
     mdb.custom_fields.push(field_data);
 
     return mdb;
-}
+};
 
 MinoDB.prototype.get_plugin_scripts = function(mino_path) {
     var mdb = this;
     var scripts = [];
+    logger.debug(mino_path);
     for (var plugin_name in mdb.plugin_manager.plugins) {
-
-        var plugin = mdb.plugin_manager.plugins[plugin_name].plugin;
-        if (typeof plugin.get_scripts === "function") {
-            var plugin_scripts = plugin.get_scripts();
-            for (var i=0; i<plugin_scripts.length; i++) {
-                plugin_scripts[i] = mino_path + plugin_scripts[i];
+        if (mdb.plugin_manager.plugins.hasOwnProperty(plugin_name)) {
+            var plugin = mdb.plugin_manager.plugins[plugin_name].plugin;
+            if (typeof plugin.get_scripts === "function") {
+                var plugin_scripts = plugin.get_scripts();
+                for (var i=0; i<plugin_scripts.length; i++) {
+                    plugin_scripts[i] = mino_path + plugin_scripts[i];
+                    logger.debug(plugin_scripts[i]);
+                }
+                scripts = scripts.concat(plugin_scripts);
             }
-            scripts = scripts.concat(plugin_scripts);
         }
     }
     logger.debug("SCRIPTS", scripts);
     return scripts;
-}
+};
 
 MinoDB.prototype.add_signal = function(signal) {
     var mdb = this;
     mdb.signal_manager.add_signal(signal);
-}
+};
 
 MinoDB.prototype.get_plugin = function(name) {
     var mdb = this;
     return mdb.plugin_manager.plugins[name].plugin;
-}
+};
 
 MinoDB.Signal = require('./core/models/Signal');
 MinoDB.Auth = require('../default_plugins/auth/Auth');
