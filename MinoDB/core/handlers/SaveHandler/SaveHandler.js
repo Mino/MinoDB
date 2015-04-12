@@ -1,7 +1,5 @@
-var errors = require('../../../../errors');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
-var Path = require('../../../../common_classes/Path');
 var FVRule = require('fieldval-rules');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var FolderChecker = require('../../models/FolderChecker');
@@ -39,8 +37,10 @@ function SaveHandler(api, user, parameters, options, callback){
 
     sh.objects_validator = new FieldVal(null);//No object to validate
 
-    var objects = sh.validator.get("objects", BasicVal.array(true), BasicVal.each(function(object, index){
-        var error = BasicVal.object(true).check(object); if(error) return error;
+    sh.validator.get("objects", BasicVal.array(true), BasicVal.each(function(object, index){
+        var error = BasicVal.object(true).check(object); 
+        if(error) return error;
+        
         logger.debug(object);
         logger.debug(index);
 
@@ -168,18 +168,20 @@ SaveHandler.prototype.retrieve_types = function(){
         };
 
         var validating = false;
+        var type_name;
+        var res;
         for(var i = 0; i < sh.types_to_retrieve.length; i++){
-            var res = get_res.objects[i];
+            res = get_res.objects[i];
             
             if (res) {
-                var type_name = sh.types_to_retrieve[i];
+                type_name = sh.types_to_retrieve[i];
                 waiting_for+=sh.types_to_items[type_name].length;    
             }
         }
 
-        for(var i = 0; i < sh.types_to_retrieve.length; i++){
-            var type_name = sh.types_to_retrieve[i];
-            var res = get_res.objects[i];
+        for(i = 0; i < sh.types_to_retrieve.length; i++){
+            type_name = sh.types_to_retrieve[i];
+            res = get_res.objects[i];
             var save_objects = sh.types_to_items[type_name];
 
             if(res){
@@ -204,10 +206,8 @@ SaveHandler.prototype.retrieve_types = function(){
     });
 };
 
-SaveHandler.prototype.do_saving = function(callback){
+SaveHandler.prototype.do_saving = function(){
     var sh = this;
-
-    var jsons = [];
 
     sh.total = sh.save_objects.length;
     sh.completed = 0;
