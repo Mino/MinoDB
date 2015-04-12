@@ -23,6 +23,7 @@ require('./default_plugins/permissions/gulpfile')(gulp);
 require('./MinoDB/ui_server/gulpfile')(gulp);
 
 var throw_errors = true;
+var debug = false;
 
 var onError = function (err) {  
   gutil.beep();
@@ -32,26 +33,52 @@ var onError = function (err) {
   }
 };
 
-if (gulp.env.loglevel) {
+if (gulp.env.loglevel === "debug") {
+    debug = true;
     logger.set_level(gulp.env.loglevel);
 }
 
 gulp.task('test', function(cb){
-    // gulp.src( [ 'MinoDB/**/*.js', '!MinoDB/ui_server/**/*' ] )
-    // .pipe(istanbul())
-    // .pipe(istanbul.hookRequire())
-    // .on( 'finish', function () {
-        gulp.src( [ 'test/test.js' ] )
+
+    var run_tests = function() {
+        var task = gulp.src( [ 'test/test.js' ] )
         .pipe( mocha( {
             reporter: 'spec',
             grep: gulp.env.grep
         }))
-        // .pipe(istanbul.writeReports())
-        .on('end', cb)
-        .pipe(plumber(onError))
+        
+        if (!debug) {
+            task.pipe(istanbul.writeReports())
+        }
+        
+        task.on('end', cb)
+        task.pipe(plumber(onError));
+    }
 
-    // })
-    // .on('error', gutil.log)
+    var setup_coverage = function(callback) {
+        gulp.src([
+            'MinoDB/**/*.js', 
+            '!MinoDB/ui_server/**/*', 
+            'common_classes/**/*.js',
+            'default_plugins/auth/Auth.js',
+            'default_plugins/permissions/MinoDbPermissions.js',
+        ])
+        .pipe(istanbul())
+        .pipe(istanbul.hookRequire())
+        .on( 'finish', function () {
+            callback();
+        })
+        .on('error', gutil.log);
+    }
+
+    if (debug) {
+        run_tests();
+    } else {
+        setup_coverage(function() {
+            run_tests();
+        })
+    }
+    
 });
 
 gulp.task('docs', function() {

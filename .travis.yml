@@ -6,3 +6,8 @@ node_js:
   - "0.10"
 notifications:
   slack: minocloud:FwmE3aKIb7pHbAAgSamLq44I
+script: 
+  - ./node_modules/gulp/bin/gulp.js test
+after_success:
+  - CODECLIMATE_REPO_TOKEN=4fd132dc3961e2900947d82a40f43529376e55f88695ccef9587ec02c4c60e88 ./node_modules/codeclimate-test-reporter/bin/codeclimate.js < coverage/lcov.info  
+
