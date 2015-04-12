@@ -75,21 +75,6 @@ Common.get_resource_type = function(this_address){
     return [null,null];
 };
 
-
-//Returns true if the string is a valid username (Less than 15 characters, more than 1 and not containing the reserved space replacements (ascii 30 or 31), whitespace, dot or /.)
-Common.is_valid_username = function(string) {
-    var length = string.length;
-    if (length > Common.MAXIMUM_USERNAME_LENGTH || length < Common.MINIMUM_USERNAME_LENGTH) {
-        return false;
-    }
-
-    var letters = /^[a-zA-Z][0-9a-zA-Z]+$/;  
-    if(string.match(letters)){
-        return true;
-    }
-    return false;
-};
-
 if (typeof module != 'undefined') {
     module.exports = Common;
 }
