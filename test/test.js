@@ -13,6 +13,7 @@ describe('MinoDB', function() {
     require('./signals/signals.js');
     require('./utils/validators');
     require('./utils/class_to_string');
+    require('./utils/get_resource_type');
     require('./permissions/PathPermissionChecker');
 
     after(function(){

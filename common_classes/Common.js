@@ -58,7 +58,7 @@ Common.get_resource_type = function(this_address){
             var is_integer_2 = num_2 % 1 === 0;
 
             if (isNaN(num_1) || !is_integer_1 || num_1 < 1 || isNaN(num_2) || !is_integer_2 || num_2 < 1) {
-
+                return [null, null];
             } else {
                 return ["id_version",[num_1,num_2]];
             }
