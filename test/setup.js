@@ -5,6 +5,7 @@ var assert = require('assert');
 var Common = require('../common_classes/Common');
 
 module.exports = function(done) {
+	this.timeout(10000);
 	MongoClient.connect(globals.db_address, function(err, db) {
 		db.dropDatabase(function(err, res) {
 			assert.equal(err, null);
