@@ -1,8 +1,5 @@
-var errors = require('../../../../errors');
 var FieldVal = require('fieldval');
 var BasicVal = FieldVal.BasicVal;
-var Path = require('../../../../common_classes/Path');
-var FVRule = require('fieldval-rules');
 var PathPermissionChecker = require('../../models/PathPermissionChecker');
 var DeleteObject = require('./DeleteObject');
 var logger = require('mino-logger');
@@ -98,10 +95,8 @@ DeleteHandler.prototype.check_ready_to_delete = function(){
     }
 };
 
-DeleteHandler.prototype.do_deleting = function(callback){
+DeleteHandler.prototype.do_deleting = function(){
     var dh = this;
-
-    var jsons = [];
 
     dh.total = dh.delete_objects.length;
     dh.completed = 0;

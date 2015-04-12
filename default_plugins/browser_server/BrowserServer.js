@@ -1,39 +1,29 @@
-var logger = require('mino-logger');
-
 var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
-var favicon = require('serve-favicon');
 var mustacheExpress = require('mustache-express');
 
 var errorHandler = require('errorhandler');
-var http = require('http');
 var path = require('path');
 
 function BrowserServer(options){
 	var bs = this;
-
     options = options || {};
-
     bs.path = options.path || '/browser/';
-
-	
 }
 
 BrowserServer.prototype.get_config_server = function(){
     var bs = this;
 
     return bs.config_server;
-}
+};
 
 BrowserServer.prototype.info = function(){
-    var bs = this;
-
     return {
         name: "browser",
         display_name: "Browser"
     };
-}
+};
 
 BrowserServer.prototype.init = function(minodb){
     var bs = this;
@@ -64,7 +54,7 @@ BrowserServer.prototype.init = function(minodb){
             mino_path: req.mino_path,
             user: JSON.stringify(minodb_user)
         });
-    })
+    });
 
     bs.config_server = express();
     bs.config_server.disable('etag');//Prevents 304s
@@ -87,11 +77,11 @@ BrowserServer.prototype.init = function(minodb){
             mino_path: req.mino_path,
             user: JSON.stringify(minodb_user)
         });
-    })
+    });
 
     bs.express_server.use(errorHandler({ showStack: true, dumpExceptions: true}));
 
     minodb.internal_server().use(bs.path, bs.express_server);
-}
+};
 
 module.exports = BrowserServer;

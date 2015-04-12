@@ -1,5 +1,5 @@
 var Constants, Common, FieldVal, errors;
-if (typeof require != 'undefined') {
+if (typeof require !== 'undefined') {
     Constants = require('./Constants');
     Common = require('./Common');
     FieldVal = require('fieldval');
@@ -7,8 +7,7 @@ if (typeof require != 'undefined') {
 }
 
 function Path() {
-    var path = this;
-
+    
 }
 
 //Returns error or null
@@ -27,7 +26,7 @@ Path.prototype.init = function(path_string, allow_tilde) {
         return errors.INVALID_PATH_FORMAT;
     }
     var path_char = path.path_string.charAt(0);
-    if (path_char != "/") { //Equal to forward slash
+    if (path_char !== "/") { //Equal to forward slash
         return errors.INVALID_PATH_FORMAT; //First character must be a forward slash in a path
     }
 
@@ -37,8 +36,8 @@ Path.prototype.init = function(path_string, allow_tilde) {
     var total = 0;
     for (var index = 1; index < path.string_length; index++) {
         path_char = path.path_string.substring(index, index + 1);
-        if (path_char.charCodeAt(0) == 47) {
-            if (last_char.charCodeAt(0) == 47) {
+        if (path_char.charCodeAt(0) === 47) {
+            if (last_char.charCodeAt(0) === 47) {
                 return errors.INVALID_PATH_FORMAT; //There were two forward slashes together
             }
             total++;
@@ -50,7 +49,7 @@ Path.prototype.init = function(path_string, allow_tilde) {
         last_char = path_char;
     }
 
-    if (last_char.charCodeAt(0) == 47) {
+    if (last_char.charCodeAt(0) === 47) {
         path.is_folder = true;
     }
 
@@ -77,15 +76,9 @@ Path.prototype.init = function(path_string, allow_tilde) {
     return null;
 };
 
-Path.prototype.replace_id_operator = function(id){
-    var path = this;
-
-
-};
-
 Path.object_name_check = function(allowed_tilde){
 
-    return function(val, emit){
+    return function(val){
 
         //Remove ~id~ because it will be overwritten (no other tildes are allowed)
         var value = val.replaceAll("~id~","");
@@ -114,20 +107,6 @@ Path.is_valid_character_for_object_name = function(path_char, allowed_tilde) {
         return false;
     }
     return true;
-};
-
-Path.prototype.to_tilde_path = function(){
-    var path = this;
-
-    return Common.convert_path_to_tilde_path(path.toString());
-};
-
-Path.prototype.permission_path = function(requesting_username,for_write){
-    var path = this;
-
-    var user = path.username_for_permission(requesting_username,for_write);
-
-    return "/"+requesting_username+"/permissions/received/"+Common.convert_path_to_tilde_path(path.toString());
 };
 
 Path.prototype.username_for_permission = function(requesting_username, for_write) {
@@ -198,6 +177,6 @@ Path.prototype.toString = function() {
     return path.path_string;
 };
 
-if (typeof module != 'undefined') {
+if (typeof module !== 'undefined') {
     module.exports = Path;
 }
