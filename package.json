@@ -46,6 +46,7 @@
     "sa-docs-to-json": "SuperAwesomeLtd/sa-docs-to-json#5a805884a082521515a348b338d9cbec13d48d77",
     "codeclimate-test-reporter": "*",
     "gulp-jshint": "*",
-    "jshint-stylish": "*"
+    "jshint-stylish": "*",
+    "gulp-open": "*"
   }
 }

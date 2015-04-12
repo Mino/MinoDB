@@ -3,6 +3,7 @@ var gutil = require('gulp-util');
 var plumber = require('gulp-plumber');
 var logger = require('mino-logger');
 
+var open = require('gulp-open');
 var less = require('gulp-less');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
@@ -29,6 +30,8 @@ if (debug) {
     logger.set_level("debug");
 }
 
+var coverage = gulp.env.coverage;
+
 var onError = function (err) {  
   gutil.beep();
   console.log(err);
@@ -50,7 +53,13 @@ gulp.task('test', function(cb){
             task.pipe(istanbul.writeReports());
         }
         
-        task.on('end', cb);
+        task.on('end', function() {
+            if (coverage) {
+                gulp.src('./coverage/lcov-report/index.html')
+                .pipe(open());    
+            }
+            cb();
+        });
         task.pipe(plumber(onError));
     };
 
