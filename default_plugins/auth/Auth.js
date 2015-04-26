@@ -243,7 +243,7 @@ Auth.prototype.create_session = function(user_id, callback) {
 	var data = {
         user_id : user_id,
         key: ""+Math.random()+Math.random()+Math.random()+Math.random(),
-        end_time: null
+        end_time: new Date().getTime() + 30 * 24 * 60 * 60 * 1000
     };
 
     var options = {

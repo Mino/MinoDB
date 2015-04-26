@@ -46,10 +46,11 @@ Session.prototype.create_save_data = function(callback){
         user_id: session.user_id,
         key: session.key,
         end_time: session.end_time
-    }
+    };
+
     logger.debug("to_save", to_save);
     callback(null, to_save);
-}
+};
 
 Session.prototype.save = function(api, options, callback){
     var session = this;
@@ -73,7 +74,7 @@ Session.prototype.save = function(api, options, callback){
             "name": "~id~",
             "path": path,
             "minodb_session": to_save
-        }
+        };
 
         new api.handlers.save(api, {
             "username": minodb_username
@@ -89,9 +90,9 @@ Session.prototype.save = function(api, options, callback){
                 session.id = save_res.objects[0]._id;
                 callback(null, session);
             }
-        })
+        });
     });
-}
+};
 
 Session.get = function(session_id, api, options, callback){
     logger.debug(arguments);
@@ -122,8 +123,8 @@ Session.get = function(session_id, api, options, callback){
             return callback(null, new Session(get_res.objects[0]));
         }
         callback(null, null);
-    })
-}
+    });
+};
 
 Session.get_active_user_sessions = function(user_id, api, options, callback){
     logger.debug(arguments);
@@ -136,7 +137,6 @@ Session.get_active_user_sessions = function(user_id, api, options, callback){
     optinos = options || {};
     var path = options.path || "/" + api.minodb.root_username + "/sessions/";
     var minodb_username = options.minodb_username || api.minodb.root_username;
-
     new api.handlers.search(api, {
         "username": minodb_username
     }, {
@@ -147,7 +147,7 @@ Session.get_active_user_sessions = function(user_id, api, options, callback){
                 "minodb_session.end_time": null
             },{
                 "minodb_session.end_time": {
-                    "$lt": new Date().getTime()
+                    "$gt": new Date().getTime()
                 }
             }]
         }
@@ -166,14 +166,14 @@ Session.get_active_user_sessions = function(user_id, api, options, callback){
         } else {
             callback(null, null);
         }
-    })
-}
+    });
+};
 
 Session.invalidate_user_sessions = function(user_id, api, options, callback) {
     Session.get_active_user_sessions(user_id, api, options, function(err, sessions) {
         logger.debug(err, sessions);
         
-        if (sessions.length == 0) {
+        if (sessions.length === 0) {
             callback();
             return;
         }
@@ -182,19 +182,18 @@ Session.invalidate_user_sessions = function(user_id, api, options, callback) {
         var waiting_for = sessions.length;
         var finished_one = function() {
             waiting_for--;
-            if (waiting_for == 0) {
+            if (waiting_for === 0) {
                 callback();
             }
-        }
+        };
+
         for (var i=0; i<sessions.length; i++) {
             var session = sessions[i];
             session.end_time = timestamp;
-            session.save(api, options, function(err, res) {
-                finished_one();
-            });
+            session.save(api, options, finished_one());
         }
     });
-}
+};
 
 Session.create = function(data, api, options, callback){
     logger.debug(arguments);
@@ -203,16 +202,13 @@ Session.create = function(data, api, options, callback){
         options = {};
     }
 
-    Session.invalidate_user_sessions(data.user_id, api, options, function() {
-        var session = new Session({
-            minodb_session: data
-        });
-        session.save(api, options, function(err, res) {
-            logger.debug(err, res);
-            callback(null, session);
-        });
+    var session = new Session({
+        minodb_session: data
     });
-    
-}
+    session.save(api, options, function(err, res) {
+        logger.debug(err, res);
+        callback(null, session);
+    });
+};
 
 module.exports = Session;

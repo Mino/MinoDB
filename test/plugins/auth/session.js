@@ -4,6 +4,7 @@ var express = require('express');
 var globals = require('../../globals');
 var request = require('supertest');
 var cookieParser = require('cookie-parser');
+var Session = require('../../../default_plugins/auth/models/Session');
 
 describe("session", function() {
 
@@ -76,7 +77,7 @@ describe("session", function() {
 		});
 	});
 
-	it('should invalidate active sessions when new one is created', function(done) {
+	it('should not log user in if session has expired', function(done) {
 		server.get('/test_invalidate_session', function(req,res) {
 			if (req.user) {
 				res.sendStatus(200);
@@ -85,35 +86,51 @@ describe("session", function() {
 			}
 		});
 
-		var agent = request.agent(server);
-		agent
-		.post('/mino/ajax/login')
-		.send({username_or_email: 'testuser', password: 'my_password'})
-		.expect(200)
-		.end(function(err, res) {
+		globals.minodb.create_user({
+            username: "expired_session_user",
+            email: "expired_session_user@minocloud.com",
+            password: "my_password"
+		}, function(err, res){
 			assert.equal(err, null);
+			var user_id = res.user.objects[0]._id;
 
+			var agent = request.agent(server);
 			agent
-			.get('/test_invalidate_session')
-			.expect(200).
-			end(function(err, res) {
+			.post('/mino/ajax/login')
+			.send({username_or_email: "expired_session_user", password: 'my_password'})
+			.expect(200)
+			.end(function(err, res) {
 				assert.equal(err, null);
 
-				var agent2 = request.agent(server);
-				agent2
-				.post('/mino/ajax/login')
-				.send({username_or_email: 'testuser', password: 'my_password'})
-				.expect(200)
-				.end(function(err, res) {
+				agent
+				.get('/test_invalidate_session')
+				.expect(200).
+				end(function(err, res) {
 					assert.equal(err, null);
 
-					//Previous session should be invalid now
-					agent
-					.get('/test_invalidate_session')
-					.expect(401).
-					end(function(err, res) {
+					//Expiring session
+					var options = {
+				        path: auth.session_path, 
+				        minodb_username: auth.username
+				    };
+
+					Session.get_active_user_sessions(user_id, globals.minodb.api, options, function(err, sessions) {
 						assert.equal(err, null);
-						done();
+						assert.equal(sessions.length, 1);
+
+						var session = sessions[0];
+						session.end_time = new Date().getTime();
+						session.save(globals.minodb.api, options, function(err, res) {
+							assert.equal(err, null);
+
+							agent
+							.get('/test_invalidate_session')
+							.expect(401).
+							end(function(err, res) {
+								assert.equal(err, null);
+								done();
+							});
+						});
 					});
 				});
 			});
