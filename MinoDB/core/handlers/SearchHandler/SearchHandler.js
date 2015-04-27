@@ -107,10 +107,10 @@ SearchHandler.prototype.do_search = function(callback){
             var path_prefixes = [];
             for(var i = 0; i < sh.paths.length; i++){
                 var path = sh.paths[i];
-
+                var path_regex = path.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
                 path_prefixes.push({
                     "path":{
-                        "$regex": "^"+path
+                        "$regex": "^"+path_regex
                     }
                 });
             }
