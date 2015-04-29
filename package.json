@@ -24,7 +24,6 @@
     "minosdk" : "Mino/MinoSDK#864c6fae84b07f6b10771219266c690902cbb5fb",
     "fieldval" : "0.4.2",
     "fieldval-rules" : "0.5.0",
-    "fieldval-ui" : "0.4.2",
     "extend": "MarcusLongmuir/extend#ab161eb5e479a74da6206d7f589892cabe29ecb7",
     "mino-logger": "Mino/mino-logger#0f8b81f946ebd956aea2fb66ea3e4fb4e418c3f7"
   },

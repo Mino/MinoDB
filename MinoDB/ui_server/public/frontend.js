@@ -13140,10 +13140,6 @@ function Page() {
     page.element = $("<div />");
 }
 
-Page.prototype.new_url = function() {
-    return "NOT_SET";
-}
-
 Page.prototype.resize = function(resize_obj) {}
 
 Page.prototype.init = function() {}
@@ -13317,14 +13313,12 @@ SAFEClass.prototype.use_page_class = function(details){
         }
     }
 
-    if (class_obj === sf.previous_class) {
+    if (class_obj === sf.previous_class && sf.current_page.new_url) {
         var new_url_response = sf.current_page.new_url(details);
-        if (new_url_response != "NOT_SET") {
-            if(details.anchor){
-                sf.scroll_to_anchor($("a[name*='"+details.anchor+"']"));
-            }
-            return;
+        if(details.anchor){
+            sf.scroll_to_anchor($("a[name*='"+details.anchor+"']"));
         }
+        return;
     }
 
     var old_page = null;
@@ -13337,7 +13331,6 @@ SAFEClass.prototype.use_page_class = function(details){
     if(typeof class_obj.redirect === 'function'){
         redirect_response = class_obj.redirect(details);
     } else if(typeof class_obj.prototype.redirect === 'function'){
-        console.log(class_obj.prototype.redirect);
         redirect_response = class_obj.prototype.redirect(details);
     }
     if (redirect_response !== undefined) {
@@ -13492,7 +13485,7 @@ SAFEClass.prototype.init = function(desired_url) {
             }
             var state = History.getState();
             if (state != null) {
-                sf.load_url(decodeURI(state.url), false);
+                sf.load_url(state.url, false);
             }
         });
     }
@@ -13611,7 +13604,7 @@ SAFEClass.prototype.get_class_and_details_for_url = function(url_with_query) {
         query_params = sf.parse_query_string(url_split[1]);
     }
 
-    var url = decodeURIComponent(url_split[0]);
+    var url = url_split[0];
 
     if (url.length >= sf.origin.length) {
         if (url.substring(0, sf.origin.length) == sf.origin) {
@@ -13692,7 +13685,7 @@ SAFEClass.prototype.get_class_and_details_for_url = function(url_with_query) {
             var part = url_parts[k];
             if(map_part[0]===":"){
                 var param_name = map_part.substring(1);
-                this_url_params[param_name] = part;
+                this_url_params[param_name] = decodeURIComponent(part);
             } else if(map_part[0]==="*"){
                 is_valid = true;
                 had_wildcard = true;
@@ -13750,13 +13743,14 @@ SAFEClass.prototype.load_url = function(url_with_query, push_state) {
             return;
         }
     } else {
+        sf.ignore_next_url = true;
         if (push_state) {
-            sf.ignore_next_url = true;
             History.pushState(null, "", full_url);
             sf.previous_url = full_url;
         } else {
             History.replaceState(null, "", full_url);
         }
+        sf.ignore_next_url = false;
     }
 
     sf.current_url = full_url;
@@ -15716,6 +15710,8 @@ function FVField(name, options) {
     field.is_disabled = false;
 
     field.on_change_callbacks = [];
+    field.on_focus_callbacks = [];
+    field.on_blur_callbacks = [];
 
     if(field.options.use_form){
         field.element = $("<form />",{
@@ -15749,9 +15745,8 @@ function FVField(name, options) {
     if(field.options.description){
         field.description_label = $("<div />").addClass("fv_field_description").text(field.options.description)
     }
-    field.input_holder = $("<div />").addClass("fv_input_holder")
+    field.input_holder = $("<div />").addClass("fv_input_holder");
     field.error_message = $("<div />").addClass("fv_error_message").hide()
-
     field.layout();
 }
 
@@ -15759,6 +15754,8 @@ FVField.prototype.clear_errors = function(){
     var field = this;
 
     field.error(null);
+
+    return field;
 }
 
 FVField.prototype.on_submit = function(callback){
@@ -15797,16 +15794,20 @@ FVField.prototype.in_array = function(parent, remove_callback){
         );
     }
 
-    field.element.append(
-        field.remove_button = $("<button />",{type:"button"})
-        .addClass("fv_field_remove_button")
-        .html("&#10006;").on(FVForm.button_event,function(event){
-            event.preventDefault();
-            field.array_remove_callback(field.key_name);
-            remove_callback();
-            field.remove();
-        })
-    )
+    if (!field.array_parent.hide_remove_button) {
+        field.element.addClass("with_remove_button").append(
+            field.remove_button = $("<button />",{type:"button"})
+            .addClass("fv_field_remove_button")
+            .html("&#10006;").on(FVForm.button_event,function(event){
+                event.preventDefault();
+                field.array_remove_callback(field.key_name);
+                remove_callback();
+                field.remove();
+            })
+        )
+    }
+
+    return field;
 }
 
 FVField.prototype.in_key_value = function(parent, remove_callback){
@@ -15831,11 +15832,14 @@ FVField.prototype.in_key_value = function(parent, remove_callback){
             field.key_value_remove_callback(field.key_name);
             field.remove();
         })
-    )
+    );
+
+    return field;
 }
 
 FVField.prototype.init = function(){
     var field = this;
+    return field;
 }
 
 FVField.prototype.remove = function(from_parent){
@@ -15846,6 +15850,8 @@ FVField.prototype.remove = function(from_parent){
         field.parent.remove_field(field);
         field.parent = null;
     }
+
+    return field;
 }
 
 FVField.prototype.change_name = function(name) {
@@ -15863,12 +15869,30 @@ FVField.prototype.layout = function(){
         field.input_holder,
         field.error_message
     )
+
+    return field;
 }
 
 FVField.prototype.on_change = function(callback){
     var field = this;
 
     field.on_change_callbacks.push(callback);
+
+    return field;
+}
+
+FVField.prototype.on_focus = function(callback){
+    var field = this;
+
+    field.on_focus_callbacks.push(callback);
+
+    return field;
+}
+
+FVField.prototype.on_blur = function(callback){
+    var field = this;
+
+    field.on_blur_callbacks.push(callback);
 
     return field;
 }
@@ -15901,8 +15925,45 @@ FVField.prototype.did_change = function(options){
     return field;
 }
 
+FVField.prototype.did_focus = function(){
+    var field = this;
+
+    for(var i = 0; i < field.on_focus_callbacks.length; i++){
+        var callback = field.on_focus_callbacks[i];
+
+        callback();
+    }
+
+    if(field.parent){
+        field.parent.did_focus();
+    }
+
+    return field;
+}
+
+FVField.prototype.did_blur = function(){
+    var field = this;
+
+    if(field.suppress_blur){
+        return field;
+    }
+
+    for(var i = 0; i < field.on_blur_callbacks.length; i++){
+        var callback = field.on_blur_callbacks[i];
+
+        callback();
+    }
+
+    if(field.parent){
+        field.parent.did_blur();
+    }
+
+    return field;
+}
+
 FVField.prototype.icon = function(params) {
     var field = this;
+    return field;
 }
 
 FVField.prototype.val = function(set_val) {
@@ -15951,20 +16012,30 @@ FVField.prototype.enable = function() {
 
 FVField.prototype.blur = function() {
     var field = this;
+
+    if(field.name_input){
+        field.name_input.blur();
+    }
+
+    return field;
 }
 
 FVField.prototype.focus = function() {
     var field = this;
+
+    return field;
 }
 
 FVField.prototype.show_error = function(){
     var field = this;
     field.error_message.show();
+    return field;
 }
 
 FVField.prototype.hide_error = function(){
     var field = this;
     field.error_message.hide();
+    return field;
 }
 
 //Used in key_value fields
@@ -16020,6 +16091,7 @@ function FVTextField(name, options) {
         options = {};
     } else if(options_type === "object"){
         field.input_type = options.type || "text";
+        field.consume_tabs = options.consume_tabs || false;
     } else {
         options = {};
     }
@@ -16047,12 +16119,30 @@ function FVTextField(name, options) {
             for(var i = 0; i < field.enter_callbacks.length; i++){
                 field.enter_callbacks[i](e);
             }
+
+            if(field.input_type==="textarea" && (event.metaKey || event.ctrlKey)){
+                var form = field.element.closest("form");
+                if(form){
+                    form.data("field").submit();
+                }
+            }
+        }
+
+        if(field.input_type==="textarea" && field.consume_tabs && e.keyCode===9) {
+            e.preventDefault();
+            document.execCommand("insertText", false, "\t");
         }
     })
     .on("keyup paste cut",function(){
         setTimeout(function(){
             field.check_changed();
         },0);
+    })
+    .on("focus",function(){
+        field.did_focus();
+    })
+    .on("blur",function(){
+        field.did_blur();
     })
     .appendTo(field.input_holder);
 }
@@ -16112,14 +16202,18 @@ FVTextField.prototype.enable = function() {
 
 FVTextField.prototype.focus = function() {
     var field = this;
+    
     field.input.focus();
-    return field;
+
+    return FVField.prototype.focus.call(this);
 }
 
 FVTextField.prototype.blur = function() {
     var field = this;
+    
     field.input.blur();
-    return field;
+
+    return FVField.prototype.blur.call(this);
 }
 
 FVTextField.numeric_regex = /^[-+]?\d*\.?\d+$/;
@@ -16214,8 +16308,6 @@ FVDisplayField.prototype.val = function(set_val, options) {
         return field;
     }
 }
-fieldval_ui_extend(FVChoiceField, FVField);
-
 function FVChoiceOption(choice, parent){
     var choice_option = this;
 
@@ -16299,6 +16391,8 @@ FVChoiceOption.prototype.get_display = function(){
     return $("<div />").text(choice_option.choice_text);
 }
 
+fieldval_ui_extend(FVChoiceField, FVField);
+
 function FVChoiceField(name, options) {
     var field = this;
 
@@ -16319,7 +16413,9 @@ function FVChoiceField(name, options) {
     .append(
         field.filter_input = $("<input type='text' />")
         .on('focus',function(e){
-            field.focus();
+            setTimeout(function(){
+                field.input_focus();
+            },1);
         })
         .attr("placeholder", name)
         .addClass("filter_input")
@@ -16449,19 +16545,22 @@ FVChoiceField.prototype.show_list = function(){
 
     if(!field.is_disabled){
 
+        if(field.list_open){
+            return field;
+        }
+
         field.input_holder.css("min-height", field.current_display.outerHeight()+"px");
 
         field.filter_input.removeClass("fv_filter_hidden");
         field.current_display.hide();
-        if(!FVForm.is_mobile){
-            if(!field.filter_input.is(":focus")){
-                field.filter_input.focus();
-            }
-        }
         field.choice_list.show();
         field.current_highlight = field.selected_value;
         field.filter(field.filter_input.val(), true);
+
+        field.list_open = true;
     }
+
+    return field;
 }
 
 FVChoiceField.prototype.hide_list = function(){
@@ -16477,6 +16576,10 @@ FVChoiceField.prototype.hide_list = function(){
     field.filter_input.addClass("fv_filter_hidden")
     field.current_display.show();
     field.choice_list.hide();
+
+    field.list_open = false;
+
+    return field;
 }
 
 FVChoiceField.prototype.filter = function(text, initial){
@@ -16540,8 +16643,26 @@ FVChoiceField.prototype.select_option = function(choice_option, options){
         )
     }
     field.hide_list();
-    
-    field.filter_input.blur().val("");
+
+    if(!options.val_event){
+        var next;
+        if(field.filter_input.is(":focus")){
+            var tabables = $("input[tabindex != '-1']:visible,textarea[tabindex != '-1']:visible,button[tabindex != '-1']:visible");
+            if(tabables){
+                var index = tabables.index(field.filter_input);
+                if(index!==-1){
+                    next = tabables[index + 1];
+                }
+            }
+        }
+        if(next){
+            next.focus();
+        } else {
+            field.blur();
+        }
+    }
+
+    field.filter_input.val("");
     
     if(!options.ignore_change){
         field.did_change(options);
@@ -16639,15 +16760,22 @@ FVChoiceField.prototype.select_highlighted = function(){
     }
 }
 
-FVChoiceField.prototype.focus = function() {
+FVChoiceField.prototype.input_focus = function(){
+    var field = this;
+
+    field.filter_input.val("");
+
+    field.show_list();
+
+    field.did_focus();
+}
+
+FVChoiceField.prototype.focus = function(from_input) {
     var field = this;
     
-    field.filter_input.val("");
-    setTimeout(function(){
-        field.show_list();
-    },1);
+    field.filter_input.focus();
 
-    return field;
+    return FVField.prototype.focus.call(this);
 }
 
 FVChoiceField.prototype.blur = function() {
@@ -16655,7 +16783,9 @@ FVChoiceField.prototype.blur = function() {
     
     field.hide_list();
 
-    return field;
+    field.did_blur();
+
+    return FVField.prototype.blur.call(this);
 }
 
 FVChoiceField.prototype.val = function(set_val, options) {
@@ -16671,6 +16801,8 @@ FVChoiceField.prototype.val = function(set_val, options) {
             for(var i = 0; i < field.option_array.length; i++){
                 var choice_option = field.option_array[i];
                 if(set_val === choice_option.get_value()){
+                    options = options || {};
+                    options.val_event = true;
                     field.select_option(choice_option, options);
                     break;
                 }
@@ -16741,11 +16873,15 @@ FVDateField.prototype.add_element_from_component = function(component, component
         .on("keyup",function(){
             field.did_change()
         })
-
-        input.blur(function(){
+        .on("focus",function(e){
+            field.did_focus();
+        })
+        .on("blur",function(e){
             var input_val = input.val();
             var padded = DateVal.pad_to_valid(input_val, component_value);
             input.val(padded);
+
+            field.did_blur();
         })
 
         field.inputs.push(input);
@@ -16795,21 +16931,27 @@ FVDateField.prototype.focus = function() {
     
     var input = field.inputs[0];
     if(input){
-        input.blur();
+        input.focus();
     }
 
-    return field;
+    return FVField.prototype.focus.call(this);
 }
 
 FVDateField.prototype.blur = function() {
     var field = this;
+
+    field.suppress_blur = true;
     for(var i = 0; i < field.inputs.length; i++){
         var input = field.inputs[i];
         if(input){
             input.blur();
         }
     }
-    return field;
+    field.suppress_blur = false;
+
+    field.did_blur();
+
+    return FVField.prototype.blur.call(this);
 }
 
 FVDateField.prototype.val = function(set_val, options) {
@@ -16890,6 +17032,12 @@ function FVBooleanField(name, options) {
     .on("change",function(){
         field.did_change()
     })
+    .on("focus",function(){
+        field.did_focus();
+    })
+    .on("blur",function(){
+        field.did_blur();
+    })
     .appendTo(field.input_holder);
 }
 
@@ -16908,13 +17056,13 @@ FVBooleanField.prototype.enable = function() {
 FVBooleanField.prototype.focus = function() {
     var field = this;
     field.input.focus();
-    return field;
+    return FVField.prototype.focus.call(this);
 }
 
 FVBooleanField.prototype.blur = function() {
     var field = this;
     field.input.blur();
-    return field;
+    return FVField.prototype.blur.call(this);
 }
 
 FVBooleanField.prototype.val = function(set_val, options) {
@@ -17046,20 +17194,35 @@ FVObjectField.prototype.enable = function() {
 
 FVObjectField.prototype.focus = function() {
     var field = this;
-    return field;
+    
+    for(var i in field.fields){
+        if(field.fields.hasOwnProperty(i)){
+            var inner_field = field.fields[i];
+            if(inner_field){
+                inner_field.focus();
+                return field;
+            }
+        }    
+    }
+
+    return FVField.prototype.focus.call(this);
 }
 
 FVObjectField.prototype.blur = function() {
     var field = this;
 
+    field.suppress_blur = true;
     for(var i in field.fields){
         if(field.fields.hasOwnProperty(i)){
             var inner_field = field.fields[i];
             inner_field.blur();
         }
     }
+    field.suppress_blur = false;
 
-    return field;
+    field.did_blur();
+
+    return FVField.prototype.blur.call(this);
 }
 
 FVObjectField.prototype.error = function(error){
@@ -17500,6 +17663,10 @@ function FVArrayField(name, options) {
 
     FVArrayField.superConstructor.call(this, name, options);
 
+    field.hide_add_button = field.options.hide_add_button || false;
+    field.hide_remove_button = field.options.hide_remove_button || false;
+    field.sortable = field.options.sortable || false;
+
     field.fields = [];
 
     field.add_button_text = field.options.add_button_text!==undefined ? field.options.add_button_text : "+";
@@ -17507,11 +17674,14 @@ function FVArrayField(name, options) {
 
     field.element.addClass("fv_array_field");
     field.input_holder.append(
-        field.fields_element = $("<div />").addClass("fv_array_fields"),
-        field.create_add_field_button()
+        field.fields_element = $("<div />").addClass("fv_array_fields")
     )
 
-    field.sortable = field.options.sortable===undefined || field.options.sortable!==false;
+    if (!field.hide_add_button) {
+        field.input_holder.append(
+            field.create_add_field_button()
+        )
+    }
     
     if(field.sortable){
         field.element.addClass("fv_array_field_sortable");
@@ -17595,6 +17765,17 @@ FVArrayField.prototype.add_field = function(inner_field){
     }
 }
 
+FVArrayField.prototype.remove = function(from_parent){
+    var field = this;
+
+    for(var i=0; i<field.fields.length; i++){
+        var inner_field = field.fields[i];
+        inner_field.remove();
+    }
+
+    FVField.prototype.remove.call(this, from_parent);
+}
+
 FVArrayField.prototype.remove_field = function(target){
     var field = this;
 
@@ -17603,13 +17784,11 @@ FVArrayField.prototype.remove_field = function(target){
         index = target;
         inner_field = field.fields[target];
     } else if(target instanceof FVField){
-        for(var i in field.fields){
-            if(field.fields.hasOwnProperty(i)){
-                if(field.fields[i]===target){
-                    index = i;
-                    inner_field = field.fields[i];
-                    break;
-                }
+        for(var i=0; i<field.fields.length; i++){
+            if(field.fields[i]===target){
+                index = i;
+                inner_field = field.fields[i];
+                break;
             }
         }
     } else {
@@ -17646,7 +17825,7 @@ FVArrayField.prototype.fields_error = function(error){
         }
 
     } else {
-        for(var i in field.fields){
+        for(var i=0; i<field.fields.length; i++){
             var inner_field = field.fields[i];
             inner_field.error(null);
         }
@@ -17689,6 +17868,35 @@ FVArrayField.prototype.enable = function(){
         add_field_button.show();
     }
     return FVField.prototype.enable.call(this);
+}
+
+FVArrayField.prototype.focus = function() {
+    var field = this;
+    
+    for(var i = 0; i < field.fields.length; i++){
+        var inner_field = field.fields[i];
+        if(inner_field){
+            inner_field.focus();
+            return field;
+        }    
+    }
+
+    return FVField.prototype.focus.call(this);
+}
+
+FVArrayField.prototype.blur = function() {
+    var field = this;
+
+    field.suppress_blur = true;
+    for(var i = 0; i < field.fields.length; i++){
+        var inner_field = field.fields[i];
+        inner_field.blur();
+    }
+    field.suppress_blur = false;
+
+    field.did_blur();
+
+    return FVField.prototype.blur.call(this);
 }
 
 FVArrayField.prototype.error = function(error) {
@@ -17770,8 +17978,18 @@ FVArrayField.prototype.val = function(set_val, options) {
                     inner_field = field.fields[i];
                 }
                 inner_field.val(set_val[i], options);
-
         	}
+            if(set_val.length<field.fields.length){
+                var to_remove = [];
+                for(var i = set_val.length; i < field.fields.length; i++){
+                    to_remove.push(field.fields[i]);
+                }
+
+                for(var i = 0; i < to_remove.length; i++){
+                    var inner_field = to_remove[i];
+                    inner_field.remove();
+                }
+            }
             
             if (!options.ignore_change) {
                 field.did_change(options);
@@ -17983,6 +18201,46 @@ FVKeyValueField.prototype.enable = function(){
         add_field_button.show();
     }
     return FVField.prototype.enable.call(this);
+}
+
+FVKeyValueField.prototype.focus = function() {
+    var field = this;
+    
+    for(var i = 0; i < field.fields.length; i++){
+        var inner_field = field.fields[i];
+        if(inner_field){
+            inner_field.focus();
+            return field;
+        }    
+    }
+
+    return FVField.prototype.focus.call(this);
+}
+
+FVKeyValueField.prototype.blur = function() {
+    var field = this;
+
+    field.suppress_blur = true;
+    for(var i = 0; i < field.fields.length; i++){
+        var inner_field = field.fields[i];
+        inner_field.blur();
+    }
+    field.suppress_blur = false;
+
+    field.did_blur();
+
+    return FVField.prototype.blur.call(this);
+}
+
+FVKeyValueField.prototype.remove = function(from_parent){
+    var field = this;
+
+    for(var i=0; i<field.fields.length; i++){
+        var inner_field = field.fields[i];
+        inner_field.remove();
+    }
+
+    FVField.prototype.remove.call(this, from_parent);
 }
 
 FVKeyValueField.prototype.error = function(error) {
@@ -19294,6 +19552,8 @@ var FVChoiceRuleField = (function(){
             name: field.name,
             display_name: field.display_name,
             choices: field.choices,
+            allow_empty: field.allow_empty,
+            empty_text: field.empty_text,
             use_form: use_form
         });
         field.element = field.ui_field.element;
@@ -19303,8 +19563,10 @@ var FVChoiceRuleField = (function(){
     FVChoiceRuleField.prototype.init = function() {
         var field = this;
 
-        field.allow_empty = field.validator.get("allow_empty", BasicVal.boolean(false));
-        field.empty_message = field.validator.get("empty_message", BasicVal.string(false));
+        field.checks.push(BasicVal.required(field.required));
+        
+        field.allow_empty = !field.required;
+        field.empty_text = field.validator.get("empty_text", BasicVal.string(false));
         field.choices = field.validator.get("choices", BasicVal.array(true));
 
         if(field.choices!==undefined){
@@ -20598,14 +20860,14 @@ var Constants = {
 	READ_PERMISSION : constant_count++,
 	WRITE_PERMISSION : constant_count++,
 	EXISTS : constant_count++
-}
+};
 
 if (typeof module != 'undefined') {
     module.exports = Constants;
 }
 String.prototype.replaceAll = function(re, replace) {
     return this.replace(new RegExp(re, "g"), replace);
-}
+};
 
  var Common = {
     SECONDSDATEFORMAT : "yyyy-MM-dd HH:mm:ss",
@@ -20620,7 +20882,7 @@ String.prototype.replaceAll = function(re, replace) {
     minimumShortTypeMiddleName : 3,
     maximumShortTypeMiddleName : 20,
     ROOT_USERNAME: "MinoDB"
-}
+};
 
 
 
@@ -20632,20 +20894,20 @@ Common.get_resource_type = function(this_address){
 
     var type_of = typeof this_address;
 
-    if (type_of == 'string') {
+    if (type_of === 'string') {
 
         var index_of_slash = this_address.indexOf('/');
 
-        if (index_of_slash == -1) {
+        if (index_of_slash === -1) {
             //Could be a number or type
             var numeric_value = parseFloat(this_address);
-            var is_integer = numeric_value % 1 == 0;
+            var is_integer = numeric_value % 1 === 0;
             if (isNaN(numeric_value)){
                 return ["type",this_address];
             } else if(is_integer && numeric_value > 1) {
                 return ["id",""+numeric_value];
             }
-        } else if (index_of_slash == 0) {
+        } else if (index_of_slash === 0) {
             //First char is slash - must be pat
 
             var path = new Path();
@@ -20657,13 +20919,13 @@ Common.get_resource_type = function(this_address){
             //Could be id/version
             var split_1 = this_address.substring(0, index_of_slash);
             var num_1 = +split_1;
-            var is_integer_1 = num_1 % 1 == 0;
+            var is_integer_1 = num_1 % 1 === 0;
             var split_2 = this_address.substring(index_of_slash + 1);
             var num_2 = +split_2;
-            var is_integer_2 = num_2 % 1 == 0;
+            var is_integer_2 = num_2 % 1 === 0;
 
             if (isNaN(num_1) || !is_integer_1 || num_1 < 1 || isNaN(num_2) || !is_integer_2 || num_2 < 1) {
-
+                return [null, null];
             } else {
                 return ["id_version",[num_1,num_2]];
             }
@@ -20678,332 +20940,21 @@ Common.get_resource_type = function(this_address){
     }
 
     return [null,null];
-}
+};
 
-
-Common.isValidPassword = function(pass) {
-    if (pass.length < 8) {
-        return false;
-    }
-    if (pass.length > 32) {
-        return false;
-    }
-    return true;
-}
-
-//Returns true if the string is a valid username (Less than 15 characters, more than 1 and not containing the reserved space replacements (ascii 30 or 31), whitespace, dot or /.)
-Common.is_valid_username = function(string) {
-    var length = string.length;
-    if (length > Common.MAXIMUM_USERNAME_LENGTH || length < Common.MINIMUM_USERNAME_LENGTH) {
-        return false;
-    }
-
-    var letters = /^[a-zA-Z][0-9a-zA-Z]+$/;  
-    if(string.match(letters)){
-        return true;
-    }
-    return false;
-}
-
-Common.isValidNewUsername = function(string) {
-    if (Common.isValidUsername(string)) {
-        for (var i = 0; i < string.length; i++) {
-            var thisChar = string.charCodeAt(i);
-            if (thisChar == '_') {
-                return false;
-            }
-        }
-    }
-    return false;
-}
-
-Common.isValidID = function(string) {
-    if (string.length == 0) {
-        return false;
-    }
-    for (var len = 0; len < string.length; len++) {
-        var thisChar = string.charCodeAt(len);
-        if (thisChar < 48 || thisChar > 57) { //Other than 0 to 9
-            return false;
-        }
-    }
-    return true;
-}
-
-Common.isTypeVersionAutoGranted = function(name, username) {
-    return Common.isValidTypeVersionName(name, username);
-}
-
-Common.splitToIDAndVersion = function(toSplit) {
-    var split = toSplit.split("/");
-    return [
-        Long.parseLong(split[0]), Long.parseLong(split[1])
-    ];
-}
-
-Common.splitToIDAndVersionString = function(toSplit) {
-    return toSplit.split("/");
-}
-
-
-Common.convertObjectToIDString = function(value) {
-
-    if (value instanceof Integer) {
-        if (value < 1) {
-            throw new ValidatorError(38);
-        }
-        return value.toString();
-    } else if (value instanceof Long) {
-        if (value < 1) {
-            throw new ValidatorError(38);
-        }
-        return value.toString();
-    } else if (value instanceof String) {
-        var id = Long.parseLong(value);
-        if (id < 1) {
-            throw new ValidatorError(38);
-        }
-        return value;
-    }
-    throw new ValidatorError(2);
-}
-
-Common.convertObjectToVersionLong = function(value) {
-
-    if (value instanceof Integer) {
-        if (value < 1) {
-            throw new ValidatorError(138);
-        }
-        return new Long(value);
-    } else if (value instanceof Long) {
-        if (value < 1) {
-            throw new ValidatorError(138);
-        }
-        return value;
-    } else if (value instanceof String) {
-        var id = Long.parseLong(value);
-        if (id < 1) {
-            throw new ValidatorError(138);
-        }
-        return id;
-    }
-    throw new ValidatorError(2);
-}
-
-Common.convert_path_to_tilde_path = function(path) {
-    return path.replaceAll('/', '~');
-}
-
-Common.convertTildePathToPath = function(path) {
-    return path.replace('~', '/');
-}
-
-Common.convertPathToStorePath = function(path) {
-    return path.replaceAll('/', String.fromCharCode(30)).replaceAll(' ', String.fromCharCode(31));
-}
-
-Common.convertStorePathToPath = function(path) {
-    return path.replaceAll(String.fromCharCode(31), ' ').replaceAll(String.fromCharCode(30), '/');
-}
-
-Common.getObjectFromID = function(id) {
-
-    // if (idAndVersionAndCreated == null || idAndVersionAndCreated.equals("DELETED")) {
-    //     return null;
-    // }
-
-    // var idVersionAndCreatedSplit = Common.splitIDValueToVersionAndPathAndCreated(idAndVersionAndCreated);
-    // idAndVersion = idVersionAndCreatedSplit[0];
-    // if (idAndVersion == null) {
-    //     return null;
-    // }
-
-    // object = (String) client.get(CouchbasePool.toKVIDVersionKey(idAndVersion));
-
-    // if (object == null) {
-    //     return null;
-    // }
-
-    // try {
-    //     return new JSONObject(objectString);
-    // } catch (JSONException e) {
-    //     ServerDaemon.error(e);
-    // }
-
-    // return null;
-}
-
-Common.getObjectFromPath = function(path) {
-
-    // CouchbaseClient client = CouchbasePool.getInstance().getCache();
-
-    // idAndVersion = (String) client.get(CouchbasePool.toKVPathKey(path));
-
-    // if (idAndVersion == null || idAndVersion.equals("DELETED")) {
-    //     return null;
-    // }
-
-    // object = (String) client.get(CouchbasePool.toKVIDVersionKey(idAndVersion));
-
-    // if (object == null) {
-    //     return null;
-    // }
-
-    // try {
-    //     return new JSONObject(objectString);
-    // } catch (JSONException e) {
-    //     ServerDaemon.error(e);
-    // }
-
-    return null;
-}
-
-Common.getMultipleObjectsFromPaths = function(paths) {
-    return Common.getMultipleObjectsFromPaths(paths.toArray(new String[paths.size()]));
-}
-
-
-//This method will use the parameter to store intermediate values. Don't pass it something you want to keep.
-Common.getMultipleObjectsFromPaths = function(paths) {
-
-    // JSONObject[] returning = new JSONObject[paths.length];
-
-    // GetFuture < Object > [] futures = new GetFuture[paths.length];
-
-    // for (var i = 0; i < paths.length; i++) {
-    //     if (paths[i] != null) {
-    //         futures[i] = client.asyncGet(CouchbasePool.toKVPathKey(paths[i]));
-    //     }
-    // }
-
-    // for (var i = 0; i < paths.length; i++) {
-    //     try {
-    //         if (paths[i] != null) {
-    //             paths[i] = (String) futures[i].get();
-
-    //             if (paths[i] == null || paths[i].equals("DELETED")) {
-    //                 paths[i] = null;
-    //                 futures[i] = null;
-    //             } else {
-    //                 futures[i] = client.asyncGet(CouchbasePool.toKVIDVersionKey(paths[i]));
-    //             }
-    //         }
-    //     } catch (Exception e) {
-    //         paths[i] = null;
-    //         futures[i] = null;
-    //     }
-    // }
-
-    // for (var i = 0; i < paths.length; i++) {
-    //     try {
-    //         if (futures[i] != null) {
-    //             paths[i] = (String) futures[i].get();
-
-    //             if (paths[i].equals("DELETED")) {
-    //                 returning[i] = null;
-    //             } else {
-    //                 returning[i] = new JSONObject(paths[i]);
-    //             }
-    //         }
-    //     } catch (Exception e) {
-    //         returning[i] = null;
-    //     }
-    // }
-    return returning;
-}
-
-//This method will use the parameter to store intermediate values. Don't pass it something you want to keep.
-Common.getMultipleObjectsFromIDs = function(ids) {
-
-    // CouchbaseClient client = CouchbasePool.getInstance().getCache();
-
-    // JSONObject[] returning = new JSONObject[ids.length];
-
-    // GetFuture < Object > [] futures = new GetFuture[ids.length];
-
-    // for (var i = 0; i < ids.length; i++) {
-    //     futures[i] = client.asyncGet(CouchbasePool.toKVIDKey(ids[i]));
-    // }
-
-    // for (var i = 0; i < ids.length; i++) {
-    //     try {
-    //         ids[i] = (String) futures[i].get();
-
-    //         if (ids[i] == null || ids[i].equals("DELETED")) {
-    //             ids[i] = null;
-    //             futures[i] = null;
-    //         } else {
-    //             var idVersionAndCreatedSplit = Common.splitIDValueToVersionAndPathAndCreated(ids[i]);
-    //             idAndVersion = idVersionAndCreatedSplit[0];
-    //             if (idAndVersion == null) {
-    //                 ids[i] = null;
-    //                 futures[i] = null;
-    //             } else {
-    //                 futures[i] = client.asyncGet(CouchbasePool.toKVIDVersionKey(idAndVersion));
-    //             }
-    //         }
-    //     } catch (Exception e) {
-    //         ids[i] = null;
-    //         futures[i] = null;
-    //     }
-    // }
-
-    // for (var i = 0; i < ids.length; i++) {
-    //     try {
-    //         if (futures[i] != null) {
-    //             ids[i] = (String) futures[i].get();
-
-    //             if (ids[i].equals("DELETED")) {
-    //                 returning[i] = null;
-    //             } else {
-    //                 returning[i] = new JSONObject(ids[i]);
-    //             }
-    //         }
-    //     } catch (Exception e) {
-    //         returning[i] = null;
-    //     }
-    // }
-
-
-    return returning;
-}
-
-Common.getDateTimeString = function(format) {
-    // final SimpleDateFormat sdf = new SimpleDateFormat(format);
-    // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-    // final utcTime = sdf.format(new Date());
-    // return utcTime;
-}
-
-Common.buildIDValueFromIDVersionPathAndCreated = function(idVersion, path, created) {
-    return idVersion + " " + Common.convertPathToStorePath(path) + " " + created;
-}
-
-Common.idFromCounterAddress = function(address) {
-    var split = address.split("\\.");
-
-    if (Common.isValidID(split[0]) && Common.isValidTypeVersionName(split[1] + "." + split[2] + "." + split[3]) && Common.isValidFieldName(split[4])) {
-        return split[0];
-    }
-
-    throw new ValidatorError(112);
-}
-
-
-if (typeof module != 'undefined') {
+if (typeof module !== 'undefined') {
     module.exports = Common;
 }
 var Constants, Common, FieldVal, errors;
-if (typeof require != 'undefined') {
+if (typeof require !== 'undefined') {
     Constants = require('./Constants');
     Common = require('./Common');
     FieldVal = require('fieldval');
-    errors = require('../errors')
+    errors = require('../errors');
 }
 
 function Path() {
-    var path = this;
-
+    
 }
 
 //Returns error or null
@@ -21019,10 +20970,10 @@ Path.prototype.init = function(path_string, allow_tilde) {
 
     path.string_length = path_string.length;
     if (path.string_length >= Constants.maximumAccessiblePathLength) {
-        return errors.INVALID_PATH_FORMAT
+        return errors.INVALID_PATH_FORMAT;
     }
     var path_char = path.path_string.charAt(0);
-    if (path_char != "/") { //Equal to forward slash
+    if (path_char !== "/") { //Equal to forward slash
         return errors.INVALID_PATH_FORMAT; //First character must be a forward slash in a path
     }
 
@@ -21032,8 +20983,8 @@ Path.prototype.init = function(path_string, allow_tilde) {
     var total = 0;
     for (var index = 1; index < path.string_length; index++) {
         path_char = path.path_string.substring(index, index + 1);
-        if (path_char.charCodeAt(0) == 47) {
-            if (last_char.charCodeAt(0) == 47) {
+        if (path_char.charCodeAt(0) === 47) {
+            if (last_char.charCodeAt(0) === 47) {
                 return errors.INVALID_PATH_FORMAT; //There were two forward slashes together
             }
             total++;
@@ -21045,7 +20996,7 @@ Path.prototype.init = function(path_string, allow_tilde) {
         last_char = path_char;
     }
 
-    if (last_char.charCodeAt(0) == 47) {
+    if (last_char.charCodeAt(0) === 47) {
         path.is_folder = true;
     }
 
@@ -21070,17 +21021,11 @@ Path.prototype.init = function(path_string, allow_tilde) {
     path.length = path.object_names.length;
 
     return null;
-}
-
-Path.prototype.replace_id_operator = function(id){
-    var path = this;
-
-
-}
+};
 
 Path.object_name_check = function(allowed_tilde){
 
-    return function(val, emit){
+    return function(val){
 
         //Remove ~id~ because it will be overwritten (no other tildes are allowed)
         var value = val.replaceAll("~id~","");
@@ -21092,8 +21037,8 @@ Path.object_name_check = function(allowed_tilde){
                 return errors.INVALID_OBJECT_NAME;
             }
         }
-    }
-}
+    };
+};
 
 Path.is_valid_character_for_object_name = function(path_char, allowed_tilde) {
 
@@ -21109,48 +21054,10 @@ Path.is_valid_character_for_object_name = function(path_char, allowed_tilde) {
         return false;
     }
     return true;
-}
-
-Path.prototype.to_tilde_path = function(){
-    var path = this;
-
-    return Common.convert_path_to_tilde_path(path.toString())
-}
-
-Path.prototype.permission_path = function(requesting_username,for_write){
-    var path = this;
-
-    var user = path.username_for_permission(requesting_username,for_write);
-
-    return "/"+requesting_username+"/permissions/received/"+Common.convert_path_to_tilde_path(path.toString());
-}
+};
 
 Path.prototype.username_for_permission = function(requesting_username, for_write) {
     var path = this;
-
-    //Restricts access to the permissions folder in each user's root
-    if (path.object_names.length > 1 && path.object_names[1] == "permissions") {
-
-        if (path.object_names.length==2 && !path.is_folder) {
-            /* The request is for an item with the same name as one of the restricted folders, not the folder itself
-             * so return the username of the top folder.
-             */
-            return path.object_names[0];
-        }
-
-        //Allows read access of permissions by user
-        if (for_write===false) {
-            return path.object_names[0];
-        }
-
-        //Allows "MinoDB" user to write
-        if(requesting_username===Common.ROOT_USERNAME){
-            return Common.ROOT_USERNAME;
-        }
-
-        return null;
-    }
-
 
     //Allow all users to read the types folder
     if (path.object_names.length > 1 && path.object_names[0] === Common.ROOT_USERNAME && path.object_names[1] === "types"){
@@ -21164,7 +21071,7 @@ Path.prototype.username_for_permission = function(requesting_username, for_write
     }
 
     return path.object_names[0];
-}
+};
 
 Path.prototype.path_for_child_with_name = function(child_name, child_is_folder) {
     var path = this;
@@ -21190,7 +21097,7 @@ Path.prototype.path_for_child_with_name = function(child_name, child_is_folder) 
     child_path.object_names[child_path.length - 1] = child_name;
     child_path.sub_paths[child_path.length - 1] = child_path.path_string;
     return child_path;
-}
+};
 
 Path.prototype.parent_path = function() {
     var path = this;
@@ -21210,14 +21117,14 @@ Path.prototype.parent_path = function() {
     parent_path.is_folder = true;
     parent_path.path_string = parent_path.sub_paths[parent_path.length - 1];
     return parent_path;
-}
+};
 
 Path.prototype.toString = function() {
     var path = this;
     return path.path_string;
-}
+};
 
-if (typeof module != 'undefined') {
+if (typeof module !== 'undefined') {
     module.exports = Path;
 }
 var Constants, Common, FieldVal, BasicVal, errors;
@@ -21226,7 +21133,7 @@ if (typeof require != 'undefined') {
     Common = require('../Common');
     FieldVal = require('fieldval');
     BasicVal = FieldVal.BasicVal;
-    errors = require('../errors')
+    errors = require('../errors');
 }
 
 function ID() {
@@ -21249,12 +21156,12 @@ ID.prototype.init = function(id_string) {
     });
 
     return error;
-}
+};
 
 ID.prototype.toString = function() {
     var id = this;
     return id.id_string;
-}
+};
 
 if (typeof module != 'undefined') {
     module.exports = ID;

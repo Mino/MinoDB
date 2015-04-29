@@ -1,4 +1,4 @@
-@import "../node_modules/fieldval-ui/themes/minimal.less";
+@import "../bower_components/fieldval-ui/themes/minimal.less";
 
 .fv_field{
 	>.fv_field_title{

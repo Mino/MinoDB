@@ -32,5 +32,31 @@ function api_request(params, callback){
 }
 
 function encode_path(path){
-    return encodeURIComponent(path).replaceAll('%2F','/');
+    var pieces = path.split("/");
+    
+    var encoded = "";
+    
+    for(var i = 0; i < pieces.length; i++){
+        encoded += encodeURIComponent(pieces[i]);
+        if(i!==pieces.length-1){
+            encoded += "/";
+        }
+    }
+
+    return encoded;
+}
+
+function decode_path(path){
+    var pieces = path.split("/");
+    
+    var decoded = "";
+    
+    for(var i = 0; i < pieces.length; i++){
+        decoded += decodeURIComponent(pieces[i]);
+        if(i!==pieces.length-1){
+            decoded += "/";
+        }
+    }
+
+    return decoded;
 }
