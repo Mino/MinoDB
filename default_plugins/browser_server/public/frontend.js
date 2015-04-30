@@ -23747,7 +23747,8 @@ Browser.prototype.iconCapacity = function(element,verticalPadding){
 
 Browser.prototype.reload_current_address = function() {
 	var browser = this;
-	browser.load_address(browser.current_address);
+
+	browser.load_address(encode_path(browser.current_address));
 }
 
 extend(BrowserPage, Page);
