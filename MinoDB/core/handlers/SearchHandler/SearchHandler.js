@@ -168,10 +168,9 @@ SearchHandler.prototype.do_search = function(callback){
             }
             have_results = true;
             done();
-        });
+        })
 
-        var mongo_count_cursor = db.object_collection.find(sh.mongo_query);
-        mongo_count_cursor.count(function(err, res_count){
+        mongo_cursor.count(false,function(err, res_count){
             logger.debug(err, res_count);
             if(err){
                 error = err;
@@ -180,7 +179,7 @@ SearchHandler.prototype.do_search = function(callback){
             }
             have_count = true;
             done();
-        });
+        })
     });
 };
 
