@@ -4,91 +4,17 @@ MinoDB
 
 MinoDB is an extensible database layer for web apps. Utilizing [MongoDB](http://www.mongodb.org/)'s freedom, MinoDB adds well-designed structure - allowing you to build apps much faster.
 
+
+Support the project and join the discussion on MinoHubs:
+
+[![MinoHubs](https://www.minohubs.com/badge/minodb/follow.svg)](https://www.minohubs.com/hub/minodb)
+
+
+
 ##Table of Contents
-* [Main features](#main-features)
 * [Installation](#installation)
 * [Example usage](#example-usage)
 * [Documentation](#documentation)
-
-Main features
-======
-
-###Powerful schema validation
-
-MinoDB validates all your objects according to the schema defined either in the code or dynamically in the UI. Validation errors are readable and parseable, i.e.
-
-Schema example:
-```javascript
-{
-    "name": "product",
-    "type": "object",
-    "fields":[{
-        "name": "title",
-        "type": "text",
-        "min_length": 5,
-    },{
-        "name": "quantity",
-        "type": "number",
-        "minimum": 0
-    },{
-        "name": "date_created",
-        "type": "date",
-        "format": "yyyy-MM-dd hh:mm:ss"
-    }]
-}
-```
-
-Error example:
-```javascript
-{
-    "invalid": {
-        "title": {
-            "error": 100,
-            "error_message": "Length is less than 5"
-        },
-        "quantity": {
-            "error_message": "Field missing.",
-            "error": 1
-        },
-        "date_created": {
-            "error": 111,
-            "error_message": "Invalid date format."
-        }
-    },
-    "error_message": "One or more errors.",
-    "error": 5
-}
-```
-
-Schema definition supports implementing custom validation (both sync and async). Check [FieldVal](https://github.com/FieldVal/fieldval-js) and [FieldVal rules](https://github.com/FieldVal/fieldval-rules-js) to learn more about errors and validation.
-
-###UI for your data
-MinoDB includes a default Browser plugin for viewing the data.
-
-
-#####Familiar folder structure, intutiative for both technical and non-technical colleagues. Increadibly easy to view and organise absolutely anything. 
-![Folder structure](https://raw.githubusercontent.com/MarcusLongmuir/MinoDB/develop/docs/folder_structure.png)
-
-
-#####Items are always validated based on the defined schema. It also uses custom rules defined in your backend.
-![Item validation](https://raw.githubusercontent.com/MarcusLongmuir/MinoDB/develop/docs/item_validation.png)
-
-###Other features
-* Users, authentication and permissions out of the box (work in progress)
-* Customise and add functionality with plugins. Writing one is as easy as building an express app.
-* Signals - listen to data changes. Extremely useful for integrating with Slack, Trello, Zapier and others.
-
-MinoDB is for startups and developers who need to build high quality web apps extremely fast. It doesn't get in your way - it's completely up to you to structure your code. MinoDB doesn't get in your way - you can still call MongoDB directly in any way you're used too.
-
-###Notice: ALPHA release - use at your own risk.
-
-###Plugins
-* [MinoVal](https://github.com/MarcusLongmuir/MinoVal) - validation and form creation with Mino types, custom validation rules and more.
-* [MinoCMS](https://github.com/bestan/MinoCMS) - basic CMS functionality. 
-
-###Examples
-* [Mino Calendar example](https://github.com/bestan/mino-calendar-example)
-* [Mino CMS example](https://github.com/bestan/mino-cms-example)
 
 Installation
 =====
