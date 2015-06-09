@@ -243,7 +243,7 @@ Auth.prototype.create_session = function(user_id, callback) {
 	var data = {
         user_id : user_id,
         key: ""+Math.random()+Math.random()+Math.random()+Math.random(),
-        end_time: null
+        end_time: new Date().getTime() + 30 * 24 * 60 * 60 * 1000
     };
 
     var options = {
@@ -270,7 +270,7 @@ Auth.prototype.persist_session = function(res, session) {
 	//mino_token, id-key
 	logger.debug(session);
     res.cookie(auth.cookie_name, session.id+"-"+session.key, {
-        maxAge: 60 * 60 * 24 * 365,
+        maxAge: 60 * 60 * 24 * 365 * 1000,
         httpOnly: false
     });
 

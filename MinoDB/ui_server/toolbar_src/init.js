@@ -1,6 +1,6 @@
 (function(window){
 
-	@import("../../../node_modules/fieldval-ui/fieldval-ui.js");
+	@import("../../../bower_components/fieldval-ui/fieldval-ui.js");
 
 	var mino_path = "{{&mino_path}}";
 	var user = {{&user}};

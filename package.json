@@ -23,10 +23,9 @@
     "mongodb" : "^2.0.14",
     "minosdk" : "Mino/MinoSDK#864c6fae84b07f6b10771219266c690902cbb5fb",
     "fieldval" : "0.4.2",
-    "fieldval-rules" : "0.4.3",
-    "fieldval-ui" : "0.4.2",
+    "fieldval-rules" : "0.5.0",
     "extend": "MarcusLongmuir/extend#ab161eb5e479a74da6206d7f589892cabe29ecb7",
-    "mino-logger": "Mino/mino-logger#0f8b81f946ebd956aea2fb66ea3e4fb4e418c3f7"
+    "mino-logger": "Mino/mino-logger#1ad9549ddac33d4cc44a1697763ba23d36ac3e07"
   },
   "devDependencies": {
     "gulp-imports" : "MarcusLongmuir/gulp-imports#3127259aa250e3568224c84dc5fbd079936f08a7",

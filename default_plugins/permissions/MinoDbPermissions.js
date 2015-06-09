@@ -551,4 +551,27 @@ MinoDbPermissions.prototype.get_ids_from_perm = function(perm, callback) {
     });
 };
 
+MinoDbPermissions.prototype.get_groups_from_id = function(id, callback) {
+    var plugin = this;
+    plugin.sdk.call({
+        "function": "search",
+        "parameters": {
+            "paths": [plugin.group_path],
+            "include_subfolders": true,
+            "query": {
+                "minodb_identifier_group.identifier": id
+            }
+        }
+    }, function(err, res) {
+        logger.debug(err, res);
+        var result = [];
+        for (var i=0; i<res.objects.length; i++) {
+            var id = res.objects[i].minodb_identifier_group.group;
+            result.push(id);
+        }
+
+        callback(null, result);
+    });
+};
+
 module.exports = MinoDbPermissions;

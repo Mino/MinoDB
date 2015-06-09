@@ -1,2 +1,2 @@
 //Based on "minimal"
-@import("../node_modules/fieldval-ui/themes/minimal.js")
+@import("../bower_components/fieldval-ui/themes/minimal.js")

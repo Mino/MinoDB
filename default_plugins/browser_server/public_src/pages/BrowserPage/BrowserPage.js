@@ -24,7 +24,7 @@ BrowserPage.prototype.new_url = function(req){
     var page = this;
 
     if(req.params['*']){
-        page.browser.load(req.params['*'], req.query);
+        page.browser.load(decode_path(req.params['*']), req.query);
     } else {
         page.browser.load("/"+user.username+"/", req.query);
     }
