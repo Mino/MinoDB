@@ -22,8 +22,11 @@ function SaveObject(json, handler, index, options){
 
 	so.granted_new_path = false;
 
-	so.id = so.validator.get("_id", BasicVal.string(false)); //,BasicVal.minimum(1));
+	so.id = so.validator.get("_id", validators.id(false));
 	so.is_new = so.id===undefined;
+	if(so.id!==undefined){
+		so.id = ""+so.id;//Convert to string
+	}
 
 	so.folder = so.validator.get("folder", BasicVal.boolean(false)) || false;
 	so.version = so.validator.get("version", BasicVal.integer(false));

@@ -1,5 +1,11 @@
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
 var errors = require('../../errors');
 var Path = require('../../common_classes/Path');
+
+exports.id = function(required){
+    return [BasicVal.integer(required,{parse: true}), BasicVal.minimum(1)]
+};
 
 exports.path = function(val, emit){
     var path = new Path();
