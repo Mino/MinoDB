@@ -22,11 +22,11 @@ module.exports = function(gulp){
       console.log(err);
     };
 
-    //LESS compilation
-    gulp.task('ui_public_less', function(){
-        gulp.src(wrap_path('../../bower_components/font-awesome/fonts/*'))
+    gulp.task('ui_public_fonts', function(){
+        return gulp.src(wrap_path('../../bower_components/font-awesome/fonts/*'))
         .pipe(gulp.dest(wrap_path('./public/fonts/')));
-
+    });
+    gulp.task('ui_public_less', function(){
         return gulp.src(wrap_path('./public_src/style/style.less'))
         .pipe(plumber(onError))
         .pipe(less())
@@ -42,6 +42,7 @@ module.exports = function(gulp){
         .pipe(gulp.dest(wrap_path('./public/')));
     });
     gulp.task('ui_less', function(){
+        gulp.start('ui_public_fonts');
         gulp.start('ui_public_less');
         gulp.start('ui_toolbar_less');
     });
