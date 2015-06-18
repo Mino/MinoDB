@@ -191,7 +191,7 @@
   top: 0px;
   right: 0px;
   background-color: #aa0000;
-  color: #ffffff;
+  color: white;
   font-size: 20px;
   line-height: 30px;
   text-align: center;
@@ -385,7 +385,7 @@
   -webkit-appearance: none;
   cursor: pointer;
   background-color: #00aa00;
-  color: #ffffff;
+  color: white;
   margin: 0px;
   border: none;
   font-size: 14px;
@@ -449,7 +449,7 @@
   -webkit-appearance: none;
   cursor: pointer;
   background-color: #00aa00;
-  color: #ffffff;
+  color: white;
   margin: 0px;
   border: none;
   font-size: 14px;

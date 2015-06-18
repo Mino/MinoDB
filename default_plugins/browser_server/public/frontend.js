@@ -15091,16 +15091,22 @@ var FieldVal = (function(){
             },
             value_in_list: function() {
                 return {
-                    error: 104,
+                    error: 118,
                     error_message: "Value not allowed"
                 };
             },
             should_not_contain: function(characters) {
                 var disallowed = characters.join(",");
                 return {
-                    error: 105,
+                    error: 119,
                     error_message: "Cannot contain "+disallowed,
                     cannot_contain: characters
+                };
+            },
+            invalid_domain: function() {
+                return {
+                    error: 120,
+                    error_message: "Invalid domain format."
                 };
             }
         },
@@ -15555,12 +15561,15 @@ var FieldVal = (function(){
             
             var check = function(value, emit){
                 for(var i = 0; i < possibles.length; i++){
-                    var option = possibles[i];
+                    var array_of_checks = possibles[i];
             
                     var emitted_value;
-                    var option_error = FieldVal.use_checks(value, option, null, null, function(emitted){
-                        emitted_value = emitted;
+                    var option_error = FieldVal.use_checks(value, array_of_checks, {
+                        emit: function(emitted){
+                            emitted_value = emitted;
+                        }
                     });
+                    
                     if(option_error===FieldVal.ASYNC){
                         throw new Error(".multiple used with async checks, use .multiple_async.");
                     }
@@ -15665,11 +15674,31 @@ var FieldVal = (function(){
                 check: check
             };
         },
+        domain: function(required, options){
+            options = BasicVal.merge_required_and_options(required, options);
+            var check = function(value) {
+                var string_error = BasicVal.string(options).check(value);
+                if(string_error!==undefined) return string_error;
+                
+                var re = BasicVal.domain_regex;
+                if(!re.test(value)){
+                    return FieldVal.create_error(BasicVal.errors.invalid_domain, options);
+                } 
+            };
+            if(options){
+                options.check = check;
+                return options;
+            }
+            return {
+                check: check
+            };
+        },
         required: FieldVal.required
     };
 
     BasicVal.email_regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     BasicVal.url_regex = /^(https?):\/\/(((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|((([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])))(:[1-9][0-9]+)?(\/)?([\/?].+)?$/;
+    BasicVal.domain_regex = /^(https?):\/\/(((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|((([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])))(:[1-9][0-9]+)?(\/)?$/;
 
     return BasicVal;
 }).call();
@@ -21766,6 +21795,20 @@ ObjectsView.prototype.finish_load = function(){
 	objects_view.contents.removeClass("loading");
 }
 
+ObjectsView.prototype.show_error = function(error){
+	var objects_view = this;
+
+	objects_view.finish_load();
+
+	objects_view.contents.append(
+		$("<div />").addClass("empty_folder").append(
+			$("<div />").addClass("fa_icon fa fa-warning"),
+			$("<div />").text(error.error_message)
+		)
+	)
+	objects_view.pagination_controller.hide();
+}
+
 ObjectsView.prototype.populate = function(options, data){
 	var objects_view = this;
 
@@ -22125,7 +22168,16 @@ FolderView.prototype.load = function(options){
 	};
 	
 	api_request(request,function(err, response){
-		console.log(err, response);
+		if(response.error){
+			var path_error = FieldVal.get_error("parameters","paths",0,response);
+			
+
+			if(path_error){
+				folder_view.show_error(path_error);
+				return;
+			}
+		}
+
 		folder_view.populate(options, response);
 	});
 }
@@ -22640,7 +22692,10 @@ SearchView.prototype.init = function(){
 	
 	var sort_field = new FVKeyValueField("Sort");
 	sort_field.new_field = function() {
-		return new FVTextField(null, {type:"number"});
+		return new FVChoiceField(null, {choices:[
+			[-1,"Descending"],
+			[1,"Ascending"]
+		]});
 	}
 	sv.form.add_field("sort", sort_field);
 
@@ -22726,6 +22781,8 @@ SearchView.prototype.do_search = function(query, add_state){
 		SAFE.add_history_state(link_address);
 	}
 
+	sv.form.clear_errors();
+
 	var this_request = sv.current_request = api_request({
 		"function": "search",
 		"parameters": query
@@ -22734,13 +22791,13 @@ SearchView.prototype.do_search = function(query, add_state){
 		if(this_request===sv.current_request){
 			console.log(err,res);
 
+			sv.finish_load();
+
 			if(err){
-				console.log("ERROR A");
 				sv.form.error(FieldVal.get_error("parameters",err));
 			} else {
 
 				if(res.error){
-					console.log("ERROR B");
 					sv.form.error(FieldVal.get_error("parameters",res));
 				} else {
 					if(res.objects){
