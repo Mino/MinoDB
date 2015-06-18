@@ -30,7 +30,7 @@ function SaveObject(json, handler, index, options){
 
 	so.folder = so.validator.get("folder", BasicVal.boolean(false)) || false;
 	so.version = so.validator.get("version", BasicVal.integer(false));
-	if(so.folder===null){
+	if(so.folder===undefined || so.folder===null){
 		so.folder = false;
 	}
 
@@ -38,7 +38,7 @@ function SaveObject(json, handler, index, options){
 	so.validator.get("full_path",BasicVal.string(false));//, validators.path);
 	
 	so.path = so.validator.get("path", BasicVal.string(true), validators.folder_path);
-	if(so.path!==null){
+	if(so.path){
 		var permission_called = false;
 		logger.debug(so.path);
 
