@@ -1,10 +1,10 @@
-@import('../../bower_components/jquery/dist/jquery.js');
+@import('../../../../bower_components/jquery/dist/jquery.js');
 
-@import("../../bower_components/safe/safe.js");
+@import("../../../../bower_components/safe/safe.js");
 
-@import('../../bower_components/fieldval/fieldval.js');
-@import('../../bower_components/fieldval-ui/fieldval-ui.js');
-@import('../../bower_components/fieldval-rules/fieldval-rules.js');
+@import('../../../../node_modules/fieldval/fieldval.js');
+@import('../../../../node_modules/fieldval-rules/fieldval-rules.js');
+@import('../../../../bower_components/fieldval-ui/fieldval-ui.js');
 
 
 @import("pages/pages.js");
@@ -19,7 +19,7 @@ $(document).ready(function(){
 		//Add properties based on the dimensions of the window
 		resize_obj.large_screen = resize_obj.window_width > 700;
 
-	}
+	};
 
 	// Append the framework's body_contents element somewhere. This element will contain the page.
     var page_holder = SAFE.element.addClass("page_holder").appendTo("body");
@@ -41,4 +41,3 @@ $(document).ready(function(){
 	// SAFE.init loads the page for the current url.
 	SAFE.init();
 });
-
