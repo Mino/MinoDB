@@ -49,9 +49,11 @@ Type.validate = function(data, creation){
     );
 
     //Perform an extra check on the name
-    var validator = new FieldVal(data, type_error);
+    var validator = new FieldVal(data, {
+        "error": type_error
+    });
     validator.get(
-        "name", 
+        "name",
         Type.NAME_CHECKS
     );
 
@@ -107,7 +109,7 @@ Type.get = function(typename, api, callback){
 };
 
 Type.create = function(data, api, callback){
-    
+
     var error = Type.validate(data, true);
     if(error){
         callback(error,null);

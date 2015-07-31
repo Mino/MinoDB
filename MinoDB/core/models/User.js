@@ -88,7 +88,9 @@ User.validate = function(data, callback){
     User.sign_in_rule.validate(data, function(user_error) {
         logger.debug(user_error);
 
-        var validator = new FieldVal(data, user_error);
+        var validator = new FieldVal(data, {
+            "error": user_error
+        });
         validator.get("username", User.username_validator);
         callback(validator.end());
     });
@@ -99,7 +101,7 @@ User.prototype.to_minodb_object = function(callback){
 
     var build_obj = function(){
 
-        var minodb_object = {  
+        var minodb_object = {
             "_id": user.id,
             "name": user.username,
             "path": user.path,
@@ -144,7 +146,7 @@ User.prototype.save = function(api, options, callback){
             "username": minodb_username
         }, {
             "objects": [
-                minodb_object   
+                minodb_object
             ]
         }, function(save_err, save_res){
             logger.debug(save_err, save_res);
