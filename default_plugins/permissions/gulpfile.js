@@ -11,9 +11,10 @@ var less = require('gulp-less');
 var concat = require('gulp-concat');
 var gulpImports = require('gulp-imports');
 
-var onError = function (err) {  
+var onError = function (err) {
     gutil.beep();
     console.log(err);
+    this.emit('end');
 };
 
 module.exports = function(gulp) {
@@ -22,7 +23,7 @@ module.exports = function(gulp) {
         .pipe(plumber(onError))
         .pipe(less())
         .pipe(concat('style.css'))
-        .pipe(gulp.dest('./config_server/public/'));    
+        .pipe(gulp.dest('./config_server/public/'));
     });
 
     gulp.task('permissions_js', function(){
@@ -38,7 +39,7 @@ module.exports = function(gulp) {
     gulp.task('permissions_watch', function(){
 
         gulp.watch(['config_server/public_src/**/*.js'], ['js']);
-        gulp.watch(['config_server/public_src/**/*.less', 'config_server/public_src/**/*.subless'], ['less']);    
+        gulp.watch(['config_server/public_src/**/*.less', 'config_server/public_src/**/*.subless'], ['less']);
 
     });
 

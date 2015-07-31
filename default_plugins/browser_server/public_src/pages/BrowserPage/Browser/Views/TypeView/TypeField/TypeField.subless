@@ -9,6 +9,11 @@
 		display: none;
 	}
 
+	>.fv_input_holder{
+		width: 100%;
+		padding: 10px;
+	}
+
 	>.title{
 		background-color: @type_field_title;
 		.bold;
@@ -28,6 +33,6 @@
 				padding-left: 35px;
 				padding-right: 35px;
 			}
-		}		
+		}
 	}
 }

@@ -49,7 +49,7 @@ function AddressBar(browser){
 	)
 
 	setTimeout(function(){
-		address_bar.text_input.autosize()
+		autosize(address_bar.text_input);
 	},2000);
 
 

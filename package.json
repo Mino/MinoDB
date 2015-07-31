@@ -1,6 +1,6 @@
 {
   "name": "minodb",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "main": "minodb.js",
   "scripts": {
@@ -23,8 +23,8 @@
     "errorhandler": "^1.4.0",
     "mongodb" : "^2.0.34",
     "minosdk" : "Mino/MinoSDK#864c6fae84b07f6b10771219266c690902cbb5fb",
-    "fieldval" : "^0.4.3",
-    "fieldval-rules" : "^0.5.0",
+    "fieldval" : "^0.5.0",
+    "fieldval-rules" : "^0.5.1",
     "extend": "MarcusLongmuir/extend#ab161eb5e479a74da6206d7f589892cabe29ecb7",
     "mino-logger": "Mino/mino-logger#1ad9549ddac33d4cc44a1697763ba23d36ac3e07"
   },

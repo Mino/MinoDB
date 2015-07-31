@@ -30,7 +30,7 @@ SearchView.prototype.init = function(){
 	sv.form.add_field("paths",paths_field);
 	sv.form.add_field("include_subfolders", new FVBooleanField("Include Subfolders"));
 	sv.form.add_field("text_search",new FVTextField("Text Search"));
-	
+
 	var sort_field = new FVKeyValueField("Sort");
 	sort_field.new_field = function() {
 		return new FVChoiceField(null, {choices:[
@@ -41,7 +41,7 @@ SearchView.prototype.init = function(){
 	sv.form.add_field("sort", sort_field);
 
 	sv.form.element.append(
-		sv.search_button = $("<button />").addClass("mino_button").text("Search")
+		sv.search_button = $("<button />").addClass("mino_button search_button").text("Search")
 	)
 
 	sv.search_button.click(function(event){
@@ -62,7 +62,7 @@ SearchView.prototype.init = function(){
 
 	sv.browser.toolbar.element.empty().append(
 		sv.toolbar_element = $("<div />").append(
-			
+
 		)
 	);
 

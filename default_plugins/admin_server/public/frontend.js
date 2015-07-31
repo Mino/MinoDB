@@ -10308,280 +10308,216 @@ return jQuery;
 }));
 
 /*!
-	Autosize 1.18.13
+	Autosize 3.0.5
 	license: MIT
 	http://www.jacklmoore.com/autosize
 */
-(function ($) {
-	var
-	defaults = {
-		className: 'autosizejs',
-		id: 'autosizejs',
-		append: '\n',
-		callback: false,
-		resizeDelay: 10,
-		placeholder: true
-	},
-
-	// border:0 is unnecessary, but avoids a bug in Firefox on OSX
-	copy = '<textarea tabindex="-1" style="position:absolute; top:-999px; left:0; right:auto; bottom:auto; border:0; padding: 0; -moz-box-sizing:content-box; -webkit-box-sizing:content-box; box-sizing:content-box; word-wrap:break-word; height:0 !important; min-height:0 !important; overflow:hidden; transition:none; -webkit-transition:none; -moz-transition:none;"/>',
-
-	// line-height is conditionally included because IE7/IE8/old Opera do not return the correct value.
-	typographyStyles = [
-		'fontFamily',
-		'fontSize',
-		'fontWeight',
-		'fontStyle',
-		'letterSpacing',
-		'textTransform',
-		'wordSpacing',
-		'textIndent',
-		'whiteSpace'
-	],
-
-	// to keep track which textarea is being mirrored when adjust() is called.
-	mirrored,
-
-	// the mirror element, which is used to calculate what size the mirrored element should be.
-	mirror = $(copy).data('autosize', true)[0];
-
-	// test that line-height can be accurately copied.
-	mirror.style.lineHeight = '99px';
-	if ($(mirror).css('lineHeight') === '99px') {
-		typographyStyles.push('lineHeight');
+(function (global, factory) {
+	if (typeof define === 'function' && define.amd) {
+		define(['exports', 'module'], factory);
+	} else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
+		factory(exports, module);
+	} else {
+		var mod = {
+			exports: {}
+		};
+		factory(mod.exports, mod);
+		global.autosize = mod.exports;
 	}
-	mirror.style.lineHeight = '';
+})(this, function (exports, module) {
+	'use strict';
 
-	$.fn.autosize = function (options) {
-		if (!this.length) {
-			return this;
+	function assign(ta) {
+		var _ref = arguments[1] === undefined ? {} : arguments[1];
+
+		var _ref$setOverflowX = _ref.setOverflowX;
+		var setOverflowX = _ref$setOverflowX === undefined ? true : _ref$setOverflowX;
+		var _ref$setOverflowY = _ref.setOverflowY;
+		var setOverflowY = _ref$setOverflowY === undefined ? true : _ref$setOverflowY;
+
+		if (!ta || !ta.nodeName || ta.nodeName !== 'TEXTAREA' || ta.hasAttribute('data-autosize-on')) return;
+
+		var heightOffset = null;
+		var overflowY = 'hidden';
+
+		function init() {
+			var style = window.getComputedStyle(ta, null);
+
+			if (style.resize === 'vertical') {
+				ta.style.resize = 'none';
+			} else if (style.resize === 'both') {
+				ta.style.resize = 'horizontal';
+			}
+
+			if (style.boxSizing === 'content-box') {
+				heightOffset = -(parseFloat(style.paddingTop) + parseFloat(style.paddingBottom));
+			} else {
+				heightOffset = parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
+			}
+
+			update();
 		}
 
-		options = $.extend({}, defaults, options || {});
+		function changeOverflow(value) {
+			{
+				// Chrome/Safari-specific fix:
+				// When the textarea y-overflow is hidden, Chrome/Safari do not reflow the text to account for the space
+				// made available by removing the scrollbar. The following forces the necessary text reflow.
+				var width = ta.style.width;
+				ta.style.width = '0px';
+				// Force reflow:
+				/* jshint ignore:start */
+				ta.offsetWidth;
+				/* jshint ignore:end */
+				ta.style.width = width;
+			}
 
-		if (mirror.parentNode !== document.body) {
-			$(document.body).append(mirror);
+			overflowY = value;
+
+			if (setOverflowY) {
+				ta.style.overflowY = value;
+			}
+
+			update();
 		}
 
-		return this.each(function () {
-			var
-			ta = this,
-			$ta = $(ta),
-			maxHeight,
-			minHeight,
-			boxOffset = 0,
-			callback = $.isFunction(options.callback),
-			originalStyles = {
-				height: ta.style.height,
-				overflow: ta.style.overflow,
-				overflowY: ta.style.overflowY,
-				wordWrap: ta.style.wordWrap,
-				resize: ta.style.resize
-			},
-			timeout,
-			width = $ta.width(),
-			taResize = $ta.css('resize');
+		function update() {
+			var startHeight = ta.style.height;
+			var htmlTop = document.documentElement.scrollTop;
+			var bodyTop = document.body.scrollTop;
+			var originalHeight = ta.style.height;
 
-			if ($ta.data('autosize')) {
-				// exit if autosize has already been applied, or if the textarea is the mirror element.
+			ta.style.height = 'auto';
+
+			var endHeight = ta.scrollHeight + heightOffset;
+
+			if (ta.scrollHeight === 0) {
+				// If the scrollHeight is 0, then the element probably has display:none or is detached from the DOM.
+				ta.style.height = originalHeight;
 				return;
 			}
-			$ta.data('autosize', true);
 
-			if ($ta.css('box-sizing') === 'border-box' || $ta.css('-moz-box-sizing') === 'border-box' || $ta.css('-webkit-box-sizing') === 'border-box'){
-				boxOffset = $ta.outerHeight() - $ta.height();
-			}
+			ta.style.height = endHeight + 'px';
 
-			// IE8 and lower return 'auto', which parses to NaN, if no min-height is set.
-			minHeight = Math.max(parseInt($ta.css('minHeight'), 10) - boxOffset || 0, $ta.height());
+			// prevents scroll-position jumping
+			document.documentElement.scrollTop = htmlTop;
+			document.body.scrollTop = bodyTop;
 
-			$ta.css({
-				overflow: 'hidden',
-				overflowY: 'hidden',
-				wordWrap: 'break-word' // horizontal overflow is hidden, so break-word is necessary for handling words longer than the textarea width
-			});
+			var style = window.getComputedStyle(ta, null);
 
-			if (taResize === 'vertical') {
-				$ta.css('resize','none');
-			} else if (taResize === 'both') {
-				$ta.css('resize', 'horizontal');
-			}
-
-			// The mirror width must exactly match the textarea width, so using getBoundingClientRect because it doesn't round the sub-pixel value.
-			// window.getComputedStyle, getBoundingClientRect returning a width are unsupported, but also unneeded in IE8 and lower.
-			function setWidth() {
-				var width;
-				var style = window.getComputedStyle ? window.getComputedStyle(ta, null) : false;
-				
-				if (style) {
-
-					width = ta.getBoundingClientRect().width;
-
-					if (width === 0 || typeof width !== 'number') {
-						width = parseInt(style.width,10);
-					}
-
-					$.each(['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'], function(i,val){
-						width -= parseInt(style[val],10);
-					});
-				} else {
-					width = $ta.width();
-				}
-
-				mirror.style.width = Math.max(width,0) + 'px';
-			}
-
-			function initMirror() {
-				var styles = {};
-
-				mirrored = ta;
-				mirror.className = options.className;
-				mirror.id = options.id;
-				maxHeight = parseInt($ta.css('maxHeight'), 10);
-
-				// mirror is a duplicate textarea located off-screen that
-				// is automatically updated to contain the same text as the
-				// original textarea.  mirror always has a height of 0.
-				// This gives a cross-browser supported way getting the actual
-				// height of the text, through the scrollTop property.
-				$.each(typographyStyles, function(i,val){
-					styles[val] = $ta.css(val);
-				});
-				
-				$(mirror).css(styles).attr('wrap', $ta.attr('wrap'));
-
-				setWidth();
-
-				// Chrome-specific fix:
-				// When the textarea y-overflow is hidden, Chrome doesn't reflow the text to account for the space
-				// made available by removing the scrollbar. This workaround triggers the reflow for Chrome.
-				if (window.chrome) {
-					var width = ta.style.width;
-					ta.style.width = '0px';
-					var ignore = ta.offsetWidth;
-					ta.style.width = width;
-				}
-			}
-
-			// Using mainly bare JS in this function because it is going
-			// to fire very often while typing, and needs to very efficient.
-			function adjust() {
-				var height, original;
-
-				if (mirrored !== ta) {
-					initMirror();
-				} else {
-					setWidth();
-				}
-
-				if (!ta.value && options.placeholder) {
-					// If the textarea is empty, copy the placeholder text into 
-					// the mirror control and use that for sizing so that we 
-					// don't end up with placeholder getting trimmed.
-					mirror.value = ($ta.attr("placeholder") || '');
-				} else {
-					mirror.value = ta.value;
-				}
-
-				mirror.value += options.append || '';
-				mirror.style.overflowY = ta.style.overflowY;
-				original = parseInt(ta.style.height,10);
-
-				// Setting scrollTop to zero is needed in IE8 and lower for the next step to be accurately applied
-				mirror.scrollTop = 0;
-
-				mirror.scrollTop = 9e4;
-
-				// Using scrollTop rather than scrollHeight because scrollHeight is non-standard and includes padding.
-				height = mirror.scrollTop;
-
-				if (maxHeight && height > maxHeight) {
-					ta.style.overflowY = 'scroll';
-					height = maxHeight;
-				} else {
-					ta.style.overflowY = 'hidden';
-					if (height < minHeight) {
-						height = minHeight;
-					}
-				}
-
-				height += boxOffset;
-
-				if (original !== height) {
-					ta.style.height = height + 'px';
-					if (callback) {
-						options.callback.call(ta,ta);
-					}
-					$ta.trigger('autosize.resized');
-				}
-			}
-
-			function resize () {
-				clearTimeout(timeout);
-				timeout = setTimeout(function(){
-					var newWidth = $ta.width();
-
-					if (newWidth !== width) {
-						width = newWidth;
-						adjust();
-					}
-				}, parseInt(options.resizeDelay,10));
-			}
-
-			if ('onpropertychange' in ta) {
-				if ('oninput' in ta) {
-					// Detects IE9.  IE9 does not fire onpropertychange or oninput for deletions,
-					// so binding to onkeyup to catch most of those occasions.  There is no way that I
-					// know of to detect something like 'cut' in IE9.
-					$ta.on('input.autosize keyup.autosize', adjust);
-				} else {
-					// IE7 / IE8
-					$ta.on('propertychange.autosize', function(){
-						if(event.propertyName === 'value'){
-							adjust();
-						}
-					});
+			if (style.height !== ta.style.height) {
+				if (overflowY !== 'visible') {
+					changeOverflow('visible');
+					return;
 				}
 			} else {
-				// Modern Browsers
-				$ta.on('input.autosize', adjust);
+				if (overflowY !== 'hidden') {
+					changeOverflow('hidden');
+					return;
+				}
 			}
 
-			// Set options.resizeDelay to false if using fixed-width textarea elements.
-			// Uses a timeout and width check to reduce the amount of times adjust needs to be called after window resize.
-
-			if (options.resizeDelay !== false) {
-				$(window).on('resize.autosize', resize);
+			if (startHeight !== ta.style.height) {
+				var evt = document.createEvent('Event');
+				evt.initEvent('autosize:resized', true, false);
+				ta.dispatchEvent(evt);
 			}
+		}
 
-			// Event for manual triggering if needed.
-			// Should only be needed when the value of the textarea is changed through JavaScript rather than user input.
-			$ta.on('autosize.resize', adjust);
+		var destroy = (function (style) {
+			window.removeEventListener('resize', update);
+			ta.removeEventListener('input', update);
+			ta.removeEventListener('keyup', update);
+			ta.removeAttribute('data-autosize-on');
+			ta.removeEventListener('autosize:destroy', destroy);
 
-			// Event for manual triggering that also forces the styles to update as well.
-			// Should only be needed if one of typography styles of the textarea change, and the textarea is already the target of the adjust method.
-			$ta.on('autosize.resizeIncludeStyle', function() {
-				mirrored = null;
-				adjust();
+			Object.keys(style).forEach(function (key) {
+				ta.style[key] = style[key];
 			});
+		}).bind(ta, {
+			height: ta.style.height,
+			resize: ta.style.resize,
+			overflowY: ta.style.overflowY,
+			overflowX: ta.style.overflowX,
+			wordWrap: ta.style.wordWrap });
 
-			$ta.on('autosize.destroy', function(){
-				mirrored = null;
-				clearTimeout(timeout);
-				$(window).off('resize', resize);
-				$ta
-					.off('autosize')
-					.off('.autosize')
-					.css(originalStyles)
-					.removeData('autosize');
-			});
+		ta.addEventListener('autosize:destroy', destroy);
 
-			// Call adjust in case the textarea already contains text.
-			adjust();
-		});
-	};
-}(jQuery || $)); // jQuery or jQuery-like library, such as Zepto
+		// IE9 does not fire onpropertychange or oninput for deletions,
+		// so binding to onkeyup to catch most of those events.
+		// There is no way that I know of to detect something like 'cut' in IE9.
+		if ('onpropertychange' in ta && 'oninput' in ta) {
+			ta.addEventListener('keyup', update);
+		}
 
+		window.addEventListener('resize', update);
+		ta.addEventListener('input', update);
+		ta.addEventListener('autosize:update', update);
+		ta.setAttribute('data-autosize-on', true);
+
+		if (setOverflowY) {
+			ta.style.overflowY = 'hidden';
+		}
+		if (setOverflowX) {
+			ta.style.overflowX = 'hidden';
+			ta.style.wordWrap = 'break-word';
+		}
+
+		init();
+	}
+
+	function destroy(ta) {
+		if (!(ta && ta.nodeName && ta.nodeName === 'TEXTAREA')) return;
+		var evt = document.createEvent('Event');
+		evt.initEvent('autosize:destroy', true, false);
+		ta.dispatchEvent(evt);
+	}
+
+	function update(ta) {
+		if (!(ta && ta.nodeName && ta.nodeName === 'TEXTAREA')) return;
+		var evt = document.createEvent('Event');
+		evt.initEvent('autosize:update', true, false);
+		ta.dispatchEvent(evt);
+	}
+
+	var autosize = null;
+
+	// Do nothing in Node.js environment and IE8 (or lower)
+	if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
+		autosize = function (el) {
+			return el;
+		};
+		autosize.destroy = function (el) {
+			return el;
+		};
+		autosize.update = function (el) {
+			return el;
+		};
+	} else {
+		autosize = function (el, options) {
+			if (el) {
+				Array.prototype.forEach.call(el.length ? el : [el], function (x) {
+					return assign(x, options);
+				});
+			}
+			return el;
+		};
+		autosize.destroy = function (el) {
+			if (el) {
+				Array.prototype.forEach.call(el.length ? el : [el], destroy);
+			}
+			return el;
+		};
+		autosize.update = function (el) {
+			if (el) {
+				Array.prototype.forEach.call(el.length ? el : [el], update);
+			}
+			return el;
+		};
+	}
+
+	module.exports = autosize;
+});
 /**
  * History.js jQuery Adapter
  * @author Benjamin Arthur Lupton <contact@balupton.com>
@@ -12705,8 +12641,7 @@ return jQuery;
 })(window);
 
 (function($) {
-    $.fn.ajax_url = function(custom_trigger, on_trigger) {
-        var element = this;
+    var ajaxify = function(element, custom_trigger, on_trigger){
         element.off('tap');
         element.on('tap',function(event) {
             var custom_trigger_return = null;
@@ -12735,8 +12670,20 @@ return jQuery;
                 event.preventDefault();
             }
         });
+    }
 
-        return element;
+    $.fn.ajax_url = function(custom_trigger, on_trigger) {
+        return this.each(function(){
+            
+            if($(this).is("a")){
+                ajaxify($(this), custom_trigger, on_trigger);
+            }
+
+            $(this).find("a").each(function(){
+                var element = $(this, custom_trigger, on_trigger);
+                ajaxify(element);
+            });
+        });
     };
 })(jQuery);
 /**
@@ -13302,7 +13249,9 @@ SAFEClass.prototype.use_page_class = function(details){
     if (class_obj == null) { //404
         if (sf.no_page_found_class == null) {
             if (sf.current_page != null) {
-                sf.current_page.remove();
+                if(sf.current_page.remove){
+                    sf.current_page.remove();
+                }
                 sf.current_page = null;
                 sf.previous_class = null;
             }
@@ -13311,20 +13260,6 @@ SAFEClass.prototype.use_page_class = function(details){
         } else {
             class_obj = sf.no_page_found_class;
         }
-    }
-
-    if (class_obj === sf.previous_class && sf.current_page.new_url) {
-        var new_url_response = sf.current_page.new_url(details);
-        if(details.anchor){
-            sf.scroll_to_anchor($("a[name*='"+details.anchor+"']"));
-        }
-        return;
-    }
-
-    var old_page = null;
-    if (sf.current_page != null) {
-        sf.current_page.remove();
-        old_page = sf.current_page;
     }
 
     var redirect_response;
@@ -13348,6 +13283,21 @@ SAFEClass.prototype.use_page_class = function(details){
         return;
     }
 
+    if (class_obj === sf.previous_class && sf.current_page.new_url) {
+        var new_url_response = sf.current_page.new_url(details);
+        if(details.anchor){
+            sf.scroll_to_anchor($("a[name*='"+details.anchor+"']"));
+        }
+        return;
+    }
+
+    var old_page = null;
+    if (sf.current_page != null) {
+        if(sf.current_page.remove){
+            sf.current_page.remove();
+        }
+        old_page = sf.current_page;
+    }
 
     var pre_load_response = sf.pre_load(class_obj, details, old_page);
 
@@ -13371,8 +13321,14 @@ SAFEClass.prototype.use_page_class = function(details){
     //Would create a circular structure if details were output via JSON.stringify
     delete details_for_page.class_name;
 
-    var new_page = new class_obj(details_for_page, old_page);
-    sf.current_page = new_page;
+    /* Anonymous class used to get a reference to the new page before 
+     * calling the constructor such that SAFE.current_page works in the 
+     * constructor. */
+    var anon_class = function(){};
+    anon_class.prototype = class_obj.prototype;
+    sf.current_page = new anon_class();
+
+    var new_page = class_obj.call(sf.current_page, details_for_page, old_page);
     sf.previous_class = class_obj;
 
     //Call before page transition to give the opportunity to correctly size any page elements
@@ -13386,7 +13342,9 @@ SAFEClass.prototype.use_page_class = function(details){
         sf.element.empty();
         sf.element.append(sf.current_page.element);
     }
-    sf.current_page.init();
+    if(sf.current_page.init){
+        sf.current_page.init();
+    }
 
     //Call the global resize function to correctly position everything
     sf.resize();
@@ -13449,7 +13407,7 @@ SAFEClass.prototype.resize = function() {
 
     sf.on_resize(sf.resize_obj);
 
-    if (sf.current_page != null) {
+    if (sf.current_page != null && sf.current_page.resize) {
         sf.current_page.resize(sf.resize_obj);
     }
 }
@@ -13793,7 +13751,7 @@ var FieldVal = (function(){
         return true;
     };
 
-    function FieldVal(validating, existing_error) {
+    function FieldVal(validating, options) {
         var fv = this;
 
         fv.async_waiting = 0;
@@ -13805,8 +13763,12 @@ var FieldVal = (function(){
         //Top level errors - added using .error() 
         fv.errors = [];
 
+        fv.options = options || {};
+        fv.ignore_unrecognized = fv.options.ignore_unrecognized;
+
+        var existing_error = fv.options.error;
         if(existing_error!==undefined){
-            //Provided a (potentially undefined) existing error
+            //Provided a (potentially null) existing error
 
             if(existing_error){
                 //Is not null
@@ -13852,6 +13814,7 @@ var FieldVal = (function(){
 
                 }
             } else {
+                //The existing_error is null, which means a previous validator recognized all fields
                 for(var n in validating){
                     if(validating.hasOwnProperty(n)) {
                         fv.recognized_keys[n] = true;
@@ -13892,7 +13855,9 @@ var FieldVal = (function(){
                 }
             }
         }
-        return new FieldVal(current_value,current_error);
+        return new FieldVal(current_value,{
+            "error": current_error
+        });
     };
 
     FieldVal.get_error = function(){
@@ -14158,24 +14123,26 @@ var FieldVal = (function(){
             }
         }
 
-        var auto_unrecognized = fv.get_unrecognized();
-        var i, auto_key;
-        for (i = 0; i < auto_unrecognized.length; i++) {
-            auto_key = auto_unrecognized[i];
-            returning_invalid[auto_key] = {
-                error_message: "Unrecognized field.",
-                error: FieldVal.FIELD_UNRECOGNIZED
-            };
-            has_error = true;
-        }
-
-        if (!is_empty(fv.invalid_keys)) {
-            for(var k in fv.invalid_keys){
-                if(fv.invalid_keys.hasOwnProperty(k)){
-                    returning_invalid[k] = fv.invalid_keys[k];
-                }
+        if(!fv.ignore_unrecognized){
+            var auto_unrecognized = fv.get_unrecognized();
+            var i, auto_key;
+            for (i = 0; i < auto_unrecognized.length; i++) {
+                auto_key = auto_unrecognized[i];
+                returning_invalid[auto_key] = {
+                    error_message: "Unrecognized field.",
+                    error: FieldVal.FIELD_UNRECOGNIZED
+                };
+                has_error = true;
             }
-            has_error = true;
+
+            if (!is_empty(fv.invalid_keys)) {
+                for(var k in fv.invalid_keys){
+                    if(fv.invalid_keys.hasOwnProperty(k)){
+                        returning_invalid[k] = fv.invalid_keys[k];
+                    }
+                }
+                has_error = true;
+            }
         }
 
 
@@ -15091,16 +15058,22 @@ var FieldVal = (function(){
             },
             value_in_list: function() {
                 return {
-                    error: 104,
+                    error: 118,
                     error_message: "Value not allowed"
                 };
             },
             should_not_contain: function(characters) {
                 var disallowed = characters.join(",");
                 return {
-                    error: 105,
+                    error: 119,
                     error_message: "Cannot contain "+disallowed,
                     cannot_contain: characters
+                };
+            },
+            invalid_domain: function() {
+                return {
+                    error: 120,
+                    error_message: "Invalid domain format."
                 };
             }
         },
@@ -15555,12 +15528,15 @@ var FieldVal = (function(){
             
             var check = function(value, emit){
                 for(var i = 0; i < possibles.length; i++){
-                    var option = possibles[i];
+                    var array_of_checks = possibles[i];
             
                     var emitted_value;
-                    var option_error = FieldVal.use_checks(value, option, null, null, function(emitted){
-                        emitted_value = emitted;
+                    var option_error = FieldVal.use_checks(value, array_of_checks, {
+                        emit: function(emitted){
+                            emitted_value = emitted;
+                        }
                     });
+                    
                     if(option_error===FieldVal.ASYNC){
                         throw new Error(".multiple used with async checks, use .multiple_async.");
                     }
@@ -15665,11 +15641,31 @@ var FieldVal = (function(){
                 check: check
             };
         },
+        domain: function(required, options){
+            options = BasicVal.merge_required_and_options(required, options);
+            var check = function(value) {
+                var string_error = BasicVal.string(options).check(value);
+                if(string_error!==undefined) return string_error;
+                
+                var re = BasicVal.domain_regex;
+                if(!re.test(value)){
+                    return FieldVal.create_error(BasicVal.errors.invalid_domain, options);
+                } 
+            };
+            if(options){
+                options.check = check;
+                return options;
+            }
+            return {
+                check: check
+            };
+        },
         required: FieldVal.required
     };
 
     BasicVal.email_regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     BasicVal.url_regex = /^(https?):\/\/(((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|((([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])))(:[1-9][0-9]+)?(\/)?([\/?].+)?$/;
+    BasicVal.domain_regex = /^(https?):\/\/(((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|((([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])))(:[1-9][0-9]+)?(\/)?$/;
 
     return BasicVal;
 }).call();
@@ -15719,7 +15715,7 @@ function FVField(name, options) {
         })
         .addClass("fv_field fv_form")
         .data("field",field)
-        
+
         var submit_function = function(event){
             event.preventDefault();
             field.submit();
@@ -15819,6 +15815,7 @@ FVField.prototype.in_key_value = function(parent, remove_callback){
 
     field.name_input = new FVTextField("Key").on_change(function(name_val){
         field.key_name = field.key_value_parent.change_key_name(field.key_name, name_val, field);
+        field.key_value_parent.did_change();
     });
     field.name_input.element.addClass("fv_key_value_name_input")
     field.title.replaceWith(field.name_input.element);
@@ -15842,12 +15839,12 @@ FVField.prototype.init = function(){
     return field;
 }
 
-FVField.prototype.remove = function(from_parent){
+FVField.prototype.remove = function(from_parent, options){
     var field = this;
 
     field.element.remove();
     if(field.parent && !from_parent){//from_parent prevents cycling
-        field.parent.remove_field(field);
+        field.parent.remove_field(field, options);
         field.parent = null;
     }
 
@@ -15908,7 +15905,7 @@ FVField.prototype.did_change = function(options){
 
     if (options === undefined) {
         options = {}
-    }   
+    }
 
     var val = field.val();
 
@@ -16079,6 +16076,7 @@ FVField.prototype.error = function(error) {
         }
     }
 }
+
 fieldval_ui_extend(FVTextField, FVField);
 
 function FVTextField(name, options) {
@@ -16107,11 +16105,11 @@ function FVTextField(name, options) {
     } else {
         field.input = $("<input type='"+field.input_type+"' />")
     }
-    
+
     field.enter_callbacks = [];
 
     field.previous_value = {};//Object to ensure invalid initial comparison
-    
+
     field.input.addClass("fv_text_input")
     .attr("placeholder", name)
     .on("keydown",function(e){
@@ -16155,13 +16153,15 @@ FVTextField.prototype.check_changed = function(){
         field.previous_value = this_value;
         field.did_change()
     }
+
+    return field;
 }
 
 FVTextField.prototype.on_enter = function(callback){
     var field = this;
 
     field.enter_callbacks.push(callback);
-    
+
     return field;
 }
 
@@ -16202,7 +16202,7 @@ FVTextField.prototype.enable = function() {
 
 FVTextField.prototype.focus = function() {
     var field = this;
-    
+
     field.input.focus();
 
     return FVField.prototype.focus.call(this);
@@ -16210,7 +16210,7 @@ FVTextField.prototype.focus = function() {
 
 FVTextField.prototype.blur = function() {
     var field = this;
-    
+
     field.input.blur();
 
     return FVField.prototype.blur.call(this);
@@ -16234,7 +16234,7 @@ FVTextField.prototype.val = function(set_val, options) {
         return value;
     } else {
         field.input.val(set_val);
-        
+
         if (!options.ignore_change) {
             field.did_change(options);
         }
@@ -16242,6 +16242,7 @@ FVTextField.prototype.val = function(set_val, options) {
         return field;
     }
 }
+
 fieldval_ui_extend(FVPasswordField, FVTextField);
 
 function FVPasswordField(name) {
@@ -16326,15 +16327,29 @@ function FVChoiceOption(choice, parent){
 
     choice_option.element = $("<div />").addClass("fv_choice_option")
     .text(choice_option.choice_text)
-    .on("mousedown",function(e){
+
+    choice_option.add_mouse_events();
+}
+
+FVChoiceOption.prototype.add_mouse_events = function(){
+    var choice_option = this;
+
+    var parent = choice_option.parent;
+
+    choice_option.element.on("mousedown",function(e){
         parent.mousedown();
+        e.preventDefault();
     })
     .on("mouseup",function(e){
         parent.mouseup();
+        e.preventDefault();
     })
     .on(FVForm.button_event,function(e){
         parent.default_click(e, choice_option);
+        e.preventDefault();
     })
+
+    return choice_option;
 }
 
 FVChoiceOption.prototype.matches_filter = function(filter){
@@ -16358,31 +16373,43 @@ FVChoiceOption.prototype.get_value = function(){
 FVChoiceOption.prototype.add_highlight = function(){
     var choice_option = this;
     choice_option.element.addClass("fv_highlighted");
+
+    return choice_option;
 }
 
 FVChoiceOption.prototype.remove_highlight = function(){
     var choice_option = this;
     choice_option.element.removeClass("fv_highlighted");
+
+    return choice_option;
 }
 
 FVChoiceOption.prototype.add_selected = function(){
     var choice_option = this;
     choice_option.element.addClass("fv_selected");
+
+    return choice_option;
 }
 
 FVChoiceOption.prototype.remove_selected = function(){
     var choice_option = this;
     choice_option.element.removeClass("fv_selected");
+
+    return choice_option;
 }
 
 FVChoiceOption.prototype.hide = function(){
     var choice_option = this;
     choice_option.element.hide();
+
+    return choice_option;
 }
 
 FVChoiceOption.prototype.show = function(){
     var choice_option = this;
-    choice_option.element.show()
+    choice_option.element.show();
+
+    return choice_option;
 }
 
 FVChoiceOption.prototype.get_display = function(){
@@ -16390,6 +16417,7 @@ FVChoiceOption.prototype.get_display = function(){
 
     return $("<div />").text(choice_option.choice_text);
 }
+
 
 fieldval_ui_extend(FVChoiceField, FVField);
 
@@ -16402,6 +16430,8 @@ function FVChoiceField(name, options) {
     field.choices = field.options.choices || [];
     field.allow_empty = field.options.allow_empty || false;
     field.empty_text = field.options.empty_text || "";
+    field.clear_filter_on_select = field.options.clear_filter_on_select!=undefined ? field.options.clear_filter_on_select : true;
+    field.clear_filter_on_focus = field.options.clear_filter_on_focus!=undefined ? field.options.clear_filter_on_focus : true;
 
     field.option_array = [];
     field.selected_value = null;
@@ -16467,7 +16497,6 @@ function FVChoiceField(name, options) {
 
     if(field.allow_empty){
         var choice_option = new field.option_class(null, field);
-        field.option_array.push(choice_option);
         field.add_option(choice_option);
     }
 
@@ -16475,7 +16504,6 @@ function FVChoiceField(name, options) {
         var choice = field.choices[i];
 
         var choice_option = new field.option_class(choice, field);
-        field.option_array.push(choice_option);
         field.add_option(choice_option);
     }
 
@@ -16486,20 +16514,24 @@ function FVChoiceField(name, options) {
 FVChoiceField.prototype.mousedown = function(){
     var field = this;
     field.is_mousedown = true;
+    return field;
 }
 FVChoiceField.prototype.mouseup = function(){
     var field = this;
     field.is_mousedown = false;
+    return field;
 }
 
 FVChoiceField.prototype.filter_enter_up = function() {
     var field = this;
     field.select_highlighted();
+    return field;
 }
 
 FVChoiceField.prototype.filter_esc_up = function() {
     var field = this;
     field.hide_list();
+    return field;
 }
 
 FVChoiceField.prototype.filter_key_up = function(e) {
@@ -16508,22 +16540,22 @@ FVChoiceField.prototype.filter_key_up = function(e) {
     if(e.keyCode===9){
         //Tab
         e.preventDefault();
-        return;
-    }if(e.keyCode===40){
+        return field;
+    } else if(e.keyCode===40){
         //Move down
         field.move_down();
         e.preventDefault();
-        return;
+        return field;
     } else if(e.keyCode===38){
         //Move up
         field.move_up();
         e.preventDefault();
-        return;
+        return field;
     } else if(e.keyCode===13){
         //Enter press
         field.filter_enter_up();
         e.preventDefault();
-        return;
+        return field;
     } else if(e.keyCode===27){
         //Esc
         field.filter_esc_up();
@@ -16531,6 +16563,7 @@ FVChoiceField.prototype.filter_key_up = function(e) {
     }
 
     field.filter(field.filter_input.val());
+    return field;
 }
 
 FVChoiceField.prototype.filter_key_down = function(e) {
@@ -16538,6 +16571,7 @@ FVChoiceField.prototype.filter_key_down = function(e) {
     if(e.keyCode===38 || e.keyCode===40 || e.keyCode===13){
         e.preventDefault();
     }
+    return field;
 }
 
 FVChoiceField.prototype.show_list = function(){
@@ -16609,6 +16643,8 @@ FVChoiceField.prototype.filter = function(text, initial){
     if(field.current_highlight){
         field.current_highlight.add_highlight();
     }
+
+    return field;
 }
 
 FVChoiceField.prototype.value_to_text = function(value){
@@ -16662,11 +16698,15 @@ FVChoiceField.prototype.select_option = function(choice_option, options){
         }
     }
 
-    field.filter_input.val("");
-    
+    if(field.clear_filter_on_select){
+        field.filter_input.val("");
+    }
+
     if(!options.ignore_change){
         field.did_change(options);
     }
+
+    return field;
 }
 
 FVChoiceField.prototype.move_up = function(){
@@ -16683,6 +16723,8 @@ FVChoiceField.prototype.move_up = function(){
             field.current_highlight = null;
         }
     }
+
+    return field;
 }
 
 FVChoiceField.prototype.move_down = function(){
@@ -16696,7 +16738,7 @@ FVChoiceField.prototype.move_down = function(){
     } else {
         var index = field.option_array.indexOf(field.current_highlight);
         if(index<field.option_array.length-1){
-            
+
             field.current_highlight.remove_highlight();
 
             field.current_highlight = field.option_array[index+1];
@@ -16704,6 +16746,8 @@ FVChoiceField.prototype.move_down = function(){
             field.move_into_view();
         }
     }
+
+    return field;
 }
 
 FVChoiceField.prototype.move_into_view = function(target){
@@ -16721,17 +16765,22 @@ FVChoiceField.prototype.move_into_view = function(target){
         }
 
         field.choice_list.scrollTop(
-            field.choice_list.scrollTop() - 
-            field.choice_list.offset().top + 
+            field.choice_list.scrollTop() -
+            field.choice_list.offset().top +
             offset - 50
         );
     },1);
+
+    return field;
 }
 
-FVChoiceField.prototype.add_option = function(option_element, initial){
+FVChoiceField.prototype.add_option = function(choice_option, initial){
     var field = this;
 
-    field.choice_list.append(option_element.element);
+    field.option_array.push(choice_option);
+    field.choice_list.append(choice_option.element);
+
+    return field;
 }
 
 FVChoiceField.prototype.default_click = function(e, choice_option){
@@ -16744,12 +16793,16 @@ FVChoiceField.prototype.default_click = function(e, choice_option){
         e.originalEvent.stopPropagation();
     }
     field.select_option(choice_option);
+
+    return field;
 }
 
 FVChoiceField.prototype.finalize_option = function(option_element, initial){
     var field = this;
 
     option_element.appendTo(field.choice_list)
+
+    return field;
 }
 
 FVChoiceField.prototype.select_highlighted = function(){
@@ -16758,21 +16811,27 @@ FVChoiceField.prototype.select_highlighted = function(){
     if(field.current_highlight){
         field.select_option(field.current_highlight);
     }
+
+    return field;
 }
 
 FVChoiceField.prototype.input_focus = function(){
     var field = this;
 
-    field.filter_input.val("");
+    if(field.clear_filter_on_focus){
+        field.filter_input.val("");
+    }
 
     field.show_list();
 
     field.did_focus();
+
+    return field;
 }
 
 FVChoiceField.prototype.focus = function(from_input) {
     var field = this;
-    
+
     field.filter_input.focus();
 
     return FVField.prototype.focus.call(this);
@@ -16780,7 +16839,7 @@ FVChoiceField.prototype.focus = function(from_input) {
 
 FVChoiceField.prototype.blur = function() {
     var field = this;
-    
+
     field.hide_list();
 
     field.did_blur();
@@ -16811,6 +16870,7 @@ FVChoiceField.prototype.val = function(set_val, options) {
         return field;
     }
 }
+
 fieldval_ui_extend(FVDateField, FVField);
 
 function FVDateField(name, options) {//format is currently unused
@@ -16830,7 +16890,7 @@ function FVDateField(name, options) {//format is currently unused
     var format_error = DateVal.date_format().check(field.format_string, function(emit_format_array){
         field.format_array = emit_format_array;
     })
-    
+
     if(format_error){
         console.error(format_error.error_message);
         return;
@@ -16887,6 +16947,8 @@ FVDateField.prototype.add_element_from_component = function(component, component
         field.inputs.push(input);
         field.input_holder.append(input)
     }
+
+    return field;
 }
 
 FVDateField.prototype.icon = function(params) {
@@ -16928,7 +16990,7 @@ FVDateField.prototype.enable = function() {
 
 FVDateField.prototype.focus = function() {
     var field = this;
-    
+
     var input = field.inputs[0];
     if(input){
         input.focus();
@@ -17018,6 +17080,7 @@ FVDateField.prototype.val = function(set_val, options) {
         return field;
     }
 }
+
 fieldval_ui_extend(FVBooleanField, FVField);
 
 function FVBooleanField(name, options) {
@@ -17079,7 +17142,7 @@ FVBooleanField.prototype.val = function(set_val, options) {
             set_val = false;
         }
        	field.input.prop('checked', set_val);
-        
+
         if (!options.ignore_change) {
             field.did_change(options);
         }
@@ -17087,6 +17150,7 @@ FVBooleanField.prototype.val = function(set_val, options) {
         return field;
     }
 }
+
 fieldval_ui_extend(FVObjectField, FVField);
 
 function FVObjectField(name, options) {
@@ -17110,6 +17174,8 @@ FVObjectField.prototype.init = function(){
             inner_field.init();
         }
     }
+
+    return field;
 }
 
 FVObjectField.prototype.remove = function(from_parent){
@@ -17118,11 +17184,11 @@ FVObjectField.prototype.remove = function(from_parent){
     for(var i in field.fields){
         if(field.fields.hasOwnProperty(i)){
             var inner_field = field.fields[i];
-            inner_field.remove();
+            inner_field.remove(false,{ignore_change:true});
         }
     }
 
-    FVField.prototype.remove.call(this, from_parent);
+    return FVField.prototype.remove.call(this, from_parent);
 }
 
 FVObjectField.prototype.add_field = function(name, inner_field){
@@ -17135,8 +17201,10 @@ FVObjectField.prototype.add_field = function(name, inner_field){
     return field;
 }
 
-FVObjectField.prototype.remove_field = function(target){
+FVObjectField.prototype.remove_field = function(target, options){
     var field = this;
+
+    options = options || {};
 
     var inner_field,key;
     if(typeof target === "string"){
@@ -17157,6 +17225,12 @@ FVObjectField.prototype.remove_field = function(target){
     if(inner_field){
         inner_field.remove(true);//Field class will perform inner_field.element.remove()
         delete field.fields[key];
+
+        if(!options.ignore_change){
+            field.did_change();
+        }
+
+        return inner_field;
     }
 }
 
@@ -17168,7 +17242,7 @@ FVObjectField.prototype.change_name = function(name) {
 
 FVObjectField.prototype.disable = function() {
     var field = this;
-    
+
     for(var i in field.fields){
         if(field.fields.hasOwnProperty(i)){
             var inner_field = field.fields[i];
@@ -17181,7 +17255,7 @@ FVObjectField.prototype.disable = function() {
 
 FVObjectField.prototype.enable = function() {
     var field = this;
-    
+
     for(var i in field.fields){
         if(field.fields.hasOwnProperty(i)){
             var inner_field = field.fields[i];
@@ -17194,7 +17268,7 @@ FVObjectField.prototype.enable = function() {
 
 FVObjectField.prototype.focus = function() {
     var field = this;
-    
+
     for(var i in field.fields){
         if(field.fields.hasOwnProperty(i)){
             var inner_field = field.fields[i];
@@ -17202,7 +17276,7 @@ FVObjectField.prototype.focus = function() {
                 inner_field.focus();
                 return field;
             }
-        }    
+        }
     }
 
     return FVField.prototype.focus.call(this);
@@ -17236,7 +17310,7 @@ FVObjectField.prototype.error = function(error){
 
         if(error.error===undefined){
             console.error("No error provided");
-            return;
+            return field;
         }
 
         if(error.error===5){
@@ -17270,6 +17344,8 @@ FVObjectField.prototype.error = function(error){
         field.fields_error(null);
         field.hide_error();
     }
+
+    return field;
 }
 
 FVObjectField.prototype.fields_error = function(error){
@@ -17281,7 +17357,7 @@ FVObjectField.prototype.fields_error = function(error){
         var invalid_fields = error.invalid || {};
         var missing_fields = error.missing || {};
         var unrecognized_fields = error.unrecognized || {};
-        
+
         for(var i in field.fields){
             if(field.fields.hasOwnProperty(i)){
                 var inner_field = field.fields[i];
@@ -17299,6 +17375,8 @@ FVObjectField.prototype.fields_error = function(error){
             }
         }
     }
+
+    return field;
 }
 
 FVObjectField.prototype.val = function(set_val, options) {
@@ -17334,6 +17412,7 @@ FVObjectField.prototype.val = function(set_val, options) {
         return field;
     }
 }
+
 /*!
  * Nestable jQuery Plugin - Copyright (c) 2012 David Bushell - http://dbushell.com/
  * Dual-licensed under the BSD or MIT licenses
@@ -17682,7 +17761,7 @@ function FVArrayField(name, options) {
             field.create_add_field_button()
         )
     }
-    
+
     if(field.sortable){
         field.element.addClass("fv_array_field_sortable");
         field.fields_element.nestable({
@@ -17709,6 +17788,8 @@ FVArrayField.prototype.reorder = function(){
         var child_field = child.data("field");
         field.fields.push(child_field);
     }
+
+    return field;
 }
 
 FVArrayField.prototype.create_add_field_button = function(){
@@ -17716,7 +17797,7 @@ FVArrayField.prototype.create_add_field_button = function(){
 
     var add_field_button = $("<button/>",{type:"button"}).addClass("fv_add_field_button").text(field.add_button_text).on(FVForm.button_event,function(event){
         event.preventDefault();
-        field.add_field_clicked();   
+        field.add_field_clicked();
     });
 
     field.add_field_buttons.push(add_field_button);
@@ -17728,14 +17809,16 @@ FVArrayField.prototype.add_field_clicked = function() {
     var field = this;
     var returned_field = field.new_field(field.fields.length);
 
-    /* Allow the new_field function to just return a field - 
-     * this will add the field if it wasn't added in the new_field 
+    /* Allow the new_field function to just return a field -
+     * this will add the field if it wasn't added in the new_field
      * callback. */
     if(returned_field){
         if(field.fields.indexOf(returned_field)===-1){
             field.add_field(returned_field);
         }
     }
+
+    return field;
 }
 
 FVArrayField.prototype.new_field = function(index){
@@ -17743,13 +17826,8 @@ FVArrayField.prototype.new_field = function(index){
     throw new Error("FVArrayField.new_field must be overriden to create fields");
 }
 
-FVArrayField.prototype.add_field = function(inner_field){
+FVArrayField.prototype.add_field = function(inner_field, suppress_change){
     var field = this;
-
-    if(arguments.length===2){
-        //Unused "name" as first parameter
-        inner_field = arguments[1];//Use the field in the second argument
-    }
 
     inner_field.in_array(field, function(){
         field.remove_field(inner_field);
@@ -17763,6 +17841,12 @@ FVArrayField.prototype.add_field = function(inner_field){
     if(field.is_disabled){
         inner_field.disable();
     }
+
+    if(!suppress_change){
+        field.did_change();
+    }
+
+    return field;
 }
 
 FVArrayField.prototype.remove = function(from_parent){
@@ -17770,14 +17854,16 @@ FVArrayField.prototype.remove = function(from_parent){
 
     for(var i=0; i<field.fields.length; i++){
         var inner_field = field.fields[i];
-        inner_field.remove();
+        inner_field.remove(false,{ignore_change:true});
     }
 
     FVField.prototype.remove.call(this, from_parent);
 }
 
-FVArrayField.prototype.remove_field = function(target){
+FVArrayField.prototype.remove_field = function(target, options){
     var field = this;
+
+    options = options || {};
 
     var inner_field,index;
     if(typeof target === "number" && (target%1)===0 && target>=0){
@@ -17798,6 +17884,12 @@ FVArrayField.prototype.remove_field = function(target){
     if(inner_field){
         inner_field.remove(true);
         field.fields.splice(index, 1);
+
+        if(!options.ignore_change){
+            field.did_change();
+        }
+
+        return inner_field;
     }
 }
 
@@ -17816,7 +17908,7 @@ FVArrayField.prototype.fields_error = function(error){
         var invalid_fields = error.invalid || {};
         var missing_fields = error.missing || {};
         var unrecognized_fields = error.unrecognized || {};
-        
+
         for(var i = 0; i < field.fields.length; i++){
             var inner_field = field.fields[i];
 
@@ -17830,6 +17922,8 @@ FVArrayField.prototype.fields_error = function(error){
             inner_field.error(null);
         }
     }
+
+    return field;
 }
 
 
@@ -17839,7 +17933,9 @@ FVArrayField.prototype.clear_errors = function(){
     for(var i=0; i<field.fields.length; i++){
         var inner_field = field.fields[i];
         inner_field.clear_errors();
-    }    
+    }
+
+    return field;
 }
 
 FVArrayField.prototype.disable = function(){
@@ -17848,7 +17944,7 @@ FVArrayField.prototype.disable = function(){
     for(var i=0; i<field.fields.length; i++){
         var inner_field = field.fields[i];
         inner_field.disable();
-    }    
+    }
     for(var i=0; i<field.add_field_buttons.length; i++){
         var add_field_button = field.add_field_buttons[i];
         add_field_button.hide();
@@ -17872,13 +17968,13 @@ FVArrayField.prototype.enable = function(){
 
 FVArrayField.prototype.focus = function() {
     var field = this;
-    
+
     for(var i = 0; i < field.fields.length; i++){
         var inner_field = field.fields[i];
         if(inner_field){
             inner_field.focus();
             return field;
-        }    
+        }
     }
 
     return FVField.prototype.focus.call(this);
@@ -17908,7 +18004,7 @@ FVArrayField.prototype.error = function(error) {
 
         if(error.error===undefined){
             console.error("No error provided");
-            return;
+            return field;
         }
 
         if(error.error===5){
@@ -17942,6 +18038,8 @@ FVArrayField.prototype.error = function(error) {
         field.fields_error(null);
         field.hide_error();
     }
+
+    return field;
 }
 
 FVArrayField.prototype.val = function(set_val, options) {
@@ -17965,12 +18063,12 @@ FVArrayField.prototype.val = function(set_val, options) {
                 if(!inner_field){
                     inner_field = field.new_field(i);
 
-                    /* Allow the new_field function to just return a field - 
-                     * this will add the field if it wasn't added in the new_field 
+                    /* Allow the new_field function to just return a field -
+                     * this will add the field if it wasn't added in the new_field
                      * callback. */
                      if(inner_field){
                          if(field.fields.indexOf(inner_field)===-1){
-                             field.add_field(inner_field);
+                             field.add_field(inner_field,true);
                          }
                      }
                 }
@@ -17987,10 +18085,12 @@ FVArrayField.prototype.val = function(set_val, options) {
 
                 for(var i = 0; i < to_remove.length; i++){
                     var inner_field = to_remove[i];
-                    inner_field.remove();
+                    inner_field.remove(false,{
+                        ignore_change: true
+                    });
                 }
             }
-            
+
             if (!options.ignore_change) {
                 field.did_change(options);
             }
@@ -17998,6 +18098,7 @@ FVArrayField.prototype.val = function(set_val, options) {
         return field;
     }
 }
+
 fieldval_ui_extend(FVKeyValueField, FVField);
 function FVKeyValueField(name, options) {
     var field = this;
@@ -18034,14 +18135,16 @@ FVKeyValueField.prototype.add_field_clicked = function() {
     var field = this;
     var returned_field = field.new_field(field.fields.length);
 
-    /* Allow the new_field function to just return a field - 
-     * this will add the field if it wasn't added in the new_field 
+    /* Allow the new_field function to just return a field -
+     * this will add the field if it wasn't added in the new_field
      * callback. */
      if(returned_field){
          if(field.fields.indexOf(returned_field)===-1){
              field.add_field(returned_field);
          }
      }
+
+     return field;
 }
 
 FVKeyValueField.prototype.new_field = function(){
@@ -18049,26 +18152,29 @@ FVKeyValueField.prototype.new_field = function(){
     throw new Error("FVKeyValueField.new_field must be overriden to create fields");
 }
 
-FVKeyValueField.prototype.add_field = function(inner_field){
+FVKeyValueField.prototype.add_field = function(inner_field, suppress_change){
     var field = this;
 
-    if(arguments.length===2){
-        //Unused "name" as first parameter
-        inner_field = arguments[1];//Use the field in the second argument
-    }
-
     inner_field.in_key_value(field,function(key_name){
-        field.remove_field(inner_field, key_name);
+        field.remove_field(inner_field);
     });
     inner_field.element.appendTo(field.fields_element);
     field.fields.push(inner_field);
     inner_field.parent = field;
 
-    inner_field.name_val("");
+    inner_field.name_val("",{
+        ignore_change: true
+    });
 
     if(field.is_disabled){
         inner_field.disable();
     }
+
+    if(!suppress_change){
+        field.did_change();
+    }
+
+    return field;
 }
 
 FVKeyValueField.prototype.change_key_name = function(old_name,new_name,inner_field){
@@ -18096,8 +18202,10 @@ FVKeyValueField.prototype.change_key_name = function(old_name,new_name,inner_fie
     return final_name_val;
 }
 
-FVKeyValueField.prototype.remove_field = function(target){
+FVKeyValueField.prototype.remove_field = function(target, options){
     var field = this;
+
+    options = options || {};
 
     var inner_field;
     var index;
@@ -18127,6 +18235,12 @@ FVKeyValueField.prototype.remove_field = function(target){
         inner_field.remove(true);
         field.fields.splice(index, 1);
         delete field.keys[inner_field.key_name];
+
+        if(!options.ignore_change){
+            field.did_change();
+        }
+
+        return inner_field;
     }
 }
 
@@ -18134,6 +18248,8 @@ FVKeyValueField.prototype.error = function(error){
     var field = this;
 
     FVKeyValueField.superClass.error.call(this,error);
+
+    return field;
 }
 
 FVKeyValueField.prototype.fields_error = function(error){
@@ -18145,7 +18261,7 @@ FVKeyValueField.prototype.fields_error = function(error){
         var invalid_fields = error.invalid || {};
         var missing_fields = error.missing || {};
         var unrecognized_fields = error.unrecognized || {};
-        
+
         for(var i in field.keys){
             if(field.keys.hasOwnProperty(i)){
                 var inner_field = field.keys[i];
@@ -18163,6 +18279,8 @@ FVKeyValueField.prototype.fields_error = function(error){
             }
         }
     }
+
+    return field;
 }
 
 
@@ -18172,7 +18290,9 @@ FVKeyValueField.prototype.clear_errors = function(){
     for(var i=0; i<field.fields.length; i++){
         var inner_field = field.fields[i];
         inner_field.clear_errors();
-    }    
+    }
+
+    return field;
 }
 
 FVKeyValueField.prototype.disable = function(){
@@ -18181,7 +18301,7 @@ FVKeyValueField.prototype.disable = function(){
     for(var i=0; i<field.fields.length; i++){
         var inner_field = field.fields[i];
         inner_field.disable();
-    }    
+    }
     for(var i=0; i<field.add_field_buttons.length; i++){
         var add_field_button = field.add_field_buttons[i];
         add_field_button.hide();
@@ -18205,13 +18325,13 @@ FVKeyValueField.prototype.enable = function(){
 
 FVKeyValueField.prototype.focus = function() {
     var field = this;
-    
+
     for(var i = 0; i < field.fields.length; i++){
         var inner_field = field.fields[i];
         if(inner_field){
             inner_field.focus();
             return field;
-        }    
+        }
     }
 
     return FVField.prototype.focus.call(this);
@@ -18237,10 +18357,10 @@ FVKeyValueField.prototype.remove = function(from_parent){
 
     for(var i=0; i<field.fields.length; i++){
         var inner_field = field.fields[i];
-        inner_field.remove();
+        inner_field.remove(false,{ignore_change:true});
     }
 
-    FVField.prototype.remove.call(this, from_parent);
+    return FVField.prototype.remove.call(this, from_parent);
 }
 
 FVKeyValueField.prototype.error = function(error) {
@@ -18252,7 +18372,7 @@ FVKeyValueField.prototype.error = function(error) {
 
         if(error.error===undefined){
             console.error("No error provided");
-            return;
+            return field;
         }
 
         if(error.error===5){
@@ -18286,6 +18406,8 @@ FVKeyValueField.prototype.error = function(error) {
         field.fields_error(null);
         field.hide_error();
     }
+
+    return field;
 }
 
 FVKeyValueField.prototype.val = function(set_val, options) {
@@ -18312,7 +18434,7 @@ FVKeyValueField.prototype.val = function(set_val, options) {
                 if(field.keys.hasOwnProperty(i)){
                     if(set_val[i]===undefined){
                         var inner_field = field.keys[i];
-                        field.remove_field(inner_field);
+                        field.remove_field(inner_field,{ignore_change:true});
                     }
                 }
             }
@@ -18321,18 +18443,20 @@ FVKeyValueField.prototype.val = function(set_val, options) {
 	        		var inner_field = field.keys[i];
 	                if(!inner_field){
 	                    inner_field = field.new_field(i);
-                        
-                        /* Allow the new_field function to just return a field - 
-                         * this will add the field if it wasn't added in the new_field 
+
+                        /* Allow the new_field function to just return a field -
+                         * this will add the field if it wasn't added in the new_field
                          * callback. */
                          if(inner_field){
                              if(field.fields.indexOf(inner_field)===-1){
-                                 field.add_field(inner_field);
+                                 field.add_field(inner_field,true);
                              }
                          }
 	                }
 	                inner_field.val(set_val[i], options);
-	                inner_field.name_val(i);
+	                inner_field.name_val(i,{
+                        ignore_change: true
+                    });
 				}
         	}
         }
@@ -18343,6 +18467,7 @@ FVKeyValueField.prototype.val = function(set_val, options) {
         return field;
     }
 }
+
 
 if ( typeof Object.getPrototypeOf !== "function" ) {
     if ( typeof "test".__proto__ === "object" ) {
@@ -18383,7 +18508,10 @@ FVProxyField.prototype.init = function(){
     if(field.inner_field){
         field.inner_field.init();
     }
+
+    return field;
 }
+
 FVProxyField.prototype.replace = function(inner_field, options){
     var field = this;
 
@@ -18490,6 +18618,8 @@ FVProxyField.prototype.replace = function(inner_field, options){
     if (!options.ignore_change) {
         field.did_change(options);
     }
+
+    return field;
 }
 
 FVProxyField.prototype.on_replace = function(callback){
@@ -18504,7 +18634,7 @@ FVProxyField.prototype.on_replace = function(callback){
 FVProxyField.prototype.val = function(set_val, options){
     var field = this;
     options = options || {}
-    
+
     if(field.inner_field){
         return field.inner_field.val.apply(field.inner_field, arguments);
     } else {
@@ -18516,6 +18646,7 @@ FVProxyField.prototype.val = function(set_val, options){
         }
     }
 }
+
 fieldval_ui_extend(FVForm, FVObjectField);
 
 function FVForm(fields){
@@ -19017,8 +19148,7 @@ var FVObjectRuleField = (function(){
     FVObjectRuleField.add_editor_params = function(editor) {
         var fields_field = new FVArrayField("Fields");
         fields_field.new_field = function(index){
-            var inner_field = new editor.constructor(null, editor);
-            fields_field.add_field(null, inner_field);
+            return new editor.constructor(null, editor);
         }
 
         var any = new FVBooleanField("Any");
@@ -19121,6 +19251,7 @@ var FVObjectRuleField = (function(){
 if (typeof module != 'undefined') {
     module.exports = FVObjectRuleField;
 }
+
 var FVKeyValueRuleField = (function(){
 
     var _FieldVal;
@@ -19691,8 +19822,7 @@ var FVChoiceRuleField = (function(){
 
         editor.add_field("choices", choices_field);
 
-        editor.add_field("allow_empty", new FVBooleanField("Allow empty"));
-        editor.add_field("empty_message", new FVTextField("Empty message"));
+        editor.add_field("empty_text", new FVTextField("Empty Text"));
 
         editor.fields.allow_empty.val(value.allow_empty);
         editor.fields.empty_message.val(value.empty_message);
@@ -19706,6 +19836,7 @@ var FVChoiceRuleField = (function(){
 if (typeof module != 'undefined') {
     module.exports = FVChoiceRuleField;
 }
+
 var FVBooleanRuleField = (function(){
 
     var _FieldVal;
@@ -20129,6 +20260,7 @@ var FVRuleEditor = (function(){
 
 		editor.add_field("name", new FVTextField("Name"));
 		editor.add_field("display_name", new FVTextField("Display Name"));
+        editor.add_field("required", new FVBooleanField("Required"));
 		editor.add_field("type", new FVChoiceField("Type", {
 			choices: field_type_choices
 		}).on_change(function(){
@@ -20179,6 +20311,7 @@ var FVRuleEditor = (function(){
 if (typeof module != 'undefined') {
     module.exports = FVRuleEditor;
 }
+
 //Used to subclass Javascript classes
 function extend(sub, sup) {
 	function emptyclass() {}

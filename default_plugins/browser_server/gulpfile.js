@@ -17,9 +17,10 @@ var wrap_path = function(relative){
 
 module.exports = function(gulp){
 
-    var onError = function (err) {  
+    var onError = function (err) {
       gutil.beep();
       console.log(err);
+      this.emit('end');
     };
 
     gulp.task('browser_public_fonts', function(){
@@ -41,9 +42,7 @@ module.exports = function(gulp){
         .pipe(gulp.dest(wrap_path('./admin/')));
     });
     gulp.task('browser_less', function(){
-        gulp.start('browser_public_fonts');
-        gulp.start('browser_public_less');
-        gulp.start('browser_admin_less');
+        return gulp.start(['browser_public_fonts','browser_public_less','browser_admin_less']);
     });
 
     var public_js_task = null;

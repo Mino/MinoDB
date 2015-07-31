@@ -17,9 +17,10 @@ var wrap_path = function(relative){
 
 module.exports = function(gulp){
 
-    var onError = function (err) {  
+    var onError = function (err) {
       gutil.beep();
       console.log(err);
+      this.emit('end');
     };
 
     gulp.task('auth_public_fonts', function(){
