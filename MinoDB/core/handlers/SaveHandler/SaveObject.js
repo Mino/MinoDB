@@ -120,7 +120,7 @@ SaveObject.validate_objects = function(objects, types, callback){
 		async.each(unrecognized, function(key, rule_done){
 			var rule = rules[key];
 			if(rule){
-				var value = object[key];
+				var value = validator.get(key);
 				rule.validate(value, function(error) {
 					if(error!==null){
 						validator.invalid(key, error);

@@ -210,5 +210,6 @@ MinoDB.Auth = require('../default_plugins/auth/Auth');
 MinoDB.Permissions = require('../default_plugins/permissions/MinoDbPermissions');
 MinoDB.Path = require('../common_classes/Path.js');
 MinoDB.User = require('./core/models/User.js');
+MinoDB.SaveObject = require('./core/handlers/SaveHandler/SaveObject.js');
 
 module.exports = MinoDB;
