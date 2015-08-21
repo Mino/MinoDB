@@ -68,25 +68,28 @@ ItemView.prototype.populate = function(data){
 
 	item_view.browser.address_bar.populate_path_buttons(item_view.path);
 
-	item_view.form = new FVForm();
-	item_view.form.add_field("_id", new FVTextField("ID"));
-	item_view.form.add_field("name", new FVTextField("Name"));
-	item_view.form.fields.name.on_change(function(){
+	item_view.form = new FVForm()
+	.add_field("_id", new FVTextField("ID",{
+		"description": "Leave empty to create a new item."
+	}))
+	.add_field("name", new FVTextField("Name").on_change(function(){
 		item_view.update_full_path();
-	})
-	item_view.form.add_field("path", new FVTextField("Path"));
-	item_view.form.fields.path.on_change(function(){
+	}))
+	.add_field("path", new FVTextField("Path").on_change(function(){
 		item_view.update_full_path();
-	})
-	item_view.form.add_field("full_path", new FVTextField("Full Path"));
-	item_view.form.on_submit(function(form_val){
+	}))
+	.add_field("full_path", new FVTextField("Full Path"))
+	.on_submit(function(form_val){
 		item_view.save();
 	})
+
 	item_view.element.empty().append(
-		item_view.form.element
+		item_view.form.element.append(
+			$("<button />",{"type":"submit"}).hide()//Hidden submit button allows return to submit form
+		)
 	)
 
-	item_view.form.val(data);
+	item_view.form.val(data)
 
 	if(item_view.options.create){
 		item_view.form.fields.path.val(item_view.path);
@@ -102,9 +105,11 @@ ItemView.prototype.populate = function(data){
 	}
 
 	for(var key in data){
-		if(!is_object_key(key)){
-			var section = new ItemSection(key, data[key], item_view);
-			item_view.sections[key] = section;
+		if(data.hasOwnProperty(key)){
+			if(!is_object_key(key)){
+				var section = new ItemSection(key, data[key], item_view);
+				item_view.sections[key] = section;
+			}
 		}
 	}
 }

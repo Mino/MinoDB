@@ -3,6 +3,8 @@ var Constants = require('../../../../common_classes/Constants');
 var Path = require('../../../../common_classes/Path');
 var logger = require('mino-logger');
 var FieldVal = require('fieldval');
+var FVRule = require('fieldval-rules');
+var async = require('async');
 var BasicVal = FieldVal.BasicVal;
 var validators = require('../../validators');
 
@@ -22,24 +24,24 @@ function SaveObject(json, handler, index, options){
 
 	so.granted_new_path = false;
 
-	so.id = so.validator.get("_id", BasicVal.string(false)); //,BasicVal.minimum(1));
-	so.is_new = so.id===undefined;
+	var bypass_path_checks = so.options.bypass_path_checks !== undefined ? so.options.bypass_path_checks : false;
 
-	so.folder = so.validator.get("folder", BasicVal.boolean(false)) || false;
-	so.version = so.validator.get("version", BasicVal.integer(false));
-	if(so.folder===null){
+	SaveObject.validate_basic_fields(so.validator, bypass_path_checks, so);
+
+	so.is_new = so.id===undefined;
+	if(so.id!==undefined){
+		so.id = ""+so.id;//Convert to string
+	}
+
+	if(so.folder===undefined || so.folder===null){
 		so.folder = false;
 	}
 
-	//full_path might be present, but it should be ignored
-	so.validator.get("full_path",BasicVal.string(false));//, validators.path);
-	
-	so.path = so.validator.get("path", BasicVal.string(true), validators.folder_path);
-	if(so.path!==null){
+	if(so.path){
 		var permission_called = false;
 		logger.debug(so.path);
 
-		if(!so.options.bypass_path_checks){
+		if(!bypass_path_checks){
 			handler.path_permission_checker.check_permissions_for_path(so.path,function(status){
 				if(status===Constants.WRITE_PERMISSION){
 					//Can write to the specified path
@@ -61,7 +63,6 @@ function SaveObject(json, handler, index, options){
 			});
 		}
 	}
-	so.name = so.validator.get("name", BasicVal.string(true), BasicVal.not_empty(true), Path.object_name_check(so.options.bypass_path_checks));
 
 	var unrecognized = so.validator.get_unrecognized();
 
@@ -73,6 +74,97 @@ function SaveObject(json, handler, index, options){
 		}
 	}
 }
+
+SaveObject.validate_basic_fields = function(validator, bypass_path_checks, save_object){
+	if(bypass_path_checks===undefined){
+		bypass_path_checks = true;
+	}
+
+	if(!save_object){
+		//Allows save object to be updated with values - otherwise ignores them
+		save_object = {};
+	}
+
+	save_object.id = validator.get("_id", validators.id(false));
+	save_object.name = validator.get("name", BasicVal.string(true), BasicVal.not_empty(true), Path.object_name_check(bypass_path_checks));
+	save_object.folder = validator.get("folder", BasicVal.boolean(false)) || false;
+	save_object.version = validator.get("version", BasicVal.integer(false));
+	//full_path might be present, but it should be ignored
+	validator.get("full_path",BasicVal.string(false));//, validators.path);
+	save_object.path = validator.get("path", BasicVal.string(true), validators.folder_path);
+};
+
+SaveObject.validate_objects = function(objects, types, callback){
+	var so = this;
+
+	var missing_types_map = {};
+	var rules = {};
+
+	for(var i in types){
+		if(types.hasOwnProperty(i)){
+			var rule = new FVRule();
+			var rule_init = rule.init(types[i]);
+			rules[i] = rule;
+		}
+	}
+
+	var validation_results = [];
+
+	async.forEachOf(objects, function(object,index,respond){
+
+		var validator = new FieldVal(object);
+		SaveObject.validate_basic_fields(validator, true);
+
+		var unrecognized = validator.get_unrecognized();
+
+		async.each(unrecognized, function(key, rule_done){
+			var rule = rules[key];
+			if(rule){
+				var value = validator.get(key);
+				rule.validate(value, function(error) {
+					if(error!==null){
+						validator.invalid(key, error);
+					}
+					rule_done();
+				});
+			} else if(rule===null) {
+				//Type doesn't exist (was looked-up and returned null)
+				//Will mark as unrecognized
+				rule_done();
+			} else {
+				//Type isn't present (not necessarily non-existant)
+				missing_types_map[key] = true;
+				rule_done();
+			}
+		}, function(err){
+			if(err){
+				respond(err);
+				return;
+			}
+
+			validation_results[index] = validator.end();
+			respond(null);
+		});
+	}, function(err){
+		if(err){
+			callback(err);
+			return;
+		}
+
+		var missing_types = [];
+		for(var m in missing_types_map){
+			if(missing_types_map.hasOwnProperty(m)){
+				missing_types.push(m);
+			}
+		}
+
+		if(missing_types.length>0){
+			callback(missing_types);
+		} else {
+			callback(null, validation_results);
+		}
+	});
+};
 
 SaveObject.prototype.create_saving_json = function(){
 	var so = this;
@@ -108,7 +200,7 @@ SaveObject.prototype.got_type = function(name, error, type, callback){
 			so.validator.invalid(name, error);
 		}
 		callback();
-	});	
+	});
 };
 
 SaveObject.prototype.replace_id_in_name = function(){

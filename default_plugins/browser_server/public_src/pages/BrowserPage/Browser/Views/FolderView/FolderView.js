@@ -176,7 +176,16 @@ FolderView.prototype.load = function(options){
 	};
 	
 	api_request(request,function(err, response){
-		console.log(err, response);
+		if(response.error){
+			var path_error = FieldVal.get_error("parameters","paths",0,response);
+			
+
+			if(path_error){
+				folder_view.show_error(path_error);
+				return;
+			}
+		}
+
 		folder_view.populate(options, response);
 	});
 }

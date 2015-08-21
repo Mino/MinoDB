@@ -60,7 +60,7 @@ Session.prototype.save = function(api, options, callback){
         callback = options;
         options = undefined;
     }
-    
+
     options = options || {};
     var path = options.path || "/" + api.minodb.root_username + "/sessions/";
     var minodb_username = options.minodb_username || api.minodb.root_username;
@@ -69,7 +69,7 @@ Session.prototype.save = function(api, options, callback){
 
         logger.debug(err, to_save);
 
-        var session_object = {  
+        var session_object = {
             "_id": session.id,
             "name": "~id~",
             "path": path,
@@ -172,7 +172,7 @@ Session.get_active_user_sessions = function(user_id, api, options, callback){
 Session.invalidate_user_sessions = function(user_id, api, options, callback) {
     Session.get_active_user_sessions(user_id, api, options, function(err, sessions) {
         logger.debug(err, sessions);
-        
+
         if (sessions.length === 0) {
             callback();
             return;

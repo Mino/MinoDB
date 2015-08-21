@@ -17,16 +17,17 @@ var wrap_path = function(relative){
 
 module.exports = function(gulp){
 
-    var onError = function (err) {  
+    var onError = function (err) {
       gutil.beep();
       console.log(err);
+      this.emit('end');
     };
 
-    //LESS compilation
-    gulp.task('auth_public_less', function(){
-        gulp.src(wrap_path('../../bower_components/font-awesome/fonts/*'))
+    gulp.task('auth_public_fonts', function(){
+        return gulp.src(wrap_path('../../bower_components/font-awesome/fonts/*'))
         .pipe(gulp.dest(wrap_path('./public/fonts/')));
-
+    });
+    gulp.task('auth_public_less', function(){
         return gulp.src(wrap_path('./public_src/style.less'))
         .pipe(plumber(onError))
         .pipe(less())
@@ -41,6 +42,7 @@ module.exports = function(gulp){
         .pipe(gulp.dest(wrap_path('./admin/')));
     });
     gulp.task('auth_less', function(){
+        gulp.start('auth_public_fonts');
         gulp.start('auth_public_less');
         gulp.start('auth_admin_less');
     });

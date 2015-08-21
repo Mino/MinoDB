@@ -1,7 +1,7 @@
 @import "MainBrowser/MainBrowser.subless";
 
 .browser{
-	
+
 	@import "AddressBar/AddressBar.subless";
 	@import "Icon/Icon.subless";
 
@@ -12,19 +12,6 @@
 
 		padding-bottom: 50px;
 
-		/* Adding borders to FieldVal fields */
-		.fv_field{
-			&:first-child{
-				border-top: 1px solid #BBB;
-			}
-			border-bottom: 1px solid #BBB;
-
-			&.rows{
-				.fv_field_title{
-					padding-top: 6px;
-				}
-			}
-		}
 	}
 
 	@import "Toolbar/Toolbar.subless";

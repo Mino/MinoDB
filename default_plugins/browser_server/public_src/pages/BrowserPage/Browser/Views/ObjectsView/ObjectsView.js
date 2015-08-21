@@ -44,6 +44,20 @@ ObjectsView.prototype.finish_load = function(){
 	objects_view.contents.removeClass("loading");
 }
 
+ObjectsView.prototype.show_error = function(error){
+	var objects_view = this;
+
+	objects_view.finish_load();
+
+	objects_view.contents.append(
+		$("<div />").addClass("empty_folder").append(
+			$("<div />").addClass("fa_icon fa fa-warning"),
+			$("<div />").text(error.error_message)
+		)
+	)
+	objects_view.pagination_controller.hide();
+}
+
 ObjectsView.prototype.populate = function(options, data){
 	var objects_view = this;
 

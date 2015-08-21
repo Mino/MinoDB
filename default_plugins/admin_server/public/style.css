@@ -16,9 +16,33 @@
   box-sizing: border-box;
   vertical-align: top;
 }
+.fv_field.rows,
+.fv_field.rows .fv_field {
+  /* Float fix */
+}
+.fv_field.rows:after,
+.fv_field.rows .fv_field:after {
+  clear: both;
+}
+.fv_field.rows:before,
+.fv_field.rows .fv_field:before,
+.fv_field.rows:after,
+.fv_field.rows .fv_field:after {
+  content: " ";
+  display: table;
+}
 .fv_field.rows > .fv_field_title,
 .fv_field.rows .fv_field > .fv_field_title {
   width: 20%;
+  float: left;
+  padding-top: 9px;
+  vertical-align: top;
+}
+.fv_field.rows > .fv_field_description,
+.fv_field.rows .fv_field > .fv_field_description {
+  width: 20%;
+  float: left;
+  clear: left;
   vertical-align: top;
 }
 .fv_field.rows > .fv_input_holder,
@@ -40,12 +64,6 @@
 }
 .fv_field.fv_field_error > .fv_field_title {
   color: #aa0000;
-}
-.fv_field.fv_field_error > .fv_input_holder > input {
-  border: 1px solid #aa0000;
-}
-.fv_field.fv_field_error > .fv_input_holder > textarea {
-  border: 1px solid #aa0000;
 }
 .fv_field.fv_disabled > .fv_input_holder > input {
   color: #a8a8a8;
@@ -83,28 +101,11 @@
 }
 .fv_field > .fv_field_description {
   font-size: 12px;
+  padding-right: 5px;
+  box-sizing: border-box;
 }
 .fv_field > .fv_input_holder {
   box-sizing: border-box;
-}
-.fv_field > .fv_input_holder > input {
-  border-radius: 0px;
-  -webkit-border-radius: 0px;
-  padding-left: 5px;
-  padding-right: 5px;
-  box-sizing: border-box;
-  margin: 0px;
-  line-height: 30px;
-  border: 1px solid #999999;
-}
-.fv_field > .fv_input_holder > textarea {
-  border-radius: 0px;
-  -webkit-border-radius: 0px;
-  margin: 0px;
-  resize: none;
-  min-height: 100px;
-  box-sizing: border-box;
-  border: 1px solid #999999;
 }
 .fv_field > .fv_field_move_handle {
   cursor: pointer;
@@ -155,7 +156,7 @@
   top: 0px;
   right: 0px;
   background-color: #aa0000;
-  color: #ffffff;
+  color: white;
   font-size: 20px;
   line-height: 30px;
   text-align: center;
@@ -167,27 +168,53 @@
 .fv_field > .fv_field_remove_button:active {
   background-color: #770000;
 }
-.fv_text_field > .fv_input_holder > textarea.fv_text_input {
+.fv_text_field > .fv_input_holder > .fv_text_input {
   width: 100%;
   font-size: 14px;
   vertical-align: top;
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  box-sizing: border-box;
+  margin: 0px;
+  resize: none;
+  border: 1px solid #999999;
+}
+.fv_text_field > .fv_input_holder > textarea.fv_text_input {
+  min-height: 100px;
 }
 .fv_text_field > .fv_input_holder > input.fv_text_input {
-  width: 100%;
-  font-size: 14px;
+  padding-left: 5px;
+  padding-right: 5px;
+  line-height: 30px;
+}
+.fv_text_field.fv_field_error > .fv_input_holder > .fv_text_input {
+  border: 1px solid #aa0000;
 }
 .fv_date_field > .fv_input_holder > .fv_date_input {
+  width: 100%;
+  vertical-align: top;
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  box-sizing: border-box;
+  margin: 0px;
+  resize: none;
+  border: 1px solid #999999;
   font-size: 14px;
   display: inline-block;
   text-align: center;
   padding-left: 2px;
   padding-right: 2px;
+  line-height: 30px;
 }
 .fv_date_field > .fv_input_holder > .fv_date_separator {
   display: inline-block;
   width: 15px;
+  line-height: 34px;
   text-align: center;
   font-weight: bold;
+}
+.fv_date_field.fv_field_error > .fv_input_holder > .fv_date_input {
+  border: 1px solid #aa0000;
 }
 .fv_choice_field > .fv_input_holder > .fv_choice_input {
   font-size: 14px;
@@ -244,10 +271,11 @@
 }
 .fv_choice_field > .fv_input_holder > .fv_choice_input > .fv_choice_list {
   position: absolute;
-  z-index: 1;
+  z-index: 999999999;
   top: 28px;
   display: none;
   max-height: 200px;
+  background-color: white;
   border: 1px solid #999999;
   border-top: none;
   width: 100%;
@@ -294,6 +322,8 @@
 }
 .fv_display_field > .fv_input_holder > div {
   font-size: 14px;
+  padding-top: 10px;
+  padding-bottom: 5px;
 }
 .fv_boolean_field > .fv_input_holder {
   padding-top: 5px;
@@ -349,7 +379,7 @@
   -webkit-appearance: none;
   cursor: pointer;
   background-color: #00aa00;
-  color: #ffffff;
+  color: white;
   margin: 0px;
   border: none;
   font-size: 14px;
@@ -413,7 +443,7 @@
   -webkit-appearance: none;
   cursor: pointer;
   background-color: #00aa00;
-  color: #ffffff;
+  color: white;
   margin: 0px;
   border: none;
   font-size: 14px;
@@ -434,15 +464,15 @@
   font-weight: bold;
 }
 /*!
- *  Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
+ *  Font Awesome 4.3.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
 /* FONT PATH
  * -------------------------- */
 @font-face {
   font-family: 'FontAwesome';
-  src: url('../fonts/fontawesome-webfont.eot?v=4.2.0');
-  src: url('../fonts/fontawesome-webfont.eot?#iefix&v=4.2.0') format('embedded-opentype'), url('../fonts/fontawesome-webfont.woff?v=4.2.0') format('woff'), url('../fonts/fontawesome-webfont.ttf?v=4.2.0') format('truetype'), url('../fonts/fontawesome-webfont.svg?v=4.2.0#fontawesomeregular') format('svg');
+  src: url('../fonts/fontawesome-webfont.eot?v=4.3.0');
+  src: url('../fonts/fontawesome-webfont.eot?#iefix&v=4.3.0') format('embedded-opentype'), url('../fonts/fontawesome-webfont.woff2?v=4.3.0') format('woff2'), url('../fonts/fontawesome-webfont.woff?v=4.3.0') format('woff'), url('../fonts/fontawesome-webfont.ttf?v=4.3.0') format('truetype'), url('../fonts/fontawesome-webfont.svg?v=4.3.0#fontawesomeregular') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -453,6 +483,7 @@
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transform: translate(0, 0);
 }
 /* makes the font 33% larger relative to the icon container */
 .fa-lg {
@@ -514,6 +545,10 @@
 .fa-spin {
   -webkit-animation: fa-spin 2s infinite linear;
   animation: fa-spin 2s infinite linear;
+}
+.fa-pulse {
+  -webkit-animation: fa-spin 1s infinite steps(8);
+  animation: fa-spin 1s infinite steps(8);
 }
 @-webkit-keyframes fa-spin {
   0% {
@@ -1045,6 +1080,7 @@
 .fa-twitter:before {
   content: "\f099";
 }
+.fa-facebook-f:before,
 .fa-facebook:before {
   content: "\f09a";
 }
@@ -1694,7 +1730,8 @@
 .fa-male:before {
   content: "\f183";
 }
-.fa-gittip:before {
+.fa-gittip:before,
+.fa-gratipay:before {
   content: "\f184";
 }
 .fa-sun-o:before {
@@ -1961,6 +1998,7 @@
 .fa-history:before {
   content: "\f1da";
 }
+.fa-genderless:before,
 .fa-circle-thin:before {
   content: "\f1db";
 }
@@ -2104,6 +2142,127 @@
 }
 .fa-meanpath:before {
   content: "\f20c";
+}
+.fa-buysellads:before {
+  content: "\f20d";
+}
+.fa-connectdevelop:before {
+  content: "\f20e";
+}
+.fa-dashcube:before {
+  content: "\f210";
+}
+.fa-forumbee:before {
+  content: "\f211";
+}
+.fa-leanpub:before {
+  content: "\f212";
+}
+.fa-sellsy:before {
+  content: "\f213";
+}
+.fa-shirtsinbulk:before {
+  content: "\f214";
+}
+.fa-simplybuilt:before {
+  content: "\f215";
+}
+.fa-skyatlas:before {
+  content: "\f216";
+}
+.fa-cart-plus:before {
+  content: "\f217";
+}
+.fa-cart-arrow-down:before {
+  content: "\f218";
+}
+.fa-diamond:before {
+  content: "\f219";
+}
+.fa-ship:before {
+  content: "\f21a";
+}
+.fa-user-secret:before {
+  content: "\f21b";
+}
+.fa-motorcycle:before {
+  content: "\f21c";
+}
+.fa-street-view:before {
+  content: "\f21d";
+}
+.fa-heartbeat:before {
+  content: "\f21e";
+}
+.fa-venus:before {
+  content: "\f221";
+}
+.fa-mars:before {
+  content: "\f222";
+}
+.fa-mercury:before {
+  content: "\f223";
+}
+.fa-transgender:before {
+  content: "\f224";
+}
+.fa-transgender-alt:before {
+  content: "\f225";
+}
+.fa-venus-double:before {
+  content: "\f226";
+}
+.fa-mars-double:before {
+  content: "\f227";
+}
+.fa-venus-mars:before {
+  content: "\f228";
+}
+.fa-mars-stroke:before {
+  content: "\f229";
+}
+.fa-mars-stroke-v:before {
+  content: "\f22a";
+}
+.fa-mars-stroke-h:before {
+  content: "\f22b";
+}
+.fa-neuter:before {
+  content: "\f22c";
+}
+.fa-facebook-official:before {
+  content: "\f230";
+}
+.fa-pinterest-p:before {
+  content: "\f231";
+}
+.fa-whatsapp:before {
+  content: "\f232";
+}
+.fa-server:before {
+  content: "\f233";
+}
+.fa-user-plus:before {
+  content: "\f234";
+}
+.fa-user-times:before {
+  content: "\f235";
+}
+.fa-hotel:before,
+.fa-bed:before {
+  content: "\f236";
+}
+.fa-viacoin:before {
+  content: "\f237";
+}
+.fa-train:before {
+  content: "\f238";
+}
+.fa-subway:before {
+  content: "\f239";
+}
+.fa-medium:before {
+  content: "\f23a";
 }
 body {
   margin: 0px;

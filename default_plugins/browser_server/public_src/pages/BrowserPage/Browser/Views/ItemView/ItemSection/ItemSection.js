@@ -91,7 +91,9 @@ ItemSection.prototype.style_section_form = function() {
     var section = this;
 
     section.item_view.form.add_field(section.name, section.field);
-    section.field.element.addClass("item_section");
+    section.field.element.addClass("item_section").append(
+        $("<button />",{"type":"submit"}).hide()//Hidden submit button allows return to submit form
+    );
 
     var title_text;
     if(section.type){
@@ -164,7 +166,7 @@ ItemSection.prototype.populate_type = function(type){
         section.vr = new FVRule();
         section.vr.init(type);
 
-        section.field = section.vr.create_form();
+        section.field = section.vr.create_ui();
     }
 
     if (section.field instanceof FVProxyField) {

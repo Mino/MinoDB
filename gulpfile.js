@@ -32,12 +32,13 @@ if (debug) {
 
 var coverage = gulp.env.coverage;
 
-var onError = function (err) {  
+var onError = function (err) {
   gutil.beep();
   console.log(err);
   if (throw_errors) {
     throw err;
   }
+  this.emit('end');
 };
 
 gulp.task('test', function(cb){
@@ -48,15 +49,15 @@ gulp.task('test', function(cb){
             reporter: 'spec',
             grep: gulp.env.grep
         }));
-        
+
         if (!debug) {
             task.pipe(istanbul.writeReports());
         }
-        
+
         task.on('end', function() {
             if (coverage) {
                 gulp.src('./coverage/lcov-report/index.html')
-                .pipe(open());    
+                .pipe(open());
             }
             cb();
         });
@@ -65,8 +66,8 @@ gulp.task('test', function(cb){
 
     var setup_coverage = function(callback) {
         gulp.src([
-            'MinoDB/**/*.js', 
-            '!MinoDB/ui_server/**/*', 
+            'MinoDB/**/*.js',
+            '!MinoDB/ui_server/**/*',
             'common_classes/**/*.js',
             'default_plugins/auth/Auth.js',
             'default_plugins/permissions/MinoDbPermissions.js',
@@ -86,13 +87,13 @@ gulp.task('test', function(cb){
             run_tests();
         });
     }
-    
+
 });
 
 gulp.task('lint', function() {
     return gulp.src([
-        'MinoDB/**/*.js', 
-        '!MinoDB/ui_server/**/*', 
+        'MinoDB/**/*.js',
+        '!MinoDB/ui_server/**/*',
         'common_classes/**/*.js',
         'default_plugins/auth/Auth.js',
         'default_plugins/permissions/MinoDbPermissions.js',

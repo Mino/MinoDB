@@ -30,15 +30,18 @@ SearchView.prototype.init = function(){
 	sv.form.add_field("paths",paths_field);
 	sv.form.add_field("include_subfolders", new FVBooleanField("Include Subfolders"));
 	sv.form.add_field("text_search",new FVTextField("Text Search"));
-	
+
 	var sort_field = new FVKeyValueField("Sort");
 	sort_field.new_field = function() {
-		return new FVTextField(null, {type:"number"});
+		return new FVChoiceField(null, {choices:[
+			[-1,"Descending"],
+			[1,"Ascending"]
+		]});
 	}
 	sv.form.add_field("sort", sort_field);
 
 	sv.form.element.append(
-		sv.search_button = $("<button />").addClass("mino_button").text("Search")
+		sv.search_button = $("<button />").addClass("mino_button search_button").text("Search")
 	)
 
 	sv.search_button.click(function(event){
@@ -59,7 +62,7 @@ SearchView.prototype.init = function(){
 
 	sv.browser.toolbar.element.empty().append(
 		sv.toolbar_element = $("<div />").append(
-			
+
 		)
 	);
 
@@ -119,6 +122,8 @@ SearchView.prototype.do_search = function(query, add_state){
 		SAFE.add_history_state(link_address);
 	}
 
+	sv.form.clear_errors();
+
 	var this_request = sv.current_request = api_request({
 		"function": "search",
 		"parameters": query
@@ -127,13 +132,13 @@ SearchView.prototype.do_search = function(query, add_state){
 		if(this_request===sv.current_request){
 			console.log(err,res);
 
+			sv.finish_load();
+
 			if(err){
-				console.log("ERROR A");
 				sv.form.error(FieldVal.get_error("parameters",err));
 			} else {
 
 				if(res.error){
-					console.log("ERROR B");
 					sv.form.error(FieldVal.get_error("parameters",res));
 				} else {
 					if(res.objects){

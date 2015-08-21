@@ -1,18 +1,55 @@
+@ui_border_color: rgba(192, 192, 192, 1.0);
+@panel_background_color: white;
+@panel_header_background_color: #F7F7F7;
+@panel_header_color: #464646;
+@panel_border_color: @ui_border_color;
+
+
 .search_view{
 	.search_form{
-		background-color: white;
-		border: 1px solid @search_form_border;
-		padding: 5px;
-
 		>.fv_form{
 			border-bottom: 0px;
 			border-top: 0px;
+			background-color: @panel_background_color;
+		    border: 1px solid @panel_border_color;
+		    position: relative;
+		    padding-top: 0px;
+		    margin-top: 0px;
 
-			>.fv_input_holder{
+		    >.fv_field_title{
+		        display: block;
+		        .bold;
+		        padding: 10px;
+				width: 100%;
+
+		        .fa {
+		            margin-right: 10px;
+		            color: rgba(0,0,0,0.5);
+		        }
+
+		        background-color: @panel_header_background_color;
+		        border-bottom: 1px solid @panel_border_color;
+		    }
+
+		    >.fv_input_holder{
+				padding: 10px;
 				margin-bottom: 5px;
 			}
+
+			&.fv_field_error{
+				border-color: @fv_error_color;
+
+				.fv_field_title{
+					border-bottom-color: @fv_error_color;
+				}
+			}
 		}
-	}	
+
+		.search_button{
+			margin-left: 10px;
+			margin-bottom: 5px;
+		}
+	}
 
 	.search_results{
 
@@ -24,7 +61,7 @@
 		.empty_folder{
 			text-align: center;
 			vertical-align: middle;
-			.bold;	
+			.bold;
 			position: absolute;
 			top: 50%;
 			left: 50%;
