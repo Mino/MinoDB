@@ -332,6 +332,7 @@ Auth.prototype.process_session = function(options) {
             }
             auth.get_user("_id", session.user_id, function(err, user) {
                 req.user = user;
+				req.session = session;
                 logger.debug("SIGNED IN AS ",req.user);
                 logger.debug("C");
                 next();
